@@ -66,10 +66,11 @@ const Navbar = () => {
             }`}>
               <div className="bg-card/98 backdrop-blur-xl rounded-2xl border border-border/60 shadow-2xl p-6 w-[520px] grid grid-cols-2 gap-3">
                 {serviceItems.map((item) => (
-                  <a
+                  <Link
                     key={item.titleKey}
-                    href={item.href}
+                    to={item.href}
                     className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group/item"
+                    onClick={() => setShowServices(false)}
                   >
                     <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-colors">
                       <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
@@ -78,7 +79,7 @@ const Navbar = () => {
                       <p className="text-sm font-semibold text-foreground">{t(item.titleKey)}</p>
                       <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{t(item.descKey)}</p>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
