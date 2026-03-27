@@ -2,6 +2,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import globeImage from "@/assets/globe-clean.png";
 
 const HeroSection = () => {
   const { t } = useI18n();
@@ -10,7 +11,6 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-gradient-hero">
-      {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.03]" style={{
         backgroundImage: `radial-gradient(circle at 1px 1px, hsl(220 25% 12%) 1px, transparent 0)`,
         backgroundSize: "40px 40px",
@@ -68,21 +68,26 @@ const HeroSection = () => {
           </ScrollReveal>
         </div>
 
-        {/* Right - Rotating Globe with Airplanes & Packages */}
+        {/* Right - Real Globe Image with Rotation */}
         <ScrollReveal direction="scale" delay={400} className="relative hidden lg:flex justify-center items-center min-h-[560px]">
           <div className="relative">
-            {/* Rotating Globe */}
-            <div className="globe-container">
-              <div className="globe">
-                <div className="globe-shine" />
-                {/* Continent hints */}
-                <div className="globe-continents" />
-              </div>
+            {/* Globe glow background */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-[420px] h-[420px] rounded-full bg-primary/10 blur-[80px] animate-pulse" />
+            </div>
+
+            {/* Real Globe Image */}
+            <div className="globe-real-container">
+              <img
+                src={globeImage}
+                alt="THG Global Network"
+                className="globe-real-image"
+              />
               {/* Orbit rings */}
               <div className="globe-orbit" />
               <div className="globe-orbit globe-orbit-2" />
 
-              {/* Animated airplanes on orbit */}
+              {/* Animated airplanes */}
               <div className="airplane-orbit">
                 <div className="airplane airplane-1">✈️</div>
               </div>
