@@ -2,7 +2,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
-import globeImage from "@/assets/globe-clean.png";
+import globeImage from "@/assets/globe-3d.png";
 
 const HeroSection = () => {
   const { t } = useI18n();
