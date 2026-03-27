@@ -6,10 +6,10 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Link, useLocation } from "react-router-dom";
 
 const serviceItems = [
-  { icon: Package, titleKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", href: "#services" },
-  { icon: Truck, titleKey: "nav.thg_express", descKey: "nav.express_desc", href: "#services" },
-  { icon: Warehouse, titleKey: "nav.thg_warehouse", descKey: "nav.warehouse_desc", href: "#services" },
-  { icon: ShoppingCart, titleKey: "nav.thg_order", descKey: "nav.order_desc", href: "#services" },
+  { icon: Package, titleKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", href: "/thg-fulfill" },
+  { icon: Truck, titleKey: "nav.thg_express", descKey: "nav.express_desc", href: "/thg-express" },
+  { icon: Warehouse, titleKey: "nav.thg_warehouse", descKey: "nav.warehouse_desc", href: "/thg-warehouse" },
+  { icon: ShoppingCart, titleKey: "nav.thg_order", descKey: "nav.order_desc", href: "/thg-order" },
 ];
 
 const Navbar = () => {
@@ -66,10 +66,11 @@ const Navbar = () => {
             }`}>
               <div className="bg-card/98 backdrop-blur-xl rounded-2xl border border-border/60 shadow-2xl p-6 w-[520px] grid grid-cols-2 gap-3">
                 {serviceItems.map((item) => (
-                  <a
+                  <Link
                     key={item.titleKey}
-                    href={item.href}
+                    to={item.href}
                     className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group/item"
+                    onClick={() => setShowServices(false)}
                   >
                     <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-colors">
                       <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
@@ -78,7 +79,7 @@ const Navbar = () => {
                       <p className="text-sm font-semibold text-foreground">{t(item.titleKey)}</p>
                       <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{t(item.descKey)}</p>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -118,15 +119,15 @@ const Navbar = () => {
         <div className="lg:hidden bg-card/98 backdrop-blur-xl border-t border-border/50 px-4 py-6 space-y-1 animate-fade-in">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2">{t("nav.services")}</p>
           {serviceItems.map((item) => (
-            <a
+            <Link
               key={item.titleKey}
-              href={item.href}
+              to={item.href}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <item.icon className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">{t(item.titleKey)}</span>
-            </a>
+            </Link>
           ))}
           <div className="border-t border-border/50 my-3" />
           {navItems.map((item) => (
