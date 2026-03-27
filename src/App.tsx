@@ -12,6 +12,7 @@ import THGExpressPage from "./pages/THGExpressPage.tsx";
 import THGWarehousePage from "./pages/THGWarehousePage.tsx";
 import THGOrderPage from "./pages/THGOrderPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import InternationalPricingPage from "./pages/InternationalPricingPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/chinh-sach" element={<PolicyPage />} />
             <Route path="/tin-tuc" element={<BlogPage />} />
+            <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
             <Route path="/thg-fulfill" element={<THGFulfillPage />} />
             <Route path="/thg-express" element={<THGExpressPage />} />
             <Route path="/thg-warehouse" element={<THGWarehousePage />} />
