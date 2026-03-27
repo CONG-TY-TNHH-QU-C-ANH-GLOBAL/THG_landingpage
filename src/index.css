@@ -115,14 +115,14 @@
     border-radius: 50%;
     object-fit: cover;
     clip-path: circle(50%);
-    animation: globe-spin 30s linear infinite;
+    animation: globe-sway 8s ease-in-out infinite;
     filter: drop-shadow(0 0 60px hsl(36 45% 42% / 0.3)) drop-shadow(0 20px 40px hsl(220 40% 13% / 0.2));
-    perspective: 800px;
   }
 
-  @keyframes globe-spin {
-    0% { transform: perspective(800px) rotateY(0deg); }
-    100% { transform: perspective(800px) rotateY(360deg); }
+  @keyframes globe-sway {
+    0% { transform: perspective(800px) rotateY(-15deg) rotateX(2deg); }
+    50% { transform: perspective(800px) rotateY(15deg) rotateX(-2deg); }
+    100% { transform: perspective(800px) rotateY(-15deg) rotateX(2deg); }
   }
 
   .globe-orbit {
