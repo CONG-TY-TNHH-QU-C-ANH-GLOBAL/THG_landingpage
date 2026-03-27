@@ -19,7 +19,7 @@ const HeroSection = () => {
         }}
       />
 
-      <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center relative z-10">
+      <div className="container mx-auto px-4 flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center relative z-10">
         <div className="space-y-6 md:space-y-8 text-center lg:text-left">
           <ScrollReveal delay={100}>
             <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm">
