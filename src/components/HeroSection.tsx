@@ -11,6 +11,7 @@ const HeroSection = () => {
 
   return (
     <section className="relative flex items-center pt-28 pb-6 md:pt-20 md:pb-10 overflow-hidden bg-gradient-hero">
+      {/* Dot grid pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
@@ -19,10 +20,13 @@ const HeroSection = () => {
         }}
       />
 
+      {/* Shimmer overlay */}
+      <div className="absolute inset-0 shimmer-effect opacity-30 pointer-events-none" />
+
       <div className="container mx-auto px-4 flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center relative z-10">
         <div className="space-y-6 md:space-y-8 text-center lg:text-left">
           <ScrollReveal delay={100}>
-            <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm">
+            <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm glow-pulse">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse flex-shrink-0" />
               <span className="font-medium text-muted-foreground tracking-wide uppercase text-[10px] md:text-xs truncate">
                 {t("hero.badge")}
@@ -58,12 +62,15 @@ const HeroSection = () => {
 
           <ScrollReveal delay={500}>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:justify-center lg:justify-start">
-              <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+              <Button
+                className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
+                style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
+              >
                 {t("hero.cta")} <ArrowRight className="w-4 h-4" />
               </Button>
               <Button
                 variant="outline"
-                className="rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 transition-all duration-300"
+                className="rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
               >
                 {t("hero.learn_more")}
               </Button>
@@ -74,9 +81,9 @@ const HeroSection = () => {
         <ScrollReveal
           direction="scale"
           delay={400}
-          className="relative flex justify-center items-center w-full overflow-hidden mx-auto lg:mx-0 mt-2 lg:mt-0"
+          className="relative flex justify-center items-center w-full overflow-hidden mx-auto lg:mx-0 mt-2 lg:mt-0 max-w-[280px] sm:max-w-none aspect-square sm:aspect-auto"
         >
-          <div className="relative flex items-center justify-center scale-[0.45] sm:scale-[0.6] md:scale-[0.75] lg:scale-100 origin-center -my-16 sm:-my-12 md:-my-8 lg:my-0">
+          <div className="relative flex items-center justify-center scale-[0.55] sm:scale-[0.65] md:scale-[0.8] lg:scale-100 origin-center -my-16 sm:-my-12 md:-my-8 lg:my-0">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-[420px] h-[420px] rounded-full bg-primary/10 blur-[80px] animate-pulse" />
             </div>
@@ -101,7 +108,7 @@ const HeroSection = () => {
               </div>
             </div>
 
-            <div className="absolute top-10 left-0 sm:-left-8 md:-left-12 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10">
+            <div className="absolute top-10 left-0 sm:-left-8 md:-left-12 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
               <div className="flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground mb-1">🇪🇺 EU</div>
               <p className="text-xl sm:text-2xl md:text-3xl font-bold text-navy tracking-tight">5-8</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground">{t("hero.delivery_days")}</p>
@@ -112,7 +119,7 @@ const HeroSection = () => {
               <span className="text-xs font-semibold">USA</span>
             </div>
 
-            <div className="absolute top-44 -right-6 md:-right-10 glass-card rounded-2xl px-4 md:px-5 py-3 md:py-4 animate-float z-10 hidden sm:block">
+            <div className="absolute top-44 -right-6 md:-right-10 glass-card rounded-2xl px-4 md:px-5 py-3 md:py-4 animate-float z-10 hidden sm:block glow-pulse">
               <p className="text-2xl md:text-3xl font-bold text-navy tracking-tight">3</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground">{t("hero.countries")}</p>
             </div>
@@ -127,7 +134,7 @@ const HeroSection = () => {
               <span className="text-xs font-semibold">Vietnam</span>
             </div>
 
-            <div className="absolute bottom-8 left-2 sm:-left-4 md:-left-8 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10">
+            <div className="absolute bottom-8 left-2 sm:-left-4 md:-left-8 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-navy tracking-tight">
                 từ <span className="text-gradient-gold">1$</span>
               </p>

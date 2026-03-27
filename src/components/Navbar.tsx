@@ -51,11 +51,13 @@ const Navbar = () => {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      scrolled ? "bg-background/95 backdrop-blur-xl shadow-sm border-b border-border/50" : "bg-transparent"
+      scrolled
+        ? "bg-background/90 backdrop-blur-2xl shadow-[0_4px_30px_hsl(36_45%_42%/0.08)] border-b border-border/40"
+        : "bg-transparent"
     }`}>
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1.5">
+          <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5">
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
@@ -66,7 +68,6 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-1">
-          {/* Services Dropdown */}
           <div
             ref={dropdownRef}
             className="relative"
@@ -78,19 +79,20 @@ const Navbar = () => {
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showServices ? "rotate-180" : ""}`} />
             </button>
 
-            {/* Mega Menu - positioned left-aligned */}
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${
-              showServices ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2 pointer-events-none"
-            }`}>
-              <div className="bg-card backdrop-blur-xl rounded-2xl border border-border/60 shadow-2xl p-5 w-[480px] grid grid-cols-2 gap-2">
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-400 ${
+              showServices ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
+            }`}
+              style={{ transitionTimingFunction: "var(--motion-spring)" }}
+            >
+              <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-5 w-[480px] grid grid-cols-2 gap-2">
                 {serviceItems.map((item) => (
                   <Link
                     key={item.titleKey}
                     to={item.href}
-                    className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group/item"
+                    className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
                     onClick={() => setShowServices(false)}
                   >
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-colors">
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
                       <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
                     </div>
                     <div>
@@ -107,7 +109,7 @@ const Navbar = () => {
             <Link
               key={item.label}
               to={item.href}
-              className={`px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-secondary/50 ${
+              className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-secondary/50 ${
                 location.pathname === item.href ? "text-primary" : "text-foreground/80 hover:text-foreground"
               }`}
             >
@@ -118,7 +120,9 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           <LanguageSwitcher />
-          <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-6 text-sm font-medium shadow-sm hover:shadow-md transition-all duration-300">
+          <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-6 text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+            style={{ boxShadow: "0 4px 15px hsl(36 45% 42% / 0.3)" }}
+          >
             {t("nav.consult")}
           </Button>
         </div>
@@ -134,7 +138,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="lg:hidden bg-card backdrop-blur-xl border-t border-border/50 px-4 py-6 space-y-1 animate-fade-in">
+        <div className="lg:hidden bg-card/95 backdrop-blur-2xl border-t border-border/40 px-4 py-6 space-y-1 animate-fade-in shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.1)]">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2">{t("nav.services")}</p>
           {serviceItems.map((item) => (
             <Link
@@ -159,7 +163,7 @@ const Navbar = () => {
             </Link>
           ))}
           <div className="pt-3">
-            <Button className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full">
+            <Button className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full shadow-lg">
               {t("nav.consult")}
             </Button>
           </div>

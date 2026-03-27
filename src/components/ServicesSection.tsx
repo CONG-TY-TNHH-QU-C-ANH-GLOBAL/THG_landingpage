@@ -41,6 +41,7 @@ const ServicesSection = () => {
 
   return (
     <section id="services" className="py-28 bg-card relative overflow-hidden">
+      <div className="section-divider absolute top-0 left-0 right-0" />
       <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/50 blur-3xl" />
       
       <div className="container mx-auto px-4 relative z-10">
@@ -60,8 +61,8 @@ const ServicesSection = () => {
 
         <div className="grid md:grid-cols-3 gap-6">
           {services.map((s, i) => (
-            <ScrollReveal key={s.titleKey} delay={i * 120}>
-              <div className="group relative rounded-3xl border border-border/60 bg-background overflow-hidden hover-lift h-full flex flex-col">
+            <ScrollReveal key={s.titleKey} delay={i * 120} direction={i === 1 ? "up" : i === 0 ? "left" : "right"}>
+              <div className="group relative rounded-3xl border border-border/60 bg-background overflow-hidden tilt-card h-full flex flex-col">
                 {/* Illustration area */}
                 <div className="relative h-56 bg-secondary/40 flex items-center justify-center overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/10" />
@@ -69,20 +70,17 @@ const ServicesSection = () => {
                   {/* POD T-shirt illustration */}
                   {s.illustration === "pod-illustration" && (
                     <div className="relative flex items-center gap-4">
-                      {/* White blank tee */}
                       <div className="w-20 h-24 relative">
                         <div className="absolute inset-0 bg-white rounded-lg shadow-md border border-border/30 flex items-center justify-center">
                           <span className="text-3xl">👕</span>
                         </div>
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground font-medium">Blank</div>
                       </div>
-                      {/* Arrow */}
                       <div className="flex flex-col items-center gap-1">
                         <div className="text-xl animate-pulse">🖨️</div>
                         <div className="w-8 h-0.5 bg-primary/30" />
                         <span className="text-[9px] text-muted-foreground">POD Print</span>
                       </div>
-                      {/* Branded tee */}
                       <div className="w-20 h-24 relative">
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg shadow-md border border-primary/30 flex items-center justify-center">
                           <span className="text-3xl">👕</span>

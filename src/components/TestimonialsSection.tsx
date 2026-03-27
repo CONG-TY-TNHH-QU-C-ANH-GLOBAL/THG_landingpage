@@ -38,6 +38,7 @@ const TestimonialsSection = () => {
 
   return (
     <section className="py-28 bg-background relative overflow-hidden">
+      <div className="section-divider absolute top-0 left-0 right-0" />
       <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-primary/5 blur-3xl" />
 
       <div className="container mx-auto px-4 relative z-10">
@@ -56,7 +57,7 @@ const TestimonialsSection = () => {
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {testimonials.map((item, i) => (
             <ScrollReveal key={i} delay={i * 100}>
-              <div className="glass-card rounded-2xl p-7 hover-lift h-full flex flex-col">
+              <div className="glass-card rounded-2xl p-7 tilt-card h-full flex flex-col">
                 {/* Stars */}
                 <div className="flex gap-0.5 mb-4">
                   {Array.from({ length: item.rating }).map((_, idx) => (
