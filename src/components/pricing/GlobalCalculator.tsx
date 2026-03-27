@@ -36,9 +36,27 @@ const GlobalCalculator = () => {
       return;
     }
 
-    // Import pricing data dynamically
-    const { getPricingData } = require("@/data/pricingData");
-    const dataArray = getPricingData(localOrigin, localItemType);
+    // Import pricing data
+    import("@/data/pricingData").then(({ getPricingData: gpd }) => {
+      const dataArray = gpd(localOrigin, localItemType);
+      const typeStr = localItemType === "cosmetic" ? "Mỹ Phẩm" : "Thường";
+
+      let matchRow = null;
+      for (const row of dataArray) {
+        if (row.kg >= localWeight) {
+          matchRow = row;
+          break;
+        }
+      }
+
+      if (matchRow && matchRow[localDest] != null) {
+        setQuoteResult({ mappedWeight: matchRow.kg, price: matchRow[localDest], type: typeStr });
+      } else {
+        setQuoteResult({ error: true });
+      }
+    });
+  };
+
     const typeStr = localItemType === "cosmetic" ? "Mỹ Phẩm" : "Thường";
 
     let matchRow = null;
