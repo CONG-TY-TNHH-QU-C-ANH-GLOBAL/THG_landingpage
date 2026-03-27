@@ -70,7 +70,7 @@ const HeroSection = () => {
 
         {/* Right - Real Globe Image with Rotation */}
         <ScrollReveal direction="scale" delay={400} className="relative flex justify-center items-center min-h-[320px] md:min-h-[460px] lg:min-h-[560px]">
-          <div className="relative">
+          <div className="relative scale-[0.6] md:scale-[0.8] lg:scale-100 origin-center">
             {/* Globe glow background */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-[420px] h-[420px] rounded-full bg-primary/10 blur-[80px] animate-pulse" />
