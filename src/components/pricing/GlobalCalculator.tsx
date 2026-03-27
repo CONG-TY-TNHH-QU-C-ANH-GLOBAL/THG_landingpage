@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { usePricingStore } from "@/stores/usePricingStore";
 import { Search, Plane, Scale } from "lucide-react";
-import { countryNames, getPricingData } from "@/data/pricingData";
+import { countryNames } from "@/data/PricingDatabase";
+import { generateTableData } from "@/data/pricingHelpers";
 import { Button } from "@/components/ui/button";
 
 const destinations = [
@@ -12,7 +13,11 @@ const destinations = [
   { value: "fr", label: "🇫🇷 Pháp (FR)" },
   { value: "ca", label: "🇨🇦 Canada (CA)" },
   { value: "au", label: "🇦🇺 Úc (AU)" },
-  { value: "jp", label: "🇯🇵 Nhật Bản (JP)" },
+  { value: "hk", label: "🇭🇰 Hồng Kông (HK)" },
+  { value: "sg", label: "🇸🇬 Singapore (SG)" },
+  { value: "br", label: "🇧🇷 Brazil (BR)" },
+  { value: "mx", label: "🇲🇽 Mexico (MX)" },
+  { value: "ae", label: "🇦🇪 UAE (AE)" },
 ];
 
 const GlobalCalculator = () => {
@@ -36,26 +41,31 @@ const GlobalCalculator = () => {
       return;
     }
 
-    const dataArray = getPricingData(localOrigin, localItemType);
-    const typeStr = localItemType === "cosmetic" ? "Mỹ Phẩm" : "Thường";
+    // Map itemType to category
+    const category = localItemType === "cosmetic" ? "cosmetics" : localItemType === "battery" ? "battery" : "standard";
+    const typeStr = localItemType === "cosmetic" ? "Mỹ Phẩm" : localItemType === "battery" ? "Pin Điện" : "Thường";
 
+    const { data } = generateTableData(localOrigin, category as "standard" | "cosmetics" | "battery");
+    const destKey = localDest.toLowerCase();
+
+    // Find closest weight match
     let matchRow = null;
-    for (const row of dataArray) {
+    for (const row of data) {
       if (row.kg >= localWeight) {
         matchRow = row;
         break;
       }
     }
 
-    if (matchRow && matchRow[localDest] != null) {
-      setQuoteResult({ mappedWeight: matchRow.kg, price: matchRow[localDest], type: typeStr });
+    if (matchRow && matchRow[destKey] != null) {
+      setQuoteResult({ mappedWeight: matchRow.kg, price: matchRow[destKey], type: typeStr });
     } else {
       setQuoteResult({ error: true });
     }
   };
 
   const originName = localOrigin === "vn" ? "Việt Nam" : "Trung Quốc";
-  const destName = countryNames[localDest] || "Quốc Tế";
+  const destName = (countryNames as Record<string, string>)[localDest.toUpperCase()] || "Quốc Tế";
 
   return (
     <div>

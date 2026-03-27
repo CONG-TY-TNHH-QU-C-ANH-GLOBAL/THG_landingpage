@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign } from "lucide-react";
+import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Link, useLocation } from "react-router-dom";
 import thgLogo from "@/assets/thg-logo.png";
 
@@ -15,6 +14,7 @@ const serviceItems = [
 
 const pricingItems = [
   { icon: Globe, titleKey: "nav.intl_pricing", descKey: "nav.intl_pricing_desc", href: "/bang-gia-quoc-te" },
+  { icon: MapPin, titleKey: "nav.domestic_pricing", descKey: "nav.domestic_pricing_desc", href: "/bang-gia-noi-dia" },
 ];
 
 const Navbar = () => {
@@ -28,11 +28,51 @@ const Navbar = () => {
   const pricingDropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
   const pricingTimeoutRef = useRef<NodeJS.Timeout>();
+  const gtDesktopSlotRef = useRef<HTMLDivElement>(null);
+  const gtMobileSlotRef = useRef<HTMLDivElement>(null);
+  const gtWidgetRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  // Inject GTranslate widget — single instance
+  useEffect(() => {
+    // Create the single widget container
+    if (!gtWidgetRef.current) {
+      gtWidgetRef.current = document.createElement("div");
+      gtWidgetRef.current.className = "gtranslate_wrapper";
+    }
+
+    if (!(window as any).gtranslateSettings) {
+      (window as any).gtranslateSettings = {
+        default_language: "en",
+        languages: ["en", "vi", "zh-CN"],
+        wrapper_selector: ".gtranslate_wrapper",
+        alt_flags: { en: "usa" },
+      };
+      const script = document.createElement("script");
+      script.src = "https://cdn.gtranslate.net/widgets/latest/popup.js";
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+
+    // Move the single widget into the correct slot based on viewport
+    const placeWidget = () => {
+      const widget = gtWidgetRef.current;
+      if (!widget) return;
+      const isDesktop = window.innerWidth >= 1024; // lg breakpoint
+      const target = isDesktop ? gtDesktopSlotRef.current : gtMobileSlotRef.current;
+      if (target && !target.contains(widget)) {
+        target.appendChild(widget);
+      }
+    };
+
+    placeWidget();
+    window.addEventListener("resize", placeWidget);
+    return () => window.removeEventListener("resize", placeWidget);
   }, []);
 
   useEffect(() => {
@@ -63,11 +103,10 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      scrolled
-        ? "bg-background/90 backdrop-blur-2xl shadow-[0_4px_30px_hsl(36_45%_42%/0.08)] border-b border-border/40"
-        : "bg-transparent"
-    }`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+      ? "bg-background/90 backdrop-blur-2xl shadow-[0_4px_30px_hsl(36_45%_42%/0.08)] border-b border-border/40"
+      : "bg-transparent"
+      }`}>
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5">
@@ -93,9 +132,8 @@ const Navbar = () => {
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showServices ? "rotate-180" : ""}`} />
             </button>
 
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-400 ${
-              showServices ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
-            }`}
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-400 ${showServices ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
+              }`}
               style={{ transitionTimingFunction: "var(--motion-spring)" }}
             >
               <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-5 w-[480px] grid grid-cols-2 gap-2">
@@ -131,9 +169,8 @@ const Navbar = () => {
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showPricing ? "rotate-180" : ""}`} />
             </button>
 
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-400 ${
-              showPricing ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
-            }`}
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-400 ${showPricing ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
+              }`}
               style={{ transitionTimingFunction: "var(--motion-spring)" }}
             >
               <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 w-[320px] space-y-1">
@@ -161,9 +198,8 @@ const Navbar = () => {
             <Link
               key={item.label}
               to={item.href}
-              className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-secondary/50 ${
-                location.pathname === item.href ? "text-primary" : "text-foreground/80 hover:text-foreground"
-              }`}
+              className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-secondary/50 ${location.pathname === item.href ? "text-primary" : "text-foreground/80 hover:text-foreground"
+                }`}
             >
               {item.label}
             </Link>
@@ -171,7 +207,7 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
-          <LanguageSwitcher />
+          <div ref={gtDesktopSlotRef} />
           <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-6 text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
             style={{ boxShadow: "0 4px 15px hsl(36 45% 42% / 0.3)" }}
           >
@@ -181,7 +217,7 @@ const Navbar = () => {
 
         {/* Mobile toggle */}
         <div className="flex lg:hidden items-center gap-2">
-          <LanguageSwitcher />
+          <div ref={gtMobileSlotRef} />
           <button className="p-2" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={22} /> : <Menu size={22} />}
           </button>

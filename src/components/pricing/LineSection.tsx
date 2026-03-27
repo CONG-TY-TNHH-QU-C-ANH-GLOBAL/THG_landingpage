@@ -4,7 +4,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 interface LineSectionProps {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   badges?: ReactNode;
   children: ReactNode;
 }

@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   :root {
@@ -69,28 +69,49 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    @apply font-semibold tracking-tight;
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 }
 
 @layer utilities {
+
   /* ─── Text Gradients ─── */
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     background-image: linear-gradient(135deg, hsl(36 45% 42%), hsl(40 50% 58%), hsl(36 45% 42%));
+  }
+
+  /* ─── Hide Scrollbar ─── */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   /* ─── Background Gradients ─── */
@@ -104,10 +125,12 @@
 
   /* ─── Glass Card (Enhanced 3D) ─── */
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+    background-color: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border) / 0.5);
     box-shadow: 0 8px 24px hsl(220 25% 12% / 0.06);
     transition: all 0.5s var(--motion-spring);
-    will-change: transform, box-shadow;
   }
 
   .glass-card:hover {
@@ -120,7 +143,6 @@
     perspective: var(--perspective);
     transform-style: preserve-3d;
     transition: all 0.5s var(--motion-spring);
-    will-change: transform;
   }
 
   .tilt-card:hover {
@@ -131,7 +153,6 @@
   /* ─── Hover Lift (Enhanced) ─── */
   .hover-lift {
     transition: all 0.5s var(--motion-spring);
-    will-change: transform;
   }
 
   .hover-lift:hover {
@@ -146,19 +167,18 @@
 
   /* ─── Shimmer Effect ─── */
   .shimmer-effect {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      hsl(36 45% 42% / 0.08) 50%,
-      transparent 100%
-    );
+    background: linear-gradient(90deg,
+        transparent 0%,
+        hsl(36 45% 42% / 0.08) 50%,
+        transparent 100%);
     background-size: 200% 100%;
     animation: shimmer 3s linear infinite;
   }
 
   /* ─── Section Divider ─── */
   .section-divider {
-    @apply h-px w-full;
+    height: 1px;
+    width: 100%;
     background: linear-gradient(90deg, transparent, hsl(36 45% 42% / 0.2), transparent);
   }
 
@@ -282,44 +302,107 @@
   }
 
   @keyframes fly-across {
-    0% { transform: translateX(-20px); opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { transform: translateX(100px); opacity: 0; }
+    0% {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+
+    20% {
+      opacity: 1;
+    }
+
+    80% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(100px);
+      opacity: 0;
+    }
   }
 
   @keyframes truck-arrive {
-    0% { transform: translateX(-30px); opacity: 0; }
-    30% { transform: translateX(0); opacity: 1; }
-    70% { transform: translateX(0); opacity: 1; }
-    100% { transform: translateX(0); opacity: 0.5; }
+    0% {
+      transform: translateX(-30px);
+      opacity: 0;
+    }
+
+    30% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    70% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(0);
+      opacity: 0.5;
+    }
   }
 
   @keyframes truck-depart {
-    0% { transform: translateX(0); opacity: 0.5; }
-    30% { transform: translateX(0); opacity: 1; }
-    100% { transform: translateX(30px); opacity: 0; }
+    0% {
+      transform: translateX(0);
+      opacity: 0.5;
+    }
+
+    30% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(30px);
+      opacity: 0;
+    }
   }
 
   /* ─── 3D Motion Keyframes ─── */
   @keyframes globe-rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @keyframes orbit-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @keyframes glowPulse {
-    0%, 100% { box-shadow: 0 0 20px hsl(36 50% 48% / 0.1); }
-    50% { box-shadow: 0 0 40px hsl(36 50% 48% / 0.25); }
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsl(36 50% 48% / 0.1);
+    }
+
+    50% {
+      box-shadow: 0 0 40px hsl(36 50% 48% / 0.25);
+    }
   }
 
   @keyframes pulse3D {
-    0%, 100% { transform: scale(1) perspective(800px) rotateY(0deg); }
-    50% { transform: scale(1.02) perspective(800px) rotateY(1deg); }
+
+    0%,
+    100% {
+      transform: scale(1) perspective(800px) rotateY(0deg);
+    }
+
+    50% {
+      transform: scale(1.02) perspective(800px) rotateY(1deg);
+    }
   }
 
   @keyframes rotateIn3D {
@@ -327,6 +410,7 @@
       opacity: 0;
       transform: perspective(1200px) rotateY(-15deg) translateZ(-50px);
     }
+
     to {
       opacity: 1;
       transform: perspective(1200px) rotateY(0) translateZ(0);
@@ -338,6 +422,7 @@
       opacity: 0;
       transform: translateY(60px) scale(0.95);
     }
+
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
@@ -349,6 +434,7 @@
       opacity: 0;
       transform: translateY(40px) perspective(var(--perspective)) rotateX(2deg);
     }
+
     to {
       opacity: 1;
       transform: translateY(0) perspective(var(--perspective)) rotateX(0);
@@ -386,5 +472,142 @@
 
   .hover-lift:hover {
     transform: translateY(-3px);
+  }
+}
+
+/* ─── GTRANSLATE CUSTOM STYLING ─────────── */
+.gtranslate_wrapper {
+  display: inline-flex !important;
+  align-items: center;
+  position: relative;
+  z-index: 1000;
+}
+
+/* The selected language button (direct child) */
+.gtranslate_wrapper>a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 14px !important;
+  background: hsl(var(--secondary) / 0.8) !important;
+  border-radius: 999px !important;
+  color: hsl(var(--foreground)) !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.gtranslate_wrapper>a:hover {
+  background: hsl(var(--secondary)) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Hide the black overlay completely and prevent click-blocking */
+.gt_black_overlay {
+  opacity: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+/* The dropdown container */
+.gt_white_content {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  margin: 10px 0 0 0 !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  border: 1px solid hsl(var(--border) / 0.6) !important;
+  padding: 8px !important;
+  background: hsl(var(--card) / 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+  min-width: 140px !important;
+  z-index: 9999 !important;
+}
+
+/* Links inside the dropdown */
+.gt_white_content a {
+  display: flex;
+  align-items: center !important;
+  gap: 10px !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  padding: 8px 12px !important;
+  margin-bottom: 2px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  line-height: normal !important;
+  white-space: normal !important;
+}
+
+/* Hide the active language which has display:none by default */
+.gt_white_content a[style*="display: none"],
+.gt_white_content a[style*="display:none"],
+.gt_white_content a.gt-current-lang {
+  display: none !important;
+}
+
+.gt_white_content a:hover {
+  background: hsl(var(--secondary) / 0.8) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* All flags */
+.gt_white_content a img,
+.gtranslate_wrapper>a img {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Simplify heavy animations on touch/mobile ─── */
+@media (pointer: coarse) {
+  .globe-real-image {
+    animation: none;
+  }
+
+  .globe-orbit,
+  .globe-orbit-2,
+  .airplane-orbit,
+  .package-orbit,
+  .package-orbit-2 {
+    animation: none;
+  }
+
+  .shipping-package-fly,
+  .shipping-airplane-fly,
+  .warehouse-truck-arrive,
+  .warehouse-truck-depart {
+    animation: none;
+  }
+
+  .glow-pulse {
+    animation: none;
+  }
+
+  .shimmer-effect {
+    animation: none;
   }
 }

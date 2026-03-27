@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { usePricingStore } from "@/stores/usePricingStore";
-import type { PriceRow } from "@/data/pricingData";
+import type { TableRow } from "@/data/pricingHelpers";
 
 interface Column {
   key: string;
@@ -9,7 +9,7 @@ interface Column {
 
 interface HighlightableTableProps {
   columns: Column[];
-  data: PriceRow[];
+  data: TableRow[];
 }
 
 const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
@@ -35,13 +35,12 @@ const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
             {visibleColumns.map((col) => (
               <th
                 key={col.key}
-                className={`px-4 py-3 border-r border-primary-foreground/10 transition-all duration-300 ${
-                  store.destination === col.key
-                    ? "bg-primary/60 shadow-inner"
-                    : store.destination && store.destination !== "all"
+                className={`px-4 py-3 border-r border-primary-foreground/10 transition-all duration-300 ${store.destination === col.key
+                  ? "bg-primary/60 shadow-inner"
+                  : store.destination && store.destination !== "all"
                     ? "opacity-50"
                     : ""
-                }`}
+                  }`}
               >
                 {col.label}
               </th>
@@ -49,21 +48,22 @@ const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((row, idx) => {
-            const active = isRowActive(row.kg);
+          {data.map((row: any, idx) => {
+            const rawWeight = row.kg ?? row.weight;
+            const finalKg = rawWeight !== undefined ? rawWeight : (row.gram ? row.gram / 1000 : "—");
+            const active = isRowActive(finalKg as number);
+
             return (
               <tr
                 key={idx}
-                className={`border-b border-border/30 transition-colors duration-200 hover:bg-secondary/30 ${
-                  active ? "bg-primary/5 border-primary/20" : ""
-                }`}
+                className={`border-b border-border/30 transition-colors duration-200 hover:bg-secondary/30 ${active ? "bg-primary/5 border-primary/20" : ""
+                  }`}
               >
                 <td
-                  className={`px-4 py-2.5 font-semibold border-r border-border/30 sticky left-0 transition-all bg-card ${
-                    active ? "!bg-primary/5 text-primary" : "text-foreground"
-                  }`}
+                  className={`px-4 py-2.5 font-semibold border-r border-border/30 sticky left-0 transition-all bg-card ${active ? "!bg-primary/5 text-primary" : "text-foreground"
+                    }`}
                 >
-                  {row.kg} KG
+                  {finalKg !== "—" ? `${finalKg} KG` : "—"}
                 </td>
                 {visibleColumns.map((col) => {
                   const val = row[col.key];
@@ -72,17 +72,20 @@ const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
                   return (
                     <td
                       key={col.key}
-                      className={`px-4 py-2.5 border-r border-border/30 tabular-nums transition-all duration-300 ${
-                        isCellActive
-                          ? "font-extrabold text-primary bg-primary/10 text-base shadow-inner"
-                          : !active && isColActive
+                      className={`px-4 py-2.5 border-r border-border/30 tabular-nums transition-all duration-300 ${isCellActive
+                        ? "font-extrabold text-primary bg-primary/10 text-base shadow-inner"
+                        : !active && isColActive
                           ? "font-semibold text-primary bg-primary/5"
                           : store.destination && store.destination !== "all" && !isColActive
-                          ? "opacity-30 text-muted-foreground"
-                          : "text-foreground"
-                      }`}
+                            ? "opacity-30 text-muted-foreground"
+                            : "text-foreground"
+                        }`}
                     >
-                      {val != null ? store.formatPrice(val as number) : "—"}
+                      {val != null ? (
+                        store.formatPrice(val as number)
+                      ) : (
+                        <div className="w-full h-8 bg-secondary/30 rounded-md backdrop-blur-sm border border-border/10"></div>
+                      )}
                     </td>
                   );
                 })}

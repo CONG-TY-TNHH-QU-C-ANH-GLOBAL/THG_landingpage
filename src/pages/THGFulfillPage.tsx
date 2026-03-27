@@ -1,9 +1,48 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
+import YouTubeEmbed from "@/components/YouTubeEmbed";
+import ImageMarquee from "@/components/ImageMarquee";
+import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
-import { Package, CheckCircle2, ArrowRight, Zap, DollarSign, Image, Video, Users, Palette } from "lucide-react";
+import { Package, CheckCircle2, ArrowRight, Zap, DollarSign, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const products = [
+  {
+    name: "Hawaiian Shirt",
+    price: "$10.83",
+    time: "3 - 5 days",
+    origin: "Việt Nam 🇻🇳",
+    image: "https://w.ladicdn.com/s600x600/67e69e24e8a7ba001127c80a/post-bai-3-2-20250904045611-nsqtt.png",
+  },
+  {
+    name: "Jersey Thêu",
+    price: "$34.00",
+    time: "5 - 10 days",
+    origin: "Trung Quốc 🇨🇳",
+    image: "https://w.ladicdn.com/s600x600/67e69e24e8a7ba001127c80a/7-20250903095516-2lcoo.png",
+  },
+  {
+    name: "Phonecase",
+    price: "$6.00",
+    time: "1 - 2 days",
+    origin: "USA 🇺🇸",
+    image: "https://w.ladicdn.com/s600x600/67e69e24e8a7ba001127c80a/1-20250904045247-dyrmm.png",
+  },
+];
+
+const sliderImages = [
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/1-20250724024641-4oczs.png",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-13-20250724024632-bt6u-.jpg",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9873-20250801074610-q-tfu.jpg",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/retouch_2025072518361201-20250801074608-tsi9a.jpg",
+  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_7181-20250801190217-bvrod.jpg",
+];
 
 const painPoints = [
   { num: "01", titleKey: "fulfill_page.pain1_title", descKey: "fulfill_page.pain1_desc" },
@@ -21,23 +60,22 @@ const advantages = [
 const processSteps = [
   { num: "01", titleKey: "fulfill_page.step1_title", descKey: "fulfill_page.step1_desc", icon: Palette },
   { num: "02", titleKey: "fulfill_page.step2_title", descKey: "fulfill_page.step2_desc", icon: Package },
-  { num: "03", titleKey: "fulfill_page.step3_title", descKey: "fulfill_page.step3_desc", icon: Image },
-  { num: "04", titleKey: "fulfill_page.step4_title", descKey: "fulfill_page.step4_desc", icon: Zap },
-];
-
-const podProducts = [
-  { emoji: "👕", name: "T-Shirts" },
-  { emoji: "👗", name: "Dresses" },
-  { emoji: "🧢", name: "Caps" },
-  { emoji: "☕", name: "Mugs" },
-  { emoji: "📱", name: "Phone Cases" },
-  { emoji: "🛍️", name: "Tote Bags" },
-  { emoji: "🖼️", name: "Canvas" },
-  { emoji: "👶", name: "Baby Clothes" },
+  { num: "03", titleKey: "fulfill_page.step3_title", descKey: "fulfill_page.step3_desc", icon: Zap },
+  { num: "04", titleKey: "fulfill_page.step4_title", descKey: "fulfill_page.step4_desc", icon: ArrowRight },
 ];
 
 const THGFulfillPage = () => {
   const { t } = useI18n();
+
+  const faqItems = [
+    { question: t("fulfill_page.faq1_q"), answer: t("fulfill_page.faq1_a") },
+    { question: t("fulfill_page.faq2_q"), answer: t("fulfill_page.faq2_a") },
+    { question: t("fulfill_page.faq3_q"), answer: t("fulfill_page.faq3_a") },
+    { question: t("fulfill_page.faq4_q"), answer: t("fulfill_page.faq4_a") },
+    { question: t("fulfill_page.faq5_q"), answer: t("fulfill_page.faq5_a") },
+    { question: t("fulfill_page.faq6_q"), answer: t("fulfill_page.faq6_a") },
+    { question: t("fulfill_page.faq7_q"), answer: t("fulfill_page.faq7_a") },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,10 +106,23 @@ const THGFulfillPage = () => {
                 <p className="text-base text-primary font-semibold tracking-wide uppercase">{t("fulfill_page.hero_tagline")}</p>
               </ScrollReveal>
               <ScrollReveal delay={300}>
-                <div className="flex gap-4 mt-10">
-                  <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
-                    {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-                  </Button>
+                <div className="flex flex-wrap gap-4 mt-10">
+                  <a href="https://order.thgfulfill.com/" target="_blank" rel="noopener noreferrer">
+                    <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
+                      {t("nav.consult")} <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </a>
+                </div>
+              </ScrollReveal>
+              {/* Platform logos */}
+              <ScrollReveal delay={400}>
+                <div className="mt-10">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.15em] mb-3">{t("fulfill_page.platforms_label")}</p>
+                  <div className="flex flex-wrap items-center gap-4 text-sm font-bold text-muted-foreground/60">
+                    {["Shopify", "Etsy", "WooCommerce", "Amazon", "TikTok Shop"].map((p, i) => (
+                      <span key={i} className="hover:text-navy transition-colors">{p}</span>
+                    ))}
+                  </div>
                 </div>
               </ScrollReveal>
             </div>
@@ -81,14 +132,12 @@ const THGFulfillPage = () => {
                 <div className="glass-card rounded-3xl p-8 flex flex-col items-center">
                   <p className="text-xs font-semibold text-accent uppercase tracking-[0.2em] mb-6">POD Process</p>
                   <div className="flex items-center gap-6">
-                    {/* Blank tee */}
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-28 h-32 bg-white rounded-xl border-2 border-dashed border-border flex items-center justify-center shadow-inner">
                         <span className="text-5xl">👕</span>
                       </div>
                       <span className="text-xs text-muted-foreground font-medium">Blank T-Shirt</span>
                     </div>
-                    {/* Arrow + printer */}
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-3xl animate-pulse">🖨️</span>
                       <div className="flex items-center">
@@ -97,7 +146,6 @@ const THGFulfillPage = () => {
                       </div>
                       <span className="text-[10px] text-muted-foreground">DTG / DTF Print</span>
                     </div>
-                    {/* Branded tee */}
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-28 h-32 bg-gradient-to-br from-primary/15 to-accent/15 rounded-xl border-2 border-primary/30 flex items-center justify-center relative shadow-lg">
                         <span className="text-5xl">👕</span>
@@ -115,21 +163,20 @@ const THGFulfillPage = () => {
         </div>
       </section>
 
-      {/* POD Products */}
-      <section className="py-16 bg-card border-y border-border/50">
+      {/* YouTube Shorts */}
+      <section className="py-12 bg-card border-y border-border/50">
         <div className="container mx-auto px-4">
-          <ScrollReveal>
-            <p className="text-center text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-8">100+ POD Product Types</p>
-          </ScrollReveal>
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-4 max-w-3xl mx-auto">
-            {podProducts.map((p, i) => (
-              <ScrollReveal key={i} delay={i * 50}>
-                <div className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-secondary/50 transition-colors">
-                  <span className="text-2xl">{p.emoji}</span>
-                  <span className="text-[10px] text-muted-foreground font-medium">{p.name}</span>
-                </div>
-              </ScrollReveal>
-            ))}
+          <div className="flex justify-center gap-6 flex-wrap">
+            <ScrollReveal delay={100}>
+              <div className="w-[280px] md:w-[300px] rounded-2xl overflow-hidden border-4 border-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                <YouTubeEmbed videoId="AveVks7bdMM" title="THG Fulfill Short 1" aspectRatio="315/560" />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <div className="w-[280px] md:w-[300px] rounded-2xl overflow-hidden border-4 border-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
+                <YouTubeEmbed videoId="UrnZpvRVb0U" title="THG Fulfill Short 2" aspectRatio="315/560" />
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -146,7 +193,7 @@ const THGFulfillPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {painPoints.map((p, i) => (
               <ScrollReveal key={p.num} delay={i * 100}>
-                <div className="glass-card rounded-2xl p-6 text-center hover-lift h-full">
+                <div className={`glass-card rounded-2xl p-6 text-center hover-lift h-full ${i === 1 ? "ring-2 ring-primary/30 bg-primary/5" : ""}`}>
                   <span className="text-3xl font-bold text-primary/20 block mb-3">{p.num}</span>
                   <h3 className="text-sm font-bold text-navy mb-2 uppercase tracking-wider">{t(p.titleKey)}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">{t(p.descKey)}</p>
@@ -157,63 +204,107 @@ const THGFulfillPage = () => {
         </div>
       </section>
 
-      {/* Solution */}
+      {/* POD Advantages */}
       <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.solution_subtitle")}</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-6">
+                THG Fulfill – <span className="text-gradient-gold">{t("fulfill_page.solution_highlight")}</span>
+              </h2>
+              <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">{t("fulfill_page.solution_desc")}</p>
+            </div>
+          </ScrollReveal>
+
+          {/* Advantage blocks with images */}
+          <div className="max-w-5xl mx-auto space-y-16">
             <ScrollReveal>
-              <div>
-                <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.solution_subtitle")}</p>
-                <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-6">
-                  THG Fulfill – <span className="text-gradient-gold">{t("fulfill_page.solution_highlight")}</span>
-                </h2>
-                <p className="text-muted-foreground leading-relaxed mb-8">{t("fulfill_page.solution_desc")}</p>
-                <ul className="space-y-3">
-                  {["fulfill_page.sol_b1", "fulfill_page.sol_b2", "fulfill_page.sol_b3", "fulfill_page.sol_b4", "fulfill_page.sol_b5"].map((k) => (
-                    <li key={k} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-foreground/80">{t(k)}</span>
-                    </li>
-                  ))}
-                </ul>
+              <div className="grid lg:grid-cols-2 gap-8 items-center">
+                <div>
+                  <h3 className="text-2xl font-bold text-navy mb-4 tracking-tight">{t("fulfill_page.adv1_title")}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{t("fulfill_page.adv1_desc")}</p>
+                </div>
+                <div className="rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1">
+                  <img
+                    src="https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg"
+                    alt="Warehouse Ecosystem"
+                    className="w-full h-64 object-cover"
+                    loading="lazy"
+                  />
+                </div>
               </div>
             </ScrollReveal>
-            <ScrollReveal delay={200} direction="right">
-              <div className="grid grid-cols-1 gap-5">
-                {advantages.map((a, i) => (
-                  <div key={i} className="glass-card rounded-2xl p-6 flex gap-4 hover-lift">
-                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
-                      <a.icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-navy mb-1 tracking-tight">{t(a.titleKey)}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{t(a.descKey)}</p>
-                    </div>
-                  </div>
-                ))}
+
+            <ScrollReveal delay={100}>
+              <div className="grid lg:grid-cols-2 gap-8 items-center">
+                <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1">
+                  <img
+                    src="https://w.ladicdn.com/s1200x750/67e69e24e8a7ba001127c80a/screenshot-2022-02-25-231050-20250808034749-tnxkm.png"
+                    alt="Tracking Dashboard"
+                    className="w-full h-64 object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="order-1 lg:order-2">
+                  <h3 className="text-2xl font-bold text-navy mb-4 tracking-tight">{t("fulfill_page.adv3_title")}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{t("fulfill_page.adv3_desc")}</p>
+                </div>
               </div>
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Video / Image placeholder */}
-      <section className="py-20 bg-background">
+      {/* Featured Products */}
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="max-w-4xl mx-auto">
-              <div className="aspect-video rounded-3xl bg-secondary/60 border border-border/50 flex flex-col items-center justify-center gap-4 overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-navy/5" />
-                <Video className="w-16 h-16 text-primary/30" />
-                <p className="text-sm text-muted-foreground font-medium">THG Fulfill Production Video</p>
-                <p className="text-xs text-muted-foreground/60">Coming soon — See our POD production in action</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-12">
+              <div>
+                <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.products_subtitle")}</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.products_title")}</h2>
               </div>
             </div>
           </ScrollReveal>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {products.map((product, i) => (
+              <ScrollReveal key={product.name} delay={i * 120}>
+                <div className="glass-card rounded-2xl overflow-hidden hover-lift h-full group">
+                  <div className="relative h-72 bg-secondary/30 p-6 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <span className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-navy shadow-sm border border-border/40">
+                      {product.origin}
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-navy mb-4 tracking-tight group-hover:text-primary transition-colors">
+                      {product.name}
+                    </h3>
+                    <div className="space-y-3 border-t-2 border-dashed border-border/50 pt-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground font-medium">{t("fulfill_page.basecost_label")}</span>
+                        <span className="text-lg font-bold text-gradient-gold">{product.price}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground font-medium">{t("fulfill_page.time_label")}</span>
+                        <span className="text-sm font-semibold text-navy">{product.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Process */}
+      {/* Workflow Process */}
       <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal>
@@ -221,50 +312,52 @@ const THGFulfillPage = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.process_title")}</h2>
             </div>
           </ScrollReveal>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {processSteps.map((s, i) => (
-              <ScrollReveal key={s.num} delay={i * 120}>
-                <div className="relative glass-card rounded-2xl p-6 hover-lift h-full">
-                  <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mb-4">
-                    <s.icon className="w-5 h-5 text-primary" />
+          <div className="grid lg:grid-cols-2 gap-10 max-w-5xl mx-auto items-center">
+            {/* Left: Image */}
+            <ScrollReveal>
+              <div className="rounded-3xl overflow-hidden shadow-lg border border-border/40">
+                <img
+                  src="https://w.ladicdn.com/s800x750/67e69e24e8a7ba001127c80a/img_9873-20250801074610-q-tfu.jpg"
+                  alt="Fulfillment Standard"
+                  className="w-full h-[400px] object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </ScrollReveal>
+            {/* Right: Steps */}
+            <div className="space-y-4">
+              {processSteps.map((s, i) => (
+                <ScrollReveal key={s.num} delay={i * 100}>
+                  <div className="flex gap-5 glass-card rounded-2xl p-5 hover-lift">
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                      <s.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-xs font-bold text-primary/40">{s.num}</span>
+                        <h3 className="text-base font-bold text-navy tracking-tight">{t(s.titleKey)}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{t(s.descKey)}</p>
+                    </div>
                   </div>
-                  <span className="text-4xl font-bold text-primary/10 absolute top-4 right-4">{s.num}</span>
-                  <h3 className="text-base font-bold text-navy mb-2 tracking-tight">{t(s.titleKey)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{t(s.descKey)}</p>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Gallery placeholder */}
-      <section className="py-20 bg-background">
+      {/* FAQ */}
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Gallery</p>
-              <h2 className="text-3xl font-bold text-navy tracking-tight">Our Production Facilities</h2>
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.faq_subtitle")}</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.faq_title")}</h2>
             </div>
           </ScrollReveal>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            {[
-              { label: "POD Printing", icon: "🖨️" },
-              { label: "Quality Control", icon: "✅" },
-              { label: "Packaging", icon: "📦" },
-              { label: "Shipping", icon: "🚚" },
-            ].map((item, i) => (
-              <ScrollReveal key={i} delay={i * 80}>
-                <div className="aspect-square rounded-2xl bg-secondary/50 border border-border/40 flex flex-col items-center justify-center gap-3 hover-lift">
-                  <span className="text-4xl">{item.icon}</span>
-                  <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
-                  <div className="flex items-center gap-1 text-[10px] text-primary">
-                    <Image className="w-3 h-3" />
-                    <span>Photo coming soon</span>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
+          <div className="max-w-3xl mx-auto">
+            <FAQAccordion items={faqItems} />
           </div>
         </div>
       </section>
@@ -276,12 +369,19 @@ const THGFulfillPage = () => {
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">{t("fulfill_page.cta_title")}</h2>
             <p className="text-primary-foreground/60 mb-8 max-w-lg mx-auto">{t("fulfill_page.cta_desc")}</p>
             <div className="flex justify-center gap-4">
-              <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-10 py-6 text-base gap-2 shadow-lg">
-                {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-              </Button>
+              <a href="https://order.thgfulfill.com/" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-10 py-6 text-base gap-2 shadow-lg">
+                  {t("nav.consult")} <ArrowRight className="w-4 h-4" />
+                </Button>
+              </a>
             </div>
           </ScrollReveal>
         </div>
+      </section>
+
+      {/* Image Marquee */}
+      <section className="py-8 bg-card border-t border-border/50">
+        <ImageMarquee images={sliderImages} speed={40} height="200px" />
       </section>
 
       <Footer />

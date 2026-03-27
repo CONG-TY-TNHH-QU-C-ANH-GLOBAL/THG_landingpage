@@ -1,9 +1,16 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
+import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { useI18n } from "@/lib/i18n";
-import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Video, Monitor, Package, Truck } from "lucide-react";
+import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Monitor, Package, Truck, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const features = [
+  { icon: "🏷️", titleKey: "warehouse_page.feat1_title", descKey: "warehouse_page.feat1_desc" },
+  { icon: "📦", titleKey: "warehouse_page.feat2_title", descKey: "warehouse_page.feat2_desc" },
+  { icon: "🚚", titleKey: "warehouse_page.feat3_title", descKey: "warehouse_page.feat3_desc" },
+];
 
 const strengths = [
   { icon: DollarSign, titleKey: "warehouse_page.str1_title", descKey: "warehouse_page.str1_desc" },
@@ -21,6 +28,29 @@ const processSteps = [
   { num: "05", titleKey: "warehouse_page.step5_title", descKey: "warehouse_page.step5_desc", icon: ArrowRight },
 ];
 
+const operationCards = [
+  {
+    title: "warehouse_page.op1_title",
+    desc: "warehouse_page.op1_desc",
+    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
+  },
+  {
+    title: "warehouse_page.op2_title",
+    desc: "warehouse_page.op2_desc",
+    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
+  },
+  {
+    title: "warehouse_page.op3_title",
+    desc: "warehouse_page.op3_desc",
+    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
+  },
+  {
+    title: "warehouse_page.op4_title",
+    desc: "warehouse_page.op4_desc",
+    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg",
+  },
+];
+
 const THGWarehousePage = () => {
   const { t } = useI18n();
 
@@ -28,88 +58,40 @@ const THGWarehousePage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
-      <section className="pt-28 pb-20 bg-gradient-hero relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(220 25% 12%) 1px, transparent 0)`,
+      {/* Hero – Dark Blue */}
+      <section className="pt-28 pb-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1e3a8a 0%, #172554 100%)" }}>
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
           backgroundSize: "40px 40px",
         }} />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <ScrollReveal>
-                <div className="inline-flex items-center gap-2 glass-card rounded-full px-5 py-2.5 text-sm mb-8">
-                  <Warehouse className="w-4 h-4 text-primary" />
-                  <span className="font-medium text-muted-foreground uppercase text-xs tracking-wider">{t("warehouse_page.badge")}</span>
-                </div>
-              </ScrollReveal>
-              <ScrollReveal delay={100}>
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6">
-                  THG <span className="text-gradient-gold">Warehouse</span>
-                </h1>
-              </ScrollReveal>
-              <ScrollReveal delay={200}>
-                <p className="text-lg md:text-xl text-muted-foreground max-w-lg mb-4">{t("warehouse_page.hero_subtitle")}</p>
-                <p className="text-base text-primary font-semibold tracking-wide uppercase">{t("warehouse_page.hero_tagline")}</p>
-              </ScrollReveal>
-              <ScrollReveal delay={300}>
-                <div className="flex gap-4 mt-10">
-                  <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
-                    {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              </ScrollReveal>
+        <div className="container mx-auto px-4 relative z-10 text-center">
+          <ScrollReveal>
+            <p className="text-indigo-200 text-sm md:text-base font-medium mb-4 tracking-wide">{t("warehouse_page.badge")}</p>
+          </ScrollReveal>
+          <ScrollReveal delay={100}>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6 leading-tight" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
+              THG <span className="text-gradient-gold">Warehouse</span>
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal delay={200}>
+            <p className="text-lg text-indigo-100/80 max-w-xl mx-auto mb-8">{t("warehouse_page.hero_subtitle")}</p>
+          </ScrollReveal>
+          {/* Hero image */}
+          <ScrollReveal delay={300}>
+            <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 hover:-translate-y-1 transition-transform mb-8">
+              <img
+                src="https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg"
+                alt="THG Warehouse Operations"
+                className="w-full h-auto"
+                loading="lazy"
+              />
             </div>
-            {/* Warehouse visual */}
-            <ScrollReveal delay={300} direction="right" className="hidden lg:block">
-              <div className="glass-card rounded-3xl p-8">
-                <div className="flex flex-col items-center gap-4">
-                  {/* Warehouse illustration */}
-                  <div className="relative w-full">
-                    <div className="flex justify-center gap-6 mb-6">
-                      <div className="w-40 h-28 bg-navy/8 rounded-t-xl border border-border/40 flex items-center justify-center relative">
-                        <span className="text-5xl">🏭</span>
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[8px] font-bold px-3 py-1 rounded-full">THG Warehouse</div>
-                      </div>
-                    </div>
-                    {/* Trucks */}
-                    <div className="flex items-center justify-between px-4">
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-2xl">🚛</span>
-                        <span className="text-[10px] text-muted-foreground">Inbound</span>
-                      </div>
-                      <div className="flex-1 mx-4">
-                        <div className="h-px bg-primary/20 relative">
-                          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-2 h-2 rounded-full bg-primary animate-pulse" />
-                          <div className="absolute top-1/2 left-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-olive animate-pulse" />
-                          <div className="absolute top-1/2 left-3/4 -translate-y-1/2 w-2 h-2 rounded-full bg-primary animate-pulse" />
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-2xl">🚚</span>
-                        <span className="text-[10px] text-muted-foreground">Outbound</span>
-                      </div>
-                    </div>
-                    {/* Stats */}
-                    <div className="grid grid-cols-3 gap-3 mt-6">
-                      <div className="text-center p-2 rounded-lg bg-secondary/40">
-                        <p className="text-lg font-bold text-gradient-gold">$1</p>
-                        <p className="text-[9px] text-muted-foreground">Per Order</p>
-                      </div>
-                      <div className="text-center p-2 rounded-lg bg-secondary/40">
-                        <p className="text-lg font-bold text-gradient-gold">90</p>
-                        <p className="text-[9px] text-muted-foreground">Free Days</p>
-                      </div>
-                      <div className="text-center p-2 rounded-lg bg-secondary/40">
-                        <p className="text-lg font-bold text-gradient-gold">2-5</p>
-                        <p className="text-[9px] text-muted-foreground">Delivery Days</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
+          </ScrollReveal>
+          <ScrollReveal delay={400}>
+            <Button className="bg-white hover:bg-slate-50 text-blue-900 rounded-full px-8 py-6 text-base font-bold gap-2 shadow-lg">
+              {t("nav.consult")} <ArrowRight className="w-4 h-4" />
+            </Button>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -134,57 +116,22 @@ const THGWarehousePage = () => {
         </div>
       </section>
 
-      {/* Solution */}
-      <section className="py-24 bg-background">
+      {/* Features Grid */}
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-4">{t("warehouse_page.solution_title")}</h2>
-              <p className="text-muted-foreground max-w-3xl mx-auto">{t("warehouse_page.solution_desc")}</p>
+            <div className="text-center mb-12">
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">THG Warehouse</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.solution_title")}</h2>
             </div>
           </ScrollReveal>
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12">
-            <ScrollReveal>
-              <ul className="space-y-3">
-                {["warehouse_page.sol_b1", "warehouse_page.sol_b2", "warehouse_page.sol_b3"].map((k) => (
-                  <li key={k} className="flex items-start gap-3 glass-card rounded-xl p-4">
-                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground/80">{t(k)}</span>
-                  </li>
-                ))}
-              </ul>
-            </ScrollReveal>
-            <ScrollReveal delay={150}>
-              <ul className="space-y-3">
-                {["warehouse_page.sol_b4", "warehouse_page.sol_b5", "warehouse_page.sol_b6"].map((k) => (
-                  <li key={k} className="flex items-start gap-3 glass-card rounded-xl p-4">
-                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground/80">{t(k)}</span>
-                  </li>
-                ))}
-              </ul>
-            </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Strengths */}
-      <section className="py-24 bg-card">
-        <div className="container mx-auto px-4">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.strengths_title")}</h2>
-            </div>
-          </ScrollReveal>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {strengths.map((s, i) => (
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {features.map((f, i) => (
               <ScrollReveal key={i} delay={i * 100}>
-                <div className="glass-card rounded-2xl p-6 hover-lift h-full">
-                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-4">
-                    <s.icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="text-base font-bold text-navy mb-2 tracking-tight">{t(s.titleKey)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{t(s.descKey)}</p>
+                <div className="glass-card rounded-2xl p-8 text-center hover-lift h-full">
+                  <span className="text-4xl block mb-4">{f.icon}</span>
+                  <h3 className="text-lg font-bold text-navy mb-3">{t(f.titleKey)}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: t(f.descKey) }} />
                 </div>
               </ScrollReveal>
             ))}
@@ -192,16 +139,145 @@ const THGWarehousePage = () => {
         </div>
       </section>
 
-      {/* Video placeholder */}
+      {/* Warehouse Strengths with Images */}
+      <section className="py-24 bg-card relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.strengths_title")}</h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="max-w-5xl mx-auto space-y-16">
+            {/* Block 1: Dual Warehouse */}
+            <ScrollReveal>
+              <div className="grid lg:grid-cols-2 gap-10 items-center">
+                <div className="rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1">
+                  <img
+                    src="https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg"
+                    alt="Dual Warehouse PA & NC"
+                    className="w-full h-72 object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-navy mb-4">{t("warehouse_page.str2_title")}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{t("warehouse_page.str2_desc")}</p>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Block 2: Cost */}
+            <ScrollReveal delay={100}>
+              <div className="grid lg:grid-cols-2 gap-10 items-center">
+                <div className="order-2 lg:order-1">
+                  <h3 className="text-2xl font-bold text-navy mb-4">{t("warehouse_page.str1_title")}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{t("warehouse_page.str1_desc")}</p>
+                </div>
+                <div className="order-1 lg:order-2 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1">
+                  <img
+                    src="https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg"
+                    alt="Optimized Fulfill Cost"
+                    className="w-full h-72 object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Operation Videos */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="max-w-4xl mx-auto aspect-video rounded-3xl bg-secondary/60 border border-border/50 flex flex-col items-center justify-center gap-4">
-              <Video className="w-16 h-16 text-primary/30" />
-              <p className="text-sm text-muted-foreground font-medium">THG Warehouse Tour</p>
-              <p className="text-xs text-muted-foreground/60">Virtual tour of our US warehouse facilities coming soon</p>
+            <div className="text-center mb-12">
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("warehouse_page.ops_badge")}</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.ops_title")}</h2>
             </div>
           </ScrollReveal>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              { title: "warehouse_page.vid1_title", desc: "warehouse_page.vid1_desc", src: "/videos/Donghuang scan.mp4" },
+              { title: "warehouse_page.vid2_title", desc: "warehouse_page.vid2_desc", src: "/videos/Huang Huan scan.mp4" },
+              { title: "warehouse_page.vid3_title", desc: "warehouse_page.vid3_desc", src: "/videos/FeatherSoft Feel Case.mp4" },
+            ].map((vid, i) => (
+              <ScrollReveal key={i} delay={i * 100}>
+                <div className="glass-card rounded-2xl overflow-hidden hover-lift h-full">
+                  <div className="aspect-video bg-black rounded-t-2xl overflow-hidden">
+                    <video
+                      src={vid.src}
+                      controls
+                      preload="metadata"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <h4 className="text-base font-bold text-navy mb-2">{t(vid.title)}</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{t(vid.desc)}</p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Operation Images Grid */}
+      <section className="py-20 bg-card">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Infrastructure & Tech</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.gallery_title")}</h2>
+              <p className="text-muted-foreground mt-3 max-w-xl mx-auto">{t("warehouse_page.gallery_desc")}</p>
+            </div>
+          </ScrollReveal>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {operationCards.map((card, i) => (
+              <ScrollReveal key={i} delay={i * 80}>
+                <div className="glass-card rounded-2xl overflow-hidden hover-lift h-full group">
+                  <div className="h-52 overflow-hidden">
+                    <img
+                      src={card.image}
+                      alt={t(card.title)}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h4 className="text-sm font-bold text-navy mb-2">{t(card.title)}</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{t(card.desc)}</p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* OMS Detail – Split */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-10 max-w-5xl mx-auto items-center">
+            <ScrollReveal>
+              <div>
+                <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("warehouse_page.oms_badge")}</p>
+                <h2 className="text-2xl md:text-3xl font-bold text-navy tracking-tight mb-6">{t("warehouse_page.oms_title")}</h2>
+                <p className="text-muted-foreground leading-relaxed mb-4">{t("warehouse_page.oms_desc1")}</p>
+                <p className="text-muted-foreground leading-relaxed mb-8">{t("warehouse_page.oms_desc2")}</p>
+                <a href="https://oms.thgfulfill.com/" target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" className="rounded-full px-6 py-5 gap-2">
+                    {t("warehouse_page.oms_cta")} <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </a>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200} direction="right">
+              <YouTubeEmbed videoId="o46X3StSbnY" title="THG Warehouse OMS" />
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 

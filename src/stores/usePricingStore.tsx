@@ -49,6 +49,12 @@ export const PricingProvider = ({ children }: { children: ReactNode }) => {
       setOrigin(o as "vn" | "cn");
       setDestination(d);
       setItemType(it as "normal" | "cosmetic" | "battery");
+      // Auto-switch to Bulk tab for heavy shipments (matches legacy behavior)
+      if (w !== null && w >= 12) {
+        setActiveTab("lo");
+      } else {
+        setActiveTab(o);
+      }
     },
     []
   );

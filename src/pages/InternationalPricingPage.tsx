@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -6,80 +6,129 @@ import GlobalCalculator from "@/components/pricing/GlobalCalculator";
 import TabNavigation from "@/components/pricing/TabNavigation";
 import LineSection from "@/components/pricing/LineSection";
 import AlertBadge from "@/components/pricing/AlertBadge";
-import TooltipIcon from "@/components/pricing/TooltipIcon";
 import HighlightableTable from "@/components/pricing/HighlightableTable";
 import BulkTable from "@/components/pricing/BulkTable";
+import ExtrasSection from "@/components/pricing/ExtrasSection";
 import { usePricingStore, PricingProvider } from "@/stores/usePricingStore";
-import {
-  vnStandard, vnCosmetics, cnStandard, cnCosmetics,
-  tiktokVN_UK, tiktokCN, bulkVN, bulkCN, countryNames,
-} from "@/data/pricingData";
+import { generateTableData } from "@/data/pricingHelpers";
+import { pricingData } from "@/data/pricingData";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
 const PricingContent = () => {
   const store = usePricingStore();
+  const [subTab, setSubTab] = useState<string>("standard");
 
-  const standardData = useMemo(() => {
-    const raw = store.origin === "vn" ? vnStandard : cnStandard;
-    const keys = Object.keys(raw[0]).filter((k) => k !== "kg");
-    const columns = keys.map((k) => ({ key: k, label: countryNames[k] || k.toUpperCase() }));
-    return { columns, data: raw };
-  }, [store.origin]);
+  // Force reset sub-tab when user switches main tabs 
+  useEffect(() => {
+    if (store.activeMainTab === "tiktok") setSubTab("ttCnUsNormal");
+    else if (store.activeMainTab === "usps") setSubTab("uspsCn");
+    else setSubTab("standard");
+  }, [store.origin, store.activeMainTab]);
 
-  const cosmeticsData = useMemo(() => {
-    const raw = store.origin === "vn" ? vnCosmetics : cnCosmetics;
-    const keys = Object.keys(raw[0]).filter((k) => k !== "kg");
-    const columns = keys.map((k) => ({ key: k, label: countryNames[k] || k.toUpperCase() }));
-    return { columns, data: raw };
-  }, [store.origin]);
+  const effectiveSubTab = subTab;
 
-  const tiktokData = useMemo(() => {
-    if (store.origin === "cn") {
-      const keys = Object.keys(tiktokCN[0]).filter((k) => k !== "kg");
-      return { columns: keys.map((k) => ({ key: k, label: countryNames[k] || k.toUpperCase() })), data: tiktokCN };
+  const tableData = useMemo(
+    () => generateTableData(store.origin, effectiveSubTab as "standard" | "cosmetics" | "battery"),
+    [store.origin, effectiveSubTab]
+  );
+
+  const originLabel = store.origin === "vn" ? "VIỆT NAM" : "CHINA";
+  const tableTitle = (() => {
+    const prefix = store.origin.toUpperCase();
+    switch (effectiveSubTab) {
+      case "standard":
+        return `HÀNG THƯỜNG + TM ${prefix} → TOÀN CẦU`;
+      case "cosmetics":
+        return `MỸ PHẨM (EXPRESS) ${prefix} → TOÀN CẦU`;
+      case "battery":
+        return `PIN ĐIỆN (LUỒN) ${prefix} → TOÀN CẦU`;
+      default:
+        return "";
     }
-    return { columns: [{ key: "uk", label: "Anh (UK)" }], data: tiktokVN_UK };
-  }, [store.origin]);
+  })();
 
-  const bulkData = useMemo(() => {
-    return store.origin === "cn" ? bulkCN : bulkVN;
-  }, [store.origin]);
+  const subTabClass = (isActive: boolean) =>
+    `px-5 py-2.5 rounded-lg text-sm font-bold transition-all border ${isActive
+      ? "bg-primary text-primary-foreground border-primary shadow-md"
+      : "bg-secondary text-muted-foreground border-border hover:border-primary/50"
+    }`;
 
   const renderTabContent = () => {
     switch (store.activeMainTab) {
       case "vn":
       case "cn":
         return (
-          <>
-            <LineSection
-              id="hang-thuong"
-              title="📦 Hàng Thường (Standard)"
-              description="Line vận chuyển phổ biến nhất dành cho các mặt hàng thông thường (quần áo, đồ gia dụng nhỏ). Cước phí cân bằng và tốc độ ổn định."
-              badges={
-                <>
-                  <AlertBadge type="success">Phổ biến nhất</AlertBadge>
-                  <AlertBadge type="info">Hàng cơ bản</AlertBadge>
-                </>
-              }
-            >
-              <HighlightableTable columns={standardData.columns} data={standardData.data} />
-            </LineSection>
+          <div>
+            {/* Section Header */}
+            <div className="mb-6">
+              <h2 className="text-2xl lg:text-3xl font-extrabold text-foreground tracking-tight mb-3">
+                {store.origin.toUpperCase()} VẬN CHUYỂN TỪ {originLabel}
+              </h2>
+              <div className="flex flex-wrap gap-2 mb-5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-secondary border border-border text-muted-foreground">
+                  ⏱ 5-12 bsd
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 border border-primary/20 text-primary">
+                  🚀 Yun Express
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-destructive/10 border border-destructive/20 text-destructive">
+                  📋 Phí xử lý: $0.7/đơn
+                </span>
+              </div>
 
+              {/* Sub-tab toggle buttons */}
+              <div className="flex gap-3 flex-wrap">
+                <button
+                  onClick={() => setSubTab("cosmetics")}
+                  className={subTabClass(effectiveSubTab === "cosmetics")}
+                >
+                  🧴 Mỹ Phẩm (Express)
+                </button>
+                <button
+                  onClick={() => setSubTab("standard")}
+                  className={subTabClass(effectiveSubTab === "standard")}
+                >
+                  📦 Hàng Thường + TM
+                </button>
+                {/* Battery sub-tab only for CN */}
+                {store.origin === "cn" && (
+                  <button
+                    onClick={() => setSubTab("battery")}
+                    className={subTabClass(effectiveSubTab === "battery")}
+                  >
+                    🔋 Pin Điện (Luồn)
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Table Section */}
             <LineSection
-              id="epacket"
-              title="✈️ ePacket Premium"
-              description="Giải pháp tiết kiệm tối đa dành cho các kiện hàng nhỏ nhẹ (dưới 2kg). Cước phí cực kỳ hợp lý với tracking E2E."
+              id={effectiveSubTab === "standard" ? "hang-thuong" : effectiveSubTab === "cosmetics" ? "epacket" : "pin-dien"}
+              title={tableTitle}
               badges={
-                <>
+                effectiveSubTab === "standard" ? (
+                  <>
+                    <AlertBadge type="success">Phổ biến nhất</AlertBadge>
+                    <AlertBadge type="info">Hàng cơ bản</AlertBadge>
+                  </>
+                ) : effectiveSubTab === "cosmetics" ? (
                   <AlertBadge type="warning" icon="⚡">Tối ưu {"<"} 2KG</AlertBadge>
-                  <TooltipIcon text="Phù hợp gửi phụ kiện, trang sức nhẹ" />
-                </>
+                ) : (
+                  <>
+                    <AlertBadge type="error" icon="🔋">Sản phẩm chứa Pin</AlertBadge>
+                    <AlertBadge type="info">Chỉ CN</AlertBadge>
+                  </>
+                )
               }
             >
-              <HighlightableTable columns={cosmeticsData.columns} data={cosmeticsData.data} />
+              <HighlightableTable
+                columns={tableData.columns}
+                data={tableData.data}
+              />
             </LineSection>
-          </>
+          </div>
         );
 
       case "tiktok":
@@ -95,7 +144,21 @@ const PricingContent = () => {
               </>
             }
           >
-            <HighlightableTable columns={tiktokData.columns} data={tiktokData.data} />
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button onClick={() => setSubTab("ttCnUsNormal")} className={subTabClass(subTab === "ttCnUsNormal")}>🇺🇸 CN → US (Thường)</button>
+              <button onClick={() => setSubTab("ttCnUsSpecial")} className={subTabClass(subTab === "ttCnUsSpecial")}>🇺🇸 CN → US (Đặc Biệt)</button>
+              <button onClick={() => setSubTab("ttCnUk")} className={subTabClass(subTab === "ttCnUk")}>🇬🇧 CN → UK</button>
+              <button onClick={() => setSubTab("ttCnDe")} className={subTabClass(subTab === "ttCnDe")}>🇩🇪 CN → DE</button>
+              <button onClick={() => setSubTab("ttVnUs_seller")} className={subTabClass(subTab === "ttVnUs_seller")}>🇻🇳 VN → US (Seller)</button>
+              <button onClick={() => setSubTab("ttVnUs_tiktok")} className={subTabClass(subTab === "ttVnUs_tiktok")}>🇻🇳 VN → US (TikTok)</button>
+            </div>
+
+            {subTab === "ttCnUsNormal" && <HighlightableTable columns={[{ key: 'rate', label: 'Cước CN → US (Thường)' }]} data={(pricingData as any).tiktokCnUsNormal} />}
+            {subTab === "ttCnUsSpecial" && <HighlightableTable columns={[{ key: 'rate', label: 'Cước CN → US (Đặc Biệt)' }]} data={(pricingData as any).tiktokCnUsSpecial} />}
+            {subTab === "ttCnUk" && <HighlightableTable columns={[{ key: 'rate', label: 'Cước CN → UK' }]} data={(pricingData as any).tiktokCnUk} />}
+            {subTab === "ttCnDe" && <HighlightableTable columns={[{ key: 'rate', label: 'Cước CN → DE' }]} data={(pricingData as any).tiktokCnDe} />}
+            {subTab === "ttVnUs_seller" && <HighlightableTable columns={[{ key: 'rate', label: 'Cước VN → US (Ship by Seller)' }]} data={(pricingData as any).tiktokVnSeller} />}
+            {subTab === "ttVnUs_tiktok" && <HighlightableTable columns={[{ key: 'rate', label: 'Cước VN → US (Ship by TikTok)' }]} data={(pricingData as any).tiktokVnTiktok} />}
           </LineSection>
         );
 
@@ -112,7 +175,11 @@ const PricingContent = () => {
               </>
             }
           >
-            <BulkTable data={bulkData} />
+            <div className="space-y-6">
+              <BulkTable title="🛒 Hàng Lô Sản Phẩm Thường" data={(pricingData as any).loThuong} />
+              <BulkTable title="🔋 Hàng Lô Sản Phẩm Pin Điện" data={(pricingData as any).loPin} />
+              <BulkTable title="💧 Hàng Lô Dung Dịch & Mỹ Phẩm" data={(pricingData as any).loMypham} />
+            </div>
           </LineSection>
         );
 
@@ -126,7 +193,18 @@ const PricingContent = () => {
               <AlertBadge type="info" icon="🇺🇸">US Only - Bao Thuế 100%</AlertBadge>
             }
           >
-            <div className="p-12 text-center bg-secondary/30 border-t border-border/30">
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button onClick={() => setSubTab("uspsCn")} className={subTabClass(subTab === "uspsCn")}>🇨🇳 China → US</button>
+              <button onClick={() => setSubTab("uspsVn")} className={subTabClass(subTab === "uspsVn")}>🇻🇳 Vietnam → US</button>
+            </div>
+
+            {subTab === "uspsCn" || subTab === "standard" ? (
+              <HighlightableTable columns={[{ key: 'rate', label: 'Cước CN → US' }]} data={(pricingData as any).uspsCn} />
+            ) : (
+              <HighlightableTable columns={[{ key: 'rate', label: 'Cước VN → US' }]} data={(pricingData as any).uspsVn} />
+            )}
+
+            <div className="mt-8 p-12 text-center bg-secondary/30 border-t border-border/30 rounded-xl">
               <div className="text-5xl mb-4">🦅</div>
               <p className="text-lg font-bold text-foreground mb-2">
                 Tuyến USPS Priority thay đổi cước liên tục theo ngày.
@@ -141,6 +219,9 @@ const PricingContent = () => {
             </div>
           </LineSection>
         );
+
+      case "extras":
+        return <ExtrasSection />;
 
       default:
         return null;

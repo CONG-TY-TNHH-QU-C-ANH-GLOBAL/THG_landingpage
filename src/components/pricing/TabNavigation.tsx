@@ -12,6 +12,7 @@ const tabs: Tab[] = [
   { id: "tiktok", icon: "🎵", label: "Line TikTok" },
   { id: "lo", icon: "📦", label: "Hàng Lô" },
   { id: "usps", icon: "✉️", label: "Priority USPS" },
+  { id: "extras", icon: "📝", label: "Phụ Phí & Khác" }
 ];
 
 const TabNavigation = () => {
@@ -22,12 +23,16 @@ const TabNavigation = () => {
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          onClick={() => store.setActiveTab(tab.id)}
-          className={`px-6 py-4 text-sm font-bold uppercase tracking-wide transition-colors border-b-2 -mb-[2px] whitespace-nowrap ${
-            store.activeMainTab === tab.id
-              ? "text-primary border-primary bg-primary/5"
-              : "text-muted-foreground border-transparent hover:text-primary"
-          }`}
+          onClick={() => {
+            store.setActiveTab(tab.id);
+            if (tab.id === "vn" || tab.id === "cn") {
+              store.setOrigin(tab.id as "vn" | "cn");
+            }
+          }}
+          className={`px-6 py-4 text-sm font-bold uppercase tracking-wide transition-colors border-b-2 -mb-[2px] whitespace-nowrap ${store.activeMainTab === tab.id
+            ? "text-primary border-primary bg-primary/5"
+            : "text-muted-foreground border-transparent hover:text-primary"
+            }`}
         >
           {tab.icon} {tab.label}
         </button>
