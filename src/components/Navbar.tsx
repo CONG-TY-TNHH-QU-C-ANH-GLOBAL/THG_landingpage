@@ -6,10 +6,10 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Link, useLocation } from "react-router-dom";
 
 const serviceItems = [
-  { icon: Package, titleKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", href: "#services" },
-  { icon: Truck, titleKey: "nav.thg_express", descKey: "nav.express_desc", href: "#services" },
-  { icon: Warehouse, titleKey: "nav.thg_warehouse", descKey: "nav.warehouse_desc", href: "#services" },
-  { icon: ShoppingCart, titleKey: "nav.thg_order", descKey: "nav.order_desc", href: "#services" },
+  { icon: Package, titleKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", href: "/thg-fulfill" },
+  { icon: Truck, titleKey: "nav.thg_express", descKey: "nav.express_desc", href: "/thg-express" },
+  { icon: Warehouse, titleKey: "nav.thg_warehouse", descKey: "nav.warehouse_desc", href: "/thg-warehouse" },
+  { icon: ShoppingCart, titleKey: "nav.thg_order", descKey: "nav.order_desc", href: "/thg-order" },
 ];
 
 const Navbar = () => {
