@@ -114,6 +114,22 @@ export default {
           from: { "--num": "0" },
           to: { "--num": "var(--target)" },
         },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px hsl(36 50% 48% / 0.1)" },
+          "50%": { boxShadow: "0 0 40px hsl(36 50% 48% / 0.25)" },
+        },
+        "pulse-3d": {
+          "0%, 100%": { transform: "scale(1) perspective(800px) rotateY(0deg)" },
+          "50%": { transform: "scale(1.02) perspective(800px) rotateY(1deg)" },
+        },
+        "rotate-in-3d": {
+          from: { opacity: "0", transform: "perspective(1200px) rotateY(-15deg) translateZ(-50px)" },
+          to: { opacity: "1", transform: "perspective(1200px) rotateY(0) translateZ(0)" },
+        },
+        "fade-in-up-3d": {
+          from: { opacity: "0", transform: "translateY(40px) perspective(1200px) rotateX(2deg)" },
+          to: { opacity: "1", transform: "translateY(0) perspective(1200px) rotateX(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -124,6 +140,10 @@ export default {
         "slide-in-right": "slide-in-right 0.3s ease-out",
         "float": "float 3s ease-in-out infinite",
         "shimmer": "shimmer 2s linear infinite",
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        "pulse-3d": "pulse-3d 4s ease-in-out infinite",
+        "rotate-in-3d": "rotate-in-3d 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards",
+        "fade-in-up-3d": "fade-in-up-3d 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards",
       },
     },
   },

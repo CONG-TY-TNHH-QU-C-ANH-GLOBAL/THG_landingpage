@@ -4,7 +4,7 @@ interface ScrollRevealProps {
   children: ReactNode;
   className?: string;
   delay?: number;
-  direction?: "up" | "left" | "right" | "scale";
+  direction?: "up" | "left" | "right" | "scale" | "rotate3d";
 }
 
 const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }: ScrollRevealProps) => {
@@ -19,7 +19,7 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
         if (entry.isIntersecting) {
           setTimeout(() => {
             el.style.opacity = "1";
-            el.style.transform = "translate(0, 0) scale(1)";
+            el.style.transform = "translate(0, 0) scale(1) perspective(1200px) rotateX(0) rotateY(0) translateZ(0)";
           }, delay);
           observer.unobserve(el);
         }
@@ -32,10 +32,11 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
   }, [delay]);
 
   const initialTransform = {
-    up: "translateY(40px)",
+    up: "translateY(40px) perspective(1200px) rotateX(2deg)",
     left: "translateX(-40px)",
     right: "translateX(40px)",
     scale: "scale(0.92)",
+    rotate3d: "perspective(1200px) rotateY(-15deg) translateZ(-50px)",
   }[direction];
 
   return (
@@ -45,8 +46,9 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
       style={{
         opacity: 0,
         transform: initialTransform,
-        transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)`,
+        transition: `opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1)`,
         transitionDelay: `${delay}ms`,
+        willChange: "opacity, transform",
       }}
     >
       {children}
