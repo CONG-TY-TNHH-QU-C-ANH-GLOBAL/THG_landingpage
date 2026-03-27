@@ -368,3 +368,33 @@ const translations: Translations = {
   "about.img3_desc": { en: "Storage & fulfillment from $1/order", vi: "LÆ°u kho & fulfill tá»« $1/Ä‘Æ¡n", zh: "ä»“å‚¨å’Œå±¥çº¦ä½Žè‡³1ç¾Žå…ƒ/å•" },
   "about.img4_title": { en: "Express Shipping", vi: "Váº­n chuyá»ƒn nhanh", zh: "å¿«é€Ÿè¿è¾“" },
   "about.img4_desc": { en: "5-8 days VN/CN to US doorstep", vi: "5-8 ngÃ y tá»« VN/CN Ä‘áº¿n táº­n nhÃ  Má»¹", zh: "è¶Šå—/ä¸­å›½åˆ°ç¾Žå›½5-8å¤©é€è¾¾" },
+
+};
+
+interface I18nContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: string) => string;
+}
+
+const I18nContext = createContext<I18nContextType | undefined>(undefined);
+
+export const I18nProvider = ({ children }: { children: ReactNode }) => {
+  const [language, setLanguage] = useState<Language>("en");
+
+  const t = (key: string): string => {
+    return translations[key]?.[language] || key;
+  };
+
+  return (
+    <I18nContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </I18nContext.Provider>
+  );
+};
+
+export const useI18n = () => {
+  const context = useContext(I18nContext);
+  if (!context) throw new Error("useI18n must be used within I18nProvider");
+  return context;
+};
