@@ -11,6 +11,7 @@ export type PricingCategory = Record<string, PriceEntry[]>;
 export interface OriginPricing {
   standard: PricingCategory;
   cosmetics: PricingCategory;
+  battery?: PricingCategory;
 }
 
 export type PricingDatabase = Record<string, OriginPricing>;

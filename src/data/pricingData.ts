@@ -1,3 +1,14 @@
+export interface PriceRow {
+  kg: number;
+  [key: string]: number | undefined;
+}
+
+export interface BulkZone {
+  name: string;
+  prices: Record<number, number>;
+  sla: string;
+}
+
 export const pricingData = {
   "vnThuong": [
     {
