@@ -10,7 +10,7 @@ const HeroSection = () => {
   const features = [t("hero.feature1"), t("hero.feature2"), t("hero.feature3"), t("hero.feature4")];
 
   return (
-    <section className="relative min-h-screen flex items-center pt-24 md:pt-20 overflow-hidden bg-gradient-hero">
+    <section className="relative min-h-screen flex items-center pt-28 pb-10 md:pt-20 overflow-hidden bg-gradient-hero">
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
