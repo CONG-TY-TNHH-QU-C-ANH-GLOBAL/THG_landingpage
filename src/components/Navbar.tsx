@@ -55,8 +55,8 @@ const Navbar = () => {
     }`}>
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-            <span className="text-primary-foreground font-bold text-sm tracking-tight">THG</span>
+          <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1.5">
+            <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
             <h1 className="text-base font-bold text-navy leading-tight tracking-tight">THG Fulfill</h1>
