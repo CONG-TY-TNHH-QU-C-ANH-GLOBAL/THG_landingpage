@@ -440,6 +440,15 @@
       transform: translateY(0) perspective(var(--perspective)) rotateX(0);
     }
   }
+
+  @keyframes heroZoom {
+    0% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1.15);
+    }
+  }
 }
 
 /* ─── Scrollbar Styling ─── */
