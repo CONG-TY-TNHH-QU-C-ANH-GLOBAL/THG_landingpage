@@ -1,3 +1,5 @@
+import { useI18n } from "@/lib/i18n";
+import ScrollReveal from "@/components/ScrollReveal";
 import {
   Accordion,
   AccordionContent,
@@ -5,37 +7,41 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const faqs = [
-  { q: "THG Fulfill phù hợp với ai?", a: "THG Fulfill phù hợp với tất cả các seller eCommerce, từ người mới bắt đầu đến các brand lớn muốn mở rộng thị trường quốc tế." },
-  { q: "Chi phí fulfillment như thế nào?", a: "Chi phí fulfill nội địa US bắt đầu từ 1$/đơn. Giá cụ thể phụ thuộc vào kích thước, trọng lượng sản phẩm và khối lượng đơn hàng." },
-  { q: "Thời gian giao hàng bao lâu?", a: "Nội địa US: 3-5 ngày làm việc. Giao hàng đến EU: 5-8 ngày làm việc. UK: 5-7 ngày làm việc." },
-  { q: "THG có hỗ trợ Print on Demand không?", a: "Có, THG cung cấp dịch vụ POD với đa dạng sản phẩm và chất lượng in ấn cao cấp." },
-  { q: "Làm thế nào để bắt đầu?", a: "Bạn chỉ cần đăng ký tài khoản, gửi hàng về kho THG và bắt đầu bán hàng. Đội ngũ THG sẽ hỗ trợ bạn từ A-Z." },
-];
-
 const FAQSection = () => {
-  return (
-    <section id="faq" className="py-24 bg-card">
-      <div className="container mx-auto px-4 max-w-3xl">
-        <div className="text-center mb-16">
-          <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Câu hỏi thường gặp</p>
-          <h2 className="text-4xl md:text-5xl font-serif text-navy">
-            Q&A
-          </h2>
-        </div>
+  const { t } = useI18n();
 
-        <Accordion type="single" collapsible className="space-y-3">
-          {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`item-${i}`} className="border border-border rounded-xl px-6 bg-background">
-              <AccordionTrigger className="text-left font-serif text-navy hover:no-underline">
-                {faq.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground leading-relaxed">
-                {faq.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+  const faqs = [
+    { q: t("faq.q1"), a: t("faq.a1") },
+    { q: t("faq.q2"), a: t("faq.a2") },
+    { q: t("faq.q3"), a: t("faq.a3") },
+    { q: t("faq.q4"), a: t("faq.a4") },
+    { q: t("faq.q5"), a: t("faq.a5") },
+  ];
+
+  return (
+    <section id="faq" className="py-28 bg-card">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("faq.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">Q&A</h2>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={200}>
+          <Accordion type="single" collapsible className="space-y-3">
+            {faqs.map((faq, i) => (
+              <AccordionItem key={i} value={`item-${i}`} className="border border-border/60 rounded-2xl px-6 bg-background hover:shadow-sm transition-shadow">
+                <AccordionTrigger className="text-left font-semibold text-navy hover:no-underline text-[15px]">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-sm">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </ScrollReveal>
       </div>
     </section>
   );

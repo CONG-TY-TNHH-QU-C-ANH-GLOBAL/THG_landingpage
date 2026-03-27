@@ -1,32 +1,41 @@
 import { Store, TrendingUp, Users, Rocket } from "lucide-react";
-
-const types = [
-  { icon: Store, title: "Seller mới bắt đầu", desc: "Hỗ trợ từ A-Z cho những người mới bước vào thương mại điện tử xuyên biên giới." },
-  { icon: TrendingUp, title: "Seller đang scale", desc: "Tối ưu chi phí và quy trình để mở rộng quy mô kinh doanh nhanh chóng." },
-  { icon: Users, title: "Seller đội nhóm", desc: "Giải pháp quản lý kho và fulfillment cho các team bán hàng chuyên nghiệp." },
-  { icon: Rocket, title: "Brand & DTC", desc: "Xây dựng thương hiệu riêng với dịch vụ fulfillment cao cấp và chuyên biệt." },
-];
+import { useI18n } from "@/lib/i18n";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const SellerTypesSection = () => {
-  return (
-    <section className="py-24">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Đối tượng khách hàng</p>
-          <h2 className="text-4xl md:text-5xl font-serif text-navy">
-            Phù hợp với <span className="text-primary italic">mọi Seller</span>
-          </h2>
-        </div>
+  const { t } = useI18n();
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {types.map((t) => (
-            <div key={t.title} className="text-center p-8 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-secondary flex items-center justify-center">
-                <t.icon className="w-8 h-8 text-primary" />
+  const types = [
+    { icon: Store, titleKey: "sellers.t1_title", descKey: "sellers.t1_desc" },
+    { icon: TrendingUp, titleKey: "sellers.t2_title", descKey: "sellers.t2_desc" },
+    { icon: Users, titleKey: "sellers.t3_title", descKey: "sellers.t3_desc" },
+    { icon: Rocket, titleKey: "sellers.t4_title", descKey: "sellers.t4_desc" },
+  ];
+
+  return (
+    <section className="py-28">
+      <div className="container mx-auto px-4">
+        <ScrollReveal>
+          <div className="text-center mb-20">
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("sellers.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
+              {t("sellers.title")}{" "}
+              <span className="text-gradient-gold">{t("sellers.title_highlight")}</span>
+            </h2>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {types.map((item, i) => (
+            <ScrollReveal key={item.titleKey} delay={i * 120}>
+              <div className="text-center p-8 rounded-2xl bg-card border border-border/60 hover-lift cursor-pointer h-full">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-secondary flex items-center justify-center">
+                  <item.icon className="w-7 h-7 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold text-navy mb-3 tracking-tight">{t(item.titleKey)}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t(item.descKey)}</p>
               </div>
-              <h3 className="text-lg font-serif font-semibold text-navy mb-3">{t.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

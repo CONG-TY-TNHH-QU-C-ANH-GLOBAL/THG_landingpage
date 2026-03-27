@@ -1,39 +1,49 @@
 import { Package, Truck, Warehouse, ShoppingCart, Globe, BarChart3 } from "lucide-react";
-
-const services = [
-  { icon: Package, title: "THG Fulfill", desc: "Dịch vụ fulfillment toàn diện từ nhận hàng, đóng gói đến giao hàng tận nơi." },
-  { icon: Truck, title: "THG Express", desc: "Vận chuyển nhanh quốc tế với thời gian giao hàng tối ưu nhất." },
-  { icon: Warehouse, title: "THG Warehouse", desc: "Hệ thống kho bãi hiện đại tại Việt Nam, Trung Quốc và Mỹ." },
-  { icon: ShoppingCart, title: "THG Order", desc: "Quản lý đơn hàng thông minh, tự động hóa quy trình xử lý." },
-  { icon: Globe, title: "Vận chuyển quốc tế", desc: "Kết nối vận chuyển toàn cầu đến US, UK, EU và nhiều thị trường khác." },
-  { icon: BarChart3, title: "Sourcing & POD", desc: "Tìm kiếm nguồn hàng và cung cấp dịch vụ Print on Demand chất lượng." },
-];
+import { useI18n } from "@/lib/i18n";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const ServicesSection = () => {
-  return (
-    <section id="services" className="py-24 bg-card">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Dịch vụ của chúng tôi</p>
-          <h2 className="text-4xl md:text-5xl font-serif text-navy">
-            Giải pháp <span className="text-primary italic">Fulfillment</span> trọn gói
-          </h2>
-        </div>
+  const { t } = useI18n();
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((s) => (
-            <div
-              key={s.title}
-              className="group p-8 rounded-2xl border border-border bg-background hover:bg-primary hover:border-primary transition-all duration-300 cursor-pointer"
-            >
-              <s.icon className="w-10 h-10 text-primary group-hover:text-primary-foreground mb-5 transition-colors" />
-              <h3 className="text-xl font-serif font-semibold text-navy group-hover:text-primary-foreground mb-3 transition-colors">
-                {s.title}
-              </h3>
-              <p className="text-muted-foreground group-hover:text-primary-foreground/80 transition-colors leading-relaxed">
-                {s.desc}
-              </p>
-            </div>
+  const services = [
+    { icon: Package, titleKey: "services.s1_title", descKey: "services.s1_desc" },
+    { icon: Truck, titleKey: "services.s2_title", descKey: "services.s2_desc" },
+    { icon: Warehouse, titleKey: "services.s3_title", descKey: "services.s3_desc" },
+    { icon: ShoppingCart, titleKey: "services.s4_title", descKey: "services.s4_desc" },
+    { icon: Globe, titleKey: "services.s5_title", descKey: "services.s5_desc" },
+    { icon: BarChart3, titleKey: "services.s6_title", descKey: "services.s6_desc" },
+  ];
+
+  return (
+    <section id="services" className="py-28 bg-card relative overflow-hidden">
+      {/* Decorative circle */}
+      <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/50 blur-3xl" />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <ScrollReveal>
+          <div className="text-center mb-20">
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("services.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
+              {t("services.title")}{" "}
+              <span className="text-gradient-gold">{t("services.title_highlight")}</span>{" "}
+              {t("services.title2")}
+            </h2>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {services.map((s, i) => (
+            <ScrollReveal key={s.titleKey} delay={i * 100}>
+              <div className="group p-7 rounded-2xl border border-border/60 bg-background hover:bg-navy transition-all duration-500 cursor-pointer hover-lift h-full">
+                <s.icon className="w-9 h-9 text-primary group-hover:text-gold-light mb-5 transition-colors duration-500" />
+                <h3 className="text-lg font-bold text-navy group-hover:text-primary-foreground mb-3 transition-colors duration-500 tracking-tight">
+                  {t(s.titleKey)}
+                </h3>
+                <p className="text-sm text-muted-foreground group-hover:text-primary-foreground/70 transition-colors duration-500 leading-relaxed">
+                  {t(s.descKey)}
+                </p>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

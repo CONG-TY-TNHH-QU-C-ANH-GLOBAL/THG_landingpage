@@ -1,36 +1,45 @@
 import { Shield, Clock, DollarSign, Headphones, Globe, Zap } from "lucide-react";
-
-const advantages = [
-  { icon: DollarSign, title: "Chi phí tối ưu", desc: "Giá cả cạnh tranh nhất thị trường với fulfill nội địa US từ 1$." },
-  { icon: Clock, title: "Giao hàng nhanh", desc: "Thời gian giao hàng 5-8 ngày đến EU, 3-5 ngày nội địa US." },
-  { icon: Globe, title: "Phủ sóng toàn cầu", desc: "Kho bãi tại 3 quốc gia: Việt Nam, Trung Quốc, Mỹ." },
-  { icon: Shield, title: "An toàn & Tin cậy", desc: "Bảo hiểm hàng hóa, đền bù 100% nếu thất lạc." },
-  { icon: Zap, title: "Công nghệ hiện đại", desc: "Hệ thống quản lý đơn hàng tự động, realtime tracking." },
-  { icon: Headphones, title: "Hỗ trợ 24/7", desc: "Đội ngũ tư vấn viên hỗ trợ bằng tiếng Việt mọi lúc." },
-];
+import { useI18n } from "@/lib/i18n";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const AdvantagesSection = () => {
-  return (
-    <section className="py-24">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <p className="text-sm font-medium text-primary uppercase tracking-widest mb-3">Tại sao chọn THG</p>
-          <h2 className="text-4xl md:text-5xl font-serif text-navy">
-            Lợi thế <span className="text-primary italic">vượt trội</span>
-          </h2>
-        </div>
+  const { t } = useI18n();
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {advantages.map((a) => (
-            <div key={a.title} className="flex gap-5">
-              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
-                <a.icon className="w-6 h-6 text-primary" />
+  const advantages = [
+    { icon: DollarSign, titleKey: "adv.a1_title", descKey: "adv.a1_desc" },
+    { icon: Clock, titleKey: "adv.a2_title", descKey: "adv.a2_desc" },
+    { icon: Globe, titleKey: "adv.a3_title", descKey: "adv.a3_desc" },
+    { icon: Shield, titleKey: "adv.a4_title", descKey: "adv.a4_desc" },
+    { icon: Zap, titleKey: "adv.a5_title", descKey: "adv.a5_desc" },
+    { icon: Headphones, titleKey: "adv.a6_title", descKey: "adv.a6_desc" },
+  ];
+
+  return (
+    <section className="py-28">
+      <div className="container mx-auto px-4">
+        <ScrollReveal>
+          <div className="text-center mb-20">
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("adv.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
+              {t("adv.title")}{" "}
+              <span className="text-gradient-gold">{t("adv.title_highlight")}</span>
+            </h2>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {advantages.map((a, i) => (
+            <ScrollReveal key={a.titleKey} delay={i * 100}>
+              <div className="flex gap-5 group">
+                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                  <a.icon className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-navy mb-2 tracking-tight">{t(a.titleKey)}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{t(a.descKey)}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-serif font-semibold text-navy mb-2">{a.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{a.desc}</p>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
