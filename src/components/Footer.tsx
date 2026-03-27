@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import { Link } from "react-router-dom";
+import thgLogo from "@/assets/thg-logo.png";
 
 const Footer = () => {
   const { t } = useI18n();
@@ -12,8 +13,8 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-10 mb-14">
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">THG</span>
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center overflow-hidden p-1.5">
+                <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
               </div>
               <div>
                 <p className="font-bold tracking-tight">THG Fulfill</p>
