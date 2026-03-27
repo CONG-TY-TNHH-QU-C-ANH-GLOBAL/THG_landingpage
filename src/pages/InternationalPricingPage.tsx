@@ -173,12 +173,12 @@ const PricingContent = () => {
 
       {/* Calculator */}
       <div className="container mx-auto px-4">
+        <TabNavigation />
         <GlobalCalculator />
       </div>
 
-      {/* Tabs + Content */}
-      <div className="container mx-auto px-4 mt-8">
-        <TabNavigation />
+      {/* Content */}
+      <div className="container mx-auto px-4">
         <div className="space-y-6 py-6">{renderTabContent()}</div>
       </div>
     </>
