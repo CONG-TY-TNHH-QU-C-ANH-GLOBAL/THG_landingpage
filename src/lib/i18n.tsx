@@ -345,6 +345,27 @@ const translations: Translations = {
   "integrations.desc": { en: "THG OMS syncs directly with major US marketplaces. Auto-import orders, update tracking, manage inventory — all in one place.", vi: "THG OMS đồng bộ trực tiếp với các marketplace lớn tại Mỹ. Tự động nhập đơn, cập nhật tracking, quản lý tồn kho — tất cả tại một nơi.", zh: "THG OMS直接与美国主要平台同步。自动导入订单、更新追踪、管理库存——一站式解决。" },
   "integrations.sync_ready": { en: "Sync Ready", vi: "Sẵn sàng đồng bộ", zh: "同步就绪" },
   "integrations.hub_desc": { en: "Central order management hub", vi: "Trung tâm quản lý đơn hàng", zh: "订单管理中心" },
+
+  // About / Video
+  "about.subtitle": { en: "About THG", vi: "Về THG", zh: "关于THG" },
+  "about.title": { en: "Why choose", vi: "Tại sao chọn", zh: "为什么选择" },
+  "about.title_highlight": { en: "THG Fulfill?", vi: "THG Fulfill?", zh: "THG Fulfill?" },
+  "about.video_placeholder": { en: "Replace with your YouTube video ID", vi: "Thay bằng YouTube video ID của bạn", zh: "替换为您的YouTube视频ID" },
+  "about.video_title": { en: "End-to-end fulfillment from Asia to the US", vi: "Fulfillment trọn gói từ Châu Á đến Mỹ", zh: "从亚洲到美国的端到端履约" },
+  "about.video_desc": { en: "THG Fulfill is a comprehensive ecosystem connecting production in Vietnam & China directly to US warehouses. We handle sourcing, printing, warehousing and last-mile delivery so you can focus on growing your brand.", vi: "THG Fulfill là hệ sinh thái toàn diện kết nối sản xuất tại Việt Nam & Trung Quốc trực tiếp đến kho Mỹ. Chúng tôi lo liệu tìm nguồn, in ấn, lưu kho và giao hàng chặng cuối để bạn tập trung phát triển thương hiệu.", zh: "THG Fulfill是一个综合生态系统，将越南和中国的生产直接连接到美国仓库。我们负责采购、印刷、仓储和最后一公里配送，让您专注于品牌发展。" },
+  "about.highlight1": { en: "Competitive basecost", vi: "Basecost cạnh tranh", zh: "有竞争力的基本成本" },
+  "about.highlight2": { en: "Fast US delivery", vi: "Giao hàng nhanh tại Mỹ", zh: "美国快速交付" },
+  "about.highlight3": { en: "Global network", vi: "Mạng lưới toàn cầu", zh: "全球网络" },
+  "about.highlight4": { en: "Quality guaranteed", vi: "Đảm bảo chất lượng", zh: "质量保证" },
+  "about.gallery_title": { en: "Our Services at a Glance", vi: "Dịch vụ của chúng tôi", zh: "我们的服务一览" },
+  "about.img1_title": { en: "Product Sourcing", vi: "Tìm nguồn hàng", zh: "产品采购" },
+  "about.img1_desc": { en: "Source trending products from China & Vietnam", vi: "Tìm sản phẩm trend từ Trung Quốc & Việt Nam", zh: "从中国和越南采购热门产品" },
+  "about.img2_title": { en: "POD Printing", vi: "In ấn POD", zh: "POD印刷" },
+  "about.img2_desc": { en: "High-quality print-on-demand production", vi: "Sản xuất in theo yêu cầu chất lượng cao", zh: "高质量按需印刷生产" },
+  "about.img3_title": { en: "US Warehouse", vi: "Kho Mỹ", zh: "美国仓库" },
+  "about.img3_desc": { en: "Storage & fulfillment from $1/order", vi: "Lưu kho & fulfill từ $1/đơn", zh: "仓储和履约低至1美元/单" },
+  "about.img4_title": { en: "Express Shipping", vi: "Vận chuyển nhanh", zh: "快速运输" },
+  "about.img4_desc": { en: "5-8 days VN/CN to US doorstep", vi: "5-8 ngày từ VN/CN đến tận nhà Mỹ", zh: "越南/中国到美国5-8天送达" },
 };
 
 interface I18nContextType {
