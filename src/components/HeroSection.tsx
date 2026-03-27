@@ -68,17 +68,35 @@ const HeroSection = () => {
           </ScrollReveal>
         </div>
 
-        {/* Right - Rotating Globe */}
+        {/* Right - Rotating Globe with Airplanes & Packages */}
         <ScrollReveal direction="scale" delay={400} className="relative hidden lg:flex justify-center items-center min-h-[560px]">
           <div className="relative">
             {/* Rotating Globe */}
             <div className="globe-container">
               <div className="globe">
                 <div className="globe-shine" />
+                {/* Continent hints */}
+                <div className="globe-continents" />
               </div>
-              {/* Orbit ring */}
+              {/* Orbit rings */}
               <div className="globe-orbit" />
               <div className="globe-orbit globe-orbit-2" />
+
+              {/* Animated airplanes on orbit */}
+              <div className="airplane-orbit">
+                <div className="airplane airplane-1">✈️</div>
+              </div>
+              <div className="airplane-orbit airplane-orbit-reverse">
+                <div className="airplane airplane-2">✈️</div>
+              </div>
+
+              {/* Animated packages */}
+              <div className="package-orbit">
+                <div className="package-item">📦</div>
+              </div>
+              <div className="package-orbit package-orbit-2">
+                <div className="package-item package-item-2">📦</div>
+              </div>
             </div>
 
             {/* Floating cards */}
