@@ -313,6 +313,31 @@ const translations: Translations = {
   "order_page.step4_desc": { en: "Package arrives at your US address. Full tracking throughout.", vi: "Kiện hàng đến tận địa chỉ Mỹ. Tracking đầy đủ.", zh: "包裹送到您的美国地址。全程追踪。" },
   "order_page.cta_title": { en: "Ready to Order from China?", vi: "Sẵn sàng đặt hàng từ Trung Quốc?", zh: "准备好从中国订购了吗？" },
   "order_page.cta_desc": { en: "Get a free quote and consultation from our team today.", vi: "Nhận báo giá miễn phí và tư vấn từ đội ngũ THG.", zh: "今天就获取免费报价和我们团队的咨询。" },
+
+  // Testimonials
+  "testimonials.subtitle": { en: "Customer Reviews", vi: "Đánh giá khách hàng", zh: "客户评价" },
+  "testimonials.title": { en: "Trusted by", vi: "Được tin tưởng bởi", zh: "受到信赖" },
+  "testimonials.title_highlight": { en: "Sellers Worldwide", vi: "Seller toàn cầu", zh: "全球卖家" },
+  "testimonials.t1_name": { en: "Nguyen Minh Tuan", vi: "Nguyễn Minh Tuấn", zh: "阮明俊" },
+  "testimonials.t1_role": { en: "POD Seller • Etsy & TikTok", vi: "POD Seller • Etsy & TikTok", zh: "POD卖家 • Etsy & TikTok" },
+  "testimonials.t1_quote": { en: "THG Fulfill helped me scale from 50 to 500+ orders/month. Their basecost is unbeatable and support is always responsive.", vi: "THG Fulfill giúp tôi scale từ 50 lên 500+ đơn/tháng. Basecost cực tốt và support luôn nhanh chóng.", zh: "THG Fulfill帮我从月50单增长到500+单。basecost无与伦比，支持团队总是及时响应。" },
+  "testimonials.t2_name": { en: "David Chen", vi: "David Chen", zh: "David Chen" },
+  "testimonials.t2_role": { en: "Dropship Seller • Amazon", vi: "Dropship Seller • Amazon", zh: "代发卖家 • Amazon" },
+  "testimonials.t2_quote": { en: "The US warehouse fulfillment from $1/order is a game-changer. My customers get packages in 2-5 days instead of 2-3 weeks.", vi: "Fulfill kho US từ $1/đơn thay đổi hoàn toàn cuộc chơi. Khách hàng nhận hàng trong 2-5 ngày thay vì 2-3 tuần.", zh: "美国仓库履约低至1美元/单是改变游戏规则的。客户2-5天收到包裹，而不是2-3周。" },
+  "testimonials.t3_name": { en: "Tran Thi Mai", vi: "Trần Thị Mai", zh: "陈氏梅" },
+  "testimonials.t3_role": { en: "Brand Owner • Shopify", vi: "Chủ Brand • Shopify", zh: "品牌主 • Shopify" },
+  "testimonials.t3_quote": { en: "Transparent pricing, no hidden fees. The packing video feature gives me peace of mind for every order shipped.", vi: "Giá minh bạch, không phí ẩn. Tính năng quay video đóng gói giúp tôi yên tâm với từng đơn hàng.", zh: "透明定价，无隐藏费用。包装视频功能让我对每个发出的订单都很放心。" },
+  "testimonials.t4_name": { en: "Kevin Nguyen", vi: "Kevin Nguyễn", zh: "Kevin Nguyen" },
+  "testimonials.t4_role": { en: "eCommerce Team Lead", vi: "Team Lead eCommerce", zh: "电商团队负责人" },
+  "testimonials.t4_quote": { en: "We switched from 3 different fulfillment partners to THG. One ecosystem handling everything from POD to US warehouse. Incredible.", vi: "Chúng tôi chuyển từ 3 đối tác fulfill khác nhau sang THG. Một hệ sinh thái xử lý mọi thứ từ POD đến kho US. Tuyệt vời.", zh: "我们从3个不同的履约合作伙伴切换到THG。一个生态系统处理从POD到美国仓库的一切。难以置信。" },
+
+  // Integrations
+  "integrations.subtitle": { en: "Sync & Connect", vi: "Đồng bộ & Kết nối", zh: "同步与连接" },
+  "integrations.title": { en: "Seamless", vi: "Kết nối liền mạch", zh: "无缝" },
+  "integrations.title_highlight": { en: "Marketplace Integration", vi: "với Marketplace", zh: "平台集成" },
+  "integrations.desc": { en: "THG OMS syncs directly with major US marketplaces. Auto-import orders, update tracking, manage inventory — all in one place.", vi: "THG OMS đồng bộ trực tiếp với các marketplace lớn tại Mỹ. Tự động nhập đơn, cập nhật tracking, quản lý tồn kho — tất cả tại một nơi.", zh: "THG OMS直接与美国主要平台同步。自动导入订单、更新追踪、管理库存——一站式解决。" },
+  "integrations.sync_ready": { en: "Sync Ready", vi: "Sẵn sàng đồng bộ", zh: "同步就绪" },
+  "integrations.hub_desc": { en: "Central order management hub", vi: "Trung tâm quản lý đơn hàng", zh: "订单管理中心" },
 };
 
 interface I18nContextType {

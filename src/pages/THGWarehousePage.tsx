@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
-import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Video, Monitor } from "lucide-react";
+import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Video, Monitor, Package, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const strengths = [
@@ -14,11 +14,11 @@ const strengths = [
 ];
 
 const processSteps = [
-  { num: "01", titleKey: "warehouse_page.step1_title", descKey: "warehouse_page.step1_desc" },
-  { num: "02", titleKey: "warehouse_page.step2_title", descKey: "warehouse_page.step2_desc" },
-  { num: "03", titleKey: "warehouse_page.step3_title", descKey: "warehouse_page.step3_desc" },
-  { num: "04", titleKey: "warehouse_page.step4_title", descKey: "warehouse_page.step4_desc" },
-  { num: "05", titleKey: "warehouse_page.step5_title", descKey: "warehouse_page.step5_desc" },
+  { num: "01", titleKey: "warehouse_page.step1_title", descKey: "warehouse_page.step1_desc", icon: Package },
+  { num: "02", titleKey: "warehouse_page.step2_title", descKey: "warehouse_page.step2_desc", icon: Truck },
+  { num: "03", titleKey: "warehouse_page.step3_title", descKey: "warehouse_page.step3_desc", icon: Warehouse },
+  { num: "04", titleKey: "warehouse_page.step4_title", descKey: "warehouse_page.step4_desc", icon: Monitor },
+  { num: "05", titleKey: "warehouse_page.step5_title", descKey: "warehouse_page.step5_desc", icon: ArrowRight },
 ];
 
 const THGWarehousePage = () => {
@@ -34,29 +34,82 @@ const THGWarehousePage = () => {
           backgroundImage: `radial-gradient(circle at 1px 1px, hsl(220 25% 12%) 1px, transparent 0)`,
           backgroundSize: "40px 40px",
         }} />
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <ScrollReveal>
-            <div className="inline-flex items-center gap-2 glass-card rounded-full px-5 py-2.5 text-sm mb-8">
-              <Warehouse className="w-4 h-4 text-primary" />
-              <span className="font-medium text-muted-foreground uppercase text-xs tracking-wider">{t("warehouse_page.badge")}</span>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <ScrollReveal>
+                <div className="inline-flex items-center gap-2 glass-card rounded-full px-5 py-2.5 text-sm mb-8">
+                  <Warehouse className="w-4 h-4 text-primary" />
+                  <span className="font-medium text-muted-foreground uppercase text-xs tracking-wider">{t("warehouse_page.badge")}</span>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal delay={100}>
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6">
+                  THG <span className="text-gradient-gold">Warehouse</span>
+                </h1>
+              </ScrollReveal>
+              <ScrollReveal delay={200}>
+                <p className="text-lg md:text-xl text-muted-foreground max-w-lg mb-4">{t("warehouse_page.hero_subtitle")}</p>
+                <p className="text-base text-primary font-semibold tracking-wide uppercase">{t("warehouse_page.hero_tagline")}</p>
+              </ScrollReveal>
+              <ScrollReveal delay={300}>
+                <div className="flex gap-4 mt-10">
+                  <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
+                    {t("nav.consult")} <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </ScrollReveal>
             </div>
-          </ScrollReveal>
-          <ScrollReveal delay={100}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6">
-              THG <span className="text-gradient-gold">Warehouse</span>
-            </h1>
-          </ScrollReveal>
-          <ScrollReveal delay={200}>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4">{t("warehouse_page.hero_subtitle")}</p>
-            <p className="text-base text-primary font-semibold tracking-wide uppercase">{t("warehouse_page.hero_tagline")}</p>
-          </ScrollReveal>
-          <ScrollReveal delay={300}>
-            <div className="flex justify-center gap-4 mt-10">
-              <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
-                {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </ScrollReveal>
+            {/* Warehouse visual */}
+            <ScrollReveal delay={300} direction="right" className="hidden lg:block">
+              <div className="glass-card rounded-3xl p-8">
+                <div className="flex flex-col items-center gap-4">
+                  {/* Warehouse illustration */}
+                  <div className="relative w-full">
+                    <div className="flex justify-center gap-6 mb-6">
+                      <div className="w-40 h-28 bg-navy/8 rounded-t-xl border border-border/40 flex items-center justify-center relative">
+                        <span className="text-5xl">🏭</span>
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[8px] font-bold px-3 py-1 rounded-full">THG Warehouse</div>
+                      </div>
+                    </div>
+                    {/* Trucks */}
+                    <div className="flex items-center justify-between px-4">
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-2xl">🚛</span>
+                        <span className="text-[10px] text-muted-foreground">Inbound</span>
+                      </div>
+                      <div className="flex-1 mx-4">
+                        <div className="h-px bg-primary/20 relative">
+                          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-2 h-2 rounded-full bg-primary animate-pulse" />
+                          <div className="absolute top-1/2 left-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-olive animate-pulse" />
+                          <div className="absolute top-1/2 left-3/4 -translate-y-1/2 w-2 h-2 rounded-full bg-primary animate-pulse" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-2xl">🚚</span>
+                        <span className="text-[10px] text-muted-foreground">Outbound</span>
+                      </div>
+                    </div>
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-3 mt-6">
+                      <div className="text-center p-2 rounded-lg bg-secondary/40">
+                        <p className="text-lg font-bold text-gradient-gold">$1</p>
+                        <p className="text-[9px] text-muted-foreground">Per Order</p>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-secondary/40">
+                        <p className="text-lg font-bold text-gradient-gold">90</p>
+                        <p className="text-[9px] text-muted-foreground">Free Days</p>
+                      </div>
+                      <div className="text-center p-2 rounded-lg bg-secondary/40">
+                        <p className="text-lg font-bold text-gradient-gold">2-5</p>
+                        <p className="text-[9px] text-muted-foreground">Delivery Days</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 
@@ -139,8 +192,21 @@ const THGWarehousePage = () => {
         </div>
       </section>
 
+      {/* Video placeholder */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="max-w-4xl mx-auto aspect-video rounded-3xl bg-secondary/60 border border-border/50 flex flex-col items-center justify-center gap-4">
+              <Video className="w-16 h-16 text-primary/30" />
+              <p className="text-sm text-muted-foreground font-medium">THG Warehouse Tour</p>
+              <p className="text-xs text-muted-foreground/60">Virtual tour of our US warehouse facilities coming soon</p>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* Process */}
-      <section className="py-24 bg-background">
+      <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-16">
@@ -151,9 +217,14 @@ const THGWarehousePage = () => {
             {processSteps.map((s, i) => (
               <ScrollReveal key={s.num} delay={i * 80}>
                 <div className="flex gap-6 glass-card rounded-2xl p-6 hover-lift">
-                  <span className="text-3xl font-bold text-primary/20 flex-shrink-0">{s.num}</span>
-                  <div>
-                    <h3 className="text-base font-bold text-navy mb-1 tracking-tight">{t(s.titleKey)}</h3>
+                  <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                    <s.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="text-xs font-bold text-primary/40">Step {s.num}</span>
+                      <h3 className="text-base font-bold text-navy tracking-tight">{t(s.titleKey)}</h3>
+                    </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">{t(s.descKey)}</p>
                   </div>
                 </div>

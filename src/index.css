@@ -144,6 +144,16 @@
       radial-gradient(ellipse 60% 100% at 50% 50%, transparent 0%, hsl(40 20% 97% / 0.06) 50%, transparent 100%);
   }
 
+  .globe-continents {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(ellipse 25% 20% at 35% 40%, hsl(140 25% 32% / 0.15) 0%, transparent 100%),
+      radial-gradient(ellipse 15% 25% at 60% 35%, hsl(140 25% 32% / 0.12) 0%, transparent 100%),
+      radial-gradient(ellipse 20% 15% at 70% 55%, hsl(140 25% 32% / 0.1) 0%, transparent 100%);
+  }
+
   .globe-shine {
     position: absolute;
     top: 15%;
@@ -170,6 +180,110 @@
     border-color: hsl(36 45% 42% / 0.08);
     animation-duration: 45s;
     animation-direction: reverse;
+  }
+
+  /* Airplane orbits */
+  .airplane-orbit {
+    position: absolute;
+    width: 460px;
+    height: 460px;
+    border-radius: 50%;
+    animation: orbit-spin 12s linear infinite;
+  }
+
+  .airplane-orbit-reverse {
+    animation-direction: reverse;
+    animation-duration: 16s;
+    width: 420px;
+    height: 420px;
+  }
+
+  .airplane {
+    position: absolute;
+    font-size: 20px;
+    filter: drop-shadow(0 2px 4px hsl(220 40% 13% / 0.3));
+  }
+
+  .airplane-1 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .airplane-2 {
+    bottom: 0;
+    right: 10%;
+    transform: rotate(-135deg);
+  }
+
+  /* Package orbits */
+  .package-orbit {
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    animation: orbit-spin 18s linear infinite;
+  }
+
+  .package-orbit-2 {
+    animation-duration: 22s;
+    animation-direction: reverse;
+    width: 440px;
+    height: 440px;
+  }
+
+  .package-item {
+    position: absolute;
+    font-size: 16px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    filter: drop-shadow(0 2px 4px hsl(220 40% 13% / 0.2));
+  }
+
+  .package-item-2 {
+    top: auto;
+    bottom: 15%;
+    left: auto;
+    right: 5%;
+    transform: none;
+  }
+
+  /* Service card shipping animations */
+  .shipping-package-fly {
+    animation: fly-across 3s ease-in-out infinite;
+  }
+
+  .shipping-airplane-fly {
+    animation: fly-across 2.5s ease-in-out infinite 0.5s;
+  }
+
+  .warehouse-truck-arrive {
+    animation: truck-arrive 3s ease-in-out infinite;
+  }
+
+  .warehouse-truck-depart {
+    animation: truck-depart 3s ease-in-out infinite 1.5s;
+  }
+
+  @keyframes fly-across {
+    0% { transform: translateX(-20px); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateX(100px); opacity: 0; }
+  }
+
+  @keyframes truck-arrive {
+    0% { transform: translateX(-30px); opacity: 0; }
+    30% { transform: translateX(0); opacity: 1; }
+    70% { transform: translateX(0); opacity: 1; }
+    100% { transform: translateX(0); opacity: 0.5; }
+  }
+
+  @keyframes truck-depart {
+    0% { transform: translateX(0); opacity: 0.5; }
+    30% { transform: translateX(0); opacity: 1; }
+    100% { transform: translateX(30px); opacity: 0; }
   }
 
   @keyframes globe-rotate {

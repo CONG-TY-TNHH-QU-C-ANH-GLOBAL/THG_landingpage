@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -18,12 +18,28 @@ const Navbar = () => {
   const [showServices, setShowServices] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  useEffect(() => {
+    setShowServices(false);
+    setIsOpen(false);
+  }, [location.pathname]);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setShowServices(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setShowServices(false), 150);
+  };
 
   const navItems = [
     { label: t("nav.pricing"), href: "/bang-gia" },
@@ -51,20 +67,21 @@ const Navbar = () => {
         <div className="hidden lg:flex items-center gap-1">
           {/* Services Dropdown */}
           <div
+            ref={dropdownRef}
             className="relative"
-            onMouseEnter={() => setShowServices(true)}
-            onMouseLeave={() => setShowServices(false)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50">
               {t("nav.services")}
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showServices ? "rotate-180" : ""}`} />
             </button>
 
-            {/* Mega Menu */}
-            <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-2 transition-all duration-300 ${
-              showServices ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
+            {/* Mega Menu - positioned left-aligned */}
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${
+              showServices ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2 pointer-events-none"
             }`}>
-              <div className="bg-card/98 backdrop-blur-xl rounded-2xl border border-border/60 shadow-2xl p-6 w-[520px] grid grid-cols-2 gap-3">
+              <div className="bg-card backdrop-blur-xl rounded-2xl border border-border/60 shadow-2xl p-5 w-[480px] grid grid-cols-2 gap-2">
                 {serviceItems.map((item) => (
                   <Link
                     key={item.titleKey}
@@ -116,7 +133,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="lg:hidden bg-card/98 backdrop-blur-xl border-t border-border/50 px-4 py-6 space-y-1 animate-fade-in">
+        <div className="lg:hidden bg-card backdrop-blur-xl border-t border-border/50 px-4 py-6 space-y-1 animate-fade-in">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2">{t("nav.services")}</p>
           {serviceItems.map((item) => (
             <Link
