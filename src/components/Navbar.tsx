@@ -119,15 +119,15 @@ const Navbar = () => {
         <div className="lg:hidden bg-card/98 backdrop-blur-xl border-t border-border/50 px-4 py-6 space-y-1 animate-fade-in">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2">{t("nav.services")}</p>
           {serviceItems.map((item) => (
-            <a
+            <Link
               key={item.titleKey}
-              href={item.href}
+              to={item.href}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <item.icon className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">{t(item.titleKey)}</span>
-            </a>
+            </Link>
           ))}
           <div className="border-t border-border/50 my-3" />
           {navItems.map((item) => (

@@ -28,10 +28,10 @@ const Footer = () => {
           <div>
             <h4 className="font-bold mb-5 tracking-tight">{t("footer.services")}</h4>
             <ul className="space-y-3 text-sm text-primary-foreground/50">
-              <li><a href="#services" className="hover:text-gold-light transition-colors duration-300">THG Fulfill</a></li>
-              <li><a href="#services" className="hover:text-gold-light transition-colors duration-300">THG Express</a></li>
-              <li><a href="#services" className="hover:text-gold-light transition-colors duration-300">THG Warehouse</a></li>
-              <li><a href="#services" className="hover:text-gold-light transition-colors duration-300">THG Order</a></li>
+              <li><Link to="/thg-fulfill" className="hover:text-gold-light transition-colors duration-300">THG Fulfill</Link></li>
+              <li><Link to="/thg-express" className="hover:text-gold-light transition-colors duration-300">THG Express</Link></li>
+              <li><Link to="/thg-warehouse" className="hover:text-gold-light transition-colors duration-300">THG Warehouse</Link></li>
+              <li><Link to="/thg-order" className="hover:text-gold-light transition-colors duration-300">THG Order</Link></li>
             </ul>
           </div>
 
