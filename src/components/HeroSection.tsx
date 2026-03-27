@@ -10,7 +10,7 @@ const HeroSection = () => {
   const features = [t("hero.feature1"), t("hero.feature2"), t("hero.feature3"), t("hero.feature4")];
 
   return (
-    <section className="relative min-h-screen flex items-center pt-24 md:pt-20 overflow-hidden bg-gradient-hero">
+    <section className="relative min-h-screen flex items-center pt-28 pb-10 md:pt-20 overflow-hidden bg-gradient-hero">
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
@@ -19,7 +19,7 @@ const HeroSection = () => {
         }}
       />
 
-      <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center relative z-10">
+      <div className="container mx-auto px-4 flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center relative z-10">
         <div className="space-y-6 md:space-y-8 text-center lg:text-left">
           <ScrollReveal delay={100}>
             <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm">
@@ -74,9 +74,9 @@ const HeroSection = () => {
         <ScrollReveal
           direction="scale"
           delay={400}
-          className="relative flex justify-center items-center min-h-[250px] sm:min-h-[320px] md:min-h-[460px] lg:min-h-[560px] mt-6 lg:mt-0"
+          className="relative flex justify-center items-center w-full max-w-[280px] sm:max-w-[360px] md:max-w-[460px] lg:max-w-none aspect-square mx-auto lg:mx-0 mt-4 lg:mt-0"
         >
-          <div className="relative scale-[0.5] sm:scale-[0.62] md:scale-[0.8] lg:scale-100 origin-center">
+          <div className="relative w-full h-full flex items-center justify-center scale-[0.55] sm:scale-[0.65] md:scale-[0.8] lg:scale-100 origin-center">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-[420px] h-[420px] rounded-full bg-primary/10 blur-[80px] animate-pulse" />
             </div>
