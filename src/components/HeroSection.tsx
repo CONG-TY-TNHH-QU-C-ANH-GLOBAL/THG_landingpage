@@ -2,7 +2,6 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
-import heroGlobe from "@/assets/hero-globe.png";
 
 const HeroSection = () => {
   const { t } = useI18n();
@@ -50,7 +49,7 @@ const HeroSection = () => {
             <div className="grid grid-cols-2 gap-3">
               {features.map((f, i) => (
                 <div key={i} className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4.5 h-4.5 text-accent flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                   <span className="text-sm text-foreground/75">{f}</span>
                 </div>
               ))}
@@ -69,34 +68,46 @@ const HeroSection = () => {
           </ScrollReveal>
         </div>
 
-        {/* Right - Globe with floating cards */}
-        <ScrollReveal direction="scale" delay={400} className="relative hidden lg:flex justify-center items-center">
+        {/* Right - Rotating Globe */}
+        <ScrollReveal direction="scale" delay={400} className="relative hidden lg:flex justify-center items-center min-h-[560px]">
           <div className="relative">
-            <img src={heroGlobe} alt="Global fulfillment network" className="w-[520px] h-[520px] object-contain" />
+            {/* Rotating Globe */}
+            <div className="globe-container">
+              <div className="globe">
+                <div className="globe-shine" />
+              </div>
+              {/* Orbit ring */}
+              <div className="globe-orbit" />
+              <div className="globe-orbit globe-orbit-2" />
+            </div>
 
             {/* Floating cards */}
-            <div className="absolute top-16 -left-8 glass-card rounded-2xl px-5 py-4 animate-float" style={{ animationDelay: "0s" }}>
+            <div className="absolute top-8 -left-12 glass-card rounded-2xl px-5 py-4 animate-float z-10" style={{ animationDelay: "0s" }}>
               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">🇪🇺 EU</div>
               <p className="text-3xl font-bold text-navy tracking-tight">5-8</p>
               <p className="text-xs text-muted-foreground">{t("hero.delivery_days")}</p>
             </div>
 
-            <div className="absolute bottom-28 -left-4 glass-card rounded-2xl px-5 py-4 animate-float" style={{ animationDelay: "1s" }}>
-              <p className="text-3xl font-bold text-navy tracking-tight">$1</p>
-              <p className="text-xs text-muted-foreground">{t("hero.us_fulfill")}</p>
+            <div className="absolute top-24 right-2 glass-card rounded-xl px-4 py-2 flex items-center gap-2 animate-float z-10" style={{ animationDelay: "0.3s" }}>
+              <span>🇺🇸</span><span className="text-xs font-semibold">USA</span>
             </div>
 
-            <div className="absolute top-32 -right-6 glass-card rounded-2xl px-5 py-4 animate-float" style={{ animationDelay: "0.5s" }}>
+            <div className="absolute top-44 -right-10 glass-card rounded-2xl px-5 py-4 animate-float z-10" style={{ animationDelay: "0.8s" }}>
               <p className="text-3xl font-bold text-navy tracking-tight">3</p>
               <p className="text-xs text-muted-foreground">{t("hero.countries")}</p>
             </div>
 
-            <div className="absolute bottom-44 right-0 glass-card rounded-xl px-4 py-2 flex items-center gap-2 animate-float" style={{ animationDelay: "1.5s" }}>
+            <div className="absolute bottom-36 right-4 glass-card rounded-xl px-4 py-2 flex items-center gap-2 animate-float z-10" style={{ animationDelay: "1.2s" }}>
               <span>🇨🇳</span><span className="text-xs font-semibold">China</span>
             </div>
 
-            <div className="absolute bottom-32 -right-4 glass-card rounded-xl px-4 py-2 flex items-center gap-2 animate-float" style={{ animationDelay: "2s" }}>
+            <div className="absolute bottom-24 -right-4 glass-card rounded-xl px-4 py-2 flex items-center gap-2 animate-float z-10" style={{ animationDelay: "1.6s" }}>
               <span>🇻🇳</span><span className="text-xs font-semibold">Vietnam</span>
+            </div>
+
+            <div className="absolute bottom-16 -left-8 glass-card rounded-2xl px-5 py-4 animate-float z-10" style={{ animationDelay: "2s" }}>
+              <p className="text-2xl font-bold text-navy tracking-tight">từ <span className="text-gradient-gold">1$</span></p>
+              <p className="text-xs text-muted-foreground">{t("hero.us_fulfill")}</p>
             </div>
           </div>
         </ScrollReveal>
