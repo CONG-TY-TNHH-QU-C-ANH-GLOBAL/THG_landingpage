@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { usePricingStore } from "@/stores/usePricingStore";
 import { Search, Plane, Scale } from "lucide-react";
-import { countryNames } from "@/data/pricingData";
+import { countryNames, getPricingData } from "@/data/pricingData";
 import { Button } from "@/components/ui/button";
 
 const destinations = [
@@ -36,27 +36,7 @@ const GlobalCalculator = () => {
       return;
     }
 
-    // Import pricing data
-    import("@/data/pricingData").then(({ getPricingData: gpd }) => {
-      const dataArray = gpd(localOrigin, localItemType);
-      const typeStr = localItemType === "cosmetic" ? "Mỹ Phẩm" : "Thường";
-
-      let matchRow = null;
-      for (const row of dataArray) {
-        if (row.kg >= localWeight) {
-          matchRow = row;
-          break;
-        }
-      }
-
-      if (matchRow && matchRow[localDest] != null) {
-        setQuoteResult({ mappedWeight: matchRow.kg, price: matchRow[localDest], type: typeStr });
-      } else {
-        setQuoteResult({ error: true });
-      }
-    });
-  };
-
+    const dataArray = getPricingData(localOrigin, localItemType);
     const typeStr = localItemType === "cosmetic" ? "Mỹ Phẩm" : "Thường";
 
     let matchRow = null;
@@ -80,7 +60,6 @@ const GlobalCalculator = () => {
   return (
     <div>
       <div className="glass-card rounded-2xl p-5 lg:p-6 flex flex-wrap gap-4 items-end relative z-10 -mt-8 mx-4 lg:mx-0">
-        {/* Origin */}
         <div className="flex-1 min-w-[130px]">
           <label className="block text-xs font-bold text-muted-foreground uppercase mb-1.5">Gửi Từ</label>
           <select
@@ -96,7 +75,6 @@ const GlobalCalculator = () => {
           </select>
         </div>
 
-        {/* Destination */}
         <div className="flex-1 min-w-[130px]">
           <label className="block text-xs font-bold text-muted-foreground uppercase mb-1.5">Giao Đến</label>
           <select
@@ -110,7 +88,6 @@ const GlobalCalculator = () => {
           </select>
         </div>
 
-        {/* Item Type */}
         <div className="flex-1 min-w-[130px]">
           <label className="block text-xs font-bold text-muted-foreground uppercase mb-1.5">Loại Hàng</label>
           <select
@@ -124,7 +101,6 @@ const GlobalCalculator = () => {
           </select>
         </div>
 
-        {/* Currency */}
         <div className="flex-1 min-w-[110px]">
           <label className="block text-xs font-bold text-muted-foreground uppercase mb-1.5">Tiền Tệ</label>
           <select
@@ -138,7 +114,6 @@ const GlobalCalculator = () => {
           </select>
         </div>
 
-        {/* Weight */}
         <div className="flex-1 min-w-[110px]">
           <label className="block text-xs font-bold text-muted-foreground uppercase mb-1.5">Cân nặng (KG)</label>
           <input
@@ -151,7 +126,6 @@ const GlobalCalculator = () => {
           />
         </div>
 
-        {/* Search Button */}
         <Button
           onClick={triggerSearch}
           className="bg-primary hover:bg-gold-dark text-primary-foreground font-extrabold px-6 lg:px-8 py-2.5 rounded-lg uppercase tracking-wide h-[42px]"
@@ -161,7 +135,6 @@ const GlobalCalculator = () => {
         </Button>
       </div>
 
-      {/* Quote Result */}
       {quoteResult && (
         <div className="px-4 lg:px-0 mt-4 mb-8 relative z-0 animate-fade-in">
           {quoteResult.error ? (
@@ -188,15 +161,11 @@ const GlobalCalculator = () => {
                 </p>
               </div>
               <div className="md:text-right flex flex-col items-center md:items-end bg-primary-foreground/10 px-8 py-5 rounded-xl border border-primary-foreground/20">
-                <p className="text-sm font-medium text-primary-foreground/80 uppercase tracking-widest mb-1">
-                  Cước Cơ Bản
-                </p>
+                <p className="text-sm font-medium text-primary-foreground/80 uppercase tracking-widest mb-1">Cước Cơ Bản</p>
                 <p className="text-4xl lg:text-5xl font-black text-primary drop-shadow-md">
                   {store.formatPrice(quoteResult.price!)}
                 </p>
-                <p className="text-xs text-primary-foreground/50 mt-2 italic">
-                  *Chưa tính phụ phí vùng sâu & VAT (nếu có)
-                </p>
+                <p className="text-xs text-primary-foreground/50 mt-2 italic">*Chưa tính phụ phí vùng sâu & VAT (nếu có)</p>
               </div>
             </div>
           )}
