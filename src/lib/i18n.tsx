@@ -8,6 +8,8 @@ const translations: Translations = {
   // Navbar
   "nav.services": { en: "Services", vi: "Dịch vụ", zh: "服务" },
   "nav.pricing": { en: "Pricing", vi: "Bảng giá", zh: "价格" },
+  "nav.intl_pricing": { en: "International Pricing", vi: "Bảng giá Quốc tế", zh: "国际运费" },
+  "nav.intl_pricing_desc": { en: "Transparent rates for VN/CN → US/UK/EU shipping", vi: "Cước phí minh bạch cho tuyến VN/CN → US/UK/EU", zh: "越南/中国到美国/英国/欧盟的透明运费" },
   "nav.policy": { en: "Policy", vi: "Chính sách", zh: "政策" },
   "nav.news": { en: "Blog", vi: "Tin tức", zh: "博客" },
   "nav.faq": { en: "Q&A", vi: "Q&A", zh: "问答" },
