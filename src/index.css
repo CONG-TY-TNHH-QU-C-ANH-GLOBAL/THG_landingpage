@@ -114,13 +114,13 @@
     height: 380px;
     border-radius: 50%;
     object-fit: cover;
-    animation: globe-spin 25s linear infinite;
-    filter: drop-shadow(0 0 60px hsl(36 45% 42% / 0.25)) drop-shadow(0 20px 40px hsl(220 40% 13% / 0.2));
+    animation: globe-spin 30s linear infinite;
+    filter: drop-shadow(0 0 60px hsl(36 45% 42% / 0.3)) drop-shadow(0 20px 40px hsl(220 40% 13% / 0.2));
   }
 
   @keyframes globe-spin {
-    from { transform: rotateY(0deg); }
-    to { transform: rotateY(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   .globe-orbit {
