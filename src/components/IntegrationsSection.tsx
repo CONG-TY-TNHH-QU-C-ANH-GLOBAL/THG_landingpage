@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import thgLogo from "@/assets/thg-logo.png";
 
 const platforms = [
   { name: "Etsy", icon: "🛍️", color: "bg-orange-50 border-orange-200" },
