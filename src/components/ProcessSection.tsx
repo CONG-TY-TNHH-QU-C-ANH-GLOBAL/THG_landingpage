@@ -1,31 +1,46 @@
-const steps = [
-  { step: "01", title: "Đăng ký & Tư vấn", desc: "Liên hệ đội ngũ THG để được tư vấn giải pháp phù hợp nhất." },
-  { step: "02", title: "Gửi hàng về kho", desc: "Gửi sản phẩm đến kho THG tại Việt Nam hoặc Trung Quốc." },
-  { step: "03", title: "Xử lý đơn hàng", desc: "Hệ thống tự động xử lý đơn, đóng gói và chuẩn bị giao hàng." },
-  { step: "04", title: "Giao hàng toàn cầu", desc: "Sản phẩm được vận chuyển đến tay khách hàng trên toàn thế giới." },
-];
+import { useI18n } from "@/lib/i18n";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const ProcessSection = () => {
-  return (
-    <section className="py-24 bg-navy text-primary-foreground">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <p className="text-sm font-medium text-gold-light uppercase tracking-widest mb-3">Quy trình</p>
-          <h2 className="text-4xl md:text-5xl font-serif">
-            Bắt đầu chỉ với <span className="text-gold-light italic">4 bước</span>
-          </h2>
-        </div>
+  const { t } = useI18n();
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+  const steps = [
+    { step: "01", titleKey: "process.s1_title", descKey: "process.s1_desc" },
+    { step: "02", titleKey: "process.s2_title", descKey: "process.s2_desc" },
+    { step: "03", titleKey: "process.s3_title", descKey: "process.s3_desc" },
+    { step: "04", titleKey: "process.s4_title", descKey: "process.s4_desc" },
+  ];
+
+  return (
+    <section className="py-28 bg-gradient-dark text-primary-foreground relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-light/30 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-light/30 to-transparent" />
+      <div className="absolute top-20 right-20 w-64 h-64 rounded-full bg-gold/5 blur-3xl" />
+
+      <div className="container mx-auto px-4 relative z-10">
+        <ScrollReveal>
+          <div className="text-center mb-20">
+            <p className="text-sm font-semibold text-gold-light uppercase tracking-[0.2em] mb-4">{t("process.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight">
+              {t("process.title")}{" "}
+              <span className="text-gold-light">{t("process.title_highlight")}</span>
+            </h2>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
           {steps.map((s, i) => (
-            <div key={s.step} className="relative">
-              <span className="text-6xl font-serif font-bold text-gold-light/20">{s.step}</span>
-              <h3 className="text-xl font-serif font-semibold mt-2 mb-3">{s.title}</h3>
-              <p className="text-sm text-primary-foreground/70 leading-relaxed">{s.desc}</p>
-              {i < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-8 -right-4 w-8 h-px bg-gold-light/30" />
-              )}
-            </div>
+            <ScrollReveal key={s.step} delay={i * 150}>
+              <div className="relative">
+                <span className="text-7xl font-bold text-gold-light/10 tracking-tighter">{s.step}</span>
+                <h3 className="text-xl font-bold mt-1 mb-3 tracking-tight">{t(s.titleKey)}</h3>
+                <p className="text-sm text-primary-foreground/60 leading-relaxed">{t(s.descKey)}</p>
+                {i < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-10 -right-5 w-10 h-px bg-gold-light/20" />
+                )}
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
