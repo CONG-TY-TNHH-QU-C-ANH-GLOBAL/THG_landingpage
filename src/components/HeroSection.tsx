@@ -69,7 +69,7 @@ const HeroSection = () => {
         </div>
 
         {/* Right - Real Globe Image with Rotation */}
-        <ScrollReveal direction="scale" delay={400} className="relative hidden lg:flex justify-center items-center min-h-[560px]">
+        <ScrollReveal direction="scale" delay={400} className="relative flex justify-center items-center min-h-[320px] md:min-h-[460px] lg:min-h-[560px]">
           <div className="relative">
             {/* Globe glow background */}
             <div className="absolute inset-0 flex items-center justify-center">
