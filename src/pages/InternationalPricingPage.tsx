@@ -9,7 +9,7 @@ import AlertBadge from "@/components/pricing/AlertBadge";
 import TooltipIcon from "@/components/pricing/TooltipIcon";
 import HighlightableTable from "@/components/pricing/HighlightableTable";
 import BulkTable from "@/components/pricing/BulkTable";
-import { usePricingStore } from "@/stores/usePricingStore";
+import { usePricingStore, PricingProvider } from "@/stores/usePricingStore";
 import {
   vnStandard, vnCosmetics, cnStandard, cnCosmetics,
   tiktokVN_UK, tiktokCN, bulkVN, bulkCN, countryNames,
@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
-const InternationalPricingPage = () => {
+const PricingContent = () => {
   const store = usePricingStore();
 
   const standardData = useMemo(() => {
@@ -148,9 +148,7 @@ const InternationalPricingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
+    <>
       {/* Hero */}
       <section className="pt-28 lg:pt-36 pb-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero" />
@@ -183,10 +181,18 @@ const InternationalPricingPage = () => {
         <TabNavigation />
         <div className="space-y-6 py-6">{renderTabContent()}</div>
       </div>
-
-      <Footer />
-    </div>
+    </>
   );
 };
+
+const InternationalPricingPage = () => (
+  <div className="min-h-screen bg-background">
+    <Navbar />
+    <PricingProvider>
+      <PricingContent />
+    </PricingProvider>
+    <Footer />
+  </div>
+);
 
 export default InternationalPricingPage;
