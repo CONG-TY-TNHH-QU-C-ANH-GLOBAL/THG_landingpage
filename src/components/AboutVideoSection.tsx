@@ -39,15 +39,11 @@ const AboutVideoSection = () => {
             >
               <iframe
                 className="w-full h-full absolute inset-0"
-                src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                src="https://www.youtube.com/embed/Cvj8kqFMLfk?autoplay=1&mute=1&loop=1&playlist=Cvj8kqFMLfk"
                 title="THG Fulfill Introduction"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-navy/80 text-primary-foreground pointer-events-none">
-                <Play className="w-14 h-14 mb-3 opacity-60" />
-                <p className="text-sm opacity-60">{t("about.video_placeholder")}</p>
-              </div>
             </div>
           </ScrollReveal>
 

@@ -112,7 +112,7 @@ const DomesticPricingContent = () => {
 
                         {/* Table */}
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
+                            <table className="w-full text-sm min-w-[500px] whitespace-nowrap">
                                 <thead>
                                     <tr className="bg-navy text-white">
                                         <th className="px-4 py-3 text-left font-semibold w-16">#</th>

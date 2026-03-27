@@ -28,7 +28,7 @@ const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
 
   return (
     <div className="overflow-x-auto relative">
-      <table className="w-full text-left text-sm whitespace-nowrap">
+      <table className="w-full text-left text-sm whitespace-nowrap min-w-[700px]">
         <thead className="bg-navy text-primary-foreground uppercase text-xs">
           <tr>
             <th className="px-4 py-3 border-r border-primary-foreground/10 sticky left-0 bg-navy z-10">Cân nặng</th>

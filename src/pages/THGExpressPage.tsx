@@ -83,7 +83,7 @@ const StatCounter = ({ value, suffix, label }: { value: number; suffix: string; 
       <p className="text-4xl sm:text-5xl font-bold text-gradient-gold tabular-nums">
         {count}<span className="text-2xl sm:text-3xl">{suffix}</span>
       </p>
-      <p className="text-[10px] uppercase tracking-[0.25em] text-white/40 mt-2 font-medium">{label}</p>
+      <p className="text-[10px] uppercase tracking-[0.25em] text-foreground/40 mt-2 font-medium">{label}</p>
     </div>
   );
 };
@@ -120,18 +120,18 @@ const THGExpressPage = () => {
       {/* ══════════════════════════════════════════════════════════
           MEGA HERO — Immersive multi-panel: text + images + video
           ══════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[hsl(var(--navy))]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(36_30%_96%)] via-[hsl(36_25%_93%)] to-[hsl(36_20%_90%)]">
         {/* ── BG texture layers ── */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`, backgroundSize: "32px 32px" }} />
+        <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(36 45% 65%) 1px, transparent 0)`, backgroundSize: "32px 32px" }} />
         <div className="absolute inset-0 shimmer-effect opacity-10 pointer-events-none" />
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))] to-transparent opacity-60" />
-        <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-[hsl(var(--gold))]/5 rounded-full blur-[150px]" />
-        <div className="absolute bottom-[10%] left-0 w-[400px] h-[400px] bg-[hsl(var(--gold))]/3 rounded-full blur-[120px]" />
-        
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))] to-transparent opacity-40" />
+        <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-[hsl(var(--gold))]/8 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[10%] left-0 w-[400px] h-[400px] bg-[hsl(var(--gold))]/5 rounded-full blur-[120px]" />
+
         {/* Floating particles */}
-        <div className="absolute top-24 left-[12%] w-2 h-2 bg-[hsl(var(--gold-light))]/20 rounded-full animate-pulse" />
-        <div className="absolute top-48 right-[18%] w-3 h-3 bg-[hsl(var(--gold-light))]/12 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-40 left-[30%] w-1.5 h-1.5 bg-[hsl(var(--gold-light))]/25 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
+        <div className="absolute top-24 left-[12%] w-2 h-2 bg-[hsl(var(--gold))]/25 rounded-full animate-pulse" />
+        <div className="absolute top-48 right-[18%] w-3 h-3 bg-[hsl(var(--gold))]/15 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute bottom-40 left-[30%] w-1.5 h-1.5 bg-[hsl(var(--gold))]/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
 
         {/* ── Panel 1: Title + Image Bento ── */}
         <div className="container mx-auto px-4 relative z-10 pt-32 pb-12">
@@ -140,14 +140,14 @@ const THGExpressPage = () => {
             {/* Left — Text */}
             <div>
               <ScrollReveal direction="scale">
-                <div className="inline-flex items-center gap-2.5 glass-card glow-pulse rounded-full px-5 py-2.5 mb-8 bg-[hsl(var(--gold))]/5 border-[hsl(var(--gold-light))]/20">
-                  <Sparkles className="w-4 h-4 text-[hsl(var(--gold-light))]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold-light))]">THG Express</span>
+                <div className="inline-flex items-center gap-2.5 glass-card glow-pulse rounded-full px-5 py-2.5 mb-8 bg-[hsl(var(--gold))]/10 border-[hsl(var(--gold))]/25">
+                  <Sparkles className="w-4 h-4 text-[hsl(var(--gold))]" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]">THG Express</span>
                 </div>
               </ScrollReveal>
 
               <ScrollReveal delay={100}>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold tracking-tight text-white leading-[1.08] mb-6">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold tracking-tight text-navy leading-[1.08] mb-6">
                   {t("express_page.hero_title1")}
                   <br />
                   <span className="text-gradient-gold">{t("express_page.hero_title_highlight")}</span>
@@ -155,7 +155,7 @@ const THGExpressPage = () => {
               </ScrollReveal>
 
               <ScrollReveal delay={200}>
-                <p className="text-base sm:text-lg text-white/50 max-w-xl leading-relaxed mb-8 font-light">
+                <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed mb-8 font-light">
                   {t("express_page.hero_subtitle")}
                 </p>
               </ScrollReveal>
@@ -165,8 +165,8 @@ const THGExpressPage = () => {
                 <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-10 max-w-md">
                   {features.map((f, i) => (
                     <div key={i} className="flex items-center gap-2.5 group">
-                      <CheckCircle2 className="w-4 h-4 text-[hsl(var(--gold-light))] flex-shrink-0 group-hover:scale-110 transition-transform" />
-                      <span className="text-sm text-white/55 group-hover:text-white/80 transition-colors">{t(f.titleKey)}</span>
+                      <CheckCircle2 className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="text-sm text-foreground/60 group-hover:text-foreground/90 transition-colors">{t(f.titleKey)}</span>
                     </div>
                   ))}
                 </div>
@@ -174,8 +174,8 @@ const THGExpressPage = () => {
 
               {/* Tracking Widget */}
               <ScrollReveal delay={400} direction="left">
-                <div className="max-w-md glass-card rounded-2xl p-5 bg-white/[0.04] border-white/10 shadow-[0_24px_48px_rgba(0,0,0,0.4)]">
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-[hsl(var(--gold-light))] mb-3 flex items-center gap-2">
+                <div className="max-w-md glass-card rounded-2xl p-5 bg-white/70 border-[hsl(var(--gold))]/15 shadow-[0_24px_48px_rgba(0,0,0,0.08)]">
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-[hsl(var(--gold))] mb-3 flex items-center gap-2">
                     <Search className="w-3.5 h-3.5" />
                     {t("express_page.track_title")}
                   </h3>
@@ -185,7 +185,7 @@ const THGExpressPage = () => {
                       value={trackingCode}
                       onChange={(e) => setTrackingCode(e.target.value)}
                       placeholder={t("express_page.track_placeholder")}
-                      className="flex-1 px-4 py-3 rounded-xl bg-white/8 border border-white/12 text-white placeholder:text-white/25 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--gold))]/30 focus:border-[hsl(var(--gold-light))]/40 transition-all backdrop-blur-sm"
+                      className="flex-1 px-4 py-3 rounded-xl bg-background/80 border border-border text-foreground placeholder:text-muted-foreground/50 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--gold))]/30 focus:border-[hsl(var(--gold))]/40 transition-all backdrop-blur-sm"
                       onKeyDown={(e) => e.key === "Enter" && handleTrack()}
                     />
                     <Button
@@ -203,7 +203,7 @@ const THGExpressPage = () => {
             <ScrollReveal delay={200} direction="right">
               <div className="grid grid-cols-12 grid-rows-2 gap-3 max-w-lg mx-auto lg:mx-0 h-[400px]">
                 {/* Large main image */}
-                <div className="col-span-7 row-span-2 rounded-2xl overflow-hidden border border-white/10 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
+                <div className="col-span-7 row-span-2 rounded-2xl overflow-hidden border border-border/40 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
                   <img
                     src={warehousePhotos[0].src}
                     alt={warehousePhotos[0].alt}
@@ -212,7 +212,7 @@ const THGExpressPage = () => {
                   />
                 </div>
                 {/* Top-right */}
-                <div className="col-span-5 rounded-2xl overflow-hidden border border-white/10 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
+                <div className="col-span-5 rounded-2xl overflow-hidden border border-border/40 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
                   <img
                     src={warehousePhotos[1].src}
                     alt={warehousePhotos[1].alt}
@@ -221,7 +221,7 @@ const THGExpressPage = () => {
                   />
                 </div>
                 {/* Bottom-right */}
-                <div className="col-span-5 rounded-2xl overflow-hidden border border-white/10 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group relative">
+                <div className="col-span-5 rounded-2xl overflow-hidden border border-border/40 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group relative">
                   <img
                     src={warehousePhotos[2].src}
                     alt={warehousePhotos[2].alt}
@@ -229,8 +229,8 @@ const THGExpressPage = () => {
                     loading="eager"
                   />
                   {/* Overlay badge */}
-                  <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/10 backdrop-blur-md border-white/15">
-                    <p className="text-[10px] font-bold text-white uppercase tracking-wider text-center">4 Kho tại Mỹ</p>
+                  <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/80 backdrop-blur-md border-border/30">
+                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center">4 Kho tại Mỹ</p>
                   </div>
                 </div>
               </div>
@@ -240,7 +240,7 @@ const THGExpressPage = () => {
 
         {/* ── Panel 2: Animated Stats ── */}
         <div className="container mx-auto px-4 relative z-10 py-10">
-          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent mb-10" />
+          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mb-10" />
           <ScrollReveal delay={100}>
             <div className="flex flex-wrap justify-center gap-12 sm:gap-20">
               <StatCounter value={5} suffix=" days" label="Air Express" />
@@ -249,13 +249,13 @@ const THGExpressPage = () => {
               <StatCounter value={4} suffix="" label="US Warehouses" />
             </div>
           </ScrollReveal>
-          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent mt-10" />
+          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mt-10" />
         </div>
 
         {/* ── Panel 3: Video Shorts ── */}
         <div className="container mx-auto px-4 relative z-10 py-10">
           <ScrollReveal>
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold-light))]/50 text-center mb-8">Behind the scenes</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]/60 text-center mb-8">Behind the scenes</p>
           </ScrollReveal>
           <div className="flex justify-center gap-4 md:gap-6 flex-wrap">
             {[
@@ -264,7 +264,7 @@ const THGExpressPage = () => {
               { id: "KDq7-tEikgg", title: "Scale of THG Express" },
             ].map((vid, i) => (
               <ScrollReveal key={vid.id} delay={i * 150} direction={i === 0 ? "left" : i === 2 ? "right" : "up"}>
-                <div className={`w-[200px] md:w-[240px] rounded-2xl overflow-hidden tilt-card border border-white/10 shadow-[var(--shadow-3d)] ${i === 1 ? "hidden sm:block" : ""} ${i === 2 ? "hidden lg:block" : ""}`}>
+                <div className={`w-[200px] md:w-[240px] rounded-2xl overflow-hidden tilt-card border border-border/40 shadow-[var(--shadow-3d)] ${i === 1 ? "hidden sm:block" : ""} ${i === 2 ? "hidden lg:block" : ""}`}>
                   <YouTubeEmbed videoId={vid.id} title={vid.title} aspectRatio="315/560" />
                 </div>
               </ScrollReveal>
@@ -276,8 +276,8 @@ const THGExpressPage = () => {
         <div className="container mx-auto px-4 relative z-10 pb-24 pt-12">
           <ScrollReveal direction="scale">
             <div className="max-w-4xl mx-auto relative">
-              <div className="absolute -inset-4 bg-gradient-to-br from-[hsl(var(--gold))]/8 to-transparent rounded-[2rem] blur-xl" />
-              <div className="relative rounded-3xl overflow-hidden shadow-[var(--shadow-3d-hover)] border border-white/10">
+              <div className="absolute -inset-4 bg-gradient-to-br from-[hsl(var(--gold))]/12 to-transparent rounded-[2rem] blur-xl" />
+              <div className="relative rounded-3xl overflow-hidden shadow-[var(--shadow-3d-hover)] border border-border/40">
                 <YouTubeEmbed videoId="AaZJmRFfiqM" title="Quy trình vận hành kho bãi THG" autoplay muted loop controls={false} />
               </div>
             </div>
@@ -285,7 +285,7 @@ const THGExpressPage = () => {
         </div>
 
         {/* Bottom gradient fade to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(var(--background))] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-card to-transparent" />
       </section>
 
       {/* ════════════════════ FEATURES ════════════════════ */}
@@ -379,15 +379,13 @@ const THGExpressPage = () => {
               <ScrollReveal key={l.num} delay={i * 120} direction={i % 2 === 0 ? "left" : "right"}>
                 <Link
                   to={l.link}
-                  className={`group flex items-center gap-5 p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 hover:-translate-y-2 ${
-                    l.special
+                  className={`group flex items-center gap-5 p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 hover:-translate-y-2 ${l.special
                       ? "border-pink-500/25 bg-pink-500/[0.04] hover:border-pink-400/50 hover:bg-pink-500/[0.08] hover:shadow-[0_20px_50px_rgba(236,72,153,0.15)]"
                       : "border-white/8 bg-white/[0.02] hover:border-[hsl(var(--gold-light))]/25 hover:bg-white/[0.05] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
-                  }`}
+                    }`}
                 >
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0 transition-all duration-500 group-hover:scale-110 ${
-                    l.special ? "bg-pink-500/10 border border-pink-500/20 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]" : "bg-white/5 border border-white/10 group-hover:shadow-[var(--shadow-glow)]"
-                  }`}>
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0 transition-all duration-500 group-hover:scale-110 ${l.special ? "bg-pink-500/10 border border-pink-500/20 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]" : "bg-white/5 border border-white/10 group-hover:shadow-[var(--shadow-glow)]"
+                    }`}>
                     {l.flags.split(" → ")[0]}
                   </div>
                   <div className="flex-1 min-w-0">

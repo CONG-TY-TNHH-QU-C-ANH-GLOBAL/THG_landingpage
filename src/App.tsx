@@ -1,18 +1,20 @@
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
-import Index from "./pages/Index";
-import PolicyPage from "./pages/PolicyPage";
-import BlogPage from "./pages/BlogPage";
-import THGFulfillPage from "./pages/THGFulfillPage";
-import THGExpressPage from "./pages/THGExpressPage";
-import THGWarehousePage from "./pages/THGWarehousePage";
-import THGOrderPage from "./pages/THGOrderPage";
-import NotFound from "./pages/NotFound";
-import InternationalPricingPage from "./pages/InternationalPricingPage";
-import DomesticPricingPage from "./pages/DomesticPricingPage";
+
+const Index = lazy(() => import("./pages/Index"));
+const PolicyPage = lazy(() => import("./pages/PolicyPage"));
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const THGFulfillPage = lazy(() => import("./pages/THGFulfillPage"));
+const THGExpressPage = lazy(() => import("./pages/THGExpressPage"));
+const THGWarehousePage = lazy(() => import("./pages/THGWarehousePage"));
+const THGOrderPage = lazy(() => import("./pages/THGOrderPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const InternationalPricingPage = lazy(() => import("./pages/InternationalPricingPage"));
+const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
 
 const App = () => (
   <I18nProvider>
@@ -20,18 +22,20 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/chinh-sach" element={<PolicyPage />} />
-          <Route path="/tin-tuc" element={<BlogPage />} />
-          <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
-          <Route path="/bang-gia-noi-dia" element={<DomesticPricingPage />} />
-          <Route path="/thg-fulfill" element={<THGFulfillPage />} />
-          <Route path="/thg-express" element={<THGExpressPage />} />
-          <Route path="/thg-warehouse" element={<THGWarehousePage />} />
-          <Route path="/thg-order" element={<THGOrderPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/chinh-sach" element={<PolicyPage />} />
+            <Route path="/tin-tuc" element={<BlogPage />} />
+            <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
+            <Route path="/bang-gia-noi-dia" element={<DomesticPricingPage />} />
+            <Route path="/thg-fulfill" element={<THGFulfillPage />} />
+            <Route path="/thg-express" element={<THGExpressPage />} />
+            <Route path="/thg-warehouse" element={<THGWarehousePage />} />
+            <Route path="/thg-order" element={<THGOrderPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </I18nProvider>

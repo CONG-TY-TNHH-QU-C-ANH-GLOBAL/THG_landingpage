@@ -36,51 +36,68 @@ const THGOrderPage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero - Dark theme like the reference */}
-      <section className="pt-28 pb-20 bg-gradient-dark relative overflow-hidden text-primary-foreground">
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(0 0% 100%) 1px, transparent 0)`,
-          backgroundSize: "32px 32px",
-        }} />
+      {/* ══════════════════════════════════════════════════════════
+          MEGA HERO — Gold Luxury Theme
+          ══════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(36_30%_96%)] via-[hsl(36_25%_93%)] to-[hsl(36_20%_90%)] pt-32 pb-24">
+        {/* ── BG texture layers ── */}
+        <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(36 45% 65%) 1px, transparent 0)`, backgroundSize: "32px 32px" }} />
+        <div className="absolute inset-0 shimmer-effect opacity-10 pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))] to-transparent opacity-40" />
+        <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-[hsl(var(--gold))]/8 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[10%] left-0 w-[400px] h-[400px] bg-[hsl(var(--gold))]/5 rounded-full blur-[120px]" />
+
+        {/* Floating particles */}
+        <div className="absolute top-24 left-[12%] w-2 h-2 bg-[hsl(var(--gold))]/25 rounded-full animate-pulse" />
+        <div className="absolute top-48 right-[18%] w-3 h-3 bg-[hsl(var(--gold))]/15 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute bottom-40 left-[30%] w-1.5 h-1.5 bg-[hsl(var(--gold))]/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
+
         <div className="container mx-auto px-4 text-center relative z-10">
-          <ScrollReveal>
-            <div className="inline-flex items-center gap-3 rounded-full px-5 py-2 text-sm border border-primary-foreground/10 mb-8 bg-primary-foreground/5">
-              <span>🇨🇳 Taobao · 1688 · Pinduoduo</span>
-              <span className="text-primary-foreground/30">|</span>
-              <span>✈️ Direct to USA</span>
+          <ScrollReveal direction="scale">
+            <div className="inline-flex items-center gap-3 rounded-full px-5 py-2 text-sm border border-[hsl(var(--gold))]/25 mb-8 bg-[hsl(var(--gold))]/10 shadow-[0_4px_12px_rgba(216,180,111,0.15)] glow-pulse">
+              <span className="font-medium text-navy">🇨🇳 Taobao · 1688 · Pinduoduo</span>
+              <span className="text-[hsl(var(--gold))]/50">|</span>
+              <span className="font-medium text-navy">✈️ Direct to USA</span>
             </div>
           </ScrollReveal>
+
           <ScrollReveal delay={100}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-              {t("order_page.hero_title1")} <span className="italic text-gradient-gold">{t("order_page.hero_highlight")}</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-navy leading-[1.08] mb-6">
+              {t("order_page.hero_title1")} <br className="hidden md:block" />
+              <span className="italic text-gradient-gold">{t("order_page.hero_highlight")}</span>
             </h1>
           </ScrollReveal>
+
           <ScrollReveal delay={200}>
-            <p className="text-lg text-primary-foreground/60 max-w-2xl mx-auto mb-10">{t("order_page.hero_desc")}</p>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 font-light leading-relaxed">{t("order_page.hero_desc")}</p>
           </ScrollReveal>
+
           <ScrollReveal delay={300}>
-            <div className="flex justify-center gap-4">
-              <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
+            <div className="flex justify-center gap-4 flex-wrap">
+              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-8 py-6 text-base gap-2 shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:-translate-y-1">
                 🚀 {t("order_page.hero_cta")}
               </Button>
-              <Button variant="outline" className="rounded-full px-8 py-6 text-base border-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/10">
-                {t("order_page.hero_cta2")} →
+              <Button variant="outline" className="rounded-full px-8 py-6 text-base border-[hsl(var(--gold))]/40 text-navy hover:bg-[hsl(var(--gold))]/10 transition-all duration-300 font-semibold">
+                {t("order_page.hero_cta2")} <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
           </ScrollReveal>
 
           {/* Stats */}
           <ScrollReveal delay={400}>
-            <div className="flex flex-wrap justify-center gap-6 mt-14 border border-primary-foreground/10 rounded-2xl p-6 max-w-3xl mx-auto bg-primary-foreground/5">
+            <div className="flex flex-wrap justify-center gap-8 mt-16 glass-card border border-border/40 rounded-3xl p-8 max-w-4xl mx-auto bg-white/60 shadow-[var(--shadow-3d)]">
               {stats.map((s, i) => (
-                <div key={i} className="text-center px-4">
-                  <p className="text-2xl font-bold text-gradient-gold">{s.val}</p>
-                  <p className="text-xs text-primary-foreground/50 mt-1">{t(s.labelKey)}</p>
+                <div key={i} className="text-center px-6">
+                  <p className="text-3xl font-bold text-gradient-gold tabular-nums">{s.val}</p>
+                  <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-foreground/40 mt-2">{t(s.labelKey)}</p>
                 </div>
               ))}
             </div>
           </ScrollReveal>
         </div>
+
+        {/* Bottom gradient fade to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-card to-transparent" />
       </section>
 
       {/* Pain Points */}
