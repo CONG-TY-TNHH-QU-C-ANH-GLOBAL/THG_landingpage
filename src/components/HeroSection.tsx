@@ -20,7 +20,7 @@ const HeroSection = () => {
       />
 
       <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center relative z-10">
-        <div className="space-y-6 md:space-y-8">
+        <div className="space-y-6 md:space-y-8 text-center lg:text-left">
           <ScrollReveal delay={100}>
             <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse flex-shrink-0" />
@@ -31,7 +31,7 @@ const HeroSection = () => {
           </ScrollReveal>
 
           <ScrollReveal delay={200}>
-            <h1 className="text-[3.2rem] sm:text-5xl md:text-6xl lg:text-[4.2rem] font-bold leading-[0.95] md:leading-[1.02] lg:leading-[1.08] text-navy tracking-tight max-w-[10ch] sm:max-w-[11ch] md:max-w-none break-words">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-[4.2rem] font-bold leading-[1.1] text-navy tracking-tight mx-auto lg:mx-0">
               {t("hero.title1")}{" "}
               <span className="text-gradient-gold">{t("hero.title_highlight")}</span>{" "}
               {t("hero.title2")}{" "}
@@ -40,13 +40,13 @@ const HeroSection = () => {
           </ScrollReveal>
 
           <ScrollReveal delay={300}>
-            <p className="text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed pr-2 md:pr-0">
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto lg:mx-0">
               {t("hero.subtitle")}
             </p>
           </ScrollReveal>
 
           <ScrollReveal delay={400}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-sm sm:max-w-none mx-auto lg:mx-0">
               {features.map((f, i) => (
                 <div key={i} className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
@@ -57,13 +57,13 @@ const HeroSection = () => {
           </ScrollReveal>
 
           <ScrollReveal delay={500}>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
-              <Button className="w-full sm:w-auto bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:justify-center lg:justify-start">
+              <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
                 {t("hero.cta")} <ArrowRight className="w-4 h-4" />
               </Button>
               <Button
                 variant="outline"
-                className="w-full sm:w-auto rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 transition-all duration-300"
+                className="rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 transition-all duration-300"
               >
                 {t("hero.learn_more")}
               </Button>
