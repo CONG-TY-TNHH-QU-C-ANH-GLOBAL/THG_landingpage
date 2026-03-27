@@ -44,7 +44,14 @@ const sliderImages = [
   "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_7181-20250801190217-bvrod.jpg",
 ];
 
-/* ─── Animated counter hook ─── */
+const warehousePhotos = [
+  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg", alt: "THG US Warehouse" },
+  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg", alt: "THG Packing Station" },
+  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg", alt: "THG Logistics" },
+  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg", alt: "THG Sorting Area" },
+];
+
+/* ─── Animated counter ─── */
 const useCounter = (end: number, duration = 2000) => {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -110,127 +117,180 @@ const THGExpressPage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* ════════════════════ HERO ════════════════════ */}
-      <section className="relative min-h-[92vh] flex items-center overflow-hidden">
-        {/* BG image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center scale-105"
-          style={{
-            backgroundImage: "url('https://w.ladicdn.com/s1440x957/67e69e24e8a7ba001127c80a/x1ws5joh20250728082550.jpg')",
-            animation: "heroZoom 20s ease-in-out infinite alternate",
-          }}
-        />
-        {/* Dark overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(var(--navy))]/85 via-[hsl(var(--navy))]/65 to-[hsl(var(--navy))]/95" />
-        
-        {/* Dot grid pattern — like homepage */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`,
-            backgroundSize: "32px 32px",
-          }}
-        />
-        
-        {/* Shimmer sweep */}
+      {/* ══════════════════════════════════════════════════════════
+          MEGA HERO — Immersive multi-panel: text + images + video
+          ══════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden bg-[hsl(var(--navy))]">
+        {/* ── BG texture layers ── */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`, backgroundSize: "32px 32px" }} />
         <div className="absolute inset-0 shimmer-effect opacity-10 pointer-events-none" />
-
-        {/* Top gold line */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))] to-transparent opacity-60" />
-
+        <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-[hsl(var(--gold))]/5 rounded-full blur-[150px]" />
+        <div className="absolute bottom-[10%] left-0 w-[400px] h-[400px] bg-[hsl(var(--gold))]/3 rounded-full blur-[120px]" />
+        
         {/* Floating particles */}
-        <div className="absolute top-20 left-[15%] w-2 h-2 bg-[hsl(var(--gold-light))]/20 rounded-full animate-pulse" />
-        <div className="absolute top-40 right-[20%] w-3 h-3 bg-[hsl(var(--gold-light))]/15 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-32 left-[25%] w-1.5 h-1.5 bg-[hsl(var(--gold-light))]/25 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
+        <div className="absolute top-24 left-[12%] w-2 h-2 bg-[hsl(var(--gold-light))]/20 rounded-full animate-pulse" />
+        <div className="absolute top-48 right-[18%] w-3 h-3 bg-[hsl(var(--gold-light))]/12 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute bottom-40 left-[30%] w-1.5 h-1.5 bg-[hsl(var(--gold-light))]/25 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
 
-        <div className="container mx-auto px-4 relative z-10 py-32">
-          <div className="max-w-3xl">
-            <ScrollReveal direction="scale">
-              <div className="inline-flex items-center gap-2.5 glass-card glow-pulse rounded-full px-5 py-2.5 mb-8 bg-[hsl(var(--gold))]/5 border-[hsl(var(--gold-light))]/20">
-                <Sparkles className="w-4 h-4 text-[hsl(var(--gold-light))]" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold-light))]">THG Express</span>
-              </div>
-            </ScrollReveal>
+        {/* ── Panel 1: Title + Image Bento ── */}
+        <div className="container mx-auto px-4 relative z-10 pt-32 pb-12">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-            <ScrollReveal delay={150}>
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08] mb-6">
-                {t("express_page.hero_title1")}
-                <br />
-                <span className="text-gradient-gold">{t("express_page.hero_title_highlight")}</span>
-              </h1>
-            </ScrollReveal>
+            {/* Left — Text */}
+            <div>
+              <ScrollReveal direction="scale">
+                <div className="inline-flex items-center gap-2.5 glass-card glow-pulse rounded-full px-5 py-2.5 mb-8 bg-[hsl(var(--gold))]/5 border-[hsl(var(--gold-light))]/20">
+                  <Sparkles className="w-4 h-4 text-[hsl(var(--gold-light))]" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold-light))]">THG Express</span>
+                </div>
+              </ScrollReveal>
 
-            <ScrollReveal delay={250}>
-              <p className="text-base sm:text-lg text-white/55 max-w-xl leading-relaxed mb-10 font-light">
-                {t("express_page.hero_subtitle")}
-              </p>
-            </ScrollReveal>
+              <ScrollReveal delay={100}>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold tracking-tight text-white leading-[1.08] mb-6">
+                  {t("express_page.hero_title1")}
+                  <br />
+                  <span className="text-gradient-gold">{t("express_page.hero_title_highlight")}</span>
+                </h1>
+              </ScrollReveal>
 
-            {/* Tracking Widget — glass */}
-            <ScrollReveal delay={350} direction="left">
-              <div className="max-w-lg glass-card rounded-2xl p-6 bg-white/[0.04] border-white/10 shadow-[0_24px_48px_rgba(0,0,0,0.4)]">
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-[hsl(var(--gold-light))] mb-4 flex items-center gap-2">
-                  <Search className="w-3.5 h-3.5" />
-                  {t("express_page.track_title")}
-                </h3>
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    value={trackingCode}
-                    onChange={(e) => setTrackingCode(e.target.value)}
-                    placeholder={t("express_page.track_placeholder")}
-                    className="flex-1 px-4 py-3 rounded-xl bg-white/8 border border-white/12 text-white placeholder:text-white/25 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--gold))]/30 focus:border-[hsl(var(--gold-light))]/40 transition-all backdrop-blur-sm"
-                    onKeyDown={(e) => e.key === "Enter" && handleTrack()}
+              <ScrollReveal delay={200}>
+                <p className="text-base sm:text-lg text-white/50 max-w-xl leading-relaxed mb-8 font-light">
+                  {t("express_page.hero_subtitle")}
+                </p>
+              </ScrollReveal>
+
+              {/* Feature checklist */}
+              <ScrollReveal delay={300}>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-10 max-w-md">
+                  {features.map((f, i) => (
+                    <div key={i} className="flex items-center gap-2.5 group">
+                      <CheckCircle2 className="w-4 h-4 text-[hsl(var(--gold-light))] flex-shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="text-sm text-white/55 group-hover:text-white/80 transition-colors">{t(f.titleKey)}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollReveal>
+
+              {/* Tracking Widget */}
+              <ScrollReveal delay={400} direction="left">
+                <div className="max-w-md glass-card rounded-2xl p-5 bg-white/[0.04] border-white/10 shadow-[0_24px_48px_rgba(0,0,0,0.4)]">
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-[hsl(var(--gold-light))] mb-3 flex items-center gap-2">
+                    <Search className="w-3.5 h-3.5" />
+                    {t("express_page.track_title")}
+                  </h3>
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={trackingCode}
+                      onChange={(e) => setTrackingCode(e.target.value)}
+                      placeholder={t("express_page.track_placeholder")}
+                      className="flex-1 px-4 py-3 rounded-xl bg-white/8 border border-white/12 text-white placeholder:text-white/25 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--gold))]/30 focus:border-[hsl(var(--gold-light))]/40 transition-all backdrop-blur-sm"
+                      onKeyDown={(e) => e.key === "Enter" && handleTrack()}
+                    />
+                    <Button
+                      onClick={handleTrack}
+                      className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-xl px-6 font-semibold shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500"
+                    >
+                      {t("express_page.track_btn")}
+                    </Button>
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
+
+            {/* Right — Image Bento Grid */}
+            <ScrollReveal delay={200} direction="right">
+              <div className="grid grid-cols-12 grid-rows-2 gap-3 max-w-lg mx-auto lg:mx-0 h-[400px]">
+                {/* Large main image */}
+                <div className="col-span-7 row-span-2 rounded-2xl overflow-hidden border border-white/10 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
+                  <img
+                    src={warehousePhotos[0].src}
+                    alt={warehousePhotos[0].alt}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="eager"
                   />
-                  <Button
-                    onClick={handleTrack}
-                    className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-xl px-6 font-semibold shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500"
-                  >
-                    {t("express_page.track_btn")}
-                  </Button>
+                </div>
+                {/* Top-right */}
+                <div className="col-span-5 rounded-2xl overflow-hidden border border-white/10 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
+                  <img
+                    src={warehousePhotos[1].src}
+                    alt={warehousePhotos[1].alt}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="eager"
+                  />
+                </div>
+                {/* Bottom-right */}
+                <div className="col-span-5 rounded-2xl overflow-hidden border border-white/10 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group relative">
+                  <img
+                    src={warehousePhotos[2].src}
+                    alt={warehousePhotos[2].alt}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="eager"
+                  />
+                  {/* Overlay badge */}
+                  <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/10 backdrop-blur-md border-white/15">
+                    <p className="text-[10px] font-bold text-white uppercase tracking-wider text-center">4 Kho tại Mỹ</p>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
           </div>
+        </div>
 
-          {/* Animated stat counters */}
-          <ScrollReveal delay={500}>
-            <div className="mt-20 flex flex-wrap gap-12 sm:gap-20">
+        {/* ── Panel 2: Animated Stats ── */}
+        <div className="container mx-auto px-4 relative z-10 py-10">
+          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent mb-10" />
+          <ScrollReveal delay={100}>
+            <div className="flex flex-wrap justify-center gap-12 sm:gap-20">
               <StatCounter value={5} suffix=" days" label="Air Express" />
               <StatCounter value={20} suffix="+" label="Shipping routes" />
               <StatCounter value={99} suffix="%" label="On-time delivery" />
+              <StatCounter value={4} suffix="" label="US Warehouses" />
             </div>
           </ScrollReveal>
+          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent mt-10" />
         </div>
-      </section>
 
-      {/* ════════════════════ VIDEO SHORTS ════════════════════ */}
-      <section className="py-16 bg-background relative overflow-hidden">
-        {/* Blurred gradient overlap from hero */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[hsl(var(--navy))] to-transparent" />
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-[hsl(var(--gold))]/5 rounded-full blur-[80px]" />
-        
-        <div className="container mx-auto px-4 relative z-10 -mt-16">
-          <div className="flex justify-center gap-5 md:gap-8 flex-wrap">
+        {/* ── Panel 3: Video Shorts ── */}
+        <div className="container mx-auto px-4 relative z-10 py-10">
+          <ScrollReveal>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold-light))]/50 text-center mb-8">Behind the scenes</p>
+          </ScrollReveal>
+          <div className="flex justify-center gap-4 md:gap-6 flex-wrap">
             {[
               { id: "n5t6sHIKv4A", title: "THG Warehouse Ops" },
               { id: "ZgoqBsujyC0", title: "THG Shipping Facility" },
               { id: "KDq7-tEikgg", title: "Scale of THG Express" },
             ].map((vid, i) => (
               <ScrollReveal key={vid.id} delay={i * 150} direction={i === 0 ? "left" : i === 2 ? "right" : "up"}>
-                <div className={`w-[220px] md:w-[260px] rounded-2xl overflow-hidden tilt-card border border-border/50 shadow-[var(--shadow-3d)] ${i === 1 ? "hidden sm:block" : ""} ${i === 2 ? "hidden lg:block" : ""}`}>
+                <div className={`w-[200px] md:w-[240px] rounded-2xl overflow-hidden tilt-card border border-white/10 shadow-[var(--shadow-3d)] ${i === 1 ? "hidden sm:block" : ""} ${i === 2 ? "hidden lg:block" : ""}`}>
                   <YouTubeEmbed videoId={vid.id} title={vid.title} aspectRatio="315/560" />
                 </div>
               </ScrollReveal>
             ))}
           </div>
         </div>
+
+        {/* ── Panel 4: Main Showcase Video ── */}
+        <div className="container mx-auto px-4 relative z-10 pb-24 pt-12">
+          <ScrollReveal direction="scale">
+            <div className="max-w-4xl mx-auto relative">
+              <div className="absolute -inset-4 bg-gradient-to-br from-[hsl(var(--gold))]/8 to-transparent rounded-[2rem] blur-xl" />
+              <div className="relative rounded-3xl overflow-hidden shadow-[var(--shadow-3d-hover)] border border-white/10">
+                <YouTubeEmbed videoId="AaZJmRFfiqM" title="Quy trình vận hành kho bãi THG" autoplay muted loop controls={false} />
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* Bottom gradient fade to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(var(--background))] to-transparent" />
       </section>
 
       {/* ════════════════════ FEATURES ════════════════════ */}
       <section className="py-28 bg-card relative overflow-hidden">
         <div className="section-divider absolute top-0 left-0 right-0" />
-        {/* Decorative blur orbs — like homepage */}
         <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/50 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-60 h-60 rounded-full bg-[hsl(var(--gold))]/5 blur-3xl" />
 
@@ -238,9 +298,7 @@ const THGExpressPage = () => {
           <ScrollReveal>
             <div className="text-center mb-20">
               <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("express_page.features_eyebrow")}</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">
-                {t("express_page.features_title")}
-              </h2>
+              <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">{t("express_page.features_title")}</h2>
               <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mt-6" />
             </div>
           </ScrollReveal>
@@ -249,9 +307,7 @@ const THGExpressPage = () => {
             {features.map((f, i) => (
               <ScrollReveal key={i} delay={i * 120} direction={i % 2 === 0 ? "rotate3d" : "up"}>
                 <div className="group tilt-card glass-card rounded-2xl p-8 text-center h-full relative overflow-hidden">
-                  {/* Hover glow layer */}
                   <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/3 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  
                   <div className="relative z-10">
                     <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-5 group-hover:shadow-[var(--shadow-glow)] transition-all duration-500 group-hover:scale-110">
                       <f.icon className="w-6 h-6 text-accent" />
@@ -266,31 +322,8 @@ const THGExpressPage = () => {
         </div>
       </section>
 
-      {/* ════════════════════ MAIN VIDEO ════════════════════ */}
-      <section className="py-20 bg-background relative">
-        <div className="section-divider absolute top-0 left-0 right-0" />
-        <div className="container mx-auto px-4">
-          <ScrollReveal direction="scale">
-            <div className="max-w-4xl mx-auto relative">
-              {/* Glow behind video */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-[hsl(var(--gold))]/10 to-transparent rounded-[2rem] blur-xl" />
-              <div className="relative rounded-3xl overflow-hidden shadow-[var(--shadow-3d-hover)] border border-border/30">
-                <YouTubeEmbed
-                  videoId="AaZJmRFfiqM"
-                  title="Quy trình vận hành kho bãi THG"
-                  autoplay
-                  muted
-                  loop
-                  controls={false}
-                />
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
       {/* ════════════════════ PROCESS — Timeline ════════════════════ */}
-      <section className="py-28 bg-card relative overflow-hidden">
+      <section className="py-28 bg-background relative overflow-hidden">
         <div className="section-divider absolute top-0 left-0 right-0" />
         <div className="absolute top-1/2 left-0 right-0 h-[1px] hidden lg:block bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2" />
         <div className="absolute -bottom-32 right-0 w-72 h-72 rounded-full bg-[hsl(var(--gold))]/5 blur-3xl" />
@@ -308,14 +341,10 @@ const THGExpressPage = () => {
             {processSteps.map((s, i) => (
               <ScrollReveal key={s.num} delay={i * 150} direction={i % 2 === 0 ? "left" : "right"}>
                 <div className="group glass-card rounded-2xl p-7 hover-lift h-full relative overflow-hidden">
-                  {/* Step number watermark */}
                   <span className="absolute -top-2 -right-1 text-6xl font-black text-accent/[0.06] select-none leading-none">{s.num}</span>
-                  
-                  {/* Animated step badge */}
                   <div className="absolute -top-3 -right-2 w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center glow-pulse">
                     <span className="text-xs font-bold text-accent">{s.num}</span>
                   </div>
-                  
                   <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5 group-hover:shadow-[var(--shadow-glow)] transition-all duration-500 group-hover:scale-110">
                     <s.icon className="w-5 h-5 text-accent" />
                   </div>
@@ -330,20 +359,9 @@ const THGExpressPage = () => {
 
       {/* ════════════════════ SHIPPING ROUTES ════════════════════ */}
       <section className="py-28 bg-gradient-dark relative overflow-hidden">
-        {/* Gold accent lines */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))]/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))]/20 to-transparent" />
-        
-        {/* Dot grid */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-        
-        {/* Glow orb */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`, backgroundSize: "40px 40px" }} />
         <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-[hsl(var(--gold))]/5 rounded-full blur-[100px]" />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -373,14 +391,10 @@ const THGExpressPage = () => {
                     {l.flags.split(" → ")[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className={`text-lg font-bold mb-1 ${l.special ? "text-pink-400" : "text-white"}`}>
-                      {t(l.routeKey)}
-                    </h4>
+                    <h4 className={`text-lg font-bold mb-1 ${l.special ? "text-pink-400" : "text-white"}`}>{t(l.routeKey)}</h4>
                     <p className="text-sm text-white/35">{t(l.typesKey)}</p>
                   </div>
-                  <ArrowRight className={`w-5 h-5 transition-all duration-300 group-hover:translate-x-1.5 ${
-                    l.special ? "text-pink-400/50 group-hover:text-pink-400" : "text-white/15 group-hover:text-[hsl(var(--gold-light))]"
-                  }`} />
+                  <ArrowRight className={`w-5 h-5 transition-all duration-300 group-hover:translate-x-1.5 ${l.special ? "text-pink-400/50 group-hover:text-pink-400" : "text-white/15 group-hover:text-[hsl(var(--gold-light))]"}`} />
                 </Link>
               </ScrollReveal>
             ))}
@@ -403,7 +417,6 @@ const THGExpressPage = () => {
       <section className="py-28 bg-card relative overflow-hidden">
         <div className="section-divider absolute top-0 left-0 right-0" />
         <div className="absolute -top-32 -left-32 w-64 h-64 rounded-full bg-secondary/40 blur-3xl" />
-
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
             <div className="text-center mb-16">
@@ -423,20 +436,8 @@ const THGExpressPage = () => {
       {/* ════════════════════ CTA ════════════════════ */}
       <section className="relative py-32 bg-gradient-dark overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))]/20 to-transparent" />
-        
-        {/* Radial glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[hsl(var(--gold))]/5 rounded-full blur-[120px]" />
-        
-        {/* Dot grid */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`,
-            backgroundSize: "32px 32px",
-          }}
-        />
-        
-        {/* Floating particles */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`, backgroundSize: "32px 32px" }} />
         <div className="absolute top-16 right-[15%] w-2 h-2 bg-[hsl(var(--gold-light))]/20 rounded-full animate-pulse" />
         <div className="absolute bottom-20 left-[18%] w-3 h-3 bg-[hsl(var(--gold-light))]/10 rounded-full animate-pulse" style={{ animationDelay: "0.7s" }} />
 
