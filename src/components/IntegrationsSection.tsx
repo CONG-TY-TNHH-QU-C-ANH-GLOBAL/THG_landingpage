@@ -68,8 +68,8 @@ const IntegrationsSection = () => {
                 ))}
               </div>
               <div className="glass-card rounded-2xl px-8 py-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">THG</span>
+                <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center overflow-hidden p-1.5">
+                  <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-navy">THG Fulfill OMS</p>
