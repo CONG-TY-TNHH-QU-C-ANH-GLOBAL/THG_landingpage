@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart } from "lucide-react";
+import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -13,14 +13,21 @@ const serviceItems = [
   { icon: ShoppingCart, titleKey: "nav.thg_order", descKey: "nav.order_desc", href: "/thg-order" },
 ];
 
+const pricingItems = [
+  { icon: Globe, titleKey: "nav.intl_pricing", descKey: "nav.intl_pricing_desc", href: "/bang-gia-quoc-te" },
+];
+
 const Navbar = () => {
   const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [showServices, setShowServices] = useState(false);
+  const [showPricing, setShowPricing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pricingDropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const pricingTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -30,6 +37,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setShowServices(false);
+    setShowPricing(false);
     setIsOpen(false);
   }, [location.pathname]);
 
@@ -37,13 +45,18 @@ const Navbar = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setShowServices(true);
   };
-
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => setShowServices(false), 150);
   };
+  const handlePricingEnter = () => {
+    if (pricingTimeoutRef.current) clearTimeout(pricingTimeoutRef.current);
+    setShowPricing(true);
+  };
+  const handlePricingLeave = () => {
+    pricingTimeoutRef.current = setTimeout(() => setShowPricing(false), 150);
+  };
 
   const navItems = [
-    { label: t("nav.pricing"), href: "/bang-gia" },
     { label: t("nav.policy"), href: "/chinh-sach" },
     { label: t("nav.news"), href: "/tin-tuc" },
     { label: t("nav.faq"), href: "/#faq" },
@@ -68,6 +81,7 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-1">
+          {/* Services Dropdown */}
           <div
             ref={dropdownRef}
             className="relative"
@@ -91,6 +105,44 @@ const Navbar = () => {
                     to={item.href}
                     className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
                     onClick={() => setShowServices(false)}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
+                      <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{t(item.titleKey)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{t(item.descKey)}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing Dropdown */}
+          <div
+            ref={pricingDropdownRef}
+            className="relative"
+            onMouseEnter={handlePricingEnter}
+            onMouseLeave={handlePricingLeave}
+          >
+            <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50">
+              {t("nav.pricing")}
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showPricing ? "rotate-180" : ""}`} />
+            </button>
+
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-400 ${
+              showPricing ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
+            }`}
+              style={{ transitionTimingFunction: "var(--motion-spring)" }}
+            >
+              <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 w-[320px] space-y-1">
+                {pricingItems.map((item) => (
+                  <Link
+                    key={item.titleKey}
+                    to={item.href}
+                    className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
+                    onClick={() => setShowPricing(false)}
                   >
                     <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
                       <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
@@ -141,6 +193,19 @@ const Navbar = () => {
         <div className="lg:hidden bg-card/95 backdrop-blur-2xl border-t border-border/40 px-4 py-6 space-y-1 animate-fade-in shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.1)]">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2">{t("nav.services")}</p>
           {serviceItems.map((item) => (
+            <Link
+              key={item.titleKey}
+              to={item.href}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              <item.icon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">{t(item.titleKey)}</span>
+            </Link>
+          ))}
+          <div className="border-t border-border/50 my-3" />
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2">{t("nav.pricing")}</p>
+          {pricingItems.map((item) => (
             <Link
               key={item.titleKey}
               to={item.href}
