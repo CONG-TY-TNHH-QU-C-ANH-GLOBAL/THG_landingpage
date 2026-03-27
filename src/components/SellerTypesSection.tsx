@@ -13,8 +13,11 @@ const SellerTypesSection = () => {
   ];
 
   return (
-    <section className="py-28">
-      <div className="container mx-auto px-4">
+    <section className="py-28 relative overflow-hidden">
+      <div className="section-divider absolute top-0 left-0 right-0" />
+      <div className="absolute -top-20 right-0 w-72 h-72 rounded-full bg-primary/5 blur-3xl" />
+
+      <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-20">
             <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("sellers.subtitle")}</p>
@@ -28,8 +31,8 @@ const SellerTypesSection = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           {types.map((item, i) => (
             <ScrollReveal key={item.titleKey} delay={i * 120}>
-              <div className="text-center p-8 rounded-2xl bg-card border border-border/60 hover-lift cursor-pointer h-full">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-secondary flex items-center justify-center">
+              <div className="text-center p-8 rounded-2xl bg-card border border-border/60 tilt-card cursor-pointer h-full">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-secondary flex items-center justify-center group-hover:scale-110 transition-all duration-300">
                   <item.icon className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-lg font-bold text-navy mb-3 tracking-tight">{t(item.titleKey)}</h3>

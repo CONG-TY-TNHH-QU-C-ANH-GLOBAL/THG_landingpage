@@ -17,6 +17,10 @@ const ProcessSection = () => {
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-light/30 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-light/30 to-transparent" />
       <div className="absolute top-20 right-20 w-64 h-64 rounded-full bg-gold/5 blur-3xl" />
+      <div className="absolute bottom-20 left-20 w-48 h-48 rounded-full bg-accent/5 blur-3xl" />
+
+      {/* Shimmer overlay */}
+      <div className="absolute inset-0 shimmer-effect opacity-10 pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
@@ -32,8 +36,8 @@ const ProcessSection = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
           {steps.map((s, i) => (
             <ScrollReveal key={s.step} delay={i * 150}>
-              <div className="relative">
-                <span className="text-7xl font-bold text-gold-light/10 tracking-tighter">{s.step}</span>
+              <div className="relative group">
+                <span className="text-7xl font-bold text-gold-light/10 tracking-tighter group-hover:text-gold-light/20 transition-colors duration-500">{s.step}</span>
                 <h3 className="text-xl font-bold mt-1 mb-3 tracking-tight">{t(s.titleKey)}</h3>
                 <p className="text-sm text-primary-foreground/60 leading-relaxed">{t(s.descKey)}</p>
                 {i < steps.length - 1 && (

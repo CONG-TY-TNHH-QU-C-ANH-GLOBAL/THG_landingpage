@@ -8,12 +8,14 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-dark text-primary-foreground py-20 relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-light/20 to-transparent" />
+      <div className="absolute top-10 right-10 w-48 h-48 rounded-full bg-gold/5 blur-3xl" />
+      <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full bg-accent/5 blur-3xl" />
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-5 gap-10 mb-14">
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center overflow-hidden p-1.5">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center overflow-hidden p-1.5 glow-pulse">
                 <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
               </div>
               <div>

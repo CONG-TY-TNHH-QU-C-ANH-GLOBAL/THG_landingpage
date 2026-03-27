@@ -16,7 +16,9 @@ const IntegrationsSection = () => {
 
   return (
     <section className="py-28 bg-card relative overflow-hidden">
+      <div className="section-divider absolute top-0 left-0 right-0" />
       <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full bg-accent/5 blur-3xl" />
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
@@ -36,12 +38,11 @@ const IntegrationsSection = () => {
           </p>
         </ScrollReveal>
 
-        {/* Sync visualization */}
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             {platforms.map((p, i) => (
               <ScrollReveal key={p.name} delay={i * 80}>
-                <div className={`rounded-2xl border ${p.color} p-6 flex flex-col items-center gap-3 hover-lift transition-all duration-300 group`}>
+                <div className={`rounded-2xl border ${p.color} p-6 flex flex-col items-center gap-3 tilt-card transition-all duration-300 group`}>
                   <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{p.icon}</span>
                   <span className="text-sm font-semibold text-navy">{p.name}</span>
                   <div className="flex items-center gap-2 mt-1">
@@ -55,19 +56,18 @@ const IntegrationsSection = () => {
             ))}
           </div>
 
-          {/* Center THG Hub */}
           <ScrollReveal delay={500}>
             <div className="mt-10 flex flex-col items-center">
               <div className="flex items-center gap-3 mb-3">
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="w-8 h-px bg-primary/30" />
                 ))}
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse glow-pulse" />
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="w-8 h-px bg-primary/30" />
                 ))}
               </div>
-              <div className="glass-card rounded-2xl px-8 py-4 flex items-center gap-3">
+              <div className="glass-card rounded-2xl px-8 py-4 flex items-center gap-3 glow-pulse">
                 <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center overflow-hidden p-1.5">
                   <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
                 </div>

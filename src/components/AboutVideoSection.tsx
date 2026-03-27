@@ -13,9 +13,12 @@ const AboutVideoSection = () => {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-background" id="about-thg">
-      <div className="container mx-auto px-4">
-        {/* Section header */}
+    <section className="py-16 md:py-24 bg-background relative overflow-hidden" id="about-thg">
+      <div className="section-divider absolute top-0 left-0 right-0" />
+      <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-accent/5 blur-3xl" />
+
+      <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-12 md:mb-16">
             <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">
@@ -30,8 +33,10 @@ const AboutVideoSection = () => {
 
         {/* Video + Text */}
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-14 items-center mb-16 md:mb-20">
-          <ScrollReveal delay={100}>
-            <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-video bg-navy/5">
+          <ScrollReveal delay={100} direction="rotate3d">
+            <div className="relative rounded-2xl overflow-hidden aspect-video bg-navy/5"
+              style={{ boxShadow: "var(--shadow-3d)" }}
+            >
               <iframe
                 className="w-full h-full absolute inset-0"
                 src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
@@ -39,7 +44,6 @@ const AboutVideoSection = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-              {/* Placeholder overlay – will disappear once a real video ID is set */}
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-navy/80 text-primary-foreground pointer-events-none">
                 <Play className="w-14 h-14 mb-3 opacity-60" />
                 <p className="text-sm opacity-60">{t("about.video_placeholder")}</p>
@@ -59,7 +63,7 @@ const AboutVideoSection = () => {
                 {highlights.map((item, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-3 glass-card rounded-xl px-4 py-3"
+                    className="flex items-center gap-3 glass-card rounded-xl px-4 py-3 hover:shadow-lg transition-all duration-300"
                   >
                     <item.icon className="w-5 h-5 text-accent flex-shrink-0" />
                     <span className="text-sm font-medium text-foreground/80">{item.label}</span>
@@ -85,8 +89,8 @@ const AboutVideoSection = () => {
             { emoji: "🚚", title: t("about.img4_title"), desc: t("about.img4_desc") },
           ].map((item, i) => (
             <ScrollReveal key={i} delay={100 + i * 80}>
-              <div className="glass-card rounded-2xl p-5 md:p-6 text-center hover-lift group">
-                <div className="text-4xl md:text-5xl mb-3 group-hover:scale-110 transition-transform">
+              <div className="glass-card rounded-2xl p-5 md:p-6 text-center tilt-card group">
+                <div className="text-4xl md:text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
                   {item.emoji}
                 </div>
                 <h4 className="font-semibold text-navy text-sm md:text-base mb-1">{item.title}</h4>
