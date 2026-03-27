@@ -74,9 +74,9 @@ const HeroSection = () => {
         <ScrollReveal
           direction="scale"
           delay={400}
-          className="relative flex justify-center items-center w-full max-w-[280px] sm:max-w-[360px] md:max-w-[460px] lg:max-w-none aspect-square mx-auto lg:mx-0 mt-4 lg:mt-0"
+          className="relative flex justify-center items-center w-full overflow-hidden mx-auto lg:mx-0 mt-2 lg:mt-0"
         >
-          <div className="relative w-full h-full flex items-center justify-center scale-[0.55] sm:scale-[0.65] md:scale-[0.8] lg:scale-100 origin-center">
+          <div className="relative flex items-center justify-center scale-[0.45] sm:scale-[0.6] md:scale-[0.75] lg:scale-100 origin-center -my-16 sm:-my-12 md:-my-8 lg:my-0">
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-[420px] h-[420px] rounded-full bg-primary/10 blur-[80px] animate-pulse" />
             </div>
