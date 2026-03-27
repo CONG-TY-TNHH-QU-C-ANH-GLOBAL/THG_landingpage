@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import { Link } from "react-router-dom";
+import thgLogo from "@/assets/thg-logo.png";
 
 const Footer = () => {
   const { t } = useI18n();
