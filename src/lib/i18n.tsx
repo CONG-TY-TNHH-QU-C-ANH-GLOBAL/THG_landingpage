@@ -124,7 +124,7 @@ const translations: Translations = {
   "faq.a5": { en: "Register an account, ship products to THG warehouse and start selling. THG team supports from A to Z.", vi: "Đăng ký tài khoản, gửi hàng về kho THG và bắt đầu bán. Đội ngũ THG hỗ trợ từ A-Z.", zh: "注册账户，将产品发送到THG仓库即可开始销售。THG团队全程支持。" },
 
   // Contact
-  "contact.subtitle": { en: "Contact Us", vi: "Liên hệ", zh: "联系我们" },
+  "contact.subtitle": { en: "Contact Us", vi: "Kết nối với THG", zh: "联系我们" },
   "contact.title": { en: "Start Your", vi: "Bắt đầu", zh: "开始您的" },
   "contact.title_highlight": { en: "Journey", vi: "hành trình", zh: "旅程" },
   "contact.title2": { en: "with THG", vi: "cùng THG", zh: "与THG" },
@@ -134,7 +134,13 @@ const translations: Translations = {
   "contact.email": { en: "Email", vi: "Email", zh: "电子邮件" },
   "contact.shop": { en: "Shop / Brand name", vi: "Tên shop / Brand", zh: "店铺/品牌名" },
   "contact.message": { en: "How can we help you?", vi: "Nội dung cần tư vấn...", zh: "请描述您的需求..." },
-  "contact.submit": { en: "Submit Inquiry", vi: "Gửi yêu cầu tư vấn", zh: "提交咨询" },
+  "contact.submit": { en: "Submit Inquiry", vi: "Đăng ký tư vấn miễn phí", zh: "提交咨询" },
+  "contact.offices_title": { en: "Offices & Warehouses", vi: "Văn phòng & Kho hàng", zh: "办公室和仓库" },
+  "contact.vn_office": { en: "VN OFFICE", vi: "VP VIỆT NAM", zh: "越南办公室" },
+  "contact.us_warehouse": { en: "US WAREHOUSE (PENNSYLVANIA)", vi: "KHO US (PENNSYLVANIA)", zh: "美国仓库 (宾夕法尼亚)" },
+  "contact.cn_warehouse": { en: "CN WAREHOUSE", vi: "KHO CHINA", zh: "中国仓库" },
+  "contact.cta_title": { en: "Ready to scale?", vi: "Sẵn sàng scale?", zh: "准备扩展？" },
+  "contact.cta_desc": { en: "15% OFF for first 50 orders. Support team will contact you within 24h.", vi: "Ưu đãi 15% cho 50 đơn hàng đầu tiên. Đội ngũ support sẽ liên hệ bạn trong 24h.", zh: "前50单享85折。支持团队将在24小时内联系您。" },
 
   // Footer
   "footer.tagline": { en: "Global Fulfillment Partner for eCommerce Sellers.", vi: "Đối tác Fulfillment toàn cầu cho eCommerce Seller.", zh: "电商卖家的全球履约合作伙伴。" },
@@ -145,6 +151,7 @@ const translations: Translations = {
   "footer.privacy": { en: "Privacy Policy", vi: "Chính sách bảo mật", zh: "隐私政策" },
   "footer.terms": { en: "Terms of Service", vi: "Điều khoản sử dụng", zh: "服务条款" },
   "footer.blog": { en: "Blog", vi: "Tin tức", zh: "博客" },
+  "footer.social": { en: "Follow Us", vi: "Theo dõi", zh: "关注我们" },
 
   // Policy page
   "policy.title": { en: "Policies & Terms", vi: "Chính sách & Điều khoản", zh: "政策与条款" },
