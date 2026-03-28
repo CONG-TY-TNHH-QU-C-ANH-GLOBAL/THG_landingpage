@@ -76,7 +76,20 @@ const Navbar = () => {
 
     placeWidget();
     window.addEventListener("resize", placeWidget);
-    return () => window.removeEventListener("resize", placeWidget);
+
+    // Re-place widget if it gets detached (e.g. tab switch, GTranslate DOM manipulation)
+    const observer = new MutationObserver(() => {
+      const widget = gtWidgetRef.current;
+      if (widget && !document.body.contains(widget)) {
+        placeWidget();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      window.removeEventListener("resize", placeWidget);
+      observer.disconnect();
+    };
   }, []);
 
   useEffect(() => {

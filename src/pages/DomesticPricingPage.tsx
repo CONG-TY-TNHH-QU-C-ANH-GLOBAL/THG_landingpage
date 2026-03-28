@@ -6,13 +6,17 @@ import { domesticPricingRows, fulfillmentServices } from "@/data/domesticPricing
 import { Link } from "react-router-dom";
 import {
     MapPin, Package, Truck, Globe, DollarSign, Shield,
-    ChevronDown, ArrowRight, Warehouse, CheckCircle2
+    ChevronDown, ChevronUp, ArrowRight, Warehouse, CheckCircle2
 } from "lucide-react";
 
 const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const INITIAL_ROWS = 6;
 
 const DomesticPricingContent = () => {
     const [selectedZone, setSelectedZone] = useState<number>(5);
+    const [showAll, setShowAll] = useState(false);
+    const displayRows = showAll ? domesticPricingRows : domesticPricingRows.slice(0, INITIAL_ROWS);
+    const hasMore = domesticPricingRows.length > INITIAL_ROWS;
 
     return (
         <main className="pt-24 pb-20 bg-background">
@@ -28,7 +32,7 @@ const DomesticPricingContent = () => {
                             US Domestic <span className="text-primary">Shipping Rates</span>
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-                            Zone-based pricing for US domestic shipping. Competitive USPS rates from THG Warehouse fulfillment centers.
+                            Zone-based pricing for US domestic shipping. Competitive USPS rates from <span className="notranslate" translate="no">THG Warehouse</span> fulfillment centers.
                         </p>
 
                         {/* Tab navigation to International */}
@@ -111,7 +115,7 @@ const DomesticPricingContent = () => {
                         </div>
 
                         {/* Table */}
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto notranslate" translate="no">
                             <table className="w-full text-sm min-w-[500px] whitespace-nowrap">
                                 <thead>
                                     <tr className="bg-navy text-white">
@@ -124,7 +128,7 @@ const DomesticPricingContent = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {domesticPricingRows.map((row, idx) => (
+                                    {displayRows.map((row, idx) => (
                                         <tr
                                             key={row.STT}
                                             className={`
@@ -133,8 +137,8 @@ const DomesticPricingContent = () => {
                       `}
                                         >
                                             <td className="px-4 py-3 text-muted-foreground font-medium">{row.STT}</td>
-                                            <td className="px-4 py-3 font-semibold text-foreground">{row.weight}</td>
-                                            <td className="px-4 py-3 text-muted-foreground">{row.gram}</td>
+                                            <td className="px-4 py-3 font-semibold text-navy">{row.weight}</td>
+                                            <td className="px-4 py-3 text-navy/70 font-medium">{row.gram}</td>
                                             <td className="px-4 py-3 text-right font-bold text-primary text-base">
                                                 {row.zones[selectedZone]}
                                             </td>
@@ -142,6 +146,20 @@ const DomesticPricingContent = () => {
                                     ))}
                                 </tbody>
                             </table>
+                            {hasMore && (
+                                <div className="flex justify-center py-4 border-t border-border/20">
+                                    <button
+                                        onClick={() => setShowAll(!showAll)}
+                                        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-sm font-semibold text-navy transition-all duration-300 hover:shadow-md"
+                                    >
+                                        {showAll ? (
+                                            <>Show Less <ChevronUp className="w-4 h-4" /></>
+                                        ) : (
+                                            <>See More ({domesticPricingRows.length - INITIAL_ROWS} rows) <ChevronDown className="w-4 h-4" /></>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </ScrollReveal>

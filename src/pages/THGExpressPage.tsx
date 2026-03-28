@@ -142,7 +142,7 @@ const THGExpressPage = () => {
               <ScrollReveal direction="scale">
                 <div className="inline-flex items-center gap-2.5 glass-card glow-pulse rounded-full px-5 py-2.5 mb-8 bg-[hsl(var(--gold))]/10 border-[hsl(var(--gold))]/25">
                   <Sparkles className="w-4 h-4 text-[hsl(var(--gold))]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]">THG Express</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))] notranslate" translate="no">THG Express</span>
                 </div>
               </ScrollReveal>
 
@@ -230,7 +230,7 @@ const THGExpressPage = () => {
                   />
                   {/* Overlay badge */}
                   <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/80 backdrop-blur-md border-border/30">
-                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center">4 Kho tại Mỹ</p>
+                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center notranslate" translate="no">4 Kho tại Mỹ</p>
                   </div>
                 </div>
               </div>

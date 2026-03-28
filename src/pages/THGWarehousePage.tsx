@@ -69,7 +69,7 @@ const THGWarehousePage = () => {
             <p className="text-indigo-200 text-sm md:text-base font-medium mb-4 tracking-wide">{t("warehouse_page.badge")}</p>
           </ScrollReveal>
           <ScrollReveal delay={100}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6 leading-tight" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6 leading-tight notranslate" translate="no" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
               THG <span className="text-gradient-gold">Warehouse</span>
             </h1>
           </ScrollReveal>
@@ -121,7 +121,7 @@ const THGWarehousePage = () => {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">THG Warehouse</p>
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4 notranslate" translate="no">THG Warehouse</p>
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.solution_title")}</h2>
             </div>
           </ScrollReveal>

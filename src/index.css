@@ -651,11 +651,26 @@
     animation: none;
   }
 
-  .glow-pulse {
+  .shimmer-effect {
     animation: none;
   }
 
-  .shimmer-effect {
-    animation: none;
+  /* Keep glow-pulse on mobile but slower */
+  .glow-pulse {
+    animation-duration: 3s;
+  }
+
+  /* Mobile touch feedback for interactive elements */
+  .hover-lift:active {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .tilt-card:active {
+    transform: scale(0.98);
+  }
+
+  .glass-card:active {
+    border-color: hsl(var(--primary) / 0.3);
   }
 }
