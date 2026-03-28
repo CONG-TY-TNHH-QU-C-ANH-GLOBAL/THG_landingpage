@@ -1,4 +1,14 @@
 import { useState, useEffect, useRef } from "react";
+
+// Module-level singleton: widget element persists across all re-renders/route changes
+let _gtWidget: HTMLDivElement | null = null;
+const getGTWidget = (): HTMLDivElement => {
+  if (!_gtWidget) {
+    _gtWidget = document.createElement("div");
+    _gtWidget.className = "gtranslate_wrapper";
+  }
+  return _gtWidget;
+};
 import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -30,7 +40,6 @@ const Navbar = () => {
   const pricingTimeoutRef = useRef<NodeJS.Timeout>();
   const gtDesktopSlotRef = useRef<HTMLDivElement>(null);
   const gtMobileSlotRef = useRef<HTMLDivElement>(null);
-  const gtWidgetRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -38,19 +47,11 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  // Inject GTranslate widget — single instance
+  // Inject GTranslate widget — runs once, polling keeps widget always visible
   useEffect(() => {
-    // Create the single widget container
-    if (!gtWidgetRef.current) {
-      gtWidgetRef.current = document.createElement("div");
-      gtWidgetRef.current.className = "gtranslate_wrapper";
-    }
-
     if (!(window as any).gtranslateSettings) {
-      // Force GTranslate to display English on first load
       document.cookie = "googtrans=/en/en; path=/;";
-      document.cookie = "googtrans=/en/en; path=/; domain=." + window.location.hostname + ";";
-
+      document.cookie = `googtrans=/en/en; path=/; domain=.${window.location.hostname};`;
       (window as any).gtranslateSettings = {
         default_language: "en",
         languages: ["en", "vi", "zh-CN"],
@@ -63,34 +64,32 @@ const Navbar = () => {
       document.body.appendChild(script);
     }
 
-    // Move the single widget into the correct slot based on viewport
+    // Always ensure widget is in the correct slot.
+    // Refs (.current) are always up-to-date even without deps,
+    // so polling interval reliably fixes widget after every React re-render.
     const placeWidget = () => {
-      const widget = gtWidgetRef.current;
-      if (!widget) return;
-      const isDesktop = window.innerWidth >= 1024; // lg breakpoint
-      const target = isDesktop ? gtDesktopSlotRef.current : gtMobileSlotRef.current;
-      if (target && !target.contains(widget)) {
-        target.appendChild(widget);
+      const widget = getGTWidget();
+      const isDesktop = window.innerWidth >= 1024;
+      const slot = isDesktop ? gtDesktopSlotRef.current : gtMobileSlotRef.current;
+      if (slot && !slot.contains(widget)) {
+        slot.appendChild(widget);
       }
     };
 
     placeWidget();
+    // Fast polling for first 3 seconds (catches GTranslate DOM manipulation on load)
+    const fastInterval = setInterval(placeWidget, 50);
+    setTimeout(() => clearInterval(fastInterval), 3000);
+    // Steady polling forever — handles route changes & GTranslate page translation
+    const interval = setInterval(placeWidget, 200);
     window.addEventListener("resize", placeWidget);
 
-    // Re-place widget if it gets detached (e.g. tab switch, GTranslate DOM manipulation)
-    const observer = new MutationObserver(() => {
-      const widget = gtWidgetRef.current;
-      if (widget && !document.body.contains(widget)) {
-        placeWidget();
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
     return () => {
+      clearInterval(fastInterval);
+      clearInterval(interval);
       window.removeEventListener("resize", placeWidget);
-      observer.disconnect();
     };
-  }, []);
+  }, []); // intentionally empty — polling handles all re-renders/route changes
 
   useEffect(() => {
     setShowServices(false);
@@ -165,7 +164,7 @@ const Navbar = () => {
                       <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">{t(item.titleKey)}</p>
+                      <p className="text-sm font-semibold text-foreground notranslate" translate="no">{t(item.titleKey)}</p>
                       <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{t(item.descKey)}</p>
                     </div>
                   </Link>
@@ -253,7 +252,7 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               <item.icon className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">{t(item.titleKey)}</span>
+              <span className="text-sm font-medium notranslate" translate="no">{t(item.titleKey)}</span>
             </Link>
           ))}
           <div className="border-t border-border/50 my-3" />

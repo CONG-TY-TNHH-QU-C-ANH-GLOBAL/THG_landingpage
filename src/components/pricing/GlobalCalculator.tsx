@@ -116,11 +116,12 @@ const GlobalCalculator = () => {
           <select
             value={store.currency}
             onChange={(e) => store.setCurrency(e.target.value as "USD" | "VND" | "CNY")}
-            className="w-full bg-gold/10 border border-gold text-foreground font-bold rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-gold text-sm"
+            className="w-full bg-gold/10 border border-gold text-foreground font-bold rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-gold text-sm notranslate"
+            translate="no"
           >
-            <option value="USD">🇺🇸 USD</option>
-            <option value="VND">🇻🇳 VND</option>
-            <option value="CNY">🇨🇳 CNY</option>
+            <option value="USD">🇺🇸 USD – Đô la Mỹ</option>
+            <option value="VND">🇻🇳 VND – Việt Nam Đồng</option>
+            <option value="CNY">🇨🇳 CNY – Nhân Dân Tệ</option>
           </select>
         </div>
 
@@ -172,7 +173,7 @@ const GlobalCalculator = () => {
               </div>
               <div className="md:text-right flex flex-col items-center md:items-end bg-primary-foreground/10 px-8 py-5 rounded-xl border border-primary-foreground/20">
                 <p className="text-sm font-medium text-primary-foreground/80 uppercase tracking-widest mb-1">Cước Cơ Bản</p>
-                <p className="text-4xl lg:text-5xl font-black text-primary drop-shadow-md">
+                <p className="text-4xl lg:text-5xl font-black text-primary drop-shadow-md notranslate" translate="no">
                   {store.formatPrice(quoteResult.price!)}
                 </p>
                 <p className="text-xs text-primary-foreground/50 mt-2 italic">*Chưa tính phụ phí vùng sâu & VAT (nếu có)</p>

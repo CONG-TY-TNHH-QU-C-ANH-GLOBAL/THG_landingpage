@@ -582,6 +582,11 @@
 
 /* ─── GTRANSLATE MOBILE FIX ─────────── */
 @media (max-width: 1023px) {
+  /* Ensure navbar doesn't clip the dropdown */
+  nav, nav > div {
+    overflow: visible !important;
+  }
+
   .gtranslate_wrapper {
     z-index: 9999 !important;
     position: relative !important;

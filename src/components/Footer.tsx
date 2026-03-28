@@ -51,11 +51,11 @@ const Footer = () => {
             <h4 className="font-bold mb-5 tracking-tight">{t("footer.contact")}</h4>
             <ul className="space-y-3 text-sm text-primary-foreground/50">
               <li>📧 info@thgfulfill.com</li>
-              <li>📞 0335.124.089</li>
+              <li className="notranslate" translate="no">📞 0335.124.089</li>
               <li>📍 VP: 121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú, TP.HCM</li>
-              <li>🇺🇸 108 Almond CT, Milford, PA 18337</li>
-              <li>🇨🇳 广东省东莞市常平镇霞坑新宅二区三街101</li>
-              <li>🌐 www.thgfulfill.com</li>
+              <li className="notranslate" translate="no">🇺🇸 108 Almond CT, Milford, PA 18337</li>
+              <li className="notranslate" translate="no" style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" }}>🇨🇳 广东省东莞市常平镇霞坑新宅二区三街101</li>
+              <li className="notranslate" translate="no">🌐 www.thgfulfill.com</li>
             </ul>
           </div>
 

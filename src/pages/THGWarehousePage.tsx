@@ -2,9 +2,65 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
+import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
 import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Monitor, Package, Truck, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const warehouseFAQs = [
+  {
+    question: "THG có bao nhiêu kho ở thời điểm hiện tại?",
+    answer: "THG hiện có 2 kho tại Mỹ: Pennsylvania (PA) và Winston-Salem, North Carolina (NC). Hệ thống kho kép giúp phủ sóng toàn nước Mỹ, tối ưu thời gian giao hàng 2–5 ngày.",
+  },
+  {
+    question: "Hàng hóa gửi qua THG Warehouse có cần lưu ý gì không?",
+    answer: "Hàng cần có barcode rõ ràng trên từng sản phẩm. Trước khi gửi hàng, bạn cần tạo yêu cầu nhập kho (IR) trên hệ thống OMS. THG hỗ trợ cung cấp file PDF barcode nếu sản phẩm chưa có.",
+  },
+  {
+    question: "THG có hỗ trợ Seller về lưu kho không?",
+    answer: "Có. THG miễn phí lưu kho cho 90 ngày đầu tiên. Từ ngày thứ 91 trở đi sẽ có phí lưu kho theo thông báo từ team THG.",
+  },
+  {
+    question: "THG có hỗ trợ quay, chụp sản phẩm khi cần thiết không?",
+    answer: "Có. THG hỗ trợ quay video toàn bộ quá trình đóng gói (100% đơn hàng). Ngoài ra, THG có thể hỗ trợ chụp ảnh sản phẩm theo yêu cầu. Vui lòng liên hệ team để biết thêm chi tiết.",
+  },
+  {
+    question: "THG có thể nhận hàng Return và hàng gửi từ kho Amazon vào kho THG không?",
+    answer: "Có. THG nhận và xử lý hàng return miễn phí cho tất cả đơn hàng do THG thực hiện. THG cũng hỗ trợ nhận hàng chuyển từ kho Amazon FBA về kho THG Warehouse.",
+  },
+  {
+    question: "THG có bao nhiêu loại bao bì đóng gói?",
+    answer: "THG cung cấp nhiều loại bao bì: túi poly, hộp carton các kích cỡ, bubble wrap và vật liệu chống sốc tiêu chuẩn quốc tế. Seller có thể yêu cầu sử dụng bao bì riêng của thương hiệu.",
+  },
+  {
+    question: "Thời gian pick & pack và mang hàng ra bưu cục USPS?",
+    answer: "Thông thường đơn hàng được xử lý và pick & pack trong vòng 24–48 giờ làm việc. Hàng được mang ra bưu cục USPS/FedEx/UPS trong ngày hoặc ngày hôm sau tùy khối lượng đơn.",
+  },
+  {
+    question: "Cách xác định vùng giao hàng (USPS Shipping Zone)?",
+    answer: "USPS Shipping Zone được tính dựa trên khoảng cách từ kho THG (PA & NC) đến địa chỉ người nhận. Zone càng thấp, phí ship càng rẻ và giao hàng càng nhanh. Team THG sẽ tư vấn zone phù hợp khi bắt đầu sử dụng dịch vụ.",
+  },
+  {
+    question: "Quy trình xử lý Barcode?",
+    answer: "1. Tạo hoặc gán barcode cho từng sản phẩm.\n2. THG cung cấp file PDF barcode nếu cần.\n3. In và dán barcode lên sản phẩm trước khi gửi vào kho, hoặc THG có thể hỗ trợ dán tại kho.",
+  },
+  {
+    question: "Quy trình gửi hàng Warehouse US?",
+    answer: "1. Tạo IR (Inbound Request) trên OMS.\n2. Đóng gói và gửi hàng đến địa chỉ kho THG (PA hoặc NC).\n3. THG nhận hàng, kiểm tra và nhập kho.\n4. Tồn kho được cập nhật real-time trên OMS.",
+  },
+  {
+    question: "Quy trình lên đơn hàng?",
+    answer: "Đơn có thể được sync tự động từ Shopify/Etsy/Amazon qua OMS, hoặc lên đơn thủ công trực tiếp trên hệ thống OMS. THG xử lý đơn, pick & pack, quay video đóng gói và giao cho carrier.",
+  },
+  {
+    question: "Quy trình xử lý hàng Return?",
+    answer: "1. THG tiếp nhận và kiểm tra tình trạng hàng return.\n2. Cập nhật trạng thái trên OMS.\n3. Seller quyết định tái xuất hoặc hủy hàng.\nMiễn phí 100% phí xử lý return cho mọi đơn THG thực hiện.",
+  },
+  {
+    question: "Quy trình xử lý công nợ?",
+    answer: "THG thông báo công nợ định kỳ qua hệ thống OMS và email. Seller thanh toán theo hình thức chuyển khoản hoặc các phương thức được thỏa thuận. Vui lòng liên hệ team CSKH để biết chi tiết về chính sách thanh toán.",
+  },
+];
 
 const features = [
   { icon: "🏷️", titleKey: "warehouse_page.feat1_title", descKey: "warehouse_page.feat1_desc" },
@@ -58,27 +114,37 @@ const THGWarehousePage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero – Dark Blue */}
-      <section className="pt-28 pb-20 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #1e3a8a 0%, #172554 100%)" }}>
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+      {/* Hero – Gold Mint */}
+      <section className="pt-28 pb-20 bg-gradient-hero relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(220 25% 12%) 1px, transparent 0)`,
           backgroundSize: "40px 40px",
         }} />
         <div className="container mx-auto px-4 relative z-10 text-center">
           <ScrollReveal>
-            <p className="text-indigo-200 text-sm md:text-base font-medium mb-4 tracking-wide">{t("warehouse_page.badge")}</p>
+            <div className="inline-flex items-center gap-2 glass-card rounded-full px-5 py-2.5 text-sm mb-6">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse flex-shrink-0" />
+              <span className="font-medium text-muted-foreground uppercase text-xs tracking-wider">{t("warehouse_page.badge")}</span>
+            </div>
           </ScrollReveal>
           <ScrollReveal delay={100}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6 leading-tight notranslate" translate="no" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-navy tracking-tight mb-6 leading-tight uppercase notranslate" translate="no">
               THG <span className="text-gradient-gold">Warehouse</span>
             </h1>
           </ScrollReveal>
           <ScrollReveal delay={200}>
-            <p className="text-lg text-indigo-100/80 max-w-xl mx-auto mb-8">{t("warehouse_page.hero_subtitle")}</p>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-4">{t("warehouse_page.hero_subtitle")}</p>
+          </ScrollReveal>
+          <ScrollReveal delay={250}>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 mb-8">
+              <span className="text-primary font-bold text-base md:text-lg uppercase tracking-widest notranslate" translate="no">{t("warehouse_page.hero_tagline")}</span>
+              <span className="hidden sm:inline text-navy/30 font-bold text-lg">|</span>
+              <span className="text-primary font-bold text-base md:text-lg uppercase tracking-widest notranslate" translate="no">{t("warehouse_page.hero_tagline2")}</span>
+            </div>
           </ScrollReveal>
           {/* Hero image */}
           <ScrollReveal delay={300}>
-            <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 hover:-translate-y-1 transition-transform mb-8">
+            <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform mb-8">
               <img
                 src="https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg"
                 alt="THG Warehouse Operations"
@@ -88,7 +154,7 @@ const THGWarehousePage = () => {
             </div>
           </ScrollReveal>
           <ScrollReveal delay={400}>
-            <Button className="bg-white hover:bg-slate-50 text-blue-900 rounded-full px-8 py-6 text-base font-bold gap-2 shadow-lg">
+            <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base font-bold gap-2 shadow-lg">
               {t("nav.consult")} <ArrowRight className="w-4 h-4" />
             </Button>
           </ScrollReveal>
@@ -98,17 +164,17 @@ const THGWarehousePage = () => {
       {/* Key Stats */}
       <section className="py-16 bg-card border-y border-border/50">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {[
-              { val: "$1", labelKey: "warehouse_page.stat1" },
-              { val: "90", labelKey: "warehouse_page.stat2" },
-              { val: "2-5", labelKey: "warehouse_page.stat3" },
-              { val: "24/7", labelKey: "warehouse_page.stat4" },
-            ].map((s, i) => (
+              "warehouse_page.stat1",
+              "warehouse_page.stat2",
+              "warehouse_page.stat3",
+              "warehouse_page.stat4",
+            ].map((key, i) => (
               <ScrollReveal key={i} delay={i * 100}>
-                <div>
-                  <p className="text-3xl md:text-4xl font-bold text-gradient-gold">{s.val}</p>
-                  <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{t(s.labelKey)}</p>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-background border border-border/50">
+                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
+                  <p className="text-sm md:text-base font-semibold text-navy">{t(key)}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -130,8 +196,8 @@ const THGWarehousePage = () => {
               <ScrollReveal key={i} delay={i * 100}>
                 <div className="glass-card rounded-2xl p-8 text-center hover-lift h-full">
                   <span className="text-4xl block mb-4">{f.icon}</span>
-                  <h3 className="text-lg font-bold text-navy mb-3">{t(f.titleKey)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: t(f.descKey) }} />
+                  <h3 className="text-xl font-bold text-navy mb-3">{t(f.titleKey)}</h3>
+                  <p className="text-base text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: t(f.descKey) }} />
                 </div>
               </ScrollReveal>
             ))}
@@ -229,7 +295,7 @@ const THGWarehousePage = () => {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Infrastructure & Tech</p>
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("warehouse_page.ops_badge")}</p>
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.gallery_title")}</h2>
               <p className="text-muted-foreground mt-3 max-w-xl mx-auto">{t("warehouse_page.gallery_desc")}</p>
             </div>
@@ -320,16 +386,17 @@ const THGWarehousePage = () => {
           </ScrollReveal>
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <ScrollReveal delay={100}>
-              <div className="border border-primary-foreground/10 rounded-2xl p-6">
-                <div className="flex items-center gap-2 mb-3"><span className="text-2xl">🇺🇸</span><h3 className="font-bold">Pennsylvania</h3></div>
-                <p className="text-sm text-primary-foreground/60">108 Almond CT, Milford, PA 18337</p>
-                <p className="text-sm text-primary-foreground/60">📞 +1 (570) 618-1169</p>
+              <div className="border border-primary-foreground/10 rounded-2xl p-6 h-full">
+                <div className="flex items-center gap-2 mb-3"><span className="text-2xl">🇺🇸</span><h3 className="font-bold notranslate" translate="no">Pennsylvania</h3></div>
+                <p className="text-sm text-primary-foreground/60 notranslate" translate="no">📍 108 Almond CT, Milford, PA 18337</p>
+                <p className="text-sm text-primary-foreground/60 notranslate" translate="no">📞 +1 (570) 618-1169</p>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={200}>
-              <div className="border border-primary-foreground/10 rounded-2xl p-6">
-                <div className="flex items-center gap-2 mb-3"><span className="text-2xl">🇺🇸</span><h3 className="font-bold">Winston-Salem, NC</h3></div>
-                <p className="text-sm text-primary-foreground/60">4136 Sunflower Circle, Winston-Salem, NC 27105</p>
+              <div className="border border-primary-foreground/10 rounded-2xl p-6 h-full">
+                <div className="flex items-center gap-2 mb-3"><span className="text-2xl">🇺🇸</span><h3 className="font-bold notranslate" translate="no">Winston-Salem, NC</h3></div>
+                <p className="text-sm text-primary-foreground/60 notranslate" translate="no">📍 4136 Sunflower Circle, Winston-Salem, NC 27105</p>
+                <p className="text-sm text-primary-foreground/60 notranslate" translate="no">📞 +1 (570) 618-1169</p>
               </div>
             </ScrollReveal>
           </div>
@@ -340,6 +407,22 @@ const THGWarehousePage = () => {
               </Button>
             </div>
           </ScrollReveal>
+        </div>
+      </section>
+
+      {/* FAQ – Q&A Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Q&A</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">Câu hỏi thường gặp</h2>
+              <p className="text-muted-foreground mt-3 max-w-xl mx-auto">Giải đáp nhanh các thắc mắc về dịch vụ THG Warehouse US</p>
+            </div>
+          </ScrollReveal>
+          <div className="max-w-3xl mx-auto">
+            <FAQAccordion items={warehouseFAQs} />
+          </div>
         </div>
       </section>
 
