@@ -43,7 +43,7 @@ const ServicesSection = () => {
     <section id="services" className="py-28 bg-card relative overflow-hidden">
       <div className="section-divider absolute top-0 left-0 right-0" />
       <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/50 blur-3xl" />
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-6">
@@ -66,7 +66,7 @@ const ServicesSection = () => {
                 {/* Illustration area */}
                 <div className="relative h-56 bg-secondary/40 flex items-center justify-center overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/10" />
-                  
+
                   {/* POD T-shirt illustration */}
                   {s.illustration === "pod-illustration" && (
                     <div className="relative flex items-center gap-4">
@@ -92,7 +92,7 @@ const ServicesSection = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Express - packages flying */}
                   {s.illustration === "express-illustration" && (
                     <div className="relative w-full h-full flex items-center justify-center">
@@ -118,7 +118,7 @@ const ServicesSection = () => {
                       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground font-medium">5-8 days delivery</div>
                     </div>
                   )}
-                  
+
                   {/* Warehouse illustration */}
                   {s.illustration === "warehouse-illustration" && (
                     <div className="relative w-full h-full flex items-center justify-center">
@@ -146,7 +146,7 @@ const ServicesSection = () => {
 
                   {/* Badge */}
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-                    <span className="inline-block glass-card rounded-full px-4 py-1.5 text-xs font-medium text-foreground/70">
+                    <span className="inline-block glass-card rounded-full px-4 py-1.5 text-xs font-medium text-foreground/70 notranslate" translate="no">
                       {t(s.badgeKey)}
                     </span>
                   </div>
@@ -154,10 +154,10 @@ const ServicesSection = () => {
 
                 {/* Content */}
                 <div className="p-7 flex-1 flex flex-col">
-                  <p className="text-xs font-semibold text-accent uppercase tracking-[0.15em] mb-2">{t(s.subtitleKey)}</p>
-                  <h3 className="text-2xl font-bold text-navy mb-3 tracking-tight">{t(s.titleKey)}</h3>
+                  <p className="text-xs font-semibold text-accent uppercase tracking-[0.15em] mb-2 notranslate" translate="no">{t(s.subtitleKey)}</p>
+                  <h3 className="text-2xl font-bold text-navy mb-3 tracking-tight notranslate" translate="no">{t(s.titleKey)}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5">{t(s.descKey)}</p>
-                  
+
                   <ul className="space-y-2.5 mb-6 flex-1">
                     {s.bulletsKey.map((bk) => (
                       <li key={bk} className="flex items-start gap-2.5 text-sm text-foreground/75">

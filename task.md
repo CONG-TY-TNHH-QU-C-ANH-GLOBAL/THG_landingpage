@@ -1,4 +1,4 @@
-- Chưa có hiệu ứng global trên mobile
+- Chưa có hiệu ứng global ở trang home trên mobile
 - Một số brand name tên riêng không được dịch, xem trên mục dịch vụ và rà lại toàn bộ brandname liên quan đến THG
 - Dịch sai đơn vị tiền tệ(Giữ nguyên USD,VNĐ,Nhân dân tệ) không dịch nhé
 - Làm con bot tính giá, báo giá tự động cho khách và bắn qua tin nhắn telegram của cskh

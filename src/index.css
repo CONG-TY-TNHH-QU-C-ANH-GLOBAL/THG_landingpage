@@ -631,33 +631,38 @@
 }
 
 /* ─── Simplify heavy animations on touch/mobile ─── */
+/* ─── Simplify heavy animations on touch/mobile ─── */
 @media (pointer: coarse) {
   .globe-real-image {
-    animation: none;
+    /* Keep animation, but make it optional or lightweight */
   }
 
+  /* Slow down orbits instead of removing them */
   .globe-orbit,
   .globe-orbit-2,
   .airplane-orbit,
   .package-orbit,
   .package-orbit-2 {
-    animation: none;
+    animation-duration: 25s;
+    opacity: 0.7;
   }
 
   .shipping-package-fly,
   .shipping-airplane-fly,
   .warehouse-truck-arrive,
   .warehouse-truck-depart {
-    animation: none;
-  }
-
-  .shimmer-effect {
-    animation: none;
+    animation-duration: 15s;
+    opacity: 0.8;
   }
 
   /* Keep glow-pulse on mobile but slower */
   .glow-pulse {
     animation-duration: 3s;
+  }
+
+  /* Shimmer can be kept or removed; let's keep it but slower */
+  .shimmer-effect {
+    animation-duration: 4s;
   }
 
   /* Mobile touch feedback for interactive elements */
