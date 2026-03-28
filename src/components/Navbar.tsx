@@ -47,6 +47,10 @@ const Navbar = () => {
     }
 
     if (!(window as any).gtranslateSettings) {
+      // Clear any leftover googtrans cookies so widget shows English by default
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + window.location.hostname + ";";
+
       (window as any).gtranslateSettings = {
         default_language: "en",
         languages: ["en", "vi", "zh-CN"],
