@@ -461,7 +461,8 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>("en");
 
   const t = (key: string): string => {
-    return translations[key]?.[language] || key;
+    // Always render English — GTranslate handles vi/zh at DOM level
+    return translations[key]?.en || key;
   };
 
   return (
