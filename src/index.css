@@ -584,6 +584,7 @@
 @media (max-width: 1023px) {
   .gtranslate_wrapper {
     z-index: 9999 !important;
+    position: relative !important;
   }
 
   .gtranslate_wrapper>a {
@@ -592,27 +593,28 @@
   }
 
   .gt_white_content {
-    position: fixed !important;
-    top: auto !important;
-    bottom: 20px !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-    min-width: 200px !important;
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin-top: 8px !important;
+    min-width: 180px !important;
     z-index: 99999 !important;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15) !important;
-    border-radius: 16px !important;
-    padding: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
   }
 
   .gt_white_content a {
-    padding: 12px 14px !important;
-    font-size: 1rem !important;
+    padding: 10px 12px !important;
+    font-size: 0.9rem !important;
   }
 
   .gt_white_content a img {
-    width: 22px !important;
-    height: 22px !important;
+    width: 20px !important;
+    height: 20px !important;
   }
 }
 
