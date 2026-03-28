@@ -169,7 +169,7 @@ const PolicyPage = () => {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">THG Fulfill</p>
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4 notranslate" translate="no">THG Fulfill</p>
               <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">{t("policy.title")}</h2>
             </div>
           </ScrollReveal>
@@ -182,11 +182,10 @@ const PolicyPage = () => {
                   <button
                     key={i}
                     onClick={() => setActivePolicy(i)}
-                    className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
-                      activePolicy === i
+                    className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 ${activePolicy === i
                         ? "bg-primary text-primary-foreground shadow-lg"
                         : "bg-secondary text-foreground/70 hover:bg-secondary/80"
-                    }`}
+                      }`}
                   >
                     <p.icon className="w-4 h-4" />
                     {t(p.titleKey)}

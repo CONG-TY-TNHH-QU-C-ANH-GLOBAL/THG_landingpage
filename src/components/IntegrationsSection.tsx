@@ -72,7 +72,7 @@ const IntegrationsSection = () => {
                   <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-navy">THG Fulfill OMS</p>
+                  <p className="text-sm font-bold text-navy notranslate" translate="no">THG Fulfill OMS</p>
                   <p className="text-[10px] text-muted-foreground">{t("integrations.hub_desc")}</p>
                 </div>
               </div>

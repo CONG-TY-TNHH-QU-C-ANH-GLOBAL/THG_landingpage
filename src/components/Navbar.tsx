@@ -113,8 +113,8 @@ const Navbar = () => {
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
-            <h1 className="text-base font-bold text-navy leading-tight tracking-tight">THG Fulfill</h1>
-            <p className="text-[9px] tracking-[0.15em] text-muted-foreground uppercase">Transport Happiness Group</p>
+            <h1 className="text-base font-bold text-navy leading-tight tracking-tight notranslate" translate="no">THG Fulfill</h1>
+            <p className="text-[9px] tracking-[0.15em] text-muted-foreground uppercase notranslate" translate="no">Transport Happiness Group</p>
           </div>
         </Link>
 

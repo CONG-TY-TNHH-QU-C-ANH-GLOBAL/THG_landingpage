@@ -97,7 +97,7 @@ const THGFulfillPage = () => {
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={100}>
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6 notranslate" translate="no">
                   THG <span className="text-gradient-gold">Fulfill</span>
                 </h1>
               </ScrollReveal>
@@ -211,7 +211,7 @@ const THGFulfillPage = () => {
             <div className="text-center mb-16">
               <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.solution_subtitle")}</p>
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-6">
-                THG Fulfill – <span className="text-gradient-gold">{t("fulfill_page.solution_highlight")}</span>
+                <span className="notranslate" translate="no">THG Fulfill</span> – <span className="text-gradient-gold">{t("fulfill_page.solution_highlight")}</span>
               </h2>
               <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">{t("fulfill_page.solution_desc")}</p>
             </div>

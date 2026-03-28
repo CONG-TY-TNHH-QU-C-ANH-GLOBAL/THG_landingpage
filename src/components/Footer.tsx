@@ -19,8 +19,8 @@ const Footer = () => {
                 <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
               </div>
               <div>
-                <p className="font-bold tracking-tight">THG Fulfill</p>
-                <p className="text-[9px] tracking-[0.12em] text-primary-foreground/50 uppercase">Transport Happiness Group</p>
+                <p className="font-bold tracking-tight notranslate" translate="no">THG Fulfill</p>
+                <p className="text-[9px] tracking-[0.12em] text-primary-foreground/50 uppercase notranslate" translate="no">Transport Happiness Group</p>
               </div>
             </div>
             <p className="text-sm text-primary-foreground/50 leading-relaxed">
@@ -31,10 +31,10 @@ const Footer = () => {
           <div>
             <h4 className="font-bold mb-5 tracking-tight">{t("footer.services")}</h4>
             <ul className="space-y-3 text-sm text-primary-foreground/50">
-              <li><Link to="/thg-fulfill" className="hover:text-gold-light transition-colors duration-300">THG Fulfill</Link></li>
-              <li><Link to="/thg-express" className="hover:text-gold-light transition-colors duration-300">THG Express</Link></li>
-              <li><Link to="/thg-warehouse" className="hover:text-gold-light transition-colors duration-300">THG Warehouse</Link></li>
-              <li><Link to="/thg-order" className="hover:text-gold-light transition-colors duration-300">THG Order</Link></li>
+              <li><Link to="/thg-fulfill" className="hover:text-gold-light transition-colors duration-300 notranslate" translate="no">THG Fulfill</Link></li>
+              <li><Link to="/thg-express" className="hover:text-gold-light transition-colors duration-300 notranslate" translate="no">THG Express</Link></li>
+              <li><Link to="/thg-warehouse" className="hover:text-gold-light transition-colors duration-300 notranslate" translate="no">THG Warehouse</Link></li>
+              <li><Link to="/thg-order" className="hover:text-gold-light transition-colors duration-300 notranslate" translate="no">THG Order</Link></li>
             </ul>
           </div>
 
@@ -64,13 +64,13 @@ const Footer = () => {
             <ul className="space-y-3 text-sm text-primary-foreground/50">
               <li>
                 <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer" className="hover:text-gold-light transition-colors duration-300 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                   Facebook
                 </a>
               </li>
               <li>
                 <a href="https://www.youtube.com/@thgfulfillment" target="_blank" rel="noopener noreferrer" className="hover:text-gold-light transition-colors duration-300 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"/><polygon fill="hsl(var(--gradient-dark, 0 0% 15%))" points="9.545 15.568 15.818 12 9.545 8.432"/></svg>
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" /><polygon fill="hsl(var(--gradient-dark, 0 0% 15%))" points="9.545 15.568 15.818 12 9.545 8.432" /></svg>
                   YouTube
                 </a>
               </li>
@@ -79,7 +79,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/10 pt-8 text-center text-sm text-primary-foreground/30">
-          © 2026 THG Fulfill. All rights reserved.
+          <span className="notranslate" translate="no">© 2026 THG Fulfill.</span> All rights reserved.
         </div>
       </div>
     </footer>
