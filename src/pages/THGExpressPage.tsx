@@ -57,12 +57,15 @@ const warehousePhotos = [
 const useCounter = (end: number, duration = 2000) => {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
+  const animatedRef = useRef(false);
   useEffect(() => {
+    animatedRef.current = false;
+    setCount(0);
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      obs.unobserve(el);
+    const animate = () => {
+      if (animatedRef.current) return;
+      animatedRef.current = true;
       const start = performance.now();
       const tick = (now: number) => {
         const progress = Math.min((now - start) / duration, 1);
@@ -71,7 +74,18 @@ const useCounter = (end: number, duration = 2000) => {
         if (progress < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
-    }, { threshold: 0.3 });
+    };
+    // Fire immediately if already in viewport
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      animate();
+      return;
+    }
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      obs.unobserve(el);
+      animate();
+    }, { threshold: 0.1 });
     obs.observe(el);
     return () => obs.disconnect();
   }, [end, duration]);
@@ -251,7 +265,7 @@ const THGExpressPage = () => {
                   />
                   {/* Overlay badge */}
                   <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/80 backdrop-blur-md border-border/30">
-                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center" >4 Kho tại Mỹ</p>
+                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center">4 Kho — 3 Quốc gia</p>
                   </div>
                 </div>
               </div>
@@ -264,10 +278,10 @@ const THGExpressPage = () => {
           <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mb-10" />
           <ScrollReveal delay={100}>
             <div className="flex flex-wrap justify-center gap-12 sm:gap-20">
-              <StatCounter value={5} suffix=" days" label="Air Express" />
-              <StatCounter value={20} suffix="+" label="Shipping routes" />
-              <StatCounter value={99} suffix="%" label="On-time delivery" />
-              <StatCounter value={4} suffix="" label="US Warehouses" />
+              <StatCounter value={5} suffix=" ngày" label="Hàng không Express" />
+              <StatCounter value={20} suffix="+" label="Tuyến vận chuyển" />
+              <StatCounter value={99} suffix="%" label="Giao đúng hạn" />
+              <StatCounter value={4} suffix="" label="Kho hàng toàn cầu" />
             </div>
           </ScrollReveal>
           <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mt-10" />
@@ -276,16 +290,16 @@ const THGExpressPage = () => {
         {/* ── Panel 3: Video Shorts ── */}
         <div className="container mx-auto px-4 relative z-10 py-10">
           <ScrollReveal>
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]/60 text-center mb-8">Behind the scenes</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]/60 text-center mb-8">3 video giới thiệu dịch vụ vận chuyển THG Express</p>
           </ScrollReveal>
-          <div className="flex justify-center gap-4 md:gap-6 flex-wrap">
+          <div className="flex gap-4 md:gap-6 overflow-x-auto pb-2 justify-start md:justify-center snap-x snap-mandatory md:snap-none scrollbar-hide px-2">
             {[
               { id: "n5t6sHIKv4A", title: "THG Warehouse Ops" },
               { id: "ZgoqBsujyC0", title: "THG Shipping Facility" },
               { id: "KDq7-tEikgg", title: "Scale of THG Express" },
             ].map((vid, i) => (
               <ScrollReveal key={vid.id} delay={i * 150} direction={i === 0 ? "left" : i === 2 ? "right" : "up"}>
-                <div className={`w-[200px] md:w-[240px] rounded-2xl overflow-hidden tilt-card border border-border/40 shadow-[var(--shadow-3d)] ${i === 1 ? "hidden sm:block" : ""} ${i === 2 ? "hidden lg:block" : ""}`}>
+                <div className="w-[200px] md:w-[240px] flex-shrink-0 snap-center rounded-2xl overflow-hidden tilt-card border border-border/40 shadow-[var(--shadow-3d)]">
                   <YouTubeEmbed videoId={vid.id} title={vid.title} aspectRatio="315/560" />
                 </div>
               </ScrollReveal>
@@ -407,7 +421,13 @@ const THGExpressPage = () => {
                 >
                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0 transition-all duration-500 group-hover:scale-110 ${l.special ? "bg-pink-500/10 border border-pink-500/20 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]" : "bg-white/5 border border-white/10 group-hover:shadow-[var(--shadow-glow)]"
                     }`}>
-                    {l.flags.split(" → ")[0]}
+                    {l.special ? (
+                      <svg className="w-8 h-8 text-pink-400" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                      </svg>
+                    ) : (
+                      l.flags.split(" → ")[0]
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className={`text-lg font-bold mb-1 ${l.special ? "text-pink-400" : "text-white"}`}>{t(l.routeKey)}</h4>

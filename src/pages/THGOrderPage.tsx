@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
@@ -56,7 +57,7 @@ const THGOrderPage = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <ScrollReveal direction="scale">
             <div className="inline-flex items-center gap-3 rounded-full px-5 py-2 text-sm border border-[hsl(var(--gold))]/25 mb-8 bg-[hsl(var(--gold))]/10 shadow-[0_4px_12px_rgba(216,180,111,0.15)] glow-pulse">
-              <span className="font-medium text-navy">🇨🇳 Taobao · 1688 · Pinduoduo</span>
+              <span className="font-medium text-navy">🇨🇳 Taobao · 1688</span>
               <span className="text-[hsl(var(--gold))]/50">|</span>
               <span className="font-medium text-navy">✈️ Direct to USA</span>
             </div>
@@ -78,8 +79,13 @@ const THGOrderPage = () => {
               <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-8 py-6 text-base gap-2 shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:-translate-y-1">
                 🚀 {t("order_page.hero_cta")}
               </Button>
-              <Button variant="outline" className="rounded-full px-8 py-6 text-base border-[hsl(var(--gold))]/40 text-navy hover:bg-[hsl(var(--gold))]/10 transition-all duration-300 font-semibold">
+              <Button variant="outline" className="rounded-full px-8 py-6 text-base border-[hsl(var(--gold))]/40 text-navy hover:bg-[hsl(var(--gold))]/10 transition-all duration-300 font-semibold" onClick={() => document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth' })}>
                 {t("order_page.hero_cta2")} <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+              <Button asChild variant="outline" className="rounded-full px-8 py-6 text-base border-[hsl(var(--gold))]/40 text-navy hover:bg-[hsl(var(--gold))]/10 transition-all duration-300 font-semibold">
+                <a href="https://thg.vn/collections/all" target="_blank" rel="noopener noreferrer">
+                  📋 {t("order_page.btn_catalog")}
+                </a>
               </Button>
             </div>
           </ScrollReveal>
@@ -145,6 +151,16 @@ const THGOrderPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Customer Feedback / Testimonials */}
+      <div className="bg-card pt-10 pb-6">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-navy mb-4 tracking-tight">
+            {t("order_page.feedback_title")}
+          </h2>
+        </div>
+      </div>
+      <TestimonialsSection />
 
       {/* Contact Section */}
       <ContactSection />

@@ -9,7 +9,7 @@ const getGTWidget = (): HTMLDivElement => {
   }
   return _gtWidget;
 };
-import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign, MapPin } from "lucide-react";
+import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign, MapPin, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";
@@ -25,6 +25,7 @@ const serviceItems = [
 const pricingItems = [
   { icon: Globe, titleKey: "nav.intl_pricing", descKey: "nav.intl_pricing_desc", href: "/bang-gia-quoc-te" },
   { icon: MapPin, titleKey: "nav.domestic_pricing", descKey: "nav.domestic_pricing_desc", href: "/bang-gia-noi-dia" },
+  { icon: Tag, titleKey: "nav.catalog", descKey: "nav.catalog_desc", href: "/catalog" },
 ];
 
 const Navbar = () => {
