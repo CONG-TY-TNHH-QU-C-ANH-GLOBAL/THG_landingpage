@@ -5,9 +5,9 @@ import ScrollReveal from "@/components/ScrollReveal";
 import globeImage from "@/assets/globe-3d.png";
 
 const HeroSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
-  const features = [t("hero.feature1"), t("hero.feature2"), t("hero.feature3"), t("hero.feature4")];
+  const features = [tVi("hero.feature1"), tVi("hero.feature2"), tVi("hero.feature3"), tVi("hero.feature4")];
 
   return (
     <section className="relative flex items-center pt-28 pb-6 md:pt-20 md:pb-10 overflow-hidden bg-gradient-hero">
@@ -28,24 +28,24 @@ const HeroSection = () => {
           <ScrollReveal delay={100}>
             <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm glow-pulse">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse flex-shrink-0" />
-              <span className="font-medium text-muted-foreground tracking-wide uppercase text-[10px] md:text-xs truncate">
-                {t("hero.badge")}
+              <span className="font-medium text-muted-foreground tracking-wide uppercase text-[10px] md:text-xs truncate" >
+                {tVi("hero.badge")}
               </span>
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={200}>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-[4.2rem] font-bold leading-[1.1] text-navy tracking-tight mx-auto lg:mx-0">
-              {t("hero.title1")}{" "}
-              <span className="text-gradient-gold">{t("hero.title_highlight")}</span>{" "}
-              {t("hero.title2")}{" "}
-              <span className="text-gradient-gold">{t("hero.title3")}</span>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-[4.2rem] font-bold leading-[1.1] text-navy tracking-tight mx-auto lg:mx-0" >
+              {tVi("hero.title1")}{" "}
+              <span className="text-gradient-gold">{tVi("hero.title_highlight")}</span>{" "}
+              {tVi("hero.title2")}{" "}
+              <span className="text-gradient-gold">{tVi("hero.title3")}</span>
             </h1>
           </ScrollReveal>
 
           <ScrollReveal delay={300}>
-            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto lg:mx-0">
-              {t("hero.subtitle")}
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto lg:mx-0" >
+              {tVi("hero.subtitle")}
             </p>
           </ScrollReveal>
 
@@ -54,7 +54,7 @@ const HeroSection = () => {
               {features.map((f, i) => (
                 <div key={i} className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                  <span className="text-sm text-foreground/75">{f}</span>
+                  <span className="text-sm text-foreground/75" >{f}</span>
                 </div>
               ))}
             </div>
@@ -66,13 +66,13 @@ const HeroSection = () => {
                 className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
                 style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
               >
-                {t("hero.cta")} <ArrowRight className="w-4 h-4" />
+                <span  >{tVi("hero.cta")}</span> <ArrowRight className="w-4 h-4" />
               </Button>
               <Button
                 variant="outline"
                 className="rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
               >
-                {t("hero.learn_more")}
+                <span  >{tVi("hero.learn_more")}</span>
               </Button>
             </div>
           </ScrollReveal>
@@ -111,7 +111,7 @@ const HeroSection = () => {
             <div className="absolute top-10 left-0 sm:-left-8 md:-left-12 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
               <div className="flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground mb-1">🇪🇺 EU</div>
               <p className="text-xl sm:text-2xl md:text-3xl font-bold text-navy tracking-tight">5-8</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">{t("hero.delivery_days")}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground" >{tVi("hero.delivery_days")}</p>
             </div>
 
             <div className="absolute top-24 right-6 sm:right-2 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
@@ -119,26 +119,26 @@ const HeroSection = () => {
               <span className="text-xs font-semibold">USA</span>
             </div>
 
-            <div className="absolute top-44 -right-6 md:-right-10 glass-card rounded-2xl px-4 md:px-5 py-3 md:py-4 animate-float z-10 hidden sm:block glow-pulse">
-              <p className="text-2xl md:text-3xl font-bold text-navy tracking-tight">3</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">{t("hero.countries")}</p>
+            <div className="absolute top-44 -right-10 md:-right-10 glass-card rounded-2xl px-4 md:px-5 py-3 md:py-4 animate-float z-10 block glow-pulse">
+              <p className="text-2xl md:text-3xl font-bold text-navy tracking-tight">4</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">{tVi("hero.warehouses")}</p>
             </div>
 
-            <div className="absolute bottom-36 right-2 md:right-4 glass-card rounded-xl px-3 md:px-4 py-2 items-center gap-2 animate-float z-10 hidden sm:flex">
+            <div className="absolute bottom-36 right-2 md:right-4 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
               <span>🇨🇳</span>
               <span className="text-xs font-semibold">China</span>
             </div>
 
-            <div className="absolute bottom-24 right-0 md:-right-4 glass-card rounded-xl px-3 md:px-4 py-2 items-center gap-2 animate-float z-10 hidden sm:flex">
+            <div className="absolute bottom-24 right-0 md:-right-4 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
               <span>🇻🇳</span>
               <span className="text-xs font-semibold">Vietnam</span>
             </div>
 
             <div className="absolute bottom-8 left-2 sm:-left-4 md:-left-8 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-navy tracking-tight">
-                từ <span className="text-gradient-gold">1$</span>
+                từ <span className="text-gradient-gold">1.2$</span>
               </p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">{t("hero.us_fulfill")}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground" >{tVi("hero.us_fulfill")}</p>
             </div>
           </div>
         </ScrollReveal>

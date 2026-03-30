@@ -34,7 +34,7 @@ const testimonials = [
 ];
 
 const TestimonialsSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   return (
     <section className="py-28 bg-background relative overflow-hidden">
@@ -45,11 +45,11 @@ const TestimonialsSection = () => {
         <ScrollReveal>
           <div className="text-center mb-16">
             <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">
-              {t("testimonials.subtitle")}
+              {tVi("testimonials.subtitle")}
             </p>
             <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">
-              {t("testimonials.title")}{" "}
-              <span className="text-gradient-gold">{t("testimonials.title_highlight")}</span>
+              {tVi("testimonials.title")}{" "}
+              <span className="text-gradient-gold">{tVi("testimonials.title_highlight")}</span>
             </h2>
           </div>
         </ScrollReveal>
@@ -65,8 +65,8 @@ const TestimonialsSection = () => {
                   ))}
                 </div>
                 {/* Quote */}
-                <p className="text-sm text-foreground/80 leading-relaxed flex-1 italic">
-                  "{t(item.quoteKey)}"
+                <p className="text-sm text-foreground/80 leading-relaxed flex-1 italic" >
+                  "{tVi(item.quoteKey)}"
                 </p>
                 {/* Author */}
                 <div className="flex items-center gap-3 mt-5 pt-5 border-t border-border/50">
@@ -74,8 +74,8 @@ const TestimonialsSection = () => {
                     {item.avatar}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-navy">{t(item.nameKey)}</p>
-                    <p className="text-xs text-muted-foreground">{t(item.roleKey)}</p>
+                    <p className="text-sm font-semibold text-navy" >{tVi(item.nameKey)}</p>
+                    <p className="text-xs text-muted-foreground" >{tVi(item.roleKey)}</p>
                   </div>
                 </div>
               </div>

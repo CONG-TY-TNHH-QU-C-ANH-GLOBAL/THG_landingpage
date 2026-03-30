@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
@@ -93,11 +94,11 @@ const THGFulfillPage = () => {
               <ScrollReveal>
                 <div className="inline-flex items-center gap-2 glass-card rounded-full px-5 py-2.5 text-sm mb-8">
                   <Package className="w-4 h-4 text-primary" />
-                  <span className="font-medium text-muted-foreground uppercase text-xs tracking-wider">POD & Dropship</span>
+                  <span className="font-medium text-muted-foreground uppercase text-xs tracking-wider">{t("fulfill_page.pod_dropship_badge")}</span>
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={100}>
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6 notranslate" translate="no">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6" >
                   THG <span className="text-gradient-gold">Fulfill</span>
                 </h1>
               </ScrollReveal>
@@ -130,13 +131,13 @@ const THGFulfillPage = () => {
             <ScrollReveal delay={300} direction="right" className="hidden lg:block">
               <div className="relative">
                 <div className="glass-card rounded-3xl p-8 flex flex-col items-center">
-                  <p className="text-xs font-semibold text-accent uppercase tracking-[0.2em] mb-6">POD Process</p>
+                  <p className="text-xs font-semibold text-accent uppercase tracking-[0.2em] mb-6">{t("fulfill_page.pod_process")}</p>
                   <div className="flex items-center gap-6">
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-28 h-32 bg-white rounded-xl border-2 border-dashed border-border flex items-center justify-center shadow-inner">
                         <span className="text-5xl">👕</span>
                       </div>
-                      <span className="text-xs text-muted-foreground font-medium">Blank T-Shirt</span>
+                      <span className="text-xs text-muted-foreground font-medium">{t("fulfill_page.blank_tshirt")}</span>
                     </div>
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-3xl animate-pulse">🖨️</span>
@@ -144,16 +145,16 @@ const THGFulfillPage = () => {
                         <div className="w-10 h-px bg-primary/40" />
                         <ArrowRight className="w-4 h-4 text-primary" />
                       </div>
-                      <span className="text-[10px] text-muted-foreground">DTG / DTF Print</span>
+                      <span className="text-[10px] text-muted-foreground">{t("fulfill_page.dtg_print")}</span>
                     </div>
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-28 h-32 bg-gradient-to-br from-primary/15 to-accent/15 rounded-xl border-2 border-primary/30 flex items-center justify-center relative shadow-lg">
                         <span className="text-5xl">👕</span>
                         <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[7px] font-bold px-2 py-1 rounded">
-                          YOUR BRAND
+                          {t("fulfill_page.your_brand")}
                         </div>
                       </div>
-                      <span className="text-xs text-primary font-semibold">Branded Product</span>
+                      <span className="text-xs text-primary font-semibold">{t("fulfill_page.branded_product")}</span>
                     </div>
                   </div>
                 </div>
@@ -211,7 +212,7 @@ const THGFulfillPage = () => {
             <div className="text-center mb-16">
               <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.solution_subtitle")}</p>
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-6">
-                <span className="notranslate" translate="no">THG Fulfill</span> – <span className="text-gradient-gold">{t("fulfill_page.solution_highlight")}</span>
+                <span  >THG Fulfill</span> – <span className="text-gradient-gold">{t("fulfill_page.solution_highlight")}</span>
               </h2>
               <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">{t("fulfill_page.solution_desc")}</p>
             </div>
@@ -362,27 +363,8 @@ const THGFulfillPage = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-gradient-dark text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <ScrollReveal>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">{t("fulfill_page.cta_title")}</h2>
-            <p className="text-primary-foreground/60 mb-8 max-w-lg mx-auto">{t("fulfill_page.cta_desc")}</p>
-            <div className="flex justify-center gap-4">
-              <a href="https://order.thgfulfill.com/" target="_blank" rel="noopener noreferrer">
-                <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-10 py-6 text-base gap-2 shadow-lg">
-                  {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-                </Button>
-              </a>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Image Marquee */}
-      <section className="py-8 bg-card border-t border-border/50">
-        <ImageMarquee images={sliderImages} speed={40} height="200px" />
-      </section>
+      {/* Contact Section */}
+      <ContactSection />
 
       <Footer />
     </div>

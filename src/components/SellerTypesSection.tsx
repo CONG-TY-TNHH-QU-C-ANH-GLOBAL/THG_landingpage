@@ -3,7 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const SellerTypesSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   const types = [
     { icon: Store, titleKey: "sellers.t1_title", descKey: "sellers.t1_desc" },
@@ -20,10 +20,10 @@ const SellerTypesSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-20">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("sellers.subtitle")}</p>
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("sellers.subtitle")}</p>
             <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
-              {t("sellers.title")}{" "}
-              <span className="text-gradient-gold">{t("sellers.title_highlight")}</span>
+              {tVi("sellers.title")}{" "}
+              <span className="text-gradient-gold">{tVi("sellers.title_highlight")}</span>
             </h2>
           </div>
         </ScrollReveal>
@@ -35,8 +35,8 @@ const SellerTypesSection = () => {
                 <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-secondary flex items-center justify-center group-hover:scale-110 transition-all duration-300">
                   <item.icon className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold text-navy mb-3 tracking-tight">{t(item.titleKey)}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t(item.descKey)}</p>
+                <h3 className="text-lg font-bold text-navy mb-3 tracking-tight" >{tVi(item.titleKey)}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed" >{tVi(item.descKey)}</p>
               </div>
             </ScrollReveal>
           ))}

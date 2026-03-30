@@ -3,13 +3,13 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const AboutVideoSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   const highlights = [
-    { icon: Package, label: t("about.highlight1") },
-    { icon: Truck, label: t("about.highlight2") },
-    { icon: Globe, label: t("about.highlight3") },
-    { icon: ShieldCheck, label: t("about.highlight4") },
+    { icon: Package, label: tVi("about.highlight1") },
+    { icon: Truck, label: tVi("about.highlight2") },
+    { icon: Globe, label: tVi("about.highlight3") },
+    { icon: ShieldCheck, label: tVi("about.highlight4") },
   ];
 
   return (
@@ -22,11 +22,11 @@ const AboutVideoSection = () => {
         <ScrollReveal>
           <div className="text-center mb-12 md:mb-16">
             <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">
-              {t("about.subtitle")}
+              {tVi("about.subtitle")}
             </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-navy tracking-tight">
-              {t("about.title")}{" "}
-              <span className="text-gradient-gold">{t("about.title_highlight")}</span>
+              {tVi("about.title")}{" "}
+              <span className="text-gradient-gold">{tVi("about.title_highlight")}</span>
             </h2>
           </div>
         </ScrollReveal>
@@ -49,11 +49,11 @@ const AboutVideoSection = () => {
 
           <ScrollReveal delay={200}>
             <div className="space-y-5">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-navy leading-snug">
-                {t("about.video_title")}
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-navy leading-snug" >
+                {tVi("about.video_title")}
               </h3>
-              <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
-                {t("about.video_desc")}
+              <p className="text-muted-foreground leading-relaxed text-sm sm:text-base" >
+                {tVi("about.video_desc")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {highlights.map((item, i) => (
@@ -62,7 +62,7 @@ const AboutVideoSection = () => {
                     className="flex items-center gap-3 glass-card rounded-xl px-4 py-3 hover:shadow-lg transition-all duration-300"
                   >
                     <item.icon className="w-5 h-5 text-accent flex-shrink-0" />
-                    <span className="text-sm font-medium text-foreground/80">{item.label}</span>
+                    <span className="text-sm font-medium text-foreground/80" >{item.label}</span>
                   </div>
                 ))}
               </div>
@@ -73,16 +73,16 @@ const AboutVideoSection = () => {
         {/* Service gallery */}
         <ScrollReveal delay={100}>
           <h3 className="text-xl sm:text-2xl font-bold text-navy text-center mb-8">
-            {t("about.gallery_title")}
+            {tVi("about.gallery_title")}
           </h3>
         </ScrollReveal>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
           {[
-            { emoji: "📦", title: t("about.img1_title"), desc: t("about.img1_desc") },
-            { emoji: "🖨️", title: t("about.img2_title"), desc: t("about.img2_desc") },
-            { emoji: "🏭", title: t("about.img3_title"), desc: t("about.img3_desc") },
-            { emoji: "🚚", title: t("about.img4_title"), desc: t("about.img4_desc") },
+            { emoji: "📦", title: tVi("about.img1_title"), desc: tVi("about.img1_desc") },
+            { emoji: "🖨️", title: tVi("about.img2_title"), desc: tVi("about.img2_desc") },
+            { emoji: "🏭", title: tVi("about.img3_title"), desc: tVi("about.img3_desc") },
+            { emoji: "🚚", title: tVi("about.img4_title"), desc: tVi("about.img4_desc") },
           ].map((item, i) => (
             <ScrollReveal key={i} delay={100 + i * 80}>
               <div className="glass-card rounded-2xl p-5 md:p-6 text-center tilt-card group">

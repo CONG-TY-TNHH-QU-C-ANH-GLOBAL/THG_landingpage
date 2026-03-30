@@ -34,7 +34,7 @@ const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
   const hasMore = data.length > INITIAL_ROWS;
 
   return (
-    <div className="notranslate" translate="no">
+    <div  >
       <div className="overflow-x-auto relative">
         <table className="w-full text-left text-sm whitespace-nowrap min-w-[700px]">
           <thead className="bg-navy text-primary-foreground uppercase text-xs">

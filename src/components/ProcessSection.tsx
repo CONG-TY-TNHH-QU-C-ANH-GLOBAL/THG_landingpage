@@ -2,7 +2,7 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const ProcessSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   const steps = [
     { step: "01", titleKey: "process.s1_title", descKey: "process.s1_desc" },
@@ -25,10 +25,10 @@ const ProcessSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-20">
-            <p className="text-sm font-semibold text-gold-light uppercase tracking-[0.2em] mb-4">{t("process.subtitle")}</p>
+            <p className="text-sm font-semibold text-gold-light uppercase tracking-[0.2em] mb-4">{tVi("process.subtitle")}</p>
             <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight">
-              {t("process.title")}{" "}
-              <span className="text-gold-light">{t("process.title_highlight")}</span>
+              {tVi("process.title")}{" "}
+              <span className="text-gold-light">{tVi("process.title_highlight")}</span>
             </h2>
           </div>
         </ScrollReveal>
@@ -37,9 +37,9 @@ const ProcessSection = () => {
           {steps.map((s, i) => (
             <ScrollReveal key={s.step} delay={i * 150}>
               <div className="relative group">
-                <span className="text-7xl font-bold text-gold-light/10 tracking-tighter group-hover:text-gold-light/20 transition-colors duration-500">{s.step}</span>
-                <h3 className="text-xl font-bold mt-1 mb-3 tracking-tight">{t(s.titleKey)}</h3>
-                <p className="text-sm text-primary-foreground/60 leading-relaxed">{t(s.descKey)}</p>
+                <span className="text-7xl font-bold text-accent/70 tracking-tighter group-hover:text-accent transition-colors duration-500">{s.step}</span>
+                <h3 className="text-xl font-bold mt-1 mb-3 tracking-tight" >{tVi(s.titleKey)}</h3>
+                <p className="text-sm text-primary-foreground/60 leading-relaxed" >{tVi(s.descKey)}</p>
                 {i < steps.length - 1 && (
                   <div className="hidden lg:block absolute top-10 -right-5 w-10 h-px bg-gold-light/20" />
                 )}

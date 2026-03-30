@@ -43,6 +43,9 @@
     --olive: 140 25% 32%;
     --olive-light: 140 20% 45%;
 
+    /* Pricing Layout */
+    --pricing-border: 40 15% 85%;
+
     /* 3D Motion System */
     --perspective: 1200px;
     --tilt-x: 4deg;
@@ -102,6 +105,7 @@
     background-clip: text;
     color: transparent;
     background-image: linear-gradient(135deg, hsl(36 45% 42%), hsl(40 50% 58%), hsl(36 45% 42%));
+    font-family: inherit;
   }
 
   /* ─── Hide Scrollbar ─── */

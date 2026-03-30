@@ -5,7 +5,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import thgLogo from "@/assets/thg-logo.png";
 
 const ContactSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   return (
     <section id="contact" className="py-28 relative overflow-hidden bg-secondary/30">
@@ -16,11 +16,11 @@ const ContactSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-16">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("contact.subtitle")}</p>
-            <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight leading-tight font-serif italic">
-              {t("contact.title")}{" "}
-              <span className="text-gradient-gold not-italic">{t("contact.title_highlight")}</span>{" "}
-              {t("contact.title2")}
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("contact.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight leading-tight">
+              {tVi("contact.title")}{" "}
+              <span className="text-gradient-gold">{tVi("contact.title_highlight")}</span>{" "}
+              {tVi("contact.title2")}
             </h2>
           </div>
         </ScrollReveal>
@@ -28,15 +28,16 @@ const ContactSection = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           <ScrollReveal direction="left">
             <div>
-              <h3 className="text-2xl font-bold text-navy mb-8 font-serif italic">{t("contact.offices_title")}</h3>
+              <h3 className="text-2xl font-bold text-navy mb-8">{tVi("contact.offices_title")}</h3>
               <div className="space-y-6">
                 {[
-                  { icon: MapPin, label: t("contact.vn_office"), value: "121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú, TP.HCM" },
-                  { icon: MapPin, label: t("contact.us_warehouse"), value: "108 Almond CT, Milford, PA 18337" },
-                  { icon: MapPin, label: t("contact.cn_warehouse"), value: "广东省东莞市常平镇霞坑新宅二区三街101", sub: "阿文物流 431391" },
+                  { icon: MapPin, label: "VP VIỆT NAM", value: "121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú, TP.HCM" },
+                  { icon: MapPin, label: "KHO MỸ – PENNSYLVANIA", value: "108 Almond CT, Milford, PA 18337", sub: "+1 (570) 618-1169" },
+                  { icon: MapPin, label: "KHO MỸ – NORTH CAROLINA", value: "4136 Sunflower Circle, Winston-Salem, NC 27105" },
+                  { icon: MapPin, label: "KHO TRUNG QUỐC", value: "广东省东莞市常平镇霞坑新宅二区三街101", fontCN: true },
                   { icon: Phone, label: "HOTLINE", value: "0335.124.089" },
                   { icon: Mail, label: "EMAIL", value: "info@thgfulfill.com" },
-                  { icon: Globe, label: "WEBSITE", value: "www.thgfulfill.com", href: "https://www.thgfulfill.com" },
+                  { icon: Globe, label: "WEBSITE", value: "thgofficial.thgfulfill.com", href: "https://thgofficial.thgfulfill.com" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 group">
                     <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
@@ -48,7 +49,10 @@ const ContactSection = () => {
                         <a href={item.href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm hover:text-accent transition-colors">{item.value}</a>
                       ) : (
                         <>
-                          <p className="text-muted-foreground text-sm">{item.value}</p>
+                          <p
+                            className="text-muted-foreground text-sm"
+                            style={item.fontCN ? { fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" } : undefined}
+                          >{item.value}</p>
                           {item.sub && <p className="text-muted-foreground text-xs mt-0.5">{item.sub}</p>}
                         </>
                       )}
@@ -66,15 +70,15 @@ const ContactSection = () => {
               <div className="w-16 h-16 rounded-full bg-navy mx-auto mb-6 flex items-center justify-center p-3 glow-pulse">
                 <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
               </div>
-              <h3 className="text-2xl font-bold text-navy mb-3">{t("contact.cta_title")}</h3>
+              <h3 className="text-2xl font-bold text-navy mb-3">{tVi("contact.cta_title")}</h3>
               <p className="text-muted-foreground mb-8 leading-relaxed">
-                {t("contact.cta_desc")}
+                {tVi("contact.cta_desc")}
               </p>
               <Button
                 className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
                 style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
               >
-                {t("contact.submit")} <ArrowRight className="w-4 h-4" />
+                {tVi("contact.submit")} <ArrowRight className="w-4 h-4" />
               </Button>
               <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
                 <span>Shopify</span>

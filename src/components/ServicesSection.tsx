@@ -4,7 +4,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { Link } from "react-router-dom";
 
 const ServicesSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   const services = [
     {
@@ -47,16 +47,16 @@ const ServicesSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-6">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("services.subtitle")}</p>
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("services.subtitle")}</p>
             <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
-              {t("services.title")}{" "}
-              <span className="text-gradient-gold">{t("services.title_highlight")}</span>{" "}
-              {t("services.title2")}
+              {tVi("services.title")}{" "}
+              <span className="text-gradient-gold">{tVi("services.title_highlight")}</span>{" "}
+              {tVi("services.title2")}
             </h2>
           </div>
         </ScrollReveal>
         <ScrollReveal delay={50}>
-          <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">{t("services.tagline")}</p>
+          <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">{tVi("services.tagline")}</p>
         </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -115,7 +115,6 @@ const ServicesSection = () => {
                           <span className="text-lg">🇪🇺</span>
                         </div>
                       </div>
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground font-medium">5-8 days delivery</div>
                     </div>
                   )}
 
@@ -146,23 +145,23 @@ const ServicesSection = () => {
 
                   {/* Badge */}
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-                    <span className="inline-block glass-card rounded-full px-4 py-1.5 text-xs font-medium text-foreground/70 notranslate" translate="no">
-                      {t(s.badgeKey)}
+                    <span className="inline-block glass-card rounded-full px-4 py-1.5 text-xs font-medium text-foreground/70" >
+                      {tVi(s.badgeKey)}
                     </span>
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-7 flex-1 flex flex-col">
-                  <p className="text-xs font-semibold text-accent uppercase tracking-[0.15em] mb-2 notranslate" translate="no">{t(s.subtitleKey)}</p>
-                  <h3 className="text-2xl font-bold text-navy mb-3 tracking-tight notranslate" translate="no">{t(s.titleKey)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">{t(s.descKey)}</p>
+                  <p className="text-xs font-semibold text-accent uppercase tracking-[0.15em] mb-2" >{tVi(s.subtitleKey)}</p>
+                  <h3 className="text-2xl font-bold text-navy mb-3 tracking-tight" >{tVi(s.titleKey)}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5" >{tVi(s.descKey)}</p>
 
                   <ul className="space-y-2.5 mb-6 flex-1">
                     {s.bulletsKey.map((bk) => (
                       <li key={bk} className="flex items-start gap-2.5 text-sm text-foreground/75">
                         <span className="text-primary mt-0.5 font-bold">•</span>
-                        <span>{t(bk)}</span>
+                        <span  >{tVi(bk)}</span>
                       </li>
                     ))}
                   </ul>
@@ -171,7 +170,7 @@ const ServicesSection = () => {
                     to={s.href}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-gold-dark transition-colors group/link"
                   >
-                    {t(s.learnKey)}
+                    {tVi(s.learnKey)}
                     <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                   </Link>
                 </div>
@@ -180,7 +179,7 @@ const ServicesSection = () => {
           ))}
         </div>
       </div>
-    </section>
+    </section >
   );
 };
 

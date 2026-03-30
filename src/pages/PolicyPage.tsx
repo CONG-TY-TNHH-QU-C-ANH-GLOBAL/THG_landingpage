@@ -159,7 +159,7 @@ const policies = [
 ];
 
 const PolicyPage = () => {
-  const { t, language } = useI18n();
+  const { t, effectiveLanguage } = useI18n();
   const [activePolicy, setActivePolicy] = useState(0);
 
   return (
@@ -169,7 +169,7 @@ const PolicyPage = () => {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4 notranslate" translate="no">THG Fulfill</p>
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4" >THG Fulfill</p>
               <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">{t("policy.title")}</h2>
             </div>
           </ScrollReveal>
@@ -183,8 +183,8 @@ const PolicyPage = () => {
                     key={i}
                     onClick={() => setActivePolicy(i)}
                     className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium transition-all duration-300 ${activePolicy === i
-                        ? "bg-primary text-primary-foreground shadow-lg"
-                        : "bg-secondary text-foreground/70 hover:bg-secondary/80"
+                      ? "bg-primary text-primary-foreground shadow-lg"
+                      : "bg-secondary text-foreground/70 hover:bg-secondary/80"
                       }`}
                   >
                     <p.icon className="w-4 h-4" />
@@ -207,7 +207,7 @@ const PolicyPage = () => {
                   <h3 className="text-2xl font-bold text-navy tracking-tight">{t(policies[activePolicy].titleKey)}</h3>
                 </div>
                 <ul className="space-y-4">
-                  {policies[activePolicy].content[language as keyof typeof policies[0]["content"]].map((item, i) => (
+                  {policies[activePolicy].content[effectiveLanguage as keyof typeof policies[0]["content"]].map((item, i) => (
                     <li key={i} className="flex gap-3 text-foreground/80 leading-relaxed">
                       <span className="text-primary font-bold mt-0.5">•</span>
                       <span>{item}</span>

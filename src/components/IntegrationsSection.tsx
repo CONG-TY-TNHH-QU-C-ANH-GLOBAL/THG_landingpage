@@ -18,7 +18,7 @@ const platforms: { name: string; icon: string | null; svg?: React.ReactNode; col
 ];
 
 const IntegrationsSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   return (
     <section className="py-28 bg-card relative overflow-hidden">
@@ -30,17 +30,17 @@ const IntegrationsSection = () => {
         <ScrollReveal>
           <div className="text-center mb-6">
             <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">
-              {t("integrations.subtitle")}
+              {tVi("integrations.subtitle")}
             </p>
             <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">
-              {t("integrations.title")}{" "}
-              <span className="text-gradient-gold">{t("integrations.title_highlight")}</span>
+              {tVi("integrations.title")}{" "}
+              <span className="text-gradient-gold">{tVi("integrations.title_highlight")}</span>
             </h2>
           </div>
         </ScrollReveal>
         <ScrollReveal delay={50}>
-          <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">
-            {t("integrations.desc")}
+          <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto" >
+            {tVi("integrations.desc")}
           </p>
         </ScrollReveal>
 
@@ -56,7 +56,7 @@ const IntegrationsSection = () => {
                   <div className="flex items-center gap-2 mt-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-olive animate-pulse" />
                     <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
-                      {t("integrations.sync_ready")}
+                      {tVi("integrations.sync_ready")}
                     </span>
                   </div>
                 </div>
@@ -80,8 +80,8 @@ const IntegrationsSection = () => {
                   <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-navy notranslate" translate="no">THG Fulfill OMS</p>
-                  <p className="text-[10px] text-muted-foreground">{t("integrations.hub_desc")}</p>
+                  <p className="text-sm font-bold text-navy" >THG Fulfill OMS</p>
+                  <p className="text-[10px] text-muted-foreground" >{tVi("integrations.hub_desc")}</p>
                 </div>
               </div>
             </div>

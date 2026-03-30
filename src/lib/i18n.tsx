@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export type Language = "en" | "vi" | "zh";
 
@@ -7,119 +7,119 @@ type Translations = Record<string, Record<Language, string>>;
 const translations: Translations = {
   // Navbar
   "nav.services": { en: "Services", vi: "Dịch vụ", zh: "服务" },
-  "nav.pricing": { en: "Pricing", vi: "Bảng giá", zh: "价格" },
+  "nav.pricing": { en: "Pricing list", vi: "Bảng giá", zh: "价格" },
   "nav.intl_pricing": { en: "International Pricing", vi: "Bảng giá Quốc tế", zh: "国际运费" },
   "nav.intl_pricing_desc": { en: "Transparent rates for VN/CN → US/UK/EU shipping", vi: "Cước phí minh bạch cho tuyến VN/CN → US/UK/EU", zh: "越南/中国到美国/英国/欧盟的透明运费" },
-  "nav.domestic_pricing": { en: "Domestic Pricing", vi: "Bảng giá Nội địa", zh: "国内运费" },
-  "nav.domestic_pricing_desc": { en: "US domestic zone-based shipping rates", vi: "Cước phí ship nội địa Mỹ theo Zone", zh: "美国国内按区域运费" },
+  "nav.domestic_pricing": { en: "US Domestic Pricing", vi: "Giá nội địa Mỹ", zh: "国内运费" },
+  "nav.domestic_pricing_desc": { en: "US domestic shipping rates by delivery zone", vi: "Biểu giá theo vùng giao hàng nội địa Mỹ", zh: "美国国内按区域运费" },
   "nav.policy": { en: "Policy", vi: "Chính sách", zh: "政策" },
-  "nav.news": { en: "Blog", vi: "Tin tức", zh: "博客" },
+  "nav.news": { en: "Blog", vi: "Blog", zh: "Blog" },
   "nav.faq": { en: "Q&A", vi: "Q&A", zh: "问答" },
   "nav.consult": { en: "Get Started", vi: "Tư vấn ngay", zh: "立即咨询" },
   "nav.thg_fulfill": { en: "THG Fulfill", vi: "THG Fulfill", zh: "THG Fulfill" },
   "nav.thg_express": { en: "THG Express", vi: "THG Express", zh: "THG Express" },
   "nav.thg_warehouse": { en: "THG Warehouse", vi: "THG Warehouse", zh: "THG Warehouse" },
   "nav.thg_order": { en: "THG Order", vi: "THG Order", zh: "THG Order" },
-  "nav.fulfill_desc": { en: "POD & Dropship with competitive basecost", vi: "POD & Dropship với basecost cạnh tranh", zh: "具有竞争力的POD和代发" },
+  "nav.fulfill_desc": { en: "POD & Dropship with competitive base pricing", vi: "POD & Dropship với chi phí gốc cạnh tranh", zh: "具有竞争力的POD和代发" },
   "nav.express_desc": { en: "International shipping VN/CN → US/UK/EU", vi: "Vận chuyển quốc tế VN/CN → US/UK/EU", zh: "国际运输 VN/CN → US/UK/EU" },
-  "nav.warehouse_desc": { en: "US warehousing & fulfillment from $1", vi: "Lưu kho & fulfill tại Mỹ từ $1", zh: "美国仓储及履约低至1美元" },
-  "nav.order_desc": { en: "Buy from Taobao/1688, direct to USA", vi: "Mua hàng Taobao/1688 ship thẳng Mỹ", zh: "淘宝/1688代购直邮美国" },
+  "nav.warehouse_desc": { en: "US warehouse & domestic fulfillment from $1.2", vi: "Kho & fulfill nội địa Mỹ từ 1.2$", zh: "美国仓储及履约低至1.2美元" },
+  "nav.order_desc": { en: "Buy from Taobao/1688, ship direct to USA", vi: "Mua hàng từ Taobao/1688, giao thẳng đến Mỹ", zh: "淘宝/1688代购直邮美国" },
 
   // Hero
-  "hero.badge": { en: "15% OFF for first 50 orders", vi: "Ưu đãi 15% cho 50 đơn đầu tiên", zh: "前50单享85折优惠" },
-  "hero.title1": { en: "Your Global", vi: "Đối tác", zh: "您的全球" },
-  "hero.title_highlight": { en: "Fulfillment", vi: "Fulfillment", zh: "Fulfillment" },
-  "hero.title2": { en: "Partner for", vi: "toàn cầu cho", zh: "合作伙伴，为" },
-  "hero.title3": { en: "eCommerce Sellers", vi: "eCommerce Seller", zh: "电商卖家" },
-  "hero.subtitle": { en: "A comprehensive Fulfillment ecosystem, seamlessly connecting from Vietnam – China – to US warehouses.", vi: "Hệ sinh thái Fulfillment toàn diện, kết nối liền mạch từ Việt Nam – Trung Quốc – đến tận kho Mỹ.", zh: "全面的履约生态系统，无缝连接越南-中国-美国仓库。" },
+  "hero.badge": { en: "15% OFF for first 50 orders", vi: "Ưu đãi 15% cho 50 đơn hàng đầu tiên", zh: "前50单享85折优惠" },
+  "hero.title1": { en: "Your Global", vi: "Giải pháp", zh: "您的全球" },
+  "hero.title_highlight": { en: "Fulfillment", vi: "vận chuyển quốc tế", zh: "Fulfillment" },
+  "hero.title2": { en: "Partner for", vi: "cho mọi", zh: "合作伙伴，为" },
+  "hero.title3": { en: "eCommerce Sellers", vi: "nhà bán hàng", zh: "电商卖家" },
+  "hero.subtitle": { en: "A comprehensive fulfillment ecosystem, seamlessly connecting from Vietnam – China – to warehouses in the US.", vi: "Nhanh, minh bạch, đáng tin cậy. Giao nhận liền mạch từ Việt Nam – Trung Quốc đi toàn cầu.", zh: "全面的履约生态系统，无缝连接越南-中国-美国仓库。" },
   "hero.cta": { en: "Get Started", vi: "Đăng ký ngay", zh: "立即注册" },
   "hero.learn_more": { en: "Learn More", vi: "Tìm hiểu thêm", zh: "了解更多" },
-  "hero.feature1": { en: "Product sourcing", vi: "Tìm kiếm nguồn hàng", zh: "产品采购" },
-  "hero.feature2": { en: "POD products", vi: "Cung cấp sản phẩm POD", zh: "POD产品" },
-  "hero.feature3": { en: "Warehouse management", vi: "Quản lý kho bãi", zh: "仓库管理" },
-  "hero.feature4": { en: "Global shipping US, UK, EU", vi: "Vận chuyển toàn cầu US, UK, EU", zh: "全球运输 US, UK, EU" },
+  "hero.feature1": { en: "Product sourcing", vi: "Tìm nguồn cung ứng sản phẩm", zh: "产品采购" },
+  "hero.feature2": { en: "POD products", vi: "Sản phẩm POD", zh: "POD产品" },
+  "hero.feature3": { en: "Warehouse management", vi: "Quản lý kho hàng", zh: "仓库管理" },
+  "hero.feature4": { en: "International shipping US, UK, EU", vi: "Vận chuyển quốc tế Mỹ, Anh, EU", zh: "全球运输 US, UK, EU" },
   "hero.delivery_days": { en: "delivery days", vi: "ngày giao hàng", zh: "交货天数" },
-  "hero.countries": { en: "production countries", vi: "quốc gia sản xuất", zh: "生产国" },
-  "hero.us_fulfill": { en: "US domestic fulfill", vi: "fulfill nội địa US", zh: "美国国内履约" },
+  "hero.warehouses": { en: "warehouses in 3 countries", vi: "kho ở cả 3 quốc gia", zh: "3个国家的仓库" },
+  "hero.us_fulfill": { en: "US domestic fulfill", vi: "Fulfill nội địa Mỹ", zh: "美国国内履约" },
 
   // Services (updated for 3 cards)
   "services.subtitle": { en: "Our Services", vi: "Dịch vụ của chúng tôi", zh: "我们的服务" },
-  "services.title": { en: "Fulfill", vi: "Hệ sinh thái", zh: "一站式" },
-  "services.title_highlight": { en: "A-Z", vi: "Fulfill A-Z", zh: "Fulfill A-Z" },
+  "services.title": { en: "Complete the", vi: "Hoàn thiện hệ sinh thái", zh: "一站式" },
+  "services.title_highlight": { en: "A-Z", vi: "A-Z", zh: "Fulfill A-Z" },
   "services.title2": { en: "Ecosystem", vi: "", zh: "生态系统" },
   "services.tagline": { en: "Seamlessly connecting from Vietnam – China – to US warehouses", vi: "Kết nối liền mạch từ Việt Nam – Trung Quốc – đến tận kho Mỹ", zh: "从越南-中国无缝连接到美国仓库" },
   "services.learn_more": { en: "Learn more", vi: "Tìm hiểu thêm", zh: "了解更多" },
   "services.s1_title": { en: "THG Fulfill", vi: "THG Fulfill", zh: "THG Fulfill" },
-  "services.s1_subtitle": { en: "POD & Dropship", vi: "POD & Dropship", zh: "POD & 代发" },
-  "services.s1_desc": { en: "POD printing in Vietnam, China and USA with competitive basecost. Dropship trending products support.", vi: "In ấn tại Việt Nam, Trung Quốc và Mỹ với basecost cạnh tranh. Hỗ trợ dropship hàng trend.", zh: "在越南、中国和美国进行POD印刷，basecost具有竞争力。支持趋势产品代发。" },
+  "services.s1_subtitle": { en: "Fulfill Ecosystem A-Z", vi: "Hệ sinh thái Fulfill A-Z", zh: "Fulfill生态系统A-Z" },
+  "services.s1_desc": { en: "POD printing in Vietnam, China and USA with competitive base pricing. Trending product dropship support.", vi: "In ấn POD tại Việt Nam, Trung Quốc và Mỹ với chi phí gốc cạnh tranh. Hỗ trợ dropship các sản phẩm trending.", zh: "在越南、中国和美国进行POD印刷，基础价格具有竞争力。支持趋势产品代发。" },
   "services.s1_badge": { en: "T-shirt → Print → Ship", vi: "Áo phôi → In ấn → Thành phẩm", zh: "T恤 → 印刷 → 成品" },
-  "services.s1_b1": { en: "POD in 3 countries", vi: "In POD tại 3 quốc gia", zh: "3个国家的POD" },
-  "services.s1_b2": { en: "Trending dropship from China", vi: "Dropship hàng trend từ Trung Quốc", zh: "中国趋势产品代发" },
-  "services.s1_b3": { en: "Competitive basecost", vi: "Basecost cạnh tranh", zh: "有竞争力的basecost" },
+  "services.s1_b1": { en: "Trending product dropship support", vi: "Hỗ trợ dropship các sản phẩm trending.", zh: "支持趋势产品代发" },
+  "services.s1_b2": { en: "Dropship trending products from China", vi: "Dropship hàng trending từ Trung Quốc", zh: "从中国代发热门产品" },
+  "services.s1_b3": { en: "Competitive base pricing", vi: "Chi phí gốc cạnh tranh", zh: "有竞争力的基础价格" },
   "services.s2_title": { en: "THG Express", vi: "THG Express", zh: "THG Express" },
   "services.s2_subtitle": { en: "International Shipping", vi: "Vận chuyển quốc tế", zh: "国际运输" },
-  "services.s2_desc": { en: "Dedicated air freight from Vietnam & China to US/UK. Transparent pricing with real-time tracking.", vi: "Tuyến bay riêng từ Việt Nam & Trung Quốc đi Mỹ/Anh. Báo giá minh bạch – tracking rõ ràng.", zh: "越南和中国直飞美国/英国的专线。透明报价，实时追踪。" },
+  "services.s2_desc": { en: "Dedicated air freight from Vietnam & China to US/UK. Transparent pricing, real-time order tracking.", vi: "Vận chuyển hàng không chuyên tuyến từ Việt Nam & Trung Quốc đến Mỹ/Anh. Giá minh bạch, theo dõi đơn hàng theo thời gian thực.", zh: "越南和中国到美国/英国的专线空运。透明报价，实时追踪。" },
   "services.s2_badge": { en: "5-8 days • Dedicated lines", vi: "5-8 ngày • Tuyến bay riêng", zh: "5-8天 • 专线" },
-  "services.s2_b1": { en: "Dedicated lines VN/CN → US/UK", vi: "Tuyến bay riêng VN/CN → US/UK", zh: "专线 VN/CN → US/UK" },
-  "services.s2_b2": { en: "Real-time tracking", vi: "Tracking real-time", zh: "实时追踪" },
-  "services.s2_b3": { en: "5-8 days delivery", vi: "5-8 ngày giao hàng", zh: "5-8天交货" },
+  "services.s2_b1": { en: "Dedicated routes VN/CN → US/UK", vi: "Tuyến chuyên biệt VN/CN → Mỹ/Anh", zh: "专线 VN/CN → US/UK" },
+  "services.s2_b2": { en: "Real-time order tracking", vi: "Theo dõi đơn hàng thời gian thực", zh: "实时追踪" },
+  "services.s2_b3": { en: "Delivery in 5-8 days", vi: "Giao hàng trong 5-8 ngày", zh: "5-8天交货" },
   "services.s3_title": { en: "THG Warehouse", vi: "THG Warehouse", zh: "THG Warehouse" },
   "services.s3_subtitle": { en: "US Warehousing", vi: "Lưu kho tại Mỹ", zh: "美国仓储" },
-  "services.s3_desc": { en: "US domestic fulfillment from $1. Free inbound & 90-day storage. OMS/WMS inventory management.", vi: "Fulfill nội địa Mỹ chỉ từ 1$. Miễn phí nhập kho, lưu kho 90 ngày.", zh: "美国国内履约低至1美元。免费入库，90天免费仓储。" },
-  "services.s3_badge": { en: "US Warehouse • From $1", vi: "Kho US • Fulfill từ $1", zh: "美国仓库 • 低至$1" },
-  "services.s3_b1": { en: "Fulfill from $1", vi: "Fulfill từ $1", zh: "低至$1" },
-  "services.s3_b2": { en: "Free 90-day storage", vi: "Miễn phí lưu kho 90 ngày", zh: "90天免费仓储" },
-  "services.s3_b3": { en: "Domestic 2-5 days", vi: "Ship nội địa 2-5 ngày", zh: "国内2-5天" },
+  "services.s3_desc": { en: "US domestic fulfillment from $1.2. Free inbound & 90-day storage. OMS/WMS inventory management.", vi: "Fulfill nội địa Mỹ từ 1.2$. Nhận hàng miễn phí & lưu kho 90 ngày. Quản lý tồn kho OMS/WMS.", zh: "美国国内履约低至1.2美元。免费入库，90天免费仓储。OMS/WMS库存管理。" },
+  "services.s3_badge": { en: "US Warehouse • From $1.2", vi: "Kho US • Fulfill từ $1.2", zh: "美国仓库 • 低至$1.2" },
+  "services.s3_b1": { en: "Fulfill from $1.2", vi: "Fulfill từ 1.2$", zh: "低至$1.2/单" },
+  "services.s3_b2": { en: "Free 90-day storage", vi: "Lưu kho miễn phí 90 ngày", zh: "90天免费仓储" },
+  "services.s3_b3": { en: "US domestic delivery 2–5 days", vi: "Giao nội địa 2–5 ngày", zh: "国内2-5天" },
 
   // Seller Types
-  "sellers.subtitle": { en: "Who We Serve", vi: "Đối tượng khách hàng", zh: "我们服务的对象" },
-  "sellers.title": { en: "For Every", vi: "Phù hợp với", zh: "适合每一位" },
-  "sellers.title_highlight": { en: "Seller", vi: "mọi Seller", zh: "卖家" },
-  "sellers.t1_title": { en: "New Sellers", vi: "Seller mới bắt đầu", zh: "新手卖家" },
-  "sellers.t1_desc": { en: "A-Z support for newcomers to cross-border eCommerce.", vi: "Hỗ trợ từ A-Z cho người mới bước vào thương mại điện tử xuyên biên giới.", zh: "为跨境电商新手提供全方位支持。" },
-  "sellers.t2_title": { en: "Scaling Sellers", vi: "Seller đang scale", zh: "成长型卖家" },
-  "sellers.t2_desc": { en: "Optimize costs and processes for rapid growth.", vi: "Tối ưu chi phí và quy trình để mở rộng quy mô kinh doanh nhanh chóng.", zh: "优化成本和流程，实现快速增长。" },
-  "sellers.t3_title": { en: "Team Sellers", vi: "Seller đội nhóm", zh: "团队卖家" },
-  "sellers.t3_desc": { en: "Warehouse and fulfillment solutions for professional teams.", vi: "Giải pháp quản lý kho và fulfillment cho các team bán hàng chuyên nghiệp.", zh: "为专业团队提供仓储和履约解决方案。" },
-  "sellers.t4_title": { en: "Brand & DTC", vi: "Brand & DTC", zh: "品牌 & DTC" },
-  "sellers.t4_desc": { en: "Build your own brand with premium fulfillment.", vi: "Xây dựng thương hiệu riêng với dịch vụ fulfillment cao cấp.", zh: "通过优质履约服务打造您的品牌。" },
+  "sellers.subtitle": { en: "Who We Serve", vi: "Chúng tôi phục vụ ai?", zh: "我们服务的对象" },
+  "sellers.title": { en: "For Every", vi: "Dành cho mọi", zh: "适合每一位" },
+  "sellers.title_highlight": { en: "Seller", vi: "người bán hàng", zh: "卖家" },
+  "sellers.t1_title": { en: "New Sellers", vi: "Người mới bắt đầu", zh: "新手卖家" },
+  "sellers.t1_desc": { en: "A-Z support for newcomers entering cross-border eCommerce.", vi: "Hỗ trợ A-Z cho người mới bước vào eCommerce xuyên biên giới.", zh: "为跨境电商新手提供全方位支持。" },
+  "sellers.t2_title": { en: "Scaling Sellers", vi: "Seller đang mở rộng", zh: "成长型卖家" },
+  "sellers.t2_desc": { en: "Optimize costs and processes for rapid growth.", vi: "Tối ưu chi phí và quy trình để tăng trưởng nhanh chóng.", zh: "优化成本和流程，实现快速增长。" },
+  "sellers.t3_title": { en: "Team Sellers", vi: "Seller theo nhóm/team", zh: "团队卖家" },
+  "sellers.t3_desc": { en: "Warehouse and fulfillment solutions for professional teams.", vi: "Giải pháp kho và fulfill cho các nhóm chuyên nghiệp.", zh: "为专业团队提供仓储和履约解决方案。" },
+  "sellers.t4_title": { en: "Brand & DTC", vi: "Thương hiệu & DTC", zh: "品牌 & DTC" },
+  "sellers.t4_desc": { en: "Build your own brand with premium fulfillment.", vi: "Xây dựng thương hiệu riêng với dịch vụ fulfill cao cấp.", zh: "通过优质履约服务打造您的品牌。" },
 
   // Process
   "process.subtitle": { en: "How It Works", vi: "Quy trình", zh: "如何运作" },
   "process.title": { en: "Get Started in", vi: "Bắt đầu chỉ với", zh: "仅需" },
   "process.title_highlight": { en: "4 Steps", vi: "4 bước", zh: "4步" },
   "process.s1_title": { en: "Register & Consult", vi: "Đăng ký & Tư vấn", zh: "注册 & 咨询" },
-  "process.s1_desc": { en: "Contact THG team for tailored fulfillment solutions.", vi: "Liên hệ đội ngũ THG để được tư vấn giải pháp phù hợp nhất.", zh: "联系THG团队获取定制解决方案。" },
-  "process.s2_title": { en: "Ship to Warehouse", vi: "Gửi hàng về kho", zh: "发货至仓库" },
-  "process.s2_desc": { en: "Send products to THG warehouses in Vietnam or China.", vi: "Gửi sản phẩm đến kho THG tại Việt Nam hoặc Trung Quốc.", zh: "将产品发送至越南或中国的THG仓库。" },
+  "process.s1_desc": { en: "Contact THG team for tailored fulfillment solutions.", vi: "Liên hệ đội ngũ THG để được tư vấn giải pháp fulfill phù hợp.", zh: "联系THG团队获取定制解决方案。" },
+  "process.s2_title": { en: "Ship to Warehouse", vi: "Gửi hàng đến kho", zh: "发货至仓库" },
+  "process.s2_desc": { en: "Ship products to THG warehouses in Vietnam or China.", vi: "Vận chuyển sản phẩm đến kho THG tại Việt Nam hoặc Trung Quốc.", zh: "将产品发送至越南或中国的THG仓库。" },
   "process.s3_title": { en: "Order Processing", vi: "Xử lý đơn hàng", zh: "订单处理" },
-  "process.s3_desc": { en: "Automated order processing, packaging and preparation.", vi: "Hệ thống tự động xử lý đơn, đóng gói và chuẩn bị giao hàng.", zh: "自动化订单处理、包装和准备。" },
+  "process.s3_desc": { en: "Automated order processing, packaging and preparation.", vi: "Tự động xử lý đơn, đóng gói và chuẩn bị hàng.", zh: "自动化订单处理、包装和准备。" },
   "process.s4_title": { en: "Global Delivery", vi: "Giao hàng toàn cầu", zh: "全球配送" },
-  "process.s4_desc": { en: "Products shipped to customers worldwide.", vi: "Sản phẩm được vận chuyển đến tay khách hàng trên toàn thế giới.", zh: "产品运送至全球客户手中。" },
+  "process.s4_desc": { en: "Products delivered to customers worldwide.", vi: "Sản phẩm được giao đến tay khách hàng trên toàn thế giới.", zh: "产品运送至全球客户手中。" },
 
   // Advantages
   "adv.subtitle": { en: "Why THG", vi: "Tại sao chọn THG", zh: "为什么选择THG" },
   "adv.title": { en: "Unmatched", vi: "Lợi thế", zh: "无与伦比的" },
   "adv.title_highlight": { en: "Advantages", vi: "vượt trội", zh: "优势" },
-  "adv.a1_title": { en: "Cost Optimized", vi: "Chi phí tối ưu", zh: "成本优化" },
-  "adv.a1_desc": { en: "Most competitive pricing with US domestic fulfillment from $1.", vi: "Giá cả cạnh tranh nhất thị trường với fulfill nội địa US từ 1$.", zh: "最具竞争力的价格，美国国内履约低至1美元。" },
+  "adv.a1_title": { en: "Cost Optimized", vi: "Tối ưu chi phí", zh: "成本优化" },
+  "adv.a1_desc": { en: "Most competitive pricing on the market, US domestic fulfillment from $1.", vi: "Mức giá cạnh tranh nhất thị trường, fulfill nội địa Mỹ từ 1$.", zh: "最具竞争力的价格，美国国内履约低至1美元。" },
   "adv.a2_title": { en: "Fast Delivery", vi: "Giao hàng nhanh", zh: "快速配送" },
-  "adv.a2_desc": { en: "5-8 days to EU, 3-5 days US domestic.", vi: "5-8 ngày đến EU, 3-5 ngày nội địa US.", zh: "5-8天到欧盟，3-5天美国国内。" },
+  "adv.a2_desc": { en: "5–8 days to EU, 3–5 days US domestic.", vi: "5–8 ngày đến EU, 3–5 ngày nội địa Mỹ.", zh: "5-8天到欧盟，3-5天美国国内。" },
   "adv.a3_title": { en: "Global Coverage", vi: "Phủ sóng toàn cầu", zh: "全球覆盖" },
-  "adv.a3_desc": { en: "Warehouses in 3 countries: Vietnam, China, USA.", vi: "Kho bãi tại 3 quốc gia: Việt Nam, Trung Quốc, Mỹ.", zh: "3个国家的仓库：越南、中国、美国。" },
-  "adv.a4_title": { en: "Safe & Reliable", vi: "An toàn & Tin cậy", zh: "安全可靠" },
-  "adv.a4_desc": { en: "Cargo insurance, 100% compensation for lost items.", vi: "Bảo hiểm hàng hóa, đền bù 100% nếu thất lạc.", zh: "货物保险，丢失100%赔偿。" },
+  "adv.a3_desc": { en: "Warehouses in 3 countries: Vietnam, China, USA.", vi: "Kho hàng tại 3 quốc gia: Việt Nam, Trung Quốc, Mỹ.", zh: "3个国家的仓库：越南、中国、美国。" },
+  "adv.a4_title": { en: "Safe & Reliable", vi: "An toàn & Đáng tin cậy", zh: "安全可靠" },
+  "adv.a4_desc": { en: "Cargo insurance, 100% compensation for lost items.", vi: "Bảo hiểm hàng hóa, đền bù 100% hàng thất lạc.", zh: "货物保险，丢失100%赔偿。" },
   "adv.a5_title": { en: "Modern Technology", vi: "Công nghệ hiện đại", zh: "现代技术" },
   "adv.a5_desc": { en: "Automated order management, realtime tracking.", vi: "Hệ thống quản lý đơn hàng tự động, realtime tracking.", zh: "自动化订单管理，实时追踪。" },
   "adv.a6_title": { en: "24/7 Support", vi: "Hỗ trợ 24/7", zh: "24/7支持" },
-  "adv.a6_desc": { en: "Vietnamese-speaking support team available anytime.", vi: "Đội ngũ tư vấn viên hỗ trợ bằng tiếng Việt mọi lúc.", zh: "越南语支持团队随时为您服务。" },
+  "adv.a6_desc": { en: "Vietnamese-speaking support team available anytime.", vi: "Đội ngũ hỗ trợ nói tiếng Việt, sẵn sàng mọi lúc.", zh: "越南语支持团队随时为您服务。" },
 
   // FAQ
   "faq.subtitle": { en: "Frequently Asked Questions", vi: "Câu hỏi thường gặp", zh: "常见问题" },
   "faq.q1": { en: "Who is THG Fulfill for?", vi: "THG Fulfill phù hợp với ai?", zh: "THG Fulfill适合谁？" },
   "faq.a1": { en: "THG Fulfill is suitable for all eCommerce sellers, from beginners to large brands looking to expand internationally.", vi: "THG Fulfill phù hợp với tất cả các seller eCommerce, từ người mới bắt đầu đến các brand lớn muốn mở rộng thị trường quốc tế.", zh: "THG Fulfill适合所有电商卖家，从新手到希望拓展国际市场的大品牌。" },
   "faq.q2": { en: "What are the fulfillment costs?", vi: "Chi phí fulfillment như thế nào?", zh: "履约费用是多少？" },
-  "faq.a2": { en: "US domestic fulfillment starts from $1/order. Specific pricing depends on product size, weight and order volume.", vi: "Chi phí fulfill nội địa US bắt đầu từ 1$/đơn. Giá cụ thể phụ thuộc vào kích thước, trọng lượng và khối lượng đơn.", zh: "美国国内履约从1美元/单起。具体价格取决于产品尺寸、重量和订单量。" },
+  "faq.a2": { en: "US domestic fulfillment starts from just $1.2/order. Specific pricing depends on product size, weight and order volume. Contact THG for a detailed quote.", vi: "Chi phí fulfill nội địa US chỉ từ 1.2$/đơn hàng. Giá cụ thể phụ thuộc vào kích thước, trọng lượng và khối lượng đơn. Liên hệ THG để nhận báo giá chi tiết.", zh: "美国国内履约低至1.2美元/单。具体价格取决于产品尺寸、重量和订单量。联系THG获取详细报价。" },
   "faq.q3": { en: "What are the delivery times?", vi: "Thời gian giao hàng bao lâu?", zh: "配送时间是多久？" },
   "faq.a3": { en: "US domestic: 3-5 business days. EU: 5-8 days. UK: 5-7 days.", vi: "Nội địa US: 3-5 ngày. EU: 5-8 ngày. UK: 5-7 ngày.", zh: "美国国内：3-5个工作日。欧盟：5-8天。英国：5-7天。" },
   "faq.q4": { en: "Does THG support Print on Demand?", vi: "THG có hỗ trợ Print on Demand không?", zh: "THG是否支持按需印刷？" },
@@ -208,6 +208,12 @@ const translations: Translations = {
   "fulfill_page.step4_desc": { en: "International shipping or US domestic fulfillment with real-time tracking.", vi: "Ship quốc tế hoặc fulfill nội địa US với tracking real-time.", zh: "国际运输或美国国内履约，实时追踪。" },
   "fulfill_page.cta_title": { en: "Ready to Optimize Your Fulfillment?", vi: "Sẵn sàng tối ưu Fulfillment?", zh: "准备好优化您的履约了吗？" },
   "fulfill_page.cta_desc": { en: "Contact THG team today for a free consultation on the best solution for your business.", vi: "Liên hệ đội ngũ THG ngay hôm nay để được tư vấn miễn phí giải pháp tối ưu.", zh: "今天就联系THG团队，获取免费咨询最适合您业务的解决方案。" },
+  "fulfill_page.pod_process": { en: "POD Process", vi: "Quy trình POD", zh: "POD流程" },
+  "fulfill_page.blank_tshirt": { en: "Blank T-Shirt", vi: "Áo phôi", zh: "空白T恤" },
+  "fulfill_page.dtg_print": { en: "DTG / DTF Print", vi: "In DTG / DTF", zh: "DTG / DTF 打印" },
+  "fulfill_page.your_brand": { en: "YOUR BRAND", vi: "BRAND CỦA BẠN", zh: "您的品牌" },
+  "fulfill_page.branded_product": { en: "Branded Product", vi: "Thành phẩm", zh: "品牌产品" },
+  "fulfill_page.pod_dropship_badge": { en: "POD & Dropship", vi: "POD & Dropship", zh: "POD & 代发" },
 
   // THG Express Page
   "express_page.badge": { en: "International Shipping", vi: "Vận chuyển quốc tế", zh: "国际运输" },
@@ -332,16 +338,16 @@ const translations: Translations = {
   "testimonials.title_highlight": { en: "Sellers Worldwide", vi: "Seller toàn cầu", zh: "全球卖家" },
   "testimonials.t1_name": { en: "Nguyen Minh Tuan", vi: "Nguyễn Minh Tuấn", zh: "阮明俊" },
   "testimonials.t1_role": { en: "POD Seller • Etsy & TikTok", vi: "POD Seller • Etsy & TikTok", zh: "POD卖家 • Etsy & TikTok" },
-  "testimonials.t1_quote": { en: "THG Fulfill helped me scale from 50 to 500+ orders/month. Their basecost is unbeatable and support is always responsive.", vi: "THG Fulfill giúp tôi scale từ 50 lên 500+ đơn/tháng. Basecost cực tốt và support luôn nhanh chóng.", zh: "THG Fulfill帮我从月50单增长到500+单。basecost无与伦比，支持团队总是及时响应。" },
+  "testimonials.t1_quote": { en: "THG Fulfill helped me grow from 50 to 500+ orders/month. Their base cost is unbeatable and support is always responsive.", vi: "THG Fulfill giúp tôi tăng từ 50 lên 500+ đơn/tháng. Chi phí gốc không đâu cạnh tranh bằng và đội hỗ trợ luôn phản hồi nhanh.", zh: "THG Fulfill帮我从月50单增长到500+单。基础成本无与伦比，支持团队总是及时响应。" },
   "testimonials.t2_name": { en: "David Chen", vi: "David Chen", zh: "David Chen" },
-  "testimonials.t2_role": { en: "Dropship Seller • Amazon", vi: "Dropship Seller • Amazon", zh: "代发卖家 • Amazon" },
-  "testimonials.t2_quote": { en: "The US warehouse fulfillment from $1/order is a game-changer. My customers get packages in 2-5 days instead of 2-3 weeks.", vi: "Fulfill kho US từ $1/đơn thay đổi hoàn toàn cuộc chơi. Khách hàng nhận hàng trong 2-5 ngày thay vì 2-3 tuần.", zh: "美国仓库履约低至1美元/单是改变游戏规则的。客户2-5天收到包裹，而不是2-3周。" },
+  "testimonials.t2_role": { en: "Dropship Seller · Amazon", vi: "Người bán hàng dropshipping • Amazon", zh: "代发卖家 · Amazon" },
+  "testimonials.t2_quote": { en: "US domestic fulfillment from $1.2/order is a real game-changer. My customers receive orders in 2–5 days instead of 2–3 weeks.", vi: "Fulfill nội địa Mỹ từ 1.2$/đơn thực sự là một bước ngoặt. Khách hàng của tôi nhận hàng trong 2–5 ngày thay vì 2–3 tuần như trước.", zh: "美国国内履约低至1.2美元/单是真正的游戏改变者。客户2-5天收到包裹，而不是2-3周。" },
   "testimonials.t3_name": { en: "Tran Thi Mai", vi: "Trần Thị Mai", zh: "陈氏梅" },
   "testimonials.t3_role": { en: "Brand Owner • Shopify", vi: "Chủ Brand • Shopify", zh: "品牌主 • Shopify" },
   "testimonials.t3_quote": { en: "Transparent pricing, no hidden fees. The packing video feature gives me peace of mind for every order shipped.", vi: "Giá minh bạch, không phí ẩn. Tính năng quay video đóng gói giúp tôi yên tâm với từng đơn hàng.", zh: "透明定价，无隐藏费用。包装视频功能让我对每个发出的订单都很放心。" },
   "testimonials.t4_name": { en: "Kevin Nguyen", vi: "Kevin Nguyễn", zh: "Kevin Nguyen" },
-  "testimonials.t4_role": { en: "eCommerce Team Lead", vi: "Team Lead eCommerce", zh: "电商团队负责人" },
-  "testimonials.t4_quote": { en: "We switched from 3 different fulfillment partners to THG. One ecosystem handling everything from POD to US warehouse. Incredible.", vi: "Chúng tôi chuyển từ 3 đối tác fulfill khác nhau sang THG. Một hệ sinh thái xử lý mọi thứ từ POD đến kho US. Tuyệt vời.", zh: "我们从3个不同的履约合作伙伴切换到THG。一个生态系统处理从POD到美国仓库的一切。难以置信。" },
+  "testimonials.t4_role": { en: "eCommerce Team Lead", vi: "Trưởng nhóm Thương mại điện tử", zh: "电商团队负责人" },
+  "testimonials.t4_quote": { en: "We used 3 different fulfillment partners before switching to THG. One single ecosystem handling everything from POD to US warehouse. Amazing.", vi: "Chúng tôi đã dùng qua 3 đối tác fulfill khác nhau trước khi chuyển sang THG. Một hệ sinh thái duy nhất xử lý tất cả từ POD đến kho Mỹ. Tuyệt vời.", zh: "我们在切换到THG之前使用了3个不同的履约合作伙伴。一个生态系统处理从POD到美国仓库的一切。难以置信。" },
 
   // Integrations
   "integrations.subtitle": { en: "Sync & Connect", vi: "Đồng bộ & Kết nối", zh: "同步与连接" },
@@ -356,9 +362,9 @@ const translations: Translations = {
   "about.title": { en: "Why choose", vi: "Tại sao chọn", zh: "为什么选择" },
   "about.title_highlight": { en: "THG Fulfill?", vi: "THG Fulfill?", zh: "THG Fulfill?" },
   "about.video_placeholder": { en: "Replace with your YouTube video ID", vi: "Thay bằng YouTube video ID của bạn", zh: "替换为您的YouTube视频ID" },
-  "about.video_title": { en: "End-to-end fulfillment from Asia to the US", vi: "Fulfillment trọn gói từ Châu Á đến Mỹ", zh: "从亚洲到美国的端到端履约" },
-  "about.video_desc": { en: "THG Fulfill is a comprehensive ecosystem connecting production in Vietnam & China directly to US warehouses. We handle sourcing, printing, warehousing and last-mile delivery so you can focus on growing your brand.", vi: "THG Fulfill là hệ sinh thái toàn diện kết nối sản xuất tại Việt Nam & Trung Quốc trực tiếp đến kho Mỹ. Chúng tôi lo liệu tìm nguồn, in ấn, lưu kho và giao hàng chặng cuối để bạn tập trung phát triển thương hiệu.", zh: "THG Fulfill是一个综合生态系统，将越南和中国的生产直接连接到美国仓库。我们负责采购、印刷、仓储和最后一公里配送，让您专注于品牌发展。" },
-  "about.highlight1": { en: "Competitive basecost", vi: "Basecost cạnh tranh", zh: "有竞争力的基本成本" },
+  "about.video_title": { en: "End-to-end fulfillment service from Asia to the US", vi: "Dịch vụ vận chuyển trọn gói từ châu Á đến Mỹ.", zh: "从亚洲到美国的端到端履约" },
+  "about.video_desc": { en: "THG Fulfill is a comprehensive ecosystem connecting production in Vietnam & China directly to US warehouses. We handle everything from sourcing, printing, warehousing to last-mile delivery — so you can focus on growing your brand.", vi: "THG Fulfill là hệ sinh thái toàn diện, kết nối trực tiếp sản xuất tại Việt Nam & Trung Quốc với kho hàng tại Mỹ. Chúng tôi xử lý toàn bộ từ tìm nguồn hàng, in ấn, lưu kho đến giao hàng chặng cuối — để bạn tập trung phát triển thương hiệu.", zh: "THG Fulfill是一个综合生态系统，将越南和中国的生产直接连接到美国仓库。我们负责采购、印刷、仓储和最后一公里配送，让您专注于品牌发展。" },
+  "about.highlight1": { en: "Competitive base pricing", vi: "Chi phí gốc cạnh tranh", zh: "有竞争力的基本成本" },
   "about.highlight2": { en: "Fast US delivery", vi: "Giao hàng nhanh tại Mỹ", zh: "美国快速交付" },
   "about.highlight3": { en: "Global network", vi: "Mạng lưới toàn cầu", zh: "全球网络" },
   "about.highlight4": { en: "Quality guaranteed", vi: "Đảm bảo chất lượng", zh: "质量保证" },
@@ -367,8 +373,8 @@ const translations: Translations = {
   "about.img1_desc": { en: "Source trending products from China & Vietnam", vi: "Tìm sản phẩm trend từ Trung Quốc & Việt Nam", zh: "从中国和越南采购热门产品" },
   "about.img2_title": { en: "POD Printing", vi: "In ấn POD", zh: "POD印刷" },
   "about.img2_desc": { en: "High-quality print-on-demand production", vi: "Sản xuất in theo yêu cầu chất lượng cao", zh: "高质量按需印刷生产" },
-  "about.img3_title": { en: "US Warehouse", vi: "Kho Mỹ", zh: "美国仓库" },
-  "about.img3_desc": { en: "Storage & fulfillment from $1/order", vi: "Lưu kho & fulfill từ $1/đơn", zh: "仓储和履约低至1美元/单" },
+  "about.img3_title": { en: "US Warehouse", vi: "Kho hàng Hoa Kỳ", zh: "美国仓库" },
+  "about.img3_desc": { en: "Storage & order processing from $1.2/order", vi: "Lưu kho và xử lý đơn chỉ từ 1.2$/đơn hàng", zh: "仓储和履约低至1.2美元/单" },
   "about.img4_title": { en: "Express Shipping", vi: "Vận chuyển nhanh", zh: "快速运输" },
   "about.img4_desc": { en: "5-8 days VN/CN to US doorstep", vi: "5-8 ngày từ VN/CN đến tận nhà Mỹ", zh: "越南/中国到美国5-8天送达" },
   // ── THG Fulfill Page: Extra content ──
@@ -419,6 +425,12 @@ const translations: Translations = {
   "express_page.faq7_a": { en: "THG Express offers clear cost reporting with no hidden fees.", vi: "THG Express cam kết báo chi phí rõ ràng, không phí phát sinh.", zh: "THG Express承诺清晰费用报告，无隐藏费用。" },
 
   // ── THG Warehouse Page: Extra content ──
+  "warehouse_page.hero_title": { en: "THG Warehouse US", vi: "THG Warehouse US", zh: "THG Warehouse US" },
+  "warehouse_page.hero_subtitle": { en: "Optimized logistics solution for your business", vi: "Giải pháp kho vận tối ưu cho doanh nghiệp của bạn", zh: "为您的企业提供优化的物流解决方案" },
+  "warehouse_page.stat1": { en: "10,000+ sqm total area", vi: "Tổng diện tích 10,000+ m²", zh: "总面积 10,000+ 平方米" },
+  "warehouse_page.stat2": { en: "US fulfillment fee from $1.2", vi: "Phí fulfill US chỉ từ $1.2", zh: "美国履约费低至 $1.2/单" },
+  "warehouse_page.stat3": { en: "Free storage up to 90 days", vi: "Miễn phí lưu kho lên đến 90 ngày", zh: "免费存储长达90天" },
+  "warehouse_page.stat4": { en: "Express delivery 2-5 days", vi: "Giao hàng hỏa tốc 2-5 ngày làm việc", zh: "快递2-5个工作日交货" },
   "warehouse_page.feat1_title": { en: "Maximum Savings", vi: "Tiết kiệm tối đa", zh: "最大节省" },
   "warehouse_page.feat1_desc": { en: "US fulfillment fee from just $1.2/order.", vi: "Phí fulfill US chỉ từ 1.2$/đơn.", zh: "美国履约费低至$1.2/单。" },
   "warehouse_page.feat2_title": { en: "No Storage Worries", vi: "Không lo chi phí", zh: "无仓储顾虑" },
@@ -448,26 +460,95 @@ const translations: Translations = {
   "warehouse_page.oms_desc1": { en: "Exclusive camera recording throughout the packing process – Transparent operations, maximum protection for seller rights.", vi: "Camera ghi hình độc quyền xuyên suốt quá trình đóng gói – Minh bạch vận hành, bảo vệ tối đa quyền lợi người bán.", zh: "全程独家摄像记录包装过程 – 透明运营，最大限度保护卖家权益。" },
   "warehouse_page.oms_desc2": { en: "THG Warehouse integrates video recording throughout packing to reduce error risk and protect seller rights.", vi: "THG Warehouse tích hợp quay video trong toàn bộ quá trình đóng gói, giảm rủi ro sai sót và bảo vệ quyền lợi Seller.", zh: "THG Warehouse在包装全程集成视频录制，降低出错风险，保护卖家权益。" },
   "warehouse_page.oms_cta": { en: "Experience OMS System", vi: "Trải nghiệm Hệ thống OMS", zh: "体验OMS系统" },
+
+  // ── Pricing Page: Search Widget & UI ──
+  "pricing.search_from": { en: "Ship From", vi: "Gửi Từ", zh: "从...发货" },
+  "pricing.search_to": { en: "Ship To", vi: "Giao Đến", zh: "发送至" },
+  "pricing.search_svc": { en: "Service", vi: "Dịch Vụ", zh: "服务" },
+  "pricing.search_cargo": { en: "Cargo Type", vi: "Loại Hàng", zh: "货物类型" },
+  "pricing.search_weight": { en: "Weight (KG)", vi: "Cân Nặng (KG)", zh: "重量 (KG)" },
+  "pricing.search_btn": { en: "SEARCH", vi: "TRA CỨU", zh: "搜索" },
+  "pricing.opt_vn": { en: "vn Vietnam", vi: "vn Việt Nam", zh: "vn 越南" },
+  "pricing.opt_cn": { en: "cn China", vi: "cn Trung Quốc", zh: "cn 中国" },
+  "pricing.opt_all": { en: "🌍 All Countries", vi: "🌍 Tất cả quốc gia", zh: "🌍 所有国家" },
+  "pricing.opt_us": { en: "🇺🇸 United States (US)", vi: "🇺🇸 Mỹ (US)", zh: "🇺🇸 美国 (US)" },
+  "pricing.opt_uk": { en: "🇬🇧 United Kingdom (UK)", vi: "🇬🇧 Anh (UK)", zh: "🇬🇧 英国 (UK)" },
+  "pricing.opt_de": { en: "🇩🇪 Germany (DE)", vi: "🇩🇪 Đức (DE)", zh: "🇩🇪 德国 (DE)" },
+  "pricing.opt_fr": { en: "🇫🇷 France (FR)", vi: "🇫🇷 Pháp (FR)", zh: "🇫🇷 法国 (FR)" },
+  "pricing.opt_au": { en: "🇦🇺 Australia (AU)", vi: "🇦🇺 Úc (AU)", zh: "🇦🇺 澳大利亚 (AU)" },
+  "pricing.cargo_std": { en: "Standard", vi: "Hàng Thường", zh: "普货" },
+  "pricing.cargo_cos": { en: "Cosmetics", vi: "Mỹ Phẩm", zh: "化妆品" },
+  "pricing.cargo_bat": { en: "Battery", vi: "Pin Điện", zh: "电池" },
+  "pricing.svc_epa": { en: "Epacket", vi: "Epacket", zh: "E邮宝" },
+  "pricing.svc_exp": { en: "Bulk / Express", vi: "Hàng Lô / Express", zh: "大货/快递" },
+  "pricing.tab_epa_desc": { en: "Epacket & Small Parcels", vi: "Bảng giá Epacket & Bưu kiện", zh: "Epacket和邮政小包" },
+  "pricing.tab_exp_desc": { en: "Bulk Cargo & Express Lines", vi: "Hàng Sỉ, Lô & Express", zh: "大货和快递专线" },
+  "pricing.res_title": { en: "✅ Estimated Price", vi: "✅ Kết quả giá ước tính", zh: "✅ 预估价格" },
+  "pricing.res_days": { en: "7–14 business days", vi: "7–14 ngày làm việc", zh: "7–14 个工作日" },
+  "pricing.res_base": { en: "Estimated Base Cost", vi: "Cước Cơ Bản Ước Tính", zh: "预估基本费用" },
+  "pricing.res_note": { en: "*Excludes remote area surcharges & VAT", vi: "*Chưa tính phụ phí vùng sâu & VAT", zh: "*不包含偏远附加费和增值税" },
+  "pricing.tab_header": { en: "View Full Pricing Table", vi: "Xem Toàn Bộ Bảng Giá", zh: "查看完整报价表" },
+  "pricing.btn_expand": { en: "See {count} more options", vi: "Xem thêm {count} tuỳ chọn", zh: "查看更多{count}个选项" },
+  "pricing.btn_collapse": { en: "Collapse table", vi: "Thu gọn bảng giá", zh: "收起表格" },
 };
 
 interface I18nContextType {
   language: Language;
+  effectiveLanguage: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  tVi: (key: string) => string;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>("en");
+  // Track GTranslate language from html[lang] attribute
+  const [gtLang, setGtLang] = useState<string>(() => {
+    if (typeof document !== "undefined") {
+      return document.documentElement.lang || "vi";
+    }
+    return "vi";
+  });
 
+  // Observe GTranslate language changes on <html lang="...">
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const lang = document.documentElement.lang || "vi";
+      setGtLang(lang);
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["lang"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  // Standard t() — always returns base language (Vietnamese) so GTranslate can translate it
   const t = (key: string): string => {
-    // Always render English — GTranslate handles vi/zh at DOM level
-    return translations[key]?.en || key;
+    return translations[key]?.vi || translations[key]?.en || key;
   };
 
+  // Smart translation — returns curated text matching the current GTranslate language.
+  // Use with translate="no" on its container to prevent GTranslate from overwriting.
+  // English mode → exact English | Vietnamese mode → exact Vietnamese | Chinese → exact Chinese
+  const tVi = (key: string): string => {
+    if (gtLang.startsWith("zh")) {
+      return translations[key]?.zh || translations[key]?.en || key;
+    }
+    if (gtLang.startsWith("en")) {
+      return translations[key]?.en || key;
+    }
+    // Default to Vietnamese since it's the master language
+    return translations[key]?.vi || translations[key]?.en || key;
+  };
+
+  // Derive effective Language type from GTranslate's detected language
+  const effectiveLanguage: Language = gtLang.startsWith("zh") ? "zh" : gtLang.startsWith("en") ? "en" : "vi";
+
   return (
-    <I18nContext.Provider value={{ language, setLanguage, t }}>
+    <I18nContext.Provider value={{ language, effectiveLanguage, setLanguage, t, tVi }}>
       {children}
     </I18nContext.Provider>
   );

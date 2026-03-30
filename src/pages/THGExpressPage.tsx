@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
@@ -7,6 +8,7 @@ import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
 import { Truck, ArrowRight, Plane, Ship, Shield, Clock, Search, MapPin, Globe, Sparkles, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
@@ -92,10 +94,11 @@ const StatCounter = ({ value, suffix, label }: { value: number; suffix: string; 
 const THGExpressPage = () => {
   const { t } = useI18n();
   const [trackingCode, setTrackingCode] = useState("");
+  const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
 
   const handleTrack = () => {
     if (trackingCode.trim()) {
-      window.open(`https://t.17track.net/en#nums=${trackingCode}`, "_blank");
+      setIsTrackModalOpen(true);
     }
   };
 
@@ -116,6 +119,24 @@ const THGExpressPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+
+      {/* Tracking Modal */}
+      <Dialog open={isTrackModalOpen} onOpenChange={setIsTrackModalOpen}>
+        <DialogContent className="sm:max-w-3xl h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
+          <DialogHeader className="p-4 border-b">
+            <DialogTitle>THG Tracking: {trackingCode}</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 bg-muted/20 w-full">
+            {isTrackModalOpen && (
+              <iframe
+                src={`https://t.17track.net/en#nums=${trackingCode}`}
+                className="w-full h-full border-0"
+                title="17Track"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* ══════════════════════════════════════════════════════════
           MEGA HERO — Immersive multi-panel: text + images + video
@@ -142,7 +163,7 @@ const THGExpressPage = () => {
               <ScrollReveal direction="scale">
                 <div className="inline-flex items-center gap-2.5 glass-card glow-pulse rounded-full px-5 py-2.5 mb-8 bg-[hsl(var(--gold))]/10 border-[hsl(var(--gold))]/25">
                   <Sparkles className="w-4 h-4 text-[hsl(var(--gold))]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))] notranslate" translate="no">THG Express</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]" >THG Express</span>
                 </div>
               </ScrollReveal>
 
@@ -230,7 +251,7 @@ const THGExpressPage = () => {
                   />
                   {/* Overlay badge */}
                   <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/80 backdrop-blur-md border-border/30">
-                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center notranslate" translate="no">4 Kho tại Mỹ</p>
+                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center" >4 Kho tại Mỹ</p>
                   </div>
                 </div>
               </div>
@@ -380,8 +401,8 @@ const THGExpressPage = () => {
                 <Link
                   to={l.link}
                   className={`group flex items-center gap-5 p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 hover:-translate-y-2 ${l.special
-                      ? "border-pink-500/25 bg-pink-500/[0.04] hover:border-pink-400/50 hover:bg-pink-500/[0.08] hover:shadow-[0_20px_50px_rgba(236,72,153,0.15)]"
-                      : "border-white/8 bg-white/[0.02] hover:border-[hsl(var(--gold-light))]/25 hover:bg-white/[0.05] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+                    ? "border-pink-500/25 bg-pink-500/[0.04] hover:border-pink-400/50 hover:bg-pink-500/[0.08] hover:shadow-[0_20px_50px_rgba(236,72,153,0.15)]"
+                    : "border-white/8 bg-white/[0.02] hover:border-[hsl(var(--gold-light))]/25 hover:bg-white/[0.05] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
                     }`}
                 >
                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0 transition-all duration-500 group-hover:scale-110 ${l.special ? "bg-pink-500/10 border border-pink-500/20 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]" : "bg-white/5 border border-white/10 group-hover:shadow-[var(--shadow-glow)]"
@@ -431,33 +452,8 @@ const THGExpressPage = () => {
         </div>
       </section>
 
-      {/* ════════════════════ CTA ════════════════════ */}
-      <section className="relative py-32 bg-gradient-dark overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))]/20 to-transparent" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-[hsl(var(--gold))]/5 rounded-full blur-[120px]" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`, backgroundSize: "32px 32px" }} />
-        <div className="absolute top-16 right-[15%] w-2 h-2 bg-[hsl(var(--gold-light))]/20 rounded-full animate-pulse" />
-        <div className="absolute bottom-20 left-[18%] w-3 h-3 bg-[hsl(var(--gold-light))]/10 rounded-full animate-pulse" style={{ animationDelay: "0.7s" }} />
-
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <ScrollReveal direction="scale">
-            <div className="inline-flex items-center gap-2 glow-pulse mb-8">
-              <Sparkles className="w-7 h-7 text-[hsl(var(--gold-light))]" />
-            </div>
-          </ScrollReveal>
-          <ScrollReveal delay={100}>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">{t("express_page.cta_title")}</h2>
-          </ScrollReveal>
-          <ScrollReveal delay={200}>
-            <p className="text-white/35 mb-12 max-w-lg mx-auto font-light leading-relaxed text-lg">{t("express_page.cta_desc")}</p>
-          </ScrollReveal>
-          <ScrollReveal delay={300} direction="up">
-            <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-14 py-7 text-base gap-3 shadow-[0_12px_40px_hsl(36_45%_42%/0.4)] hover:shadow-[0_20px_60px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:scale-105">
-              {t("nav.consult")} <ArrowRight className="w-5 h-5" />
-            </Button>
-          </ScrollReveal>
-        </div>
-      </section>
+      {/* Contact Section */}
+      <ContactSection />
 
       <Footer />
     </div>

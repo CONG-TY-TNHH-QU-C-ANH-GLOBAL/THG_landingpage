@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
@@ -145,19 +146,8 @@ const THGOrderPage = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-gradient-dark text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <ScrollReveal>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">{t("order_page.cta_title")}</h2>
-            <p className="text-primary-foreground/60 mb-8 max-w-lg mx-auto">{t("order_page.cta_desc")}</p>
-            <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-10 py-6 text-base gap-2 shadow-lg">
-              {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-            </Button>
-          </ScrollReveal>
-        </div>
-      </section>
-
+      {/* Contact Section */}
+      <ContactSection />
       <Footer />
     </div>
   );

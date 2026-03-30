@@ -3,7 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const AdvantagesSection = () => {
-  const { t } = useI18n();
+  const { t, tVi } = useI18n();
 
   const advantages = [
     { icon: DollarSign, titleKey: "adv.a1_title", descKey: "adv.a1_desc" },
@@ -22,10 +22,10 @@ const AdvantagesSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-20">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("adv.subtitle")}</p>
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("adv.subtitle")}</p>
             <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
-              {t("adv.title")}{" "}
-              <span className="text-gradient-gold">{t("adv.title_highlight")}</span>
+              {tVi("adv.title")}{" "}
+              <span className="text-gradient-gold">{tVi("adv.title_highlight")}</span>
             </h2>
           </div>
         </ScrollReveal>
@@ -40,8 +40,8 @@ const AdvantagesSection = () => {
                   <a.icon className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-navy mb-2 tracking-tight">{t(a.titleKey)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{t(a.descKey)}</p>
+                  <h3 className="text-lg font-bold text-navy mb-2 tracking-tight" >{tVi(a.titleKey)}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed" >{tVi(a.descKey)}</p>
                 </div>
               </div>
             </ScrollReveal>

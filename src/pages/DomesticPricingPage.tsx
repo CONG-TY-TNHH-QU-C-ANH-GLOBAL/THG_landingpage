@@ -32,7 +32,7 @@ const DomesticPricingContent = () => {
                             US Domestic <span className="text-primary">Shipping Rates</span>
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-                            Zone-based pricing for US domestic shipping. Competitive USPS rates from <span className="notranslate" translate="no">THG Warehouse</span> fulfillment centers.
+                            Zone-based pricing for US domestic shipping. Competitive USPS rates from <span  >THG Warehouse</span> fulfillment centers.
                         </p>
 
                         {/* Tab navigation to International */}
@@ -115,7 +115,7 @@ const DomesticPricingContent = () => {
                         </div>
 
                         {/* Table */}
-                        <div className="overflow-x-auto notranslate" translate="no">
+                        <div className="overflow-x-auto" >
                             <table className="w-full text-sm min-w-[500px] whitespace-nowrap">
                                 <thead>
                                     <tr className="bg-navy text-white">
