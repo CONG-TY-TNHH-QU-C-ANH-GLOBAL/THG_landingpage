@@ -936,14 +936,14 @@ const InternationalPricingPage = () => {
                       badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority VN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
                       note="Cập nhật: 29/03/2026"
                       data={(pricingData as any)["uspsVn"] || []}
-                      columns={[{key: "us", label: "Cước ($)"}]}
+                      columns={[{key: "rate", label: "Cước ($)"}]}
                     />
                     <PriceTable
                       title="Bảng Giá Chi Tiết CN ➝ US (Priority)"
                       badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority CN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
                       note="Cập nhật: 29/03/2026"
                       data={(pricingData as any)["uspsCn"] || []}
-                      columns={[{key: "us", label: "Cước ($)"}]}
+                      columns={[{key: "rate", label: "Cước ($)"}]}
                     />
                   </div>
                 ) : (
