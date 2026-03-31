@@ -25,7 +25,7 @@ const serviceItems = [
 const pricingItems = [
   { icon: Globe, titleKey: "nav.intl_pricing", descKey: "nav.intl_pricing_desc", href: "/bang-gia-quoc-te" },
   { icon: MapPin, titleKey: "nav.domestic_pricing", descKey: "nav.domestic_pricing_desc", href: "/bang-gia-noi-dia" },
-  { icon: Tag, titleKey: "nav.catalog", descKey: "nav.catalog_desc", href: "https://www.saranimkr.online/catalog", external: true },
+  { icon: Tag, titleKey: "nav.catalog", descKey: "nav.catalog_desc", href: "/catalog" },
 ];
 
 const Navbar = () => {

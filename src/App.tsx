@@ -15,6 +15,7 @@ const THGOrderPage = lazy(() => import("./pages/THGOrderPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const InternationalPricingPage = lazy(() => import("./pages/InternationalPricingPage"));
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
+const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 
 const App = () => (
   <I18nProvider>
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/thg-express" element={<THGExpressPage />} />
             <Route path="/thg-warehouse" element={<THGWarehousePage />} />
             <Route path="/thg-order" element={<THGOrderPage />} />
+            <Route path="/catalog" element={<CatalogPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
