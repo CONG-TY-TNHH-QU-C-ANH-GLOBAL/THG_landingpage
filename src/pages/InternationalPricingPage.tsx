@@ -18,10 +18,10 @@ type ExpressRoute = "vn-us" | "cn-us";
 type CargoType = "standard" | "cosmetics" | "battery";
 
 const ROUTES: Record<EpacketRoute, { name: React.ReactNode; nameVi: React.ReactNode; time: string; cargo: CargoType[]; type: string }> = {
-  "std-vn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard VN → Worldwide</span>, nameVi: "🇻🇳 Standard VN → Worldwide", time: "⏱ 5–12 BSD", cargo: ["standard", "cosmetics"], type: "merchant" },
-  "std-cn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard CN → Worldwide</span>, nameVi: "🇨🇳 Standard CN → Worldwide", time: "⏱ 6–12 BSD", cargo: ["standard", "cosmetics", "battery"], type: "merchant" },
-  "pri-vncn-us": { name: <span className="notranslate font-semibold tracking-wide">Priority VN/CN → US</span>, nameVi: "🇻🇳/🇨🇳 Priority VN/CN → US", time: "⏱ 5–10 BSD", cargo: ["standard"], type: "merchant" },
-  "cn-us-label": { name: <span className="notranslate font-semibold tracking-wide">CN → US Ship by Label</span>, nameVi: "🇨🇳 CN → US Ship by Label", time: "⏱ Theo lịch USPS", cargo: [], type: "label" },
+  "std-vn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard <span translate='no'>VN</span> → Worldwide</span>, nameVi: <>🇻🇳 Standard <span translate='no'>VN</span> → Worldwide</>, time: "⏱ 5–12 BSD", cargo: ["standard", "cosmetics"], type: "merchant" },
+  "std-cn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard <span translate='no'>CN</span> → Worldwide</span>, nameVi: <>🇨🇳 Standard <span translate='no'>CN</span> → Worldwide</>, time: "⏱ 6–12 BSD", cargo: ["standard", "cosmetics", "battery"], type: "merchant" },
+  "pri-vncn-us": { name: <span className="notranslate font-semibold tracking-wide">Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></span>, nameVi: <>🇻🇳/🇨🇳 Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></>, time: "⏱ 5–10 BSD", cargo: ["standard"], type: "merchant" },
+  "cn-us-label": { name: <span className="notranslate font-semibold tracking-wide"><span translate='no'>CN</span> → <span translate='no'>US</span> Ship by Label</span>, nameVi: <>🇨🇳 <span translate='no'>CN</span> → <span translate='no'>US</span> Ship by Label</>, time: "⏱ Theo lịch USPS", cargo: [], type: "label" },
 };
 
 const CARGO_LABELS: Record<CargoType, string> = { standard: "Hàng Thường", cosmetics: "Mỹ Phẩm", battery: "Pin Điện" };
@@ -365,7 +365,7 @@ const TerminologyPanel = () => {
       title: { vi: "🌏 Nhóm 4 — Tuyến vận chuyển", en: "🌏 Group 4 — Shipping Routes", zh: "🌏 第4组 — 运输线路" },
       terms: [
         {
-          term: { vi: "Standard VN → Worldwide", en: "Standard VN → Worldwide", zh: "Standard VN → Worldwide" },
+          term: { vi: "Standard <span translate='no'>VN</span> → Worldwide", en: "Standard <span translate='no'>VN</span> → Worldwide", zh: "Standard <span translate='no'>VN</span> → Worldwide" },
           desc: {
             vi: "Tuyến vận chuyển tiêu chuẩn từ Việt Nam đến các quốc gia trên toàn thế giới. Hàng được giao trực tiếp đến tay người nhận tại nước đến. Phù hợp với hàng thông thường và mỹ phẩm. Tracking number được cung cấp là tracking của Yun Express.",
             en: "Standard shipping route from Vietnam to destinations worldwide. Parcels are delivered directly to the recipient in the destination country. Supports regular goods and cosmetics. Tracking numbers provided are Yun Express tracking numbers.",
@@ -373,7 +373,7 @@ const TerminologyPanel = () => {
           }
         },
         {
-          term: { vi: "Standard CN → Worldwide", en: "Standard CN → Worldwide", zh: "Standard CN → Worldwide" },
+          term: { vi: "Standard <span translate='no'>CN</span> → Worldwide", en: "Standard <span translate='no'>CN</span> → Worldwide", zh: "Standard <span translate='no'>CN</span> → Worldwide" },
           desc: {
             vi: "Tuyến vận chuyển tiêu chuẩn từ Trung Quốc đến toàn cầu. Ngoài hàng thông thường và mỹ phẩm, tuyến này còn hỗ trợ vận chuyển hàng có pin (battery). Tracking number được cung cấp là tracking của Yun Express.",
             en: "Standard shipping route from China to worldwide destinations. In addition to regular goods and cosmetics, this route also supports items containing batteries. Tracking numbers provided are Yun Express tracking numbers.",
@@ -381,7 +381,7 @@ const TerminologyPanel = () => {
           }
         },
         {
-          term: { vi: "Priority VN/CN → US (Tuyến ưu tiên đi Mỹ)", en: "Priority VN/CN → US", zh: "Priority VN/CN → US（越/中至美优先线路）" },
+          term: { vi: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span> (Tuyến ưu tiên đi Mỹ)", en: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span>", zh: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span>（越/中至美优先线路）" },
           desc: {
             vi: "Tuyến ưu tiên từ Việt Nam hoặc Trung Quốc đến Mỹ với thời gian xử lý nhanh hơn (5–10 BSD). Tracking number được cung cấp bằng USPS và sẽ được active trong vòng 24 giờ kể từ thời điểm tạo tracking. Phù hợp cho khách hàng bán hàng qua các nền tảng như Amazon, TikTok.",
             en: "Priority route from Vietnam or China to the United States with faster processing (5–10 BSD). Tracking numbers are provided by USPS and will be activated within 24 hours of the tracking number being created. Suitable for sellers on platforms such as Amazon and TikTok.",
@@ -866,7 +866,7 @@ const InternationalPricingPage = () => {
             {route === "cn-us-label" ? (
               <div>
                 <div className="bg-white border border-[var(--pricing-border)] rounded-xl p-6 shadow-sm">
-                  <h3 className="font-extrabold text-base text-navy mb-2 notranslate">🏷️ CN – US Ship by Label</h3>
+                  <h3 className="font-extrabold text-base text-navy mb-2 notranslate">🏷️ <span translate='no'>CN</span> – <span translate='no'>US</span> Ship by Label</h3>
                   <p className="text-muted-foreground text-[13px] mb-3">
                     Dịch vụ dành cho đơn hàng <strong>đã có sẵn shipping label</strong> từ TikTok Shop và Marketplace.
                   </p>
@@ -929,13 +929,32 @@ const InternationalPricingPage = () => {
                 </div>
 
                 {/* ──── PRICE TABLE ──── */}
-                <PriceTable
-                  title="Bảng Giá Chi Tiết"
-                  badge={`${routeConfig.name} · ${CARGO_LABELS[cargo]}`}
-                  note="Cập nhật: 29/03/2026"
-                  data={currentData}
-                  columns={tableColumns}
-                />
+                {route === "pri-vncn-us" ? (
+                  <div className="flex flex-col gap-6">
+                    <PriceTable
+                      title="Bảng Giá Chi Tiết VN ➝ US (Priority)"
+                      badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority VN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
+                      note="Cập nhật: 29/03/2026"
+                      data={(pricingData as any)["uspsVn"] || []}
+                      columns={[{key: "us", label: "Cước ($)"}]}
+                    />
+                    <PriceTable
+                      title="Bảng Giá Chi Tiết CN ➝ US (Priority)"
+                      badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority CN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
+                      note="Cập nhật: 29/03/2026"
+                      data={(pricingData as any)["uspsCn"] || []}
+                      columns={[{key: "us", label: "Cước ($)"}]}
+                    />
+                  </div>
+                ) : (
+                  <PriceTable
+                    title="Bảng Giá Chi Tiết"
+                    badge={<div className="flex items-center gap-1">{routeConfig.name} <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
+                    note="Cập nhật: 29/03/2026"
+                    data={currentData}
+                    columns={tableColumns}
+                  />
+                )}
 
                 {/* ──── POST-TABLE ACCORDIONS ──── */}
                 <div className="flex flex-col gap-3 mt-6">
@@ -1217,8 +1236,8 @@ const TikTokPanel = () => {
     { id: "cnUsSpecial", label: "🇺🇸 CN → US (Đặc Biệt)", dataKey: "tiktokCnUsSpecial" },
     { id: "cnUk", label: "🇬🇧 CN → UK", dataKey: "tiktokCnUk" },
     { id: "cnDe", label: "🇩🇪 CN → DE", dataKey: "tiktokCnDe" },
-    { id: "vnSeller", label: "🇻🇳 VN → US (Seller)", dataKey: "tiktokVnSeller" },
-    { id: "vnTiktok", label: "🇻🇳 VN → US (TikTok)", dataKey: "tiktokVnTiktok" },
+    { id: "vnSeller", label: <>🇻🇳 <span translate='no'>VN</span> → <span translate='no'>US</span> (Seller)</>, dataKey: "tiktokVnSeller" },
+    { id: "vnTiktok", label: <>🇻🇳 <span translate='no'>VN</span> → <span translate='no'>US</span> (TikTok)</>, dataKey: "tiktokVnTiktok" },
   ];
 
   const activeTab = tabs.find(t => t.id === tab)!;
