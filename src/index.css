@@ -78,7 +78,8 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: "Times New Roman", Times, serif;
+    
+    
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
@@ -90,7 +91,7 @@
   h4,
   h5,
   h6 {
-    font-family: "Times New Roman", Times, serif;
+    
     font-weight: 600;
     letter-spacing: -0.025em;
   }

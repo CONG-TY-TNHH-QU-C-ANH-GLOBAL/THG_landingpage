@@ -15,7 +15,6 @@ const THGOrderPage = lazy(() => import("./pages/THGOrderPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const InternationalPricingPage = lazy(() => import("./pages/InternationalPricingPage"));
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
-const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 
 const App = () => (
   <I18nProvider>
@@ -30,7 +29,6 @@ const App = () => (
             <Route path="/tin-tuc" element={<BlogPage />} />
             <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
             <Route path="/bang-gia-noi-dia" element={<DomesticPricingPage />} />
-            <Route path="/catalog" element={<CatalogPage />} />
             <Route path="/thg-fulfill" element={<THGFulfillPage />} />
             <Route path="/thg-express" element={<THGExpressPage />} />
             <Route path="/thg-warehouse" element={<THGWarehousePage />} />

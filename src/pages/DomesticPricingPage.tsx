@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -6,8 +6,10 @@ import { domesticPricingRows, fulfillmentServices } from "@/data/domesticPricing
 import { Link } from "react-router-dom";
 import {
     MapPin, Package, Truck, Globe, DollarSign, Shield,
-    ChevronDown, ChevronUp, ArrowRight, Warehouse, CheckCircle2
+    ChevronDown, ChevronUp, ArrowRight, Warehouse, CheckCircle2,
+    FileSpreadsheet, FileText, FileIcon
 } from "lucide-react";
+import { exportToExcel, exportToWord, exportToPdf } from "@/lib/exportUtils";
 
 const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
@@ -17,6 +19,15 @@ const DomesticPricingContent = () => {
     const [showAll, setShowAll] = useState(false);
     const displayRows = showAll ? domesticPricingRows : domesticPricingRows.slice(0, INITIAL_ROWS);
     const hasMore = domesticPricingRows.length > INITIAL_ROWS;
+    
+    // Export Data Mapping
+    const exportConfig = React.useMemo(() => {
+        const headers = ["STT", "Cân nặng (oz)", "Cân nặng (gram)", `Cước phí (Zone ${selectedZone})`];
+        const rows = domesticPricingRows.map(row => [
+            row.STT, row.weight, row.gram, row.zones[selectedZone]
+        ]);
+        return { filename: 'THG_Domestic_Pricing_Zone_' + selectedZone, headers, rows };
+    }, [selectedZone]);
 
     return (
         <main className="pt-24 pb-20 bg-background">
@@ -24,30 +35,30 @@ const DomesticPricingContent = () => {
                 {/* Hero */}
                 <ScrollReveal>
                     <div className="text-center mb-12">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-sm font-medium text-primary mb-6">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-[13px] font-medium text-primary mb-6">
                             <MapPin className="w-4 h-4" />
-                            US Domestic Shipping
+                            Vận Chuyển Nội Địa Mỹ
                         </div>
                         <h1 className="text-3xl md:text-5xl font-bold text-navy mb-4 tracking-tight">
-                            US Domestic <span className="text-primary">Shipping Rates</span>
+                            Bảng Giá Cước <span className="text-primary tracking-normal">Nội Địa Mỹ</span>
                         </h1>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-                            Zone-based pricing for US domestic shipping. Competitive USPS rates from <span  >THG Warehouse</span> fulfillment centers.
+                            Bảng giá cước vận chuyển nội địa Mỹ theo phân vùng (Zone). Cước phí USPS cạnh tranh trực tiếp từ các trung tâm fulfillment của <span className="notranslate font-semibold">THG Warehouse</span>.
                         </p>
 
                         {/* Tab navigation to International */}
                         <div className="flex justify-center gap-3 mt-8 flex-wrap">
                             <Link
                                 to="/bang-gia-noi-dia"
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-md"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-[13px] shadow-md"
                             >
-                                <MapPin className="w-4 h-4" /> Domestic Pricing
+                                <MapPin className="w-4 h-4" /> Bảng Giá Nội Địa
                             </Link>
                             <Link
                                 to="/bang-gia-quoc-te"
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary text-foreground font-semibold text-sm hover:bg-secondary/80 transition-colors"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary text-foreground font-semibold text-[13px] hover:bg-secondary/80 transition-colors"
                             >
-                                <Globe className="w-4 h-4" /> International Pricing
+                                <Globe className="w-4 h-4" /> Bảng Giá Quốc Tế
                             </Link>
                         </div>
                     </div>
@@ -62,8 +73,8 @@ const DomesticPricingContent = () => {
                                     <Truck className="w-5 h-5 text-primary" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-foreground">Select Shipping Zone</h3>
-                                    <p className="text-xs text-muted-foreground">Zones 1-9 based on origin-destination distance</p>
+                                    <h3 className="font-bold text-foreground">Chọn Vùng Giao Hàng (Zone)</h3>
+                                    <p className="text-xs text-muted-foreground">Vùng 1-9 phân chia dựa trên khoảng cách từ kho đến điểm đích</p>
                                 </div>
                             </div>
                         </div>
@@ -74,7 +85,7 @@ const DomesticPricingContent = () => {
                                     key={z}
                                     onClick={() => setSelectedZone(z)}
                                     className={`
-                    relative px-3 py-3 rounded-xl font-bold text-sm transition-all duration-300 border-2
+                    relative px-3 py-3 rounded-xl font-bold text-[13px] transition-all duration-300 border-2
                     ${selectedZone === z
                                             ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-105"
                                             : "bg-secondary/50 text-foreground border-transparent hover:border-primary/30 hover:bg-secondary"
@@ -100,30 +111,41 @@ const DomesticPricingContent = () => {
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-foreground text-lg">
-                                            Zone {selectedZone} — Shipping Rates
+                                            Zone {selectedZone} — Bảng Giá Cước
                                         </h3>
                                         <p className="text-xs text-muted-foreground">
-                                            Prices are reference only. Contact THG for actual quotes.
+                                            Giá mang tính chất tham khảo. Vui lòng liên hệ THG để nhận báo giá chính xác.
                                         </p>
                                     </div>
                                 </div>
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold">
                                     <DollarSign className="w-3.5 h-3.5" />
-                                    {domesticPricingRows.length} weight tiers
+                                    {domesticPricingRows.length} mốc trọng lượng
                                 </span>
+                                <div className="flex items-center gap-1.5 ml-2">
+                                    <button onClick={() => exportToExcel('table-domestic', 'THG_Domestic_Pricing')} className="p-1.5 bg-secondary hover:bg-primary/20 rounded-md text-primary transition-colors" title="Xuất Excel">
+                                        <FileSpreadsheet size={16} />
+                                    </button>
+                                    <button onClick={() => exportToWord('table-domestic', 'THG_Domestic_Pricing')} className="p-1.5 bg-secondary hover:bg-primary/20 rounded-md text-primary transition-colors" title="Xuất Word">
+                                        <FileText size={16} />
+                                    </button>
+                                    <button onClick={() => exportToPdf('table-domestic', 'THG_Domestic_Pricing')} className="p-1.5 bg-secondary hover:bg-primary/20 rounded-md text-primary transition-colors" title="Xuất PDF">
+                                        <FileIcon size={16} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         {/* Table */}
                         <div className="overflow-x-auto" >
-                            <table className="w-full text-sm min-w-[500px] whitespace-nowrap">
+                            <table id="table-domestic" className="w-full text-[13px] min-w-[500px] whitespace-nowrap">
                                 <thead>
                                     <tr className="bg-navy text-white">
-                                        <th className="px-4 py-3 text-left font-semibold w-16">#</th>
-                                        <th className="px-4 py-3 text-left font-semibold">Weight (oz)</th>
-                                        <th className="px-4 py-3 text-left font-semibold">Weight (gram)</th>
-                                        <th className="px-4 py-3 text-right font-semibold">
-                                            Price (Zone {selectedZone})
+                                        <th className="px-5 py-3 text-left font-semibold w-16">STT</th>
+                                        <th className="px-5 py-3 text-left font-semibold">Cân nặng (oz)</th>
+                                        <th className="px-5 py-3 text-left font-semibold">Cân nặng (gram)</th>
+                                        <th className="px-5 py-3 text-right font-semibold">
+                                            Cước phí (Zone {selectedZone})
                                         </th>
                                     </tr>
                                 </thead>
@@ -136,10 +158,10 @@ const DomesticPricingContent = () => {
                         ${idx % 2 === 0 ? "bg-background" : "bg-secondary/20"}
                       `}
                                         >
-                                            <td className="px-4 py-3 text-muted-foreground font-medium">{row.STT}</td>
-                                            <td className="px-4 py-3 font-semibold text-navy">{row.weight}</td>
-                                            <td className="px-4 py-3 text-navy/70 font-medium">{row.gram}</td>
-                                            <td className="px-4 py-3 text-right font-bold text-primary text-base">
+                                            <td className="px-5 py-3 text-muted-foreground font-medium">{row.STT}</td>
+                                            <td className="px-5 py-3 font-semibold text-navy">{row.weight}</td>
+                                            <td className="px-5 py-3 text-navy/70 font-medium">{row.gram}</td>
+                                            <td className="px-5 py-3 text-right font-bold text-primary text-base">
                                                 {row.zones[selectedZone]}
                                             </td>
                                         </tr>
@@ -150,12 +172,12 @@ const DomesticPricingContent = () => {
                                 <div className="flex justify-center py-4 border-t border-border/20">
                                     <button
                                         onClick={() => setShowAll(!showAll)}
-                                        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-sm font-semibold text-navy transition-all duration-300 hover:shadow-md"
+                                        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-[13px] font-semibold text-navy transition-all duration-300 hover:shadow-md"
                                     >
                                         {showAll ? (
-                                            <>Show Less <ChevronUp className="w-4 h-4" /></>
+                                            <>Thu gọn <ChevronUp className="w-4 h-4" /></>
                                         ) : (
-                                            <>See More ({domesticPricingRows.length - INITIAL_ROWS} rows) <ChevronDown className="w-4 h-4" /></>
+                                            <>Xem thêm ({domesticPricingRows.length - INITIAL_ROWS} dòng) <ChevronDown className="w-4 h-4" /></>
                                         )}
                                     </button>
                                 </div>
@@ -168,12 +190,12 @@ const DomesticPricingContent = () => {
                 <ScrollReveal>
                     <div className="mb-8">
                         <div className="text-center mb-8">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-sm font-medium text-primary mb-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-[13px] font-medium text-primary mb-4">
                                 <Warehouse className="w-4 h-4" />
-                                US Warehouse Services
+                                Dịch Vụ Kho Mỹ
                             </div>
                             <h2 className="text-2xl md:text-3xl font-bold text-navy">
-                                Fulfillment <span className="text-primary">Service Costs</span>
+                                Chi Phí Dịch Vụ <span className="text-primary notranslate">Fulfillment</span>
                             </h2>
                         </div>
 
@@ -187,7 +209,7 @@ const DomesticPricingContent = () => {
                                     <h4 className="font-bold text-foreground">{fulfillmentServices.receiving.label}</h4>
                                 </div>
                                 <div className="text-3xl font-black text-emerald-600 mb-2">{fulfillmentServices.receiving.price}</div>
-                                <p className="text-sm text-muted-foreground">{fulfillmentServices.receiving.note}</p>
+                                <p className="text-[13px] text-muted-foreground">{fulfillmentServices.receiving.note}</p>
                             </div>
 
                             {/* Storage */}
@@ -201,7 +223,7 @@ const DomesticPricingContent = () => {
                                 <div className="space-y-2 mb-3">
                                     {fulfillmentServices.storage.options.map((opt) => (
                                         <div key={opt.desc} className="flex items-center justify-between">
-                                            <span className="text-sm text-muted-foreground">{opt.desc}</span>
+                                            <span className="text-[13px] text-muted-foreground">{opt.desc}</span>
                                             <span className="font-bold text-blue-600">{opt.price}</span>
                                         </div>
                                     ))}
@@ -223,7 +245,7 @@ const DomesticPricingContent = () => {
                                 <div className="space-y-2">
                                     {fulfillmentServices.packLabel.tiers.map((tier) => (
                                         <div key={tier.range} className="flex items-center justify-between py-1 border-b border-border/20 last:border-b-0">
-                                            <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                                            <span className="text-[13px] text-muted-foreground flex items-center gap-1.5">
                                                 <ArrowRight className="w-3 h-3" /> {tier.range}
                                             </span>
                                             <span className="font-bold text-amber-600">{tier.price}</span>
@@ -238,15 +260,15 @@ const DomesticPricingContent = () => {
                 {/* CTA */}
                 <ScrollReveal>
                     <div className="bg-gradient-to-br from-navy via-navy/95 to-primary/80 text-white rounded-2xl p-8 md:p-12 text-center">
-                        <h3 className="text-2xl md:text-3xl font-bold mb-3">Need a Custom Quote?</h3>
+                        <h3 className="text-2xl md:text-3xl font-bold mb-3">Bạn Cần Báo Giá Tùy Chỉnh?</h3>
                         <p className="text-white/70 mb-6 max-w-xl mx-auto">
-                            Contact THG team for personalized shipping rates based on your volume and requirements.
+                            Liên hệ với đội ngũ THG để nhận bảng giá vận chuyển cá nhân hóa dựa trên sản lượng và nhu cầu của bạn.
                         </p>
                         <a
                             href="/#contact"
-                            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/30"
+                            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-[13px] hover:bg-primary/90 transition-colors shadow-lg shadow-primary/30"
                         >
-                            Get Free Quote <ArrowRight className="w-4 h-4" />
+                            Nhận Báo Giá Miễn Phí <ArrowRight className="w-4 h-4" />
                         </a>
                     </div>
                 </ScrollReveal>

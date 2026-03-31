@@ -25,17 +25,17 @@ export const domesticPricingRows: DomesticPricingRow[] = (rawData as any[]).map(
 }));
 
 export const fulfillmentServices = {
-    receiving: { label: "Receiving (Inbound)", price: "FREE", note: "No inbound fee" },
+    receiving: { label: "Nhập kho (Inbound)", price: "MIỄN PHÍ", note: "Không thu phí nhập kho" },
     storage: {
-        label: "Storage",
+        label: "Lưu kho",
         options: [
-            { desc: "Per item / month", price: "$0.10" },
-            { desc: "Per CBM / month", price: "$20.00" },
+            { desc: "Mỗi sản phẩm / tháng", price: "$0.10" },
+            { desc: "Mỗi CBM / tháng", price: "$20.00" },
         ],
-        note: "First 90 days free",
+        note: "Miễn phí 90 ngày đầu tiên",
     },
     packLabel: {
-        label: "Pack & Label",
+        label: "Đóng gói & Dán nhãn",
         tiers: [
             { range: "≤ 2 lbs", price: "$1.20 / pc" },
             { range: "2 – 4 lbs", price: "$1.70 / pc" },

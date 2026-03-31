@@ -6,7 +6,8 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { pricingData } from "@/data/pricingData";
 import { countryNames } from "@/data/pricingHelpers";
-import { ChevronDown, ChevronUp, Search, ExternalLink } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, ExternalLink, FileSpreadsheet, FileText, FileIcon } from "lucide-react";
+import { exportToExcel, exportToPdf, exportToWord } from "@/lib/exportUtils";
 
 /* ═══════════════════════════════════════════════
    TYPES & CONFIG
@@ -57,12 +58,29 @@ const Accordion = ({ icon, title, defaultOpen = false, children }: { icon: strin
    PRICE TABLE COMPONENT
    ═══════════════════════════════════════════════ */
 const PriceTable = ({ title, badge, note, data, columns }: {
-  title: string; badge?: string; note?: string;
+  title: string; badge?: React.ReactNode; note?: React.ReactNode;
   data: any[]; columns: { key: string; label: string }[];
 }) => {
   const { tVi } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
+  const tableId = useMemo(() => "table-price-" + Math.random().toString(36).substring(2, 9), []);
   if (!data || data.length === 0) return null;
+
+  const exportConfig = useMemo(() => {
+    const headers = ["Cân Nặng (KG)", ...columns.map(c => c.label)];
+    const rows = data.map((row: any) => {
+      return [
+        row.kg ?? row.weight ?? "—",
+        ...columns.map(c => {
+          const val = row[c.key];
+          if (val === null || val === undefined) return "—";
+          if (typeof val === "number") return "$" + val.toFixed(2);
+          return val;
+        })
+      ];
+    });
+    return { filename: title, headers, rows };
+  }, [data, columns, title]);
 
   const displayData = isExpanded ? data : data.slice(0, 6);
 
@@ -70,33 +88,44 @@ const PriceTable = ({ title, badge, note, data, columns }: {
     <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
       <div className="bg-navy px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-white font-bold text-xs">📋 {title}</span>
-          {badge && <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[10px] font-bold px-2 py-0.5 rounded-full">{badge}</span>}
+          <span className="text-white font-bold text-[13px]">📋 {title}</span>
+          {badge && <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">{badge}</span>}
         </div>
-        {note && <span className="text-[#9CA3AF] text-[10px]">{note}</span>}
+        <div className="flex items-center gap-2 ml-auto">
+          {note && <span className="text-[#9CA3AF] text-[12px] mr-2">{note}</span>}
+          <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title="Xuất Excel">
+            <FileSpreadsheet size={14} />
+          </button>
+          <button onClick={() => exportToWord(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title="Xuất Word">
+            <FileText size={14} />
+          </button>
+          <button onClick={() => exportToPdf(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title="Xuất PDF">
+            <FileIcon size={14} />
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-xs">
+        <table id={tableId} className="w-full border-collapse text-[13px]">
           <thead>
             <tr className="bg-[#FAFAF8]">
-              <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">Cân Nặng (KG)</th>
+              <th className="px-4 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">Cân Nặng (KG)</th>
               {columns.map(c => (
-                <th key={c.key} className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">{c.label}</th>
+                <th key={c.key} className="px-4 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">{c.label}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {displayData.map((row: any, i: number) => (
               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                <td className="px-3 py-1.5 font-medium whitespace-nowrap">{row.kg ?? row.weight ?? "—"}</td>
+                <td className="px-4 py-2.5 font-medium whitespace-nowrap">{row.kg ?? row.weight ?? "—"}</td>
                 {columns.map(c => {
                   const val = row[c.key];
                   const isNull = val === null || val === undefined;
                   const isContact = typeof val === 'string' && val.includes('Liên hệ');
                   return (
-                    <td key={c.key} className={`px-3 py-1.5 whitespace-nowrap ${isNull ? "text-muted-foreground/30" : isContact ? "text-primary font-bold" : "font-bold"}`}>
+                    <td key={c.key} className={`px-4 py-2.5 whitespace-nowrap ${isNull ? "text-muted-foreground/30" : isContact ? "text-primary font-bold" : "font-bold"}`}>
                       {isNull ? (
-                        <span className="inline-block px-1.5 py-0 bg-muted/20 rounded text-[10px] backdrop-blur-sm">—</span>
+                        <span className="inline-block px-1.5 py-0 bg-muted/20 rounded text-[12px] backdrop-blur-sm">—</span>
                       ) : typeof val === "number" ? (
                         `$${val.toFixed(2)}`
                       ) : val}
@@ -108,7 +137,7 @@ const PriceTable = ({ title, badge, note, data, columns }: {
             {!isExpanded && data.length > 6 && (
               <tr>
                 <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-xs font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                  <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                     {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
                   </button>
                 </td>
@@ -117,7 +146,7 @@ const PriceTable = ({ title, badge, note, data, columns }: {
             {isExpanded && data.length > 6 && (
               <tr>
                 <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-xs font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                  <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                     {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
                   </button>
                 </td>
@@ -133,18 +162,36 @@ const PriceTable = ({ title, badge, note, data, columns }: {
 /* ═══════════════════════════════════════════════
    COMPACT ACCORDION TABLE CONTROLLER
    ═══════════════════════════════════════════════ */
-const CompactAccordionTable = ({ headers, data, renderRow }: { headers: string[], data: any[], renderRow: (row: any, i: number) => React.ReactNode }) => {
+const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table", extractRowData }: { headers: string[], data: any[], renderRow: (row: any, i: number) => React.ReactNode, title?: string, extractRowData?: (row: any) => (string | number)[] }) => {
   const { tVi } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
+  const tableId = useMemo(() => "table-compact-" + Math.random().toString(36).substring(2, 9), []);
   if (!data || data.length === 0) return null;
+
+  const exportConfig = useMemo(() => {
+    const rows = extractRowData ? data.map(extractRowData) : data.map((r: any) => Object.values(r) as string[]);
+    return { filename: title, headers, rows };
+  }, [data, headers, title, extractRowData]);
   const displayData = isExpanded ? data : data.slice(0, 6);
 
   return (
-    <table className="w-full border-collapse text-xs">
+    <div className="relative">
+      <div className="absolute top-[-36px] right-0 flex items-center gap-1">
+        <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Xuất Excel">
+          <FileSpreadsheet size={13} />
+        </button>
+        <button onClick={() => exportToWord(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Xuất Word">
+          <FileText size={13} />
+        </button>
+        <button onClick={() => exportToPdf(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Xuất PDF">
+          <FileIcon size={13} />
+        </button>
+      </div>
+      <table id={tableId} className="w-full border-collapse text-[13px]">
       <thead>
         <tr className="bg-[#FAFAF8]">
           {headers.map((h, i) => (
-            <th key={i} className="px-3 py-2 text-left text-[10px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">{h}</th>
+            <th key={i} className="px-4 py-3 text-left text-[12px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">{h}</th>
           ))}
         </tr>
       </thead>
@@ -153,7 +200,7 @@ const CompactAccordionTable = ({ headers, data, renderRow }: { headers: string[]
         {!isExpanded && data.length > 6 && (
           <tr>
             <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-              <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-xs font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+              <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                 {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
               </button>
             </td>
@@ -162,7 +209,7 @@ const CompactAccordionTable = ({ headers, data, renderRow }: { headers: string[]
         {isExpanded && data.length > 6 && (
           <tr>
             <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-              <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-xs font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+              <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                 {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
               </button>
             </td>
@@ -170,6 +217,7 @@ const CompactAccordionTable = ({ headers, data, renderRow }: { headers: string[]
         )}
       </tbody>
     </table>
+    </div>
   );
 };
 
@@ -711,7 +759,7 @@ const InternationalPricingPage = () => {
           <div className="mb-10 bg-white border-[1.5px] border-[var(--pricing-border)] border-dashed rounded-xl p-6 shadow-sm overflow-hidden animate-fade-in relative z-10 mx-auto max-w-[1000px]">
             <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
               <div className="flex-1 text-center md:text-left">
-                <div className="inline-block bg-[rgba(184,146,42,0.15)] text-[#B8922A] text-[10px] font-bold tracking-[0.1em] px-3 py-1 rounded-full uppercase mb-4">
+                <div className="inline-block bg-[rgba(184,146,42,0.15)] text-[#B8922A] text-[12px] font-bold tracking-[0.1em] px-3 py-1 rounded-full uppercase mb-4">
                   {tVi("pricing.res_title")} · {searchSvc === 'epacket' ? tVi("pricing.svc_epa") : tVi("pricing.svc_exp")}
                 </div>
                 <h3 className="text-xl md:text-2xl font-black text-navy flex items-center justify-center md:justify-start gap-3">
@@ -731,7 +779,7 @@ const InternationalPricingPage = () => {
                   <div className="text-primary font-bold text-lg">{estimatedPrice.text}</div>
                 ) : (
                   <>
-                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.1em] mb-1">{tVi("pricing.res_base")}</div>
+                    <div className="text-[12px] font-bold text-muted-foreground uppercase tracking-[0.1em] mb-1">{tVi("pricing.res_base")}</div>
                     <div className="text-3xl font-black text-navy drop-shadow-sm"><span className="text-gold text-2xl align-top mr-1 font-bold"></span>{estimatedPrice?.text}</div>
                     <div className="text-[11px] text-muted-foreground mt-2 italic">{tVi("pricing.res_note")}</div>
                   </>
@@ -764,7 +812,7 @@ const InternationalPricingPage = () => {
               {service === tab.id && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary" />}
               <div className="text-xl mb-1">{tab.icon}</div>
               <div className={`font-bold text-[15px] ${service === tab.id ? "text-primary" : "text-navy"}`}>{tab.name}</div>
-              <div className="text-xs text-muted-foreground mt-1">{tab.desc}</div>
+              <div className="text-[13px] text-muted-foreground mt-1">{tab.desc}</div>
             </button>
           ))}
         </div>
@@ -793,19 +841,19 @@ const InternationalPricingPage = () => {
                     : "border-[var(--pricing-border)] bg-white hover:border-primary/40"
                     }`}
                 >
-                  <span className={`font-bold text-xs truncate ${route === rid ? "text-primary" : "text-navy"}`}>{r.nameVi}</span>
-                  <span className="text-[10px] text-muted-foreground">{r.time}</span>
+                  <span className={`font-bold text-[13px] truncate ${route === rid ? "text-primary" : "text-navy"}`}>{r.nameVi}</span>
+                  <span className="text-[12px] text-muted-foreground">{r.time}</span>
                   <div className="flex gap-1 flex-wrap mt-0.5">
-                    {r.type === "merchant" && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">🛒 Ship by Merchant</span>}
+                    {r.type === "merchant" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">🛒 Ship by Merchant</span>}
                     {r.type === "label" && (
                       <>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700">🏷️ Ship by Label</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700">📬 Drop-off USPS</span>
+                        <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700">🏷️ Ship by Label</span>
+                        <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700">📬 Drop-off USPS</span>
                       </>
                     )}
-                    {rid === "pri-vncn-us" && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">✅ Bao thuế · Active USPS</span>}
+                    {rid === "pri-vncn-us" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">✅ Bao thuế · Active USPS</span>}
                     {r.cargo.length > 0 && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
+                      <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
                         {r.cargo.map(c => CARGO_ICONS[c]).join(" ")} {r.cargo.map(c => CARGO_LABELS[c]).join(" · ")}
                       </span>
                     )}
@@ -849,7 +897,7 @@ const InternationalPricingPage = () => {
               <>
                 {/* ──── CARGO FILTER ──── */}
                 <div className="flex items-center gap-3 mb-4 flex-wrap">
-                  <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Loại hàng:</span>
+                  <span className="text-[13px] font-semibold text-muted-foreground whitespace-nowrap">Loại hàng:</span>
                   <div className="flex gap-2 flex-wrap">
                     {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
                       const enabled = routeConfig.cargo.includes(c);
@@ -858,7 +906,7 @@ const InternationalPricingPage = () => {
                           key={c}
                           onClick={() => handleCargoSwitch(c)}
                           disabled={!enabled}
-                          className={`px-4 py-1.5 rounded-full text-xs font-semibold border-[1.5px] transition-all ${!enabled
+                          className={`px-4 py-1.5 rounded-full text-[13px] font-semibold border-[1.5px] transition-all ${!enabled
                             ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
                             : cargo === c
                               ? "bg-primary border-primary text-white"
@@ -902,13 +950,13 @@ const InternationalPricingPage = () => {
                             data={remoteSurcharge}
                             renderRow={(r, i) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                <td className="px-3 py-2"><span className="notranslate">{r.zone || r.name || `Zone ${i + 1}`}</span></td>
-                                <td className="px-3 py-2 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
+                                <td className="px-4 py-3"><span className="notranslate">{r.zone || r.name || `Zone ${i + 1}`}</span></td>
+                                <td className="px-4 py-3 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
                               </tr>
                             )}
                           />
                         ) : (
-                          <p className="text-muted-foreground text-xs italic">Dữ liệu đang cập nhật</p>
+                          <p className="text-muted-foreground text-[13px] italic">Dữ liệu đang cập nhật</p>
                         )}
                       </div>
                       <div>
@@ -919,14 +967,14 @@ const InternationalPricingPage = () => {
                             data={vatData}
                             renderRow={(v, i) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                <td className="px-3 py-2"><span className="notranslate">{v.country}</span></td>
-                                <td className="px-3 py-2">{v.vat}</td>
-                                <td className="px-3 py-2 font-bold">{v.service}</td>
+                                <td className="px-4 py-3"><span className="notranslate">{v.country}</span></td>
+                                <td className="px-4 py-3">{v.vat}</td>
+                                <td className="px-4 py-3 font-bold">{v.service}</td>
                               </tr>
                             )}
                           />
                         ) : (
-                          <p className="text-muted-foreground text-xs italic">Dữ liệu đang cập nhật</p>
+                          <p className="text-muted-foreground text-[13px] italic">Dữ liệu đang cập nhật</p>
                         )}
                       </div>
                     </div>
@@ -936,21 +984,21 @@ const InternationalPricingPage = () => {
                   <Accordion icon="🔁" title="Phí Reship (Gửi Lại)">
                     {redeliveryData.length > 0 ? (
                       <div>
-                        <p className="text-xs text-muted-foreground italic mb-3">* Phí reship áp dụng khi kiện hàng bị trả về do địa chỉ sai, không có người nhận, hoặc bị từ chối nhận.</p>
+                        <p className="text-[13px] text-muted-foreground italic mb-3">* Phí reship áp dụng khi kiện hàng bị trả về do địa chỉ sai, không có người nhận, hoặc bị từ chối nhận.</p>
                         <CompactAccordionTable
                           headers={["Khu Vực", "Mã QG", "Phí ($)"]}
                           data={redeliveryData}
                           renderRow={(r, i) => (
                             <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                              <td className="px-3 py-2"><span className="notranslate">{r.dest}</span></td>
-                              <td className="px-3 py-2"><span className="notranslate">{r.code}</span></td>
-                              <td className="px-3 py-2 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
+                              <td className="px-4 py-3"><span className="notranslate">{r.dest}</span></td>
+                              <td className="px-4 py-3"><span className="notranslate">{r.code}</span></td>
+                              <td className="px-4 py-3 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
                             </tr>
                           )}
                         />
                       </div>
                     ) : (
-                      <p className="text-muted-foreground text-xs italic text-center py-4">📝 Dữ liệu phí reship đang được cập nhật.</p>
+                      <p className="text-muted-foreground text-[13px] italic text-center py-4">📝 Dữ liệu phí reship đang được cập nhật.</p>
                     )}
                   </Accordion>
 
@@ -980,18 +1028,18 @@ const InternationalPricingPage = () => {
                 className={`flex flex-col gap-1 border-[1.5px] rounded-[10px] p-3 text-left transition-all ${expressRoute === "vn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"
                   }`}
               >
-                <span className={`font-bold text-xs ${expressRoute === "vn-us" ? "text-primary" : "text-navy"}`}>🇻🇳 VN → US (UPS)</span>
-                <span className="text-[10px] text-muted-foreground">⏱ 3–7 BSD</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 w-fit">⚠️ Chưa gồm tax NK US</span>
+                <span className={`font-bold text-[13px] ${expressRoute === "vn-us" ? "text-primary" : "text-navy"}`}>🇻🇳 VN → US (UPS)</span>
+                <span className="text-[12px] text-muted-foreground">⏱ 3–7 BSD</span>
+                <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 w-fit">⚠️ Chưa gồm tax NK US</span>
               </button>
               <button
                 onClick={() => setExpressRoute("cn-us")}
                 className={`flex flex-col gap-1 border-[1.5px] rounded-[10px] p-3 text-left transition-all ${expressRoute === "cn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"
                   }`}
               >
-                <span className={`font-bold text-xs ${expressRoute === "cn-us" ? "text-primary" : "text-navy"}`}>🇨🇳 CN → US (Air & Sea)</span>
-                <span className="text-[10px] text-muted-foreground">⏱ 6–25 BSD</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 w-fit">✈️ Air · 🚢 Sea</span>
+                <span className={`font-bold text-[13px] ${expressRoute === "cn-us" ? "text-primary" : "text-navy"}`}>🇨🇳 CN → US (Air & Sea)</span>
+                <span className="text-[12px] text-muted-foreground">⏱ 6–25 BSD</span>
+                <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 w-fit">✈️ Air · 🚢 Sea</span>
               </button>
             </div>
 
@@ -1015,13 +1063,13 @@ const InternationalPricingPage = () => {
                         <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area – US)</h4>
                         <table className="w-full border-collapse text-[13px]">
                           <thead><tr className="bg-[#FAFAF8]">
-                            <th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Khu Vực</th>
-                            <th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Surcharge</th>
+                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Khu Vực</th>
+                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Surcharge</th>
                           </tr></thead>
                           <tbody>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-3 py-2">Alaska / Hawaii</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-3 py-2">Puerto Rico</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
-                            <tr><td className="px-3 py-2">Remote ZIP Codes</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
+                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Alaska / Hawaii</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Puerto Rico</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                            <tr><td className="px-4 py-3">Remote ZIP Codes</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
                           </tbody>
                         </table>
                       </div>
@@ -1029,13 +1077,13 @@ const InternationalPricingPage = () => {
                         <h4 className="font-bold text-[13px] text-navy mb-2">📦 Phí Dịch Vụ Thêm</h4>
                         <table className="w-full border-collapse text-[13px]">
                           <thead><tr className="bg-[#FAFAF8]">
-                            <th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Dịch Vụ</th>
-                            <th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Phí</th>
+                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Dịch Vụ</th>
+                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Phí</th>
                           </tr></thead>
                           <tbody>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-3 py-2">Khai báo hải quan</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-3 py-2">Đóng gói thêm</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
-                            <tr><td className="px-3 py-2">Bảo hiểm hàng hóa</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
+                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Khai báo hải quan</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Đóng gói thêm</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                            <tr><td className="px-4 py-3">Bảo hiểm hàng hóa</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
                           </tbody>
                         </table>
                       </div>
@@ -1068,9 +1116,9 @@ const InternationalPricingPage = () => {
                     <div key={i} className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                       <div className={`${line.bg} px-5 py-3 flex items-center justify-between flex-wrap gap-2`}>
                         <span className="text-white font-bold text-[13px] flex items-center gap-2">
-                          {line.name} <span className="font-normal text-xs opacity-80">{line.time}</span>
+                          {line.name} <span className="font-normal text-[13px] opacity-80">{line.time}</span>
                         </span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${line.tax ? "bg-emerald-100/20 text-emerald-300" : "bg-amber-100/20 text-amber-300"}`}>
+                        <span className={`text-[12px] font-bold px-2 py-0.5 rounded-full ${line.tax ? "bg-emerald-100/20 text-emerald-300" : "bg-amber-100/20 text-amber-300"}`}>
                           {line.tax ? "✅ Đã bao gồm tax NK US" : "⚠️ Chưa bao gồm tax NK US"}
                         </span>
                       </div>
@@ -1087,7 +1135,7 @@ const InternationalPricingPage = () => {
                             <tr key={j} className="border-b border-[var(--pricing-border)] last:border-0">
                               <td className="px-5 py-2">{r.w}</td>
                               <td className="px-5 py-2 text-primary font-bold">Liên hệ THG</td>
-                              <td className="px-5 py-2 text-muted-foreground text-xs">Báo giá theo lô</td>
+                              <td className="px-5 py-2 text-muted-foreground text-[13px]">Báo giá theo lô</td>
                             </tr>
                           ))}
                         </tbody>
@@ -1108,26 +1156,26 @@ const InternationalPricingPage = () => {
                             data={remoteSurcharge}
                             renderRow={(r, i) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                <td className="px-3 py-2"><span className="notranslate">{r.zone || r.name || `Zone ${i + 1}`}</span></td>
-                                <td className="px-3 py-2 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
+                                <td className="px-4 py-3"><span className="notranslate">{r.zone || r.name || `Zone ${i + 1}`}</span></td>
+                                <td className="px-4 py-3 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
                               </tr>
                             )}
                           />
                         ) : (
-                          <p className="text-muted-foreground text-xs italic">Dữ liệu đang cập nhật</p>
+                          <p className="text-muted-foreground text-[13px] italic">Dữ liệu đang cập nhật</p>
                         )}
                       </div>
                       <div>
                         <h4 className="font-bold text-[13px] text-navy mb-2">📦 Phí Dịch Vụ Thêm</h4>
                         <table className="w-full border-collapse text-[13px]">
                           <thead><tr className="bg-[#FAFAF8]">
-                            <th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Dịch Vụ</th>
-                            <th className="px-3 py-2 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Phí</th>
+                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Dịch Vụ</th>
+                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Phí</th>
                           </tr></thead>
                           <tbody>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-3 py-2">Kiểm tra hàng tại kho</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-3 py-2">Đóng gói / Re-pack</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
-                            <tr><td className="px-3 py-2">Bảo hiểm lô hàng</td><td className="px-3 py-2 font-bold">Liên hệ THG</td></tr>
+                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Kiểm tra hàng tại kho</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Đóng gói / Re-pack</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                            <tr><td className="px-4 py-3">Bảo hiểm lô hàng</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
                           </tbody>
                         </table>
                       </div>
@@ -1184,7 +1232,7 @@ const TikTokPanel = () => {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 rounded-lg text-xs font-bold border transition-all ${tab === t.id
+            className={`px-4 py-2 rounded-lg text-[13px] font-bold border transition-all ${tab === t.id
               ? "bg-primary text-white border-primary shadow-md"
               : "bg-white border-[var(--pricing-border)] text-muted-foreground hover:border-primary/40"
               }`}
@@ -1207,31 +1255,56 @@ const TikTokPanel = () => {
 /* ═══════════════════════════════════════════════
    BULK DATA TABLE (for Express panel)
    ═══════════════════════════════════════════════ */
-const BulkDataTable = ({ title, badge, data }: { title: string; badge: string; data: any[] }) => {
+const BulkDataTable = ({ title, badge, data }: { title: string; badge: React.ReactNode; data: any[] }) => {
   const { tVi } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
+  const tableId = useMemo(() => "table-bulk-" + Math.random().toString(36).substring(2, 9), []);
   if (!data || data.length === 0) return null;
 
-  // The Bulk data structure is: { name: "Zone 1", prices: { "12": 10.5, "21": 9.5 ... }, sla: "3-5 jours" }
-  // We need to extract the weight keys from the 'prices' object of the first row
   const weightKeys = data[0]?.prices ? Object.keys(data[0].prices).sort((a, b) => Number(a) - Number(b)) : [];
+
+  const exportConfig = useMemo(() => {
+    const headers = ["Vùng (Zone)", ...weightKeys.map(k => k + " kg"), "Thời gian (SLA)"];
+    const rows = data.map((row: any) => {
+      return [
+        row.name,
+        ...weightKeys.map(k => {
+          const val = row.prices[k];
+          return (val === null || val === undefined) ? "—" : "$" + val.toFixed(2);
+        }),
+        row.sla || "—"
+      ];
+    });
+    return { filename: title, headers, rows };
+  }, [data, weightKeys, title]);
   const displayData = isExpanded ? data : data.slice(0, 6);
 
   return (
     <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
       <div className="bg-navy px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
-        <span className="text-white font-bold text-xs flex items-center gap-2">
+        <span className="text-white font-bold text-[13px] flex items-center gap-2">
           {title}
-          <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[10px] font-bold px-2 py-0.5 rounded-full">{badge}</span>
+          <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">{badge}</span>
         </span>
+        <div className="flex items-center gap-1.5 ml-auto">
+          <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title="Xuất Excel">
+            <FileSpreadsheet size={14} />
+          </button>
+          <button onClick={() => exportToWord(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title="Xuất Word">
+            <FileText size={14} />
+          </button>
+          <button onClick={() => exportToPdf(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title="Xuất PDF">
+            <FileIcon size={14} />
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-xs">
+        <table id={tableId} className="w-full border-collapse text-[13px]">
           <thead>
             <tr className="bg-[#FAFAF8]">
-              <th className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">Zone / SLA</th>
+              <th className="px-4 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">Zone / SLA</th>
               {weightKeys.map(w => (
-                <th key={w} className="px-3 py-2 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">
+                <th key={w} className="px-4 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">
                   {w} KG+
                 </th>
               ))}
@@ -1240,14 +1313,14 @@ const BulkDataTable = ({ title, badge, data }: { title: string; badge: string; d
           <tbody>
             {displayData.map((row: any, i: number) => (
               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                <td className="px-3 py-1.5 whitespace-nowrap">
-                  <div className="font-bold text-navy text-xs"><span className="notranslate">{row.name}</span></div>
-                  <div className="text-[10px] text-muted-foreground mt-0.5">⏱ {row.sla}</div>
+                <td className="px-4 py-2.5 whitespace-nowrap">
+                  <div className="font-bold text-navy text-[13px]"><span className="notranslate">{row.name}</span></div>
+                  <div className="text-[12px] text-muted-foreground mt-0.5">⏱ {row.sla}</div>
                 </td>
                 {weightKeys.map(w => {
                   const price = row.prices?.[w];
                   return (
-                    <td key={w} className="px-3 py-1.5 font-bold whitespace-nowrap">
+                    <td key={w} className="px-4 py-2.5 font-bold whitespace-nowrap">
                       {price != null ? `$${price}` : "—"}
                     </td>
                   );
@@ -1257,7 +1330,7 @@ const BulkDataTable = ({ title, badge, data }: { title: string; badge: string; d
             {!isExpanded && data.length > 6 && (
               <tr>
                 <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-xs font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                  <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                     {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
                   </button>
                 </td>
@@ -1266,7 +1339,7 @@ const BulkDataTable = ({ title, badge, data }: { title: string; badge: string; d
             {isExpanded && data.length > 6 && (
               <tr>
                 <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-xs font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                  <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                     {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
                   </button>
                 </td>
