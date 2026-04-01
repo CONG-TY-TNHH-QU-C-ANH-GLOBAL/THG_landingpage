@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactSection from "@/components/ContactSection";
@@ -57,9 +57,10 @@ const Accordion = ({ icon, title, defaultOpen = false, children }: { icon: strin
 /* ═══════════════════════════════════════════════
    PRICE TABLE COMPONENT
    ═══════════════════════════════════════════════ */
-const PriceTable = ({ title, badge, note, data, columns }: {
+const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbol = "$" }: {
   title: string; badge?: React.ReactNode; note?: React.ReactNode;
   data: any[]; columns: { key: string; label: string }[];
+  rate?: number; currencySymbol?: string;
 }) => {
   const { tVi } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -127,7 +128,9 @@ const PriceTable = ({ title, badge, note, data, columns }: {
                       {isNull ? (
                         <span className="inline-block px-1.5 py-0 bg-muted/20 rounded text-[12px] backdrop-blur-sm">—</span>
                       ) : typeof val === "number" ? (
-                        `$${val.toFixed(2)}`
+                        <span className="notranslate" translate="no">
+                          {`${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: currencySymbol === "₫" ? 0 : 2, minimumFractionDigits: currencySymbol === "₫" ? 0 : 2 })}`}
+                        </span>
                       ) : val}
                     </td>
                   );
@@ -188,35 +191,35 @@ const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table",
         </button>
       </div>
       <table id={tableId} className="w-full border-collapse text-[13px]">
-      <thead>
-        <tr className="bg-[#FAFAF8]">
-          {headers.map((h, i) => (
-            <th key={i} className="px-4 py-3 text-left text-[12px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">{h}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {displayData.map((row, i) => renderRow(row, i))}
-        {!isExpanded && data.length > 6 && (
-          <tr>
-            <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-              <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
-                {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
-              </button>
-            </td>
+        <thead>
+          <tr className="bg-[#FAFAF8]">
+            {headers.map((h, i) => (
+              <th key={i} className="px-4 py-3 text-left text-[12px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">{h}</th>
+            ))}
           </tr>
-        )}
-        {isExpanded && data.length > 6 && (
-          <tr>
-            <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-              <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
-                {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
-              </button>
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {displayData.map((row, i) => renderRow(row, i))}
+          {!isExpanded && data.length > 6 && (
+            <tr>
+              <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
+                <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                  {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
+                </button>
+              </td>
+            </tr>
+          )}
+          {isExpanded && data.length > 6 && (
+            <tr>
+              <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
+                <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                  {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
+                </button>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -234,216 +237,216 @@ const TerminologyPanel = () => {
       desc: { vi: string; en: string; zh: string };
     }>;
   }> = [
-    {
-      title: { vi: "⏱ Nhóm 1 — Thời gian & Đơn vị", en: "⏱ Group 1 — Time & Units", zh: "⏱ 第1组 — 时间与单位" },
-      terms: [
-        {
-          term: { vi: "BSD — Ngày làm việc vận chuyển", en: "BSD — Business Shipping Days", zh: "BSD — 工作运输日" },
-          desc: {
-            vi: "Chỉ tính các ngày từ Thứ Hai đến Thứ Sáu, không bao gồm Thứ Bảy, Chủ nhật và các ngày lễ quốc gia tại nước đến. Ví dụ: 5 BSD không có nghĩa là 5 ngày liên tiếp, mà là 5 ngày làm việc thực tế.",
-            en: "Only weekdays (Monday to Friday) are counted, excluding Saturdays, Sundays, and public holidays in the destination country. For example, 5 BSD does not mean 5 consecutive calendar days, but 5 actual business days.",
-            zh: "仅计算周一至周五的工作日，不包括周六、周日及目的地国家的法定节假日。例如：5 BSD 不代表连续5天，而是5个实际工作日。"
+      {
+        title: { vi: "⏱ Nhóm 1 — Thời gian & Đơn vị", en: "⏱ Group 1 — Time & Units", zh: "⏱ 第1组 — 时间与单位" },
+        terms: [
+          {
+            term: { vi: "BSD — Ngày làm việc vận chuyển", en: "BSD — Business Shipping Days", zh: "BSD — 工作运输日" },
+            desc: {
+              vi: "Chỉ tính các ngày từ Thứ Hai đến Thứ Sáu, không bao gồm Thứ Bảy, Chủ nhật và các ngày lễ quốc gia tại nước đến. Ví dụ: 5 BSD không có nghĩa là 5 ngày liên tiếp, mà là 5 ngày làm việc thực tế.",
+              en: "Only weekdays (Monday to Friday) are counted, excluding Saturdays, Sundays, and public holidays in the destination country. For example, 5 BSD does not mean 5 consecutive calendar days, but 5 actual business days.",
+              zh: "仅计算周一至周五的工作日，不包括周六、周日及目的地国家的法定节假日。例如：5 BSD 不代表连续5天，而是5个实际工作日。"
+            }
+          },
+          {
+            term: { vi: "5–12 BSD — Thời gian giao hàng dự kiến", en: "5–12 BSD — Estimated Delivery Window", zh: "5–12 BSD — 预计送达时间" },
+            desc: {
+              vi: "Thời gian giao hàng dự kiến từ 5 đến 12 ngày làm việc, được tính bắt đầu từ thời điểm THG Fulfill tiếp nhận và gửi hàng đi (không phải từ lúc khách hàng đặt đơn). Thời gian thực tế có thể thay đổi tùy theo điều kiện thông quan và quốc gia đến.",
+              en: "Estimated delivery window of 5 to 12 business shipping days, calculated from the moment THG Fulfill receives and dispatches the shipment — not from when the customer places the order. Actual delivery time may vary depending on customs clearance conditions and the destination country.",
+              zh: "预计送达时间为5至12个工作运输日，从THG Fulfill接收并发出货物时开始计算，而非客户下单时间。实际时间可能因清关情况和目的地国家而有所不同。"
+            }
           }
-        },
-        {
-          term: { vi: "5–12 BSD — Thời gian giao hàng dự kiến", en: "5–12 BSD — Estimated Delivery Window", zh: "5–12 BSD — 预计送达时间" },
-          desc: {
-            vi: "Thời gian giao hàng dự kiến từ 5 đến 12 ngày làm việc, được tính bắt đầu từ thời điểm THG Fulfill tiếp nhận và gửi hàng đi (không phải từ lúc khách hàng đặt đơn). Thời gian thực tế có thể thay đổi tùy theo điều kiện thông quan và quốc gia đến.",
-            en: "Estimated delivery window of 5 to 12 business shipping days, calculated from the moment THG Fulfill receives and dispatches the shipment — not from when the customer places the order. Actual delivery time may vary depending on customs clearance conditions and the destination country.",
-            zh: "预计送达时间为5至12个工作运输日，从THG Fulfill接收并发出货物时开始计算，而非客户下单时间。实际时间可能因清关情况和目的地国家而有所不同。"
+        ]
+      },
+      {
+        title: { vi: "🚚 Nhóm 2 — Loại dịch vụ", en: "🚚 Group 2 — Service Types", zh: "🚚 第2组 — 服务类型" },
+        terms: [
+          {
+            term: { vi: "Epacket (Bưu kiện nhỏ quốc tế)", en: "Epacket (International Small Parcel)", zh: "Epacket（国际小包）" },
+            desc: {
+              vi: "Dịch vụ vận chuyển bưu kiện nhỏ quốc tế, thường áp dụng cho hàng hóa có trọng lượng dưới 2kg để tối ưu chi phí vận chuyển. Phù hợp với các đơn hàng lẻ từ các nền tảng thương mại điện tử như Shopify, Etsy, Amazon.",
+              en: "An international small parcel delivery service, typically for items weighing under 2 kg to optimize shipping costs. Ideal for individual orders from e-commerce platforms such as Shopify, Etsy, and Amazon.",
+              zh: "适用于2公斤以下小件货物的国际小包服务，用于降低运费。适合Shopify、Etsy、Amazon等电商平台的零售订单。"
+            }
+          },
+          {
+            term: { vi: "Bulk Shipping (Vận chuyển hàng sỉ)", en: "Bulk Shipping", zh: "Bulk Shipping（大货运输）" },
+            desc: {
+              vi: "Dịch vụ vận chuyển hàng sỉ, áp dụng cho các lô hàng lớn về số lượng hoặc trọng lượng, thường vận chuyển bằng đường biển hoặc đường hàng không. Phù hợp với doanh nghiệp muốn nhập kho hoặc phân phối số lượng lớn sang thị trường quốc tế.",
+              en: "A shipping service for large-volume or heavyweight consignments, typically transported by sea freight or air freight. Suited for businesses looking to import to a warehouse or distribute large quantities to international markets.",
+              zh: "适用于大批量或重货的运输服务，通常通过海运或空运进行。适合希望进仓或向国际市场大批量分销的企业。"
+            }
+          },
+          {
+            term: { vi: "Express Shipping (Chuyển phát nhanh)", en: "Express Shipping", zh: "Express Shipping（快递）" },
+            desc: {
+              vi: "Dịch vụ chuyển phát nhanh quốc tế, ưu tiên xử lý và giao hàng trong thời gian ngắn hơn so với Standard. Thường đi qua các hãng vận chuyển như DHL, FedEx, UPS.",
+              en: "International expedited delivery with prioritized processing and faster transit times compared to Standard. Typically handled by carriers such as DHL, FedEx, or UPS.",
+              zh: "国际快递服务，处理优先、时效比标准快。通常由DHL、FedEx、UPS等承运商承运。"
+            }
+          },
+          {
+            term: { vi: "Standard Shipping (Vận chuyển tiêu chuẩn)", en: "Standard Shipping", zh: "Standard Shipping（标准运输）" },
+            desc: {
+              vi: "Dịch vụ vận chuyển tiêu chuẩn với chi phí tối ưu. Thời gian giao hàng dài hơn Express nhưng phù hợp với phần lớn đơn hàng thương mại điện tử thông thường.",
+              en: "Cost-effective standard shipping service. Delivery times are longer than Express but suitable for the majority of regular e-commerce orders.",
+              zh: "经济实惠的标准运输服务。时效比快递慢，但适合大多数普通电商订单。"
+            }
+          },
+          {
+            term: { vi: "Ship by Merchant (Merchant mua nhãn)", en: "Ship by Merchant", zh: "Ship by Merchant（商家购标发货）" },
+            desc: {
+              vi: "Hình thức merchant mua nhãn vận chuyển (shipping label) trực tiếp từ THG Fulfill. THG Fulfill chịu trách nhiệm toàn bộ hành trình vận chuyển — từ khi tiếp nhận hàng tại kho cho đến khi giao thành công đến tay người nhận cuối cùng tại nước đích.",
+              en: "A shipping arrangement where the merchant purchases a shipping label directly from THG Fulfill. THG Fulfill is responsible for the entire shipping journey — from receiving the goods at the warehouse through to successful delivery to the end recipient in the destination country.",
+              zh: "商家直接从THG Fulfill购买运输标签的发货方式。THG Fulfill负责从仓库接货到最终目的地收件人成功签收的全程运输。"
+            }
+          },
+          {
+            term: { vi: "Ship by Label (Merchant tự có nhãn)", en: "Ship by Label", zh: "Ship by Label（商家自备标签）" },
+            desc: {
+              vi: "Hình thức merchant tự cung cấp nhãn vận chuyển đã có sẵn — do merchant tự mua hoặc được nền tảng bán hàng cấp phát. THG Fulfill chịu trách nhiệm vận chuyển kiện hàng từ kho đến điểm tiếp nhận (drop-off point) của đơn vị phát hành label tương ứng (ví dụ: label USPS thì drop-off tại bưu cục USPS). Toàn bộ quá trình giao hàng nội địa đến người nhận cuối sẽ do đơn vị phát hành label đảm nhận.",
+              en: "A shipping arrangement where the merchant provides their own shipping label — either self-purchased or issued by a selling platform. THG Fulfill is responsible for transporting the parcel from the warehouse to the drop-off point of the corresponding carrier (e.g., USPS label goes to a USPS post office). Last-mile delivery to the end recipient is handled entirely by the label-issuing carrier.",
+              zh: "商家自行提供运输标签（自购或由销售平台发放）的发货方式。THG Fulfill负责将包裹从仓库运至对应承运商的交接点（如USPS标签则交至USPS邮局）。最后一公里配送由标签发行承运商全权负责。"
+            }
+          },
+          {
+            term: { vi: "Drop-off USPS (Bàn giao tại USPS)", en: "Drop-off USPS", zh: "Drop-off USPS（USPS交接）" },
+            desc: {
+              vi: "THG bàn giao hàng hóa tại post office của USPS, trách nhiệm vận chuyển hàng đến tay khách hàng cuối cùng do USPS đảm nhận. Thường áp dụng cho tuyến Priority CN — US Ship by Label.",
+              en: "THG Fulfill hands over shipments at a USPS post office. Delivery to the final customer is then handled entirely by USPS. Typically applied to the Priority CN — US Ship by Label route.",
+              zh: "THG Fulfill将货物移交至USPS邮局，之后由USPS负责配送至最终客户。通常适用于Priority CN — US Ship by Label线路。"
+            }
           }
-        }
-      ]
-    },
-    {
-      title: { vi: "🚚 Nhóm 2 — Loại dịch vụ", en: "🚚 Group 2 — Service Types", zh: "🚚 第2组 — 服务类型" },
-      terms: [
-        {
-          term: { vi: "Epacket (Bưu kiện nhỏ quốc tế)", en: "Epacket (International Small Parcel)", zh: "Epacket（国际小包）" },
-          desc: {
-            vi: "Dịch vụ vận chuyển bưu kiện nhỏ quốc tế, thường áp dụng cho hàng hóa có trọng lượng dưới 2kg để tối ưu chi phí vận chuyển. Phù hợp với các đơn hàng lẻ từ các nền tảng thương mại điện tử như Shopify, Etsy, Amazon.",
-            en: "An international small parcel delivery service, typically for items weighing under 2 kg to optimize shipping costs. Ideal for individual orders from e-commerce platforms such as Shopify, Etsy, and Amazon.",
-            zh: "适用于2公斤以下小件货物的国际小包服务，用于降低运费。适合Shopify、Etsy、Amazon等电商平台的零售订单。"
+        ]
+      },
+      {
+        title: { vi: "💲 Nhóm 3 — Thuật ngữ giá cước", en: "💲 Group 3 — Pricing Terms", zh: "💲 第3组 — 价格术语" },
+        terms: [
+          {
+            term: { vi: "Remote Area Surcharge (Phụ phí vùng xa)", en: "Remote Area Surcharge", zh: "Remote Area Surcharge（偏远地区附加费）" },
+            desc: {
+              vi: "Khoản phụ phí phát sinh khi địa chỉ giao hàng nằm tại khu vực xa trung tâm, hẻo lánh hoặc khó tiếp cận. Mức phí được phân chia theo Zone (vùng) từ 1 đến 6, do các hãng vận chuyển quốc tế (như FedEx, DHL, USPS) quy định dựa trên mật độ dân số và khả năng tiếp cận logistics. Giá hiển thị trong bảng chưa bao gồm khoản phụ phí này.",
+              en: "An additional fee applied when the delivery address is located in a remote, rural, or difficult-to-access area. Fees are tiered by Zone (1 to 6) as defined by international carriers (e.g., FedEx, DHL, USPS) based on population density and logistics accessibility. This surcharge is NOT included in the base price displayed in the price table.",
+              zh: "当收货地址位于偏远、农村或难以到达地区时产生的附加费。费用按Zone（区域）1至6分级，由FedEx、DHL、USPS等国际承运商根据人口密度和物流可及性制定。此附加费不含在价格表显示的基础运费中。"
+            }
+          },
+          {
+            term: { vi: "Zone 1 – Zone 6 (Hệ thống phân vùng địa lý)", en: "Zone 1 – Zone 6", zh: "Zone 1 – Zone 6（地理分区系统）" },
+            desc: {
+              vi: "Hệ thống phân vùng địa lý do hãng vận chuyển quy định để tính phụ phí vùng xa. Zone càng cao thì khu vực càng xa xôi và phụ phí càng lớn. Khách hàng có thể tra cứu Zone của địa chỉ cụ thể ngay trên trang bảng giá.",
+              en: "A geographic zoning system used by carriers to calculate remote area surcharges. Higher zones indicate more remote areas and therefore higher surcharge rates. Customers can look up the zone for a specific delivery address directly on the pricing page.",
+              zh: "承运商用于计算偏远地区附加费的地理分区系统。区号越高，地区越偏远，附加费越高。客户可直接在定价页面查询特定收货地址的区号。"
+            }
+          },
+          {
+            term: { vi: "VAT (Thuế giá trị gia tăng)", en: "VAT (Value Added Tax)", zh: "VAT（增值税）" },
+            desc: {
+              vi: "Thuế giá trị gia tăng áp dụng tại quốc gia nhận hàng. Mức VAT khác nhau theo từng nước (ví dụ: Tây Ban Nha 21%, Thụy Điển 25%). Đây là nghĩa vụ thuế của người nhận hàng và THG sẽ thu hộ để khai báo với cơ quan thuế nước sở tại.",
+              en: "Import value-added tax applied by the destination country. VAT rates vary by country (e.g., Spain 21%, Sweden 25%). This is a tax obligation of the recipient, and THG Fulfill collects it on behalf of the local tax authority.",
+              zh: "目的地国家征收的进口增值税。各国税率不同（例如：西班牙21%，瑞典25%）。这是收件人的纳税义务，THG Fulfill代为收取并向当地税务机关申报。"
+            }
+          },
+          {
+            term: { vi: "Service Charge 2% (Phí xử lý VAT)", en: "Service Charge (2%)", zh: "Service Charge 2%（VAT处理费）" },
+            desc: {
+              vi: "Phí xử lý và quản lý thu hộ thuế (VAT) của THG Fulfill, tính bằng 2% trên tổng giá trị lô hàng. Khoản phí này chỉ áp dụng ở các quốc gia có yêu cầu khai báo VAT.",
+              en: "A handling and VAT collection fee charged by THG Fulfill, equal to 2% of the total shipment value. This fee only applies in countries that require VAT reporting.",
+              zh: "THG Fulfill收取的VAT代收处理费，为货物总价值的2%。此费用仅适用于需要申报VAT的国家。"
+            }
+          },
+          {
+            term: { vi: "Giá chưa bao gồm phụ phí vùng xa và VAT", en: "Price excludes remote area surcharges and VAT", zh: "价格不含偏远附加费和增值税" },
+            desc: {
+              vi: "Cảnh báo quan trọng: giá hiển thị trong bảng là giá cước vận chuyển cơ bản, chưa tính phụ phí vùng xa và thuế VAT. Giá thực tế khách hàng phải trả có thể cao hơn tùy theo địa chỉ giao hàng và quốc gia đến. Luôn kiểm tra địa chỉ giao hàng trong công cụ tra cứu Remote Area trước khi xác nhận đơn.",
+              en: "Important disclaimer: the prices shown in the table are base shipping rates only and do not include remote area surcharges or VAT. The final amount charged may be higher depending on the delivery address and destination country. Always verify the delivery address using the Remote Area lookup tool before confirming an order.",
+              zh: "重要提示：价格表中显示的价格仅为基础运费，不含偏远地区附加费和增值税。实际收费可能因收货地址和目的地国家而更高。确认订单前，请务必使用偏远地区查询工具核实收货地址。"
+            }
           }
-        },
-        {
-          term: { vi: "Bulk Shipping (Vận chuyển hàng sỉ)", en: "Bulk Shipping", zh: "Bulk Shipping（大货运输）" },
-          desc: {
-            vi: "Dịch vụ vận chuyển hàng sỉ, áp dụng cho các lô hàng lớn về số lượng hoặc trọng lượng, thường vận chuyển bằng đường biển hoặc đường hàng không. Phù hợp với doanh nghiệp muốn nhập kho hoặc phân phối số lượng lớn sang thị trường quốc tế.",
-            en: "A shipping service for large-volume or heavyweight consignments, typically transported by sea freight or air freight. Suited for businesses looking to import to a warehouse or distribute large quantities to international markets.",
-            zh: "适用于大批量或重货的运输服务，通常通过海运或空运进行。适合希望进仓或向国际市场大批量分销的企业。"
+        ]
+      },
+      {
+        title: { vi: "🌏 Nhóm 4 — Tuyến vận chuyển", en: "🌏 Group 4 — Shipping Routes", zh: "🌏 第4组 — 运输线路" },
+        terms: [
+          {
+            term: { vi: "Standard <span translate='no'>VN</span> → Worldwide", en: "Standard <span translate='no'>VN</span> → Worldwide", zh: "Standard <span translate='no'>VN</span> → Worldwide" },
+            desc: {
+              vi: "Tuyến vận chuyển tiêu chuẩn từ Việt Nam đến các quốc gia trên toàn thế giới. Hàng được giao trực tiếp đến tay người nhận tại nước đến. Phù hợp với hàng thông thường và mỹ phẩm. Tracking number được cung cấp là tracking của Yun Express.",
+              en: "Standard shipping route from Vietnam to destinations worldwide. Parcels are delivered directly to the recipient in the destination country. Supports regular goods and cosmetics. Tracking numbers provided are Yun Express tracking numbers.",
+              zh: "越南至全球目的地的标准运输线路。包裹直接送达目的地收件人。支持普通货物和化妆品。提供的追踪号为Yun Express追踪号。"
+            }
+          },
+          {
+            term: { vi: "Standard <span translate='no'>CN</span> → Worldwide", en: "Standard <span translate='no'>CN</span> → Worldwide", zh: "Standard <span translate='no'>CN</span> → Worldwide" },
+            desc: {
+              vi: "Tuyến vận chuyển tiêu chuẩn từ Trung Quốc đến toàn cầu. Ngoài hàng thông thường và mỹ phẩm, tuyến này còn hỗ trợ vận chuyển hàng có pin (battery). Tracking number được cung cấp là tracking của Yun Express.",
+              en: "Standard shipping route from China to worldwide destinations. In addition to regular goods and cosmetics, this route also supports items containing batteries. Tracking numbers provided are Yun Express tracking numbers.",
+              zh: "中国至全球目的地的标准运输线路。除普通货物和化妆品外，还支持含电池商品。提供的追踪号为Yun Express追踪号。"
+            }
+          },
+          {
+            term: { vi: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span> (Tuyến ưu tiên đi Mỹ)", en: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span>", zh: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span>（越/中至美优先线路）" },
+            desc: {
+              vi: "Tuyến ưu tiên từ Việt Nam hoặc Trung Quốc đến Mỹ với thời gian xử lý nhanh hơn (5–10 BSD). Tracking number được cung cấp bằng USPS và sẽ được active trong vòng 24 giờ kể từ thời điểm tạo tracking. Phù hợp cho khách hàng bán hàng qua các nền tảng như Amazon, TikTok.",
+              en: "Priority route from Vietnam or China to the United States with faster processing (5–10 BSD). Tracking numbers are provided by USPS and will be activated within 24 hours of the tracking number being created. Suitable for sellers on platforms such as Amazon and TikTok.",
+              zh: "越南或中国至美国的优先线路，处理更快（5–10 BSD）。提供USPS追踪号，自创建起24小时内激活。适合在Amazon、TikTok等平台销售的卖家。"
+            }
+          },
+          {
+            term: { vi: "CN — US Ship by Label (Trung Quốc → Mỹ theo nhãn)", en: "CN — US Ship by Label", zh: "CN — US Ship by Label（中国至美国贴标线路）" },
+            desc: {
+              vi: "Tuyến vận chuyển từ Trung Quốc đến Mỹ theo hình thức Ship by Label. Các đơn hàng đã có sẵn label từ merchant (tự mua hoặc label của nền tảng như TikTok, Amazon). THG chỉ có trách nhiệm vận chuyển các đơn hàng đến điểm tiếp nhận của đơn vị phát hành label. Toàn bộ quá trình giao hàng nội địa đến người nhận cuối sẽ do đơn vị phát hành label đảm nhận.",
+              en: "Shipping route from China to the United States using the Ship by Label method. Orders already have labels provided by the merchant (either self-purchased or issued by an e-commerce platform such as TikTok or Amazon). THG is only responsible for transporting orders to the drop-off point of the label-issuing carrier. Last-mile delivery to the end recipient is handled entirely by the label-issuing carrier.",
+              zh: "以Ship by Label方式从中国运往美国的线路。订单已有商家提供的标签（自购或TikTok、Amazon等平台发放）。THG仅负责将订单运至标签承运商的交接点，最后一公里配送由标签承运商全权负责。"
+            }
+          },
+          {
+            term: { vi: "Tax included (Đã bao gồm thuế)", en: "Tax included", zh: "Tax included（含税）" },
+            desc: {
+              vi: "Thuế nhập khẩu hoặc VAT đã được tính và bao gồm trong giá cước hiển thị. Khách hàng không phải trả thêm bất kỳ khoản thuế nào cho lô hàng đó tại nước đến.",
+              en: "Import duties or VAT are already calculated and included in the displayed shipping rate. Customers will not be charged any additional taxes for that shipment upon delivery in the destination country.",
+              zh: "进口关税或增值税已计算并包含在显示的运费中。客户在目的地国家收货时无需额外支付任何税费。"
+            }
+          },
+          {
+            term: { vi: "Active USPS (Trạng thái USPS hoạt động)", en: "Active USPS", zh: "Active USPS（USPS正常运营状态）" },
+            desc: {
+              vi: "Trạng thái xác nhận rằng hệ thống USPS đang hoạt động bình thường và chấp nhận lô hàng từ tuyến này. Thông tin này được cập nhật theo thời gian thực để đảm bảo không có gián đoạn dịch vụ.",
+              en: "A real-time status confirming that the USPS network is operating normally and accepting shipments on this route. This information is updated in real time to ensure there are no service interruptions.",
+              zh: "实时状态确认，表明USPS网络运营正常并接受本线路的货物。此信息实时更新，确保服务不中断。"
+            }
           }
-        },
-        {
-          term: { vi: "Express Shipping (Chuyển phát nhanh)", en: "Express Shipping", zh: "Express Shipping（快递）" },
-          desc: {
-            vi: "Dịch vụ chuyển phát nhanh quốc tế, ưu tiên xử lý và giao hàng trong thời gian ngắn hơn so với Standard. Thường đi qua các hãng vận chuyển như DHL, FedEx, UPS.",
-            en: "International expedited delivery with prioritized processing and faster transit times compared to Standard. Typically handled by carriers such as DHL, FedEx, or UPS.",
-            zh: "国际快递服务，处理优先、时效比标准快。通常由DHL、FedEx、UPS等承运商承运。"
+        ]
+      },
+      {
+        title: { vi: "📦 Nhóm 5 — Loại hàng hóa", en: "📦 Group 5 — Product Types", zh: "📦 第5组 — 货物类型" },
+        terms: [
+          {
+            term: { vi: "Regular Items / Hàng thông thường", en: "Regular Items / Regular Goods", zh: "Regular Items / 普通货物" },
+            desc: {
+              vi: "Các mặt hàng tiêu dùng thông thường không thuộc danh mục đặc biệt: quần áo, phụ kiện thời trang, đồ gia dụng, đồ chơi, văn phòng phẩm, v.v. Đây là loại hàng được chấp nhận trên hầu hết tất cả các tuyến vận chuyển.",
+              en: "Standard consumer goods that do not fall under any special category: clothing, fashion accessories, household items, toys, stationery, etc. This product type is accepted on almost all available shipping routes.",
+              zh: "不属于任何特殊类别的普通消费品：服装、时尚配件、家居用品、玩具、文具等。该类货物几乎适用于所有可用运输线路。"
+            }
+          },
+          {
+            term: { vi: "Cosmetics (Mỹ phẩm)", en: "Cosmetics", zh: "Cosmetics（化妆品）" },
+            desc: {
+              vi: "Sản phẩm chăm sóc sắc đẹp và cơ thể như kem dưỡng da, son môi, nước hoa, dầu gội, v.v. Mỹ phẩm có thể yêu cầu thêm giấy tờ kiểm định hoặc khai báo thành phần tùy theo quy định hải quan của quốc gia đến. Không phải tuyến nào cũng hỗ trợ gửi mỹ phẩm.",
+              en: "Beauty and personal care products such as moisturizers, lipsticks, perfumes, shampoos, etc. Cosmetics may require additional certification documents or ingredient declarations depending on customs regulations in the destination country. Not all routes support cosmetics.",
+              zh: "美容和个人护理产品，如润肤霜、口红、香水、洗发水等。化妆品可能需要根据目的地国家海关法规提供额外认证文件或成分申报。并非所有线路都支持化妆品运输。"
+            }
+          },
+          {
+            term: { vi: "Battery (Hàng có pin)", en: "Battery", zh: "Battery（含电池货物）" },
+            desc: {
+              vi: "Được chấp nhận: pin tích hợp trong sản phẩm và pin đi kèm sản phẩm (công suất không vượt quá 100Wh). Không được chấp nhận: pin nguyên chất (pin không kèm thiết bị), chất lỏng, bột, súng, đạn dược và các vật phẩm bị cấm khác. Chỉ một số tuyến nhất định hỗ trợ gửi hàng có pin. Vui lòng liên hệ đội ngũ tư vấn THG Fulfill trước khi gửi hàng có pin lithium.",
+              en: "Accepted: batteries integrated into a product and batteries included alongside a product (capacity must not exceed 100Wh). Not accepted: standalone batteries (not attached to a device), liquids, powders, firearms, ammunition, and other prohibited items. Only specific routes support battery shipments. Please contact the THG Fulfill advisory team before shipping any lithium battery products.",
+              zh: "允许：集成在产品中的电池及随产品附带的电池（容量不超过100Wh）。不允许：独立电池（不附带设备）、液体、粉末、枪支、弹药及其他禁运物品。仅特定线路支持含电池货物。寄送锂电池产品前请联系THG Fulfill顾问团队。"
+            }
           }
-        },
-        {
-          term: { vi: "Standard Shipping (Vận chuyển tiêu chuẩn)", en: "Standard Shipping", zh: "Standard Shipping（标准运输）" },
-          desc: {
-            vi: "Dịch vụ vận chuyển tiêu chuẩn với chi phí tối ưu. Thời gian giao hàng dài hơn Express nhưng phù hợp với phần lớn đơn hàng thương mại điện tử thông thường.",
-            en: "Cost-effective standard shipping service. Delivery times are longer than Express but suitable for the majority of regular e-commerce orders.",
-            zh: "经济实惠的标准运输服务。时效比快递慢，但适合大多数普通电商订单。"
-          }
-        },
-        {
-          term: { vi: "Ship by Merchant (Merchant mua nhãn)", en: "Ship by Merchant", zh: "Ship by Merchant（商家购标发货）" },
-          desc: {
-            vi: "Hình thức merchant mua nhãn vận chuyển (shipping label) trực tiếp từ THG Fulfill. THG Fulfill chịu trách nhiệm toàn bộ hành trình vận chuyển — từ khi tiếp nhận hàng tại kho cho đến khi giao thành công đến tay người nhận cuối cùng tại nước đích.",
-            en: "A shipping arrangement where the merchant purchases a shipping label directly from THG Fulfill. THG Fulfill is responsible for the entire shipping journey — from receiving the goods at the warehouse through to successful delivery to the end recipient in the destination country.",
-            zh: "商家直接从THG Fulfill购买运输标签的发货方式。THG Fulfill负责从仓库接货到最终目的地收件人成功签收的全程运输。"
-          }
-        },
-        {
-          term: { vi: "Ship by Label (Merchant tự có nhãn)", en: "Ship by Label", zh: "Ship by Label（商家自备标签）" },
-          desc: {
-            vi: "Hình thức merchant tự cung cấp nhãn vận chuyển đã có sẵn — do merchant tự mua hoặc được nền tảng bán hàng cấp phát. THG Fulfill chịu trách nhiệm vận chuyển kiện hàng từ kho đến điểm tiếp nhận (drop-off point) của đơn vị phát hành label tương ứng (ví dụ: label USPS thì drop-off tại bưu cục USPS). Toàn bộ quá trình giao hàng nội địa đến người nhận cuối sẽ do đơn vị phát hành label đảm nhận.",
-            en: "A shipping arrangement where the merchant provides their own shipping label — either self-purchased or issued by a selling platform. THG Fulfill is responsible for transporting the parcel from the warehouse to the drop-off point of the corresponding carrier (e.g., USPS label goes to a USPS post office). Last-mile delivery to the end recipient is handled entirely by the label-issuing carrier.",
-            zh: "商家自行提供运输标签（自购或由销售平台发放）的发货方式。THG Fulfill负责将包裹从仓库运至对应承运商的交接点（如USPS标签则交至USPS邮局）。最后一公里配送由标签发行承运商全权负责。"
-          }
-        },
-        {
-          term: { vi: "Drop-off USPS (Bàn giao tại USPS)", en: "Drop-off USPS", zh: "Drop-off USPS（USPS交接）" },
-          desc: {
-            vi: "THG bàn giao hàng hóa tại post office của USPS, trách nhiệm vận chuyển hàng đến tay khách hàng cuối cùng do USPS đảm nhận. Thường áp dụng cho tuyến Priority CN — US Ship by Label.",
-            en: "THG Fulfill hands over shipments at a USPS post office. Delivery to the final customer is then handled entirely by USPS. Typically applied to the Priority CN — US Ship by Label route.",
-            zh: "THG Fulfill将货物移交至USPS邮局，之后由USPS负责配送至最终客户。通常适用于Priority CN — US Ship by Label线路。"
-          }
-        }
-      ]
-    },
-    {
-      title: { vi: "💲 Nhóm 3 — Thuật ngữ giá cước", en: "💲 Group 3 — Pricing Terms", zh: "💲 第3组 — 价格术语" },
-      terms: [
-        {
-          term: { vi: "Remote Area Surcharge (Phụ phí vùng xa)", en: "Remote Area Surcharge", zh: "Remote Area Surcharge（偏远地区附加费）" },
-          desc: {
-            vi: "Khoản phụ phí phát sinh khi địa chỉ giao hàng nằm tại khu vực xa trung tâm, hẻo lánh hoặc khó tiếp cận. Mức phí được phân chia theo Zone (vùng) từ 1 đến 6, do các hãng vận chuyển quốc tế (như FedEx, DHL, USPS) quy định dựa trên mật độ dân số và khả năng tiếp cận logistics. Giá hiển thị trong bảng chưa bao gồm khoản phụ phí này.",
-            en: "An additional fee applied when the delivery address is located in a remote, rural, or difficult-to-access area. Fees are tiered by Zone (1 to 6) as defined by international carriers (e.g., FedEx, DHL, USPS) based on population density and logistics accessibility. This surcharge is NOT included in the base price displayed in the price table.",
-            zh: "当收货地址位于偏远、农村或难以到达地区时产生的附加费。费用按Zone（区域）1至6分级，由FedEx、DHL、USPS等国际承运商根据人口密度和物流可及性制定。此附加费不含在价格表显示的基础运费中。"
-          }
-        },
-        {
-          term: { vi: "Zone 1 – Zone 6 (Hệ thống phân vùng địa lý)", en: "Zone 1 – Zone 6", zh: "Zone 1 – Zone 6（地理分区系统）" },
-          desc: {
-            vi: "Hệ thống phân vùng địa lý do hãng vận chuyển quy định để tính phụ phí vùng xa. Zone càng cao thì khu vực càng xa xôi và phụ phí càng lớn. Khách hàng có thể tra cứu Zone của địa chỉ cụ thể ngay trên trang bảng giá.",
-            en: "A geographic zoning system used by carriers to calculate remote area surcharges. Higher zones indicate more remote areas and therefore higher surcharge rates. Customers can look up the zone for a specific delivery address directly on the pricing page.",
-            zh: "承运商用于计算偏远地区附加费的地理分区系统。区号越高，地区越偏远，附加费越高。客户可直接在定价页面查询特定收货地址的区号。"
-          }
-        },
-        {
-          term: { vi: "VAT (Thuế giá trị gia tăng)", en: "VAT (Value Added Tax)", zh: "VAT（增值税）" },
-          desc: {
-            vi: "Thuế giá trị gia tăng áp dụng tại quốc gia nhận hàng. Mức VAT khác nhau theo từng nước (ví dụ: Tây Ban Nha 21%, Thụy Điển 25%). Đây là nghĩa vụ thuế của người nhận hàng và THG sẽ thu hộ để khai báo với cơ quan thuế nước sở tại.",
-            en: "Import value-added tax applied by the destination country. VAT rates vary by country (e.g., Spain 21%, Sweden 25%). This is a tax obligation of the recipient, and THG Fulfill collects it on behalf of the local tax authority.",
-            zh: "目的地国家征收的进口增值税。各国税率不同（例如：西班牙21%，瑞典25%）。这是收件人的纳税义务，THG Fulfill代为收取并向当地税务机关申报。"
-          }
-        },
-        {
-          term: { vi: "Service Charge 2% (Phí xử lý VAT)", en: "Service Charge (2%)", zh: "Service Charge 2%（VAT处理费）" },
-          desc: {
-            vi: "Phí xử lý và quản lý thu hộ thuế (VAT) của THG Fulfill, tính bằng 2% trên tổng giá trị lô hàng. Khoản phí này chỉ áp dụng ở các quốc gia có yêu cầu khai báo VAT.",
-            en: "A handling and VAT collection fee charged by THG Fulfill, equal to 2% of the total shipment value. This fee only applies in countries that require VAT reporting.",
-            zh: "THG Fulfill收取的VAT代收处理费，为货物总价值的2%。此费用仅适用于需要申报VAT的国家。"
-          }
-        },
-        {
-          term: { vi: "Giá chưa bao gồm phụ phí vùng xa và VAT", en: "Price excludes remote area surcharges and VAT", zh: "价格不含偏远附加费和增值税" },
-          desc: {
-            vi: "Cảnh báo quan trọng: giá hiển thị trong bảng là giá cước vận chuyển cơ bản, chưa tính phụ phí vùng xa và thuế VAT. Giá thực tế khách hàng phải trả có thể cao hơn tùy theo địa chỉ giao hàng và quốc gia đến. Luôn kiểm tra địa chỉ giao hàng trong công cụ tra cứu Remote Area trước khi xác nhận đơn.",
-            en: "Important disclaimer: the prices shown in the table are base shipping rates only and do not include remote area surcharges or VAT. The final amount charged may be higher depending on the delivery address and destination country. Always verify the delivery address using the Remote Area lookup tool before confirming an order.",
-            zh: "重要提示：价格表中显示的价格仅为基础运费，不含偏远地区附加费和增值税。实际收费可能因收货地址和目的地国家而更高。确认订单前，请务必使用偏远地区查询工具核实收货地址。"
-          }
-        }
-      ]
-    },
-    {
-      title: { vi: "🌏 Nhóm 4 — Tuyến vận chuyển", en: "🌏 Group 4 — Shipping Routes", zh: "🌏 第4组 — 运输线路" },
-      terms: [
-        {
-          term: { vi: "Standard <span translate='no'>VN</span> → Worldwide", en: "Standard <span translate='no'>VN</span> → Worldwide", zh: "Standard <span translate='no'>VN</span> → Worldwide" },
-          desc: {
-            vi: "Tuyến vận chuyển tiêu chuẩn từ Việt Nam đến các quốc gia trên toàn thế giới. Hàng được giao trực tiếp đến tay người nhận tại nước đến. Phù hợp với hàng thông thường và mỹ phẩm. Tracking number được cung cấp là tracking của Yun Express.",
-            en: "Standard shipping route from Vietnam to destinations worldwide. Parcels are delivered directly to the recipient in the destination country. Supports regular goods and cosmetics. Tracking numbers provided are Yun Express tracking numbers.",
-            zh: "越南至全球目的地的标准运输线路。包裹直接送达目的地收件人。支持普通货物和化妆品。提供的追踪号为Yun Express追踪号。"
-          }
-        },
-        {
-          term: { vi: "Standard <span translate='no'>CN</span> → Worldwide", en: "Standard <span translate='no'>CN</span> → Worldwide", zh: "Standard <span translate='no'>CN</span> → Worldwide" },
-          desc: {
-            vi: "Tuyến vận chuyển tiêu chuẩn từ Trung Quốc đến toàn cầu. Ngoài hàng thông thường và mỹ phẩm, tuyến này còn hỗ trợ vận chuyển hàng có pin (battery). Tracking number được cung cấp là tracking của Yun Express.",
-            en: "Standard shipping route from China to worldwide destinations. In addition to regular goods and cosmetics, this route also supports items containing batteries. Tracking numbers provided are Yun Express tracking numbers.",
-            zh: "中国至全球目的地的标准运输线路。除普通货物和化妆品外，还支持含电池商品。提供的追踪号为Yun Express追踪号。"
-          }
-        },
-        {
-          term: { vi: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span> (Tuyến ưu tiên đi Mỹ)", en: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span>", zh: "Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span>（越/中至美优先线路）" },
-          desc: {
-            vi: "Tuyến ưu tiên từ Việt Nam hoặc Trung Quốc đến Mỹ với thời gian xử lý nhanh hơn (5–10 BSD). Tracking number được cung cấp bằng USPS và sẽ được active trong vòng 24 giờ kể từ thời điểm tạo tracking. Phù hợp cho khách hàng bán hàng qua các nền tảng như Amazon, TikTok.",
-            en: "Priority route from Vietnam or China to the United States with faster processing (5–10 BSD). Tracking numbers are provided by USPS and will be activated within 24 hours of the tracking number being created. Suitable for sellers on platforms such as Amazon and TikTok.",
-            zh: "越南或中国至美国的优先线路，处理更快（5–10 BSD）。提供USPS追踪号，自创建起24小时内激活。适合在Amazon、TikTok等平台销售的卖家。"
-          }
-        },
-        {
-          term: { vi: "CN — US Ship by Label (Trung Quốc → Mỹ theo nhãn)", en: "CN — US Ship by Label", zh: "CN — US Ship by Label（中国至美国贴标线路）" },
-          desc: {
-            vi: "Tuyến vận chuyển từ Trung Quốc đến Mỹ theo hình thức Ship by Label. Các đơn hàng đã có sẵn label từ merchant (tự mua hoặc label của nền tảng như TikTok, Amazon). THG chỉ có trách nhiệm vận chuyển các đơn hàng đến điểm tiếp nhận của đơn vị phát hành label. Toàn bộ quá trình giao hàng nội địa đến người nhận cuối sẽ do đơn vị phát hành label đảm nhận.",
-            en: "Shipping route from China to the United States using the Ship by Label method. Orders already have labels provided by the merchant (either self-purchased or issued by an e-commerce platform such as TikTok or Amazon). THG is only responsible for transporting orders to the drop-off point of the label-issuing carrier. Last-mile delivery to the end recipient is handled entirely by the label-issuing carrier.",
-            zh: "以Ship by Label方式从中国运往美国的线路。订单已有商家提供的标签（自购或TikTok、Amazon等平台发放）。THG仅负责将订单运至标签承运商的交接点，最后一公里配送由标签承运商全权负责。"
-          }
-        },
-        {
-          term: { vi: "Tax included (Đã bao gồm thuế)", en: "Tax included", zh: "Tax included（含税）" },
-          desc: {
-            vi: "Thuế nhập khẩu hoặc VAT đã được tính và bao gồm trong giá cước hiển thị. Khách hàng không phải trả thêm bất kỳ khoản thuế nào cho lô hàng đó tại nước đến.",
-            en: "Import duties or VAT are already calculated and included in the displayed shipping rate. Customers will not be charged any additional taxes for that shipment upon delivery in the destination country.",
-            zh: "进口关税或增值税已计算并包含在显示的运费中。客户在目的地国家收货时无需额外支付任何税费。"
-          }
-        },
-        {
-          term: { vi: "Active USPS (Trạng thái USPS hoạt động)", en: "Active USPS", zh: "Active USPS（USPS正常运营状态）" },
-          desc: {
-            vi: "Trạng thái xác nhận rằng hệ thống USPS đang hoạt động bình thường và chấp nhận lô hàng từ tuyến này. Thông tin này được cập nhật theo thời gian thực để đảm bảo không có gián đoạn dịch vụ.",
-            en: "A real-time status confirming that the USPS network is operating normally and accepting shipments on this route. This information is updated in real time to ensure there are no service interruptions.",
-            zh: "实时状态确认，表明USPS网络运营正常并接受本线路的货物。此信息实时更新，确保服务不中断。"
-          }
-        }
-      ]
-    },
-    {
-      title: { vi: "📦 Nhóm 5 — Loại hàng hóa", en: "📦 Group 5 — Product Types", zh: "📦 第5组 — 货物类型" },
-      terms: [
-        {
-          term: { vi: "Regular Items / Hàng thông thường", en: "Regular Items / Regular Goods", zh: "Regular Items / 普通货物" },
-          desc: {
-            vi: "Các mặt hàng tiêu dùng thông thường không thuộc danh mục đặc biệt: quần áo, phụ kiện thời trang, đồ gia dụng, đồ chơi, văn phòng phẩm, v.v. Đây là loại hàng được chấp nhận trên hầu hết tất cả các tuyến vận chuyển.",
-            en: "Standard consumer goods that do not fall under any special category: clothing, fashion accessories, household items, toys, stationery, etc. This product type is accepted on almost all available shipping routes.",
-            zh: "不属于任何特殊类别的普通消费品：服装、时尚配件、家居用品、玩具、文具等。该类货物几乎适用于所有可用运输线路。"
-          }
-        },
-        {
-          term: { vi: "Cosmetics (Mỹ phẩm)", en: "Cosmetics", zh: "Cosmetics（化妆品）" },
-          desc: {
-            vi: "Sản phẩm chăm sóc sắc đẹp và cơ thể như kem dưỡng da, son môi, nước hoa, dầu gội, v.v. Mỹ phẩm có thể yêu cầu thêm giấy tờ kiểm định hoặc khai báo thành phần tùy theo quy định hải quan của quốc gia đến. Không phải tuyến nào cũng hỗ trợ gửi mỹ phẩm.",
-            en: "Beauty and personal care products such as moisturizers, lipsticks, perfumes, shampoos, etc. Cosmetics may require additional certification documents or ingredient declarations depending on customs regulations in the destination country. Not all routes support cosmetics.",
-            zh: "美容和个人护理产品，如润肤霜、口红、香水、洗发水等。化妆品可能需要根据目的地国家海关法规提供额外认证文件或成分申报。并非所有线路都支持化妆品运输。"
-          }
-        },
-        {
-          term: { vi: "Battery (Hàng có pin)", en: "Battery", zh: "Battery（含电池货物）" },
-          desc: {
-            vi: "Được chấp nhận: pin tích hợp trong sản phẩm và pin đi kèm sản phẩm (công suất không vượt quá 100Wh). Không được chấp nhận: pin nguyên chất (pin không kèm thiết bị), chất lỏng, bột, súng, đạn dược và các vật phẩm bị cấm khác. Chỉ một số tuyến nhất định hỗ trợ gửi hàng có pin. Vui lòng liên hệ đội ngũ tư vấn THG Fulfill trước khi gửi hàng có pin lithium.",
-            en: "Accepted: batteries integrated into a product and batteries included alongside a product (capacity must not exceed 100Wh). Not accepted: standalone batteries (not attached to a device), liquids, powders, firearms, ammunition, and other prohibited items. Only specific routes support battery shipments. Please contact the THG Fulfill advisory team before shipping any lithium battery products.",
-            zh: "允许：集成在产品中的电池及随产品附带的电池（容量不超过100Wh）。不允许：独立电池（不附带设备）、液体、粉末、枪支、弹药及其他禁运物品。仅特定线路支持含电池货物。寄送锂电池产品前请联系THG Fulfill顾问团队。"
-          }
-        }
-      ]
-    }
-  ];
+        ]
+      }
+    ];
 
   return (
     <div className="bg-white border border-[var(--pricing-border)] rounded-xl p-6 md:p-8 shadow-sm">
@@ -454,8 +457,8 @@ const TerminologyPanel = () => {
         {language === 'vi'
           ? 'Dành cho khách hàng sử dụng dịch vụ vận chuyển quốc tế THG Fulfill · Cập nhật: Tháng 3/2026'
           : language === 'en'
-          ? 'For customers using THG Fulfill international shipping services · Updated: March 2026'
-          : '适用于使用THG Fulfill国际运输服务的客户 · 更新：2026年3月'}
+            ? 'For customers using THG Fulfill international shipping services · Updated: March 2026'
+            : '适用于使用THG Fulfill国际运输服务的客户 · 更新：2026年3月'}
       </p>
       <div className="space-y-10">
         {groups.map((group, gi) => (
@@ -482,8 +485,8 @@ const TerminologyPanel = () => {
         {language === 'vi'
           ? 'Cần hỗ trợ thêm? Email: info@thgfulfill.com · Hotline: 0335.124.089'
           : language === 'en'
-          ? 'Need further assistance? Email: info@thgfulfill.com · Hotline: 0335.124.089'
-          : '需要更多帮助？邮箱：info@thgfulfill.com · 热线：0335.124.089'}
+            ? 'Need further assistance? Email: info@thgfulfill.com · Hotline: 0335.124.089'
+            : '需要更多帮助？邮箱：info@thgfulfill.com · 热线：0335.124.089'}
       </div>
     </div>
   );
@@ -563,6 +566,35 @@ const InternationalPricingPage = () => {
   const [searchCargo, setSearchCargo] = useState("standard");
   const [searchWeight, setSearchWeight] = useState(1);
   const [showResult, setShowResult] = useState(false);
+
+  /* ─── Currency Display State ─── */
+  const CC_OPTIONS = [
+    { code: "USD", symbol: "$", label: "USD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#B22234" /><rect y="2.18" width="36" height="1.84" fill="#fff" /><rect y="5.82" width="36" height="1.84" fill="#fff" /><rect y="9.45" width="36" height="1.84" fill="#fff" /><rect y="13.09" width="36" height="1.84" fill="#fff" /><rect y="16.73" width="36" height="1.84" fill="#fff" /><rect y="20.36" width="36" height="1.84" fill="#fff" /><rect width="14.4" height="11.27" fill="#3C3B6E" /></svg> },
+    { code: "VND", symbol: "₫", label: "VND", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DA251D" /><polygon points="18,5 19.76,10.42 25.56,10.42 21,13.61 22.76,19.03 18,15.84 13.24,19.03 15,13.61 10.44,10.42 16.24,10.42" fill="#FFFF00" /></svg> },
+    { code: "CNY", symbol: "¥", label: "CNY", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DE2910" /><polygon points="6,3 7.12,6.47 10.8,6.47 7.84,8.53 8.96,12 6,9.94 3.04,12 4.16,8.53 1.2,6.47 4.88,6.47" fill="#FFDE00" /><polygon points="12,2 12.56,3.73 14.4,3.73 12.92,4.77 13.48,6.5 12,5.46 10.52,6.5 11.08,4.77 9.6,3.73 11.44,3.73" fill="#FFDE00" /><polygon points="15,5 15.56,6.73 17.4,6.73 15.92,7.77 16.48,9.5 15,8.46 13.52,9.5 14.08,7.77 12.6,6.73 14.44,6.73" fill="#FFDE00" /><polygon points="15,9 15.56,10.73 17.4,10.73 15.92,11.77 16.48,13.5 15,12.46 13.52,13.5 14.08,11.77 12.6,10.73 14.44,10.73" fill="#FFDE00" /><polygon points="12,12 12.56,13.73 14.4,13.73 12.92,14.77 13.48,16.5 12,15.46 10.52,16.5 11.08,14.77 9.6,13.73 11.44,13.73" fill="#FFDE00" /></svg> },
+    { code: "EUR", symbol: "€", label: "EUR", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="12" height="24" fill="#003082" /><rect x="12" width="12" height="24" fill="#FECB00" /><rect x="24" width="12" height="24" fill="#EF3340" /></svg> },
+    { code: "AUD", symbol: "A$", label: "AUD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#00008B" /><rect width="18" height="12" fill="#012169" /><polygon points="0,0 18,12 18,0 0,12" fill="#012169" /><polygon points="0,0 18,12" stroke="#fff" strokeWidth="3" /><polygon points="18,0 0,12" stroke="#fff" strokeWidth="3" /><polygon points="0,0 18,12" stroke="#C8102E" strokeWidth="2" /><polygon points="18,0 0,12" stroke="#C8102E" strokeWidth="2" /></svg> },
+  ];
+  const [displayCurrency, setDisplayCurrency] = useState("USD");
+  const [rates, setRates] = useState<Record<string, number> | null>(null);
+  const [ratesLoading, setRatesLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("https://open.er-api.com/v6/latest/USD")
+      .then(r => r.json())
+      .then(data => { if (data.result === "success") setRates(data.rates); })
+      .catch(() => { });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const displayRate = useMemo(() => {
+    if (!rates || displayCurrency === "USD") return 1;
+    return rates[displayCurrency] ?? 1;
+  }, [rates, displayCurrency]);
+
+  const displaySymbol = useMemo(() => {
+    return CC_OPTIONS.find(o => o.code === displayCurrency)?.symbol ?? "$";
+  }, [displayCurrency]);
 
   const handleSearch = () => {
     setShowResult(true);
@@ -789,6 +821,7 @@ const InternationalPricingPage = () => {
           </div>
         )}
 
+
         {/* ──── SERVICE TABS (Level 1) ──── */}
         <div className="flex items-center gap-4 mb-3 mt-4">
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
@@ -891,32 +924,55 @@ const InternationalPricingPage = () => {
                 </div>
 
                 {/* TikTok sub-tabs */}
-                <TikTokPanel />
+                <TikTokPanel rate={displayRate} currencySymbol={displaySymbol} />
               </div>
             ) : (
               <>
-                {/* ──── CARGO FILTER ──── */}
-                <div className="flex items-center gap-3 mb-4 flex-wrap">
-                  <span className="text-[13px] font-semibold text-muted-foreground whitespace-nowrap">Loại hàng:</span>
-                  <div className="flex gap-2 flex-wrap">
-                    {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
-                      const enabled = routeConfig.cargo.includes(c);
-                      return (
-                        <button
-                          key={c}
-                          onClick={() => handleCargoSwitch(c)}
-                          disabled={!enabled}
-                          className={`px-4 py-1.5 rounded-full text-[13px] font-semibold border-[1.5px] transition-all ${!enabled
-                            ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
-                            : cargo === c
-                              ? "bg-primary border-primary text-white"
-                              : "border-[var(--pricing-border)] bg-white hover:border-primary hover:text-primary"
-                            }`}
-                        >
-                          {CARGO_ICONS[c]} {CARGO_LABELS[c]}
-                        </button>
-                      );
-                    })}
+                {/* ──── CARGO FILTER + CURRENCY ──── */}
+                <div className="flex items-center gap-3 mb-4 flex-wrap justify-between">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-[13px] font-semibold text-muted-foreground whitespace-nowrap">Loại hàng:</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
+                        const enabled = routeConfig.cargo.includes(c);
+                        return (
+                          <button
+                            key={c}
+                            onClick={() => handleCargoSwitch(c)}
+                            disabled={!enabled}
+                            className={`px-4 py-1.5 rounded-full text-[13px] font-semibold border-[1.5px] transition-all ${!enabled
+                              ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
+                              : cargo === c
+                                ? "bg-primary border-primary text-white"
+                                : "border-[var(--pricing-border)] bg-white hover:border-primary hover:text-primary"
+                              }`}
+                          >
+                            {CARGO_ICONS[c]} {CARGO_LABELS[c]}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {/* Currency switcher pills */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1 notranslate" translate="no">Tiền tệ:</span>
+                    {CC_OPTIONS.map(opt => (
+                      <button
+                        key={opt.code}
+                        onClick={() => setDisplayCurrency(opt.code)}
+                        title={opt.code}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold border-[1.5px] transition-all ${displayCurrency === opt.code
+                          ? "bg-navy border-navy text-white shadow-sm"
+                          : "border-[var(--pricing-border)] bg-white text-navy hover:border-navy/60"
+                          }`}
+                      >
+                        <span className="overflow-hidden rounded-[2px] shrink-0 relative" style={{ width: 22, height: 15, display: 'inline-flex', alignItems: 'center' }}>{opt.flag}</span>
+                        <span className="notranslate" translate="no">{opt.label}</span>
+                        {!ratesLoading && rates && opt.code !== "USD" && (
+                          <span className="text-[10px] opacity-50 font-medium notranslate" translate="no">= {(rates[opt.code] ?? 1).toLocaleString("en-US", { maximumFractionDigits: opt.code === "VND" ? 0 : 2 })}</span>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -936,14 +992,16 @@ const InternationalPricingPage = () => {
                       badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority VN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
                       note="Cập nhật: 29/03/2026"
                       data={(pricingData as any)["uspsVn"] || []}
-                      columns={[{key: "rate", label: "Cước ($)"}]}
+                      columns={[{ key: "rate", label: `Cước (${displaySymbol})` }]}
+                      rate={displayRate} currencySymbol={displaySymbol}
                     />
                     <PriceTable
                       title="Bảng Giá Chi Tiết CN ➝ US (Priority)"
                       badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority CN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
                       note="Cập nhật: 29/03/2026"
                       data={(pricingData as any)["uspsCn"] || []}
-                      columns={[{key: "rate", label: "Cước ($)"}]}
+                      columns={[{ key: "rate", label: `Cước (${displaySymbol})` }]}
+                      rate={displayRate} currencySymbol={displaySymbol}
                     />
                   </div>
                 ) : (
@@ -952,7 +1010,8 @@ const InternationalPricingPage = () => {
                     badge={<div className="flex items-center gap-1">{routeConfig.name} <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
                     note="Cập nhật: 29/03/2026"
                     data={currentData}
-                    columns={tableColumns}
+                    columns={tableColumns.map(c => ({ ...c, label: c.label }))}
+                    rate={displayRate} currencySymbol={displaySymbol}
                   />
                 )}
 
@@ -970,7 +1029,7 @@ const InternationalPricingPage = () => {
                             renderRow={(r, i) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
                                 <td className="px-4 py-3"><span className="notranslate">{r.zone || r.name || `Zone ${i + 1}`}</span></td>
-                                <td className="px-4 py-3 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
+                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2, minimumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
                               </tr>
                             )}
                           />
@@ -987,8 +1046,8 @@ const InternationalPricingPage = () => {
                             renderRow={(v, i) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
                                 <td className="px-4 py-3"><span className="notranslate">{v.country}</span></td>
-                                <td className="px-4 py-3">{v.vat}</td>
-                                <td className="px-4 py-3 font-bold">{v.service}</td>
+                                <td className="px-4 py-3"><span className="notranslate" translate="no">{v.vat}</span></td>
+                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{v.service}</span></td>
                               </tr>
                             )}
                           />
@@ -1011,7 +1070,7 @@ const InternationalPricingPage = () => {
                             <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
                               <td className="px-4 py-3"><span className="notranslate">{r.dest}</span></td>
                               <td className="px-4 py-3"><span className="notranslate">{r.code}</span></td>
-                              <td className="px-4 py-3 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
+                              <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2, minimumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
                             </tr>
                           )}
                         />
@@ -1067,10 +1126,10 @@ const InternationalPricingPage = () => {
                 {/* Bulk Tables for VN */}
                 <div className="space-y-6">
                   {loThuong.length > 0 && (
-                    <BulkDataTable title="🛒 Hàng Lô Sản Phẩm Thường" badge="VN → US" data={loThuong} />
+                    <BulkDataTable title="🛒 Hàng Lô Sản Phẩm Thường" badge="VN → US" data={loThuong} rate={displayRate} currencySymbol={displaySymbol} />
                   )}
                   {loMypham.length > 0 && (
-                    <BulkDataTable title="💧 Hàng Lô Dung Dịch & Mỹ Phẩm" badge="VN → US" data={loMypham} />
+                    <BulkDataTable title="💧 Hàng Lô Dung Dịch & Mỹ Phẩm" badge="VN → US" data={loMypham} rate={displayRate} currencySymbol={displaySymbol} />
                   )}
                 </div>
 
@@ -1228,7 +1287,7 @@ const InternationalPricingPage = () => {
 /* ═══════════════════════════════════════════════
    TIKTOK PANEL (under Ship by Label)
    ═══════════════════════════════════════════════ */
-const TikTokPanel = () => {
+const TikTokPanel = ({ rate = 1, currencySymbol = "$" }: { rate?: number; currencySymbol?: string }) => {
   const [tab, setTab] = useState("cnUsNormal");
 
   const tabs = [
@@ -1265,7 +1324,8 @@ const TikTokPanel = () => {
         badge="Ship by Label"
         note="Cập nhật: 29/03/2026"
         data={data}
-        columns={[{ key: "rate", label: `Cước ($)` }]}
+        columns={[{ key: "rate", label: `Cước (${currencySymbol})` }]}
+        rate={rate} currencySymbol={currencySymbol}
       />
     </div>
   );
@@ -1274,7 +1334,7 @@ const TikTokPanel = () => {
 /* ═══════════════════════════════════════════════
    BULK DATA TABLE (for Express panel)
    ═══════════════════════════════════════════════ */
-const BulkDataTable = ({ title, badge, data }: { title: string; badge: React.ReactNode; data: any[] }) => {
+const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: { title: string; badge: React.ReactNode; data: any[]; rate?: number; currencySymbol?: string }) => {
   const { tVi } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
   const tableId = useMemo(() => "table-bulk-" + Math.random().toString(36).substring(2, 9), []);
@@ -1340,7 +1400,9 @@ const BulkDataTable = ({ title, badge, data }: { title: string; badge: React.Rea
                   const price = row.prices?.[w];
                   return (
                     <td key={w} className="px-4 py-2.5 font-bold whitespace-nowrap">
-                      {price != null ? `$${price}` : "—"}
+                      <span className="notranslate" translate="no">
+                        {price != null ? `${currencySymbol}${(price * rate).toLocaleString("en-US", { maximumFractionDigits: currencySymbol === "₫" ? 0 : 2, minimumFractionDigits: currencySymbol === "₫" ? 0 : 2 })}` : "—"}
+                      </span>
                     </td>
                   );
                 })}
