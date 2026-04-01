@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 const appId = 'thg-fulfill-production';
+const GEMINI_KEY = 'AIzaSyDc8SzvOOSfAZ1NxMlnjboiqGnO_yzC244';
 
 const taskOptions = [
     { id: "blog", label: "Bài Blog SEO", icon: PenTool },
@@ -31,6 +32,7 @@ export default function AgentPage() {
     const [isAuthReady, setIsAuthReady] = useState(false);
     const [history, setHistory] = useState<any[]>([]);
     const [isActionLoading, setIsActionLoading] = useState(false);
+    const [errMsg, setErrMsg] = useState('');
 
     // States cho Content
     const [topic, setTopic] = useState('');
@@ -87,11 +89,12 @@ export default function AgentPage() {
         return () => unsubscribe();
     }, [isAuthReady, userId]);
 
-    // 4. Công cụ Viết AI (Gọi Cloudflare Worker)
+    // 4. Công cụ Viết AI (Gọi trực tiếp Gemini API)
     const generateContent = async () => {
         if (!topic) return;
         setIsActionLoading(true);
         setWriterResult('');
+        setErrMsg('');
 
         try {
             const systemPrompt = "Bạn là chuyên gia Content Marketing tại THG Fulfill. Chuyên sâu về: Fulfillment, Vận chuyển Việt-Trung, Kho bãi, Thủ tục hải quan. Hãy viết nội dung chuyên nghiệp, chuẩn xác và thu hút khách hàng B2B.";
@@ -107,14 +110,20 @@ export default function AgentPage() {
 
             const userPrompt = `Yêu cầu: Viết ${typeMap[taskType] || typeMap.blog}. \nChủ đề: ${topic}. \nNgôn ngữ: Tiếng Việt.`;
 
-            const response = await fetch("/api/gemini", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: userPrompt, systemPrompt })
-            });
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userPrompt }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                    }),
+                }
+            );
 
             const data = await response.json();
-            const content = data.content;
+            const content = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 
             if (content) {
                 setWriterResult(content);
@@ -123,29 +132,37 @@ export default function AgentPage() {
                         type: 'content', subType: taskType, title: topic, content, createdAt: serverTimestamp()
                     });
                 }
-            } else if (data.error) {
-                console.error(data.error);
+            } else {
+                setErrMsg('Gemini không trả về kết quả. Vui lòng thử lại.');
             }
-        } catch (e) { console.error(e); }
+        } catch (e: any) { setErrMsg(e.message || 'Lỗi kết nối Gemini API'); }
         finally { setIsActionLoading(false); }
     };
 
-    // 5. Công cụ Thiết kế AI (Gọi Cloudflare Worker proxy Imagen)
+    // 5. Công cụ Thiết kế AI (Gọi trực tiếp Imagen API)
     const generateDesign = async () => {
         if (!designPrompt) return;
         setIsActionLoading(true);
         setDesignResult(null);
+        setErrMsg('');
 
         try {
-            const response = await fetch("/api/imagen", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    prompt: `Ultra-modern logistics center, THG Fulfill branding, autonomous delivery robots, shipping port with large cargo ships, professional photography, high-end commercial style, ${designPrompt}.`
-                })
-            });
+            const fullPrompt = `Ultra-modern logistics center, THG Fulfill branding, professional photography, high-end commercial style, ${designPrompt}.`;
+
+            const response = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${GEMINI_KEY}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        instances: [{ prompt: fullPrompt }],
+                        parameters: { sampleCount: 1 },
+                    }),
+                }
+            );
+
             const data = await response.json();
-            const base64 = data.base64;
+            const base64 = data.predictions?.[0]?.bytesBase64Encoded;
 
             if (base64) {
                 const url = `data:image/jpeg;base64,${base64}`;
@@ -155,10 +172,10 @@ export default function AgentPage() {
                         type: 'design', title: designPrompt, imageUrl: url, createdAt: serverTimestamp()
                     });
                 }
-            } else if (data.error) {
-                console.error(data.error);
+            } else {
+                setErrMsg('Imagen không trả về kết quả. Vui lòng thử lại.');
             }
-        } catch (e) { console.error(e); }
+        } catch (e: any) { setErrMsg(e.message || 'Lỗi kết nối Imagen API'); }
         finally { setIsActionLoading(false); }
     };
 
