@@ -17,7 +17,6 @@ const InternationalPricingPage = lazy(() => import("./pages/InternationalPricing
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
 const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const AgentPage = lazy(() => import("./pages/AgentPage"));
-const AgentLoginPage = lazy(() => import("./pages/AgentLoginPage"));
 
 const App = () => (
   <I18nProvider>
@@ -39,7 +38,6 @@ const App = () => (
             <Route path="/catalog" element={<CatalogPage />} />
             {/* Internal agent tool — not linked in public nav */}
             <Route path="/agent" element={<AgentPage />} />
-            <Route path="/agent/login" element={<AgentLoginPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

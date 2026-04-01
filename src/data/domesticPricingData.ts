@@ -25,21 +25,38 @@ export const domesticPricingRows: DomesticPricingRow[] = (rawData as any[]).map(
 }));
 
 export const fulfillmentServices = {
-    receiving: { label: "Nhập kho (Inbound)", price: "MIỄN PHÍ", note: "Không thu phí nhập kho" },
-    storage: {
-        label: "Lưu kho",
+    receiving: {
+        label: "Nhập kho",
+        price: "Miễn phí"
+    },
+    inspection: {
+        label: "Phí kiểm đếm",
         options: [
-            { desc: "Mỗi sản phẩm / tháng", price: "$0.10" },
-            { desc: "Mỗi CBM / tháng", price: "$20.00" },
-        ],
-        note: "Miễn phí 90 ngày đầu tiên",
+            { desc: "Hàng hóa đóng gói nhỏ lẻ, số lượng ít hơn 20 món/carton", price: "Miễn phí" },
+            { desc: "Hàng hóa đóng kiện, chỉ có 1 loại sản phẩm, kiểm tra nhanh", price: "2.5$ /carton" },
+            { desc: "Hàng hóa đóng kiện với nhiều món hàng lẫn lộn", price: "6.25$ /carton" },
+            { desc: "Hàng hóa lớn, đóng gói theo CBM", price: "38$ /CBM" },
+            { desc: "Phí kiểm kê hàng hóa định kỳ (theo yêu cầu)", price: "30$ /hour hoặc 30$ cho 1500pcs", note: "Sẽ có xê dịch tùy thuộc vào mặt hàng" },
+            { desc: "Các trường hợp khác", price: "Tính theo case cụ thể" },
+        ]
+    },
+    storage: {
+        label: "Phí lưu kho",
+        options: [
+            { desc: "Theo sản phẩm", price: "0.1$ /pc/tháng" },
+            { desc: "Theo thể tích", price: "20$ / 1 CBM/ 1 tháng" },
+        ]
     },
     packLabel: {
-        label: "Đóng gói & Dán nhãn",
+        label: "Phí đóng gói, dán label và mang hàng ra hãng vận chuyển",
         tiers: [
-            { range: "≤ 2 lbs", price: "$1.20 / pc" },
-            { range: "2 – 4 lbs", price: "$1.70 / pc" },
-            { range: "4 – 6 lbs", price: "$2.20 / pc" },
+            { range: "Items ≤ 2 lbs", price: "1.2$ /pc" },
+            { range: "Item > 2 lbs; ≤ 4 lbs", price: "1.7$ /pc" },
+            { range: "Item > 4 lbs; ≤ 6 lbs", price: "2.2$ /pc" },
+            { range: "Item > 6 lbs; ≤ 8 lbs", price: "2.7$ /pc" },
+            { range: "Item > 8 lbs; ≤ 10 lbs", price: "3.2$ /pc" },
+            { range: "Item > 10 lbs", price: "Tính theo case cụ thể" },
         ],
+        note: "Nếu đơn hàng có nhiều hơn 1 pc thì sẽ cộng thêm $0.5/pc cho mỗi pc tiếp theo"
     },
 };

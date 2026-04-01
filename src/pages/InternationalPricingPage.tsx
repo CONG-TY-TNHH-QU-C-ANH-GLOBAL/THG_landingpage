@@ -105,7 +105,41 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
           </button>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile Cards (Hidden on md+) */}
+      <div className="md:hidden flex flex-col gap-3 p-4 bg-secondary/10">
+        {displayData.map((row: any, i: number) => (
+          <div key={i} className="bg-white border border-[var(--pricing-border)] rounded-xl p-4 shadow-sm relative">
+            <div className="font-bold text-navy text-[15px] mb-3 pb-2 border-b border-[var(--pricing-border)]/50 flex justify-between">
+              <span>Cân Nặng:</span>
+              <span className="text-primary notranslate">{row.kg ?? row.weight ?? "—"} kg</span>
+            </div>
+            <div className="space-y-2">
+              {columns.map(c => {
+                const val = row[c.key];
+                const isNull = val === null || val === undefined;
+                const isContact = typeof val === 'string' && val.includes('Liên hệ');
+                return (
+                  <div key={c.key} className="flex justify-between items-center">
+                    <span className="text-[13px] font-medium text-navy/70">{c.label}</span>
+                    <span className={`text-[14px] whitespace-nowrap ${isNull ? "text-muted-foreground/30" : isContact ? "text-primary font-bold" : "font-bold text-navy"}`}>
+                      {isNull ? (
+                        <span className="inline-block px-1.5 py-0 bg-muted/20 rounded text-[12px] backdrop-blur-sm">—</span>
+                      ) : typeof val === "number" ? (
+                        <span className="notranslate" translate="no">
+                          {`${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: currencySymbol === "₫" ? 0 : 2, minimumFractionDigits: currencySymbol === "₫" ? 0 : 2 })}`}
+                        </span>
+                      ) : val}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table (Hidden on mobile) */}
+      <div className="hidden md:block overflow-x-auto">
         <table id={tableId} className="w-full border-collapse text-[13px]">
           <thead>
             <tr className="bg-[#FAFAF8]">
@@ -137,27 +171,25 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                 })}
               </tr>
             ))}
-            {!isExpanded && data.length > 6 && (
-              <tr>
-                <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
-                    {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
-                  </button>
-                </td>
-              </tr>
-            )}
-            {isExpanded && data.length > 6 && (
-              <tr>
-                <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
-                    {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
-                  </button>
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
+
+      {/* Expand/Collapse Buttons */}
+      {!isExpanded && data.length > 6 && (
+        <div className="border-t border-[var(--pricing-border)]">
+          <button onClick={() => setIsExpanded(true)} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+            {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
+          </button>
+        </div>
+      )}
+      {isExpanded && data.length > 6 && (
+        <div className="border-t border-[var(--pricing-border)]">
+          <button onClick={() => setIsExpanded(false)} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+            {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -1081,12 +1113,8 @@ const InternationalPricingPage = () => {
                   </Accordion>
 
                   {/* 3. Terms */}
-                  <Accordion icon="📄" title="Điều Khoản Vận Chuyển">
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground text-[13px] italic bg-[#F7F5F0] border-[1.5px] border-dashed border-[var(--pricing-border)] rounded-lg px-4 py-3">
-                        📝 Nội dung điều khoản vận chuyển đang được cập nhật. THG sẽ bổ sung chi tiết trong thời gian sớm nhất.
-                      </p>
-                    </div>
+                  <Accordion icon="📄" title="Điều Khoản Vận Chuyển & FAQ">
+                    <ShippingTermsQnAPanel />
                   </Accordion>
                 </div>
               </>
@@ -1167,10 +1195,8 @@ const InternationalPricingPage = () => {
                       </div>
                     </div>
                   </Accordion>
-                  <Accordion icon="📄" title="Điều Khoản Vận Chuyển">
-                    <p className="text-muted-foreground text-[13px] italic bg-[#F7F5F0] border-[1.5px] border-dashed border-[var(--pricing-border)] rounded-lg px-4 py-3 text-center">
-                      📝 Nội dung điều khoản vận chuyển đang được cập nhật. THG sẽ bổ sung chi tiết trong thời gian sớm nhất.
-                    </p>
+                  <Accordion icon="📄" title="Điều Khoản Vận Chuyển & FAQ">
+                    <ShippingTermsQnAPanel />
                   </Accordion>
                 </div>
               </div>
@@ -1259,10 +1285,8 @@ const InternationalPricingPage = () => {
                       </div>
                     </div>
                   </Accordion>
-                  <Accordion icon="📄" title="Điều Khoản Vận Chuyển">
-                    <p className="text-muted-foreground text-[13px] italic bg-[#F7F5F0] border-[1.5px] border-dashed border-[var(--pricing-border)] rounded-lg px-4 py-3 text-center">
-                      📝 Nội dung điều khoản vận chuyển đang được cập nhật. THG sẽ bổ sung chi tiết trong thời gian sớm nhất.
-                    </p>
+                  <Accordion icon="📄" title="Điều Khoản Vận Chuyển & FAQ">
+                    <ShippingTermsQnAPanel />
                   </Accordion>
                 </div>
 
@@ -1377,7 +1401,35 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
           </button>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile Cards (Hidden on md+) */}
+      <div className="md:hidden flex flex-col gap-3 p-4 bg-secondary/10">
+        {displayData.map((row: any, i: number) => (
+          <div key={i} className="bg-white border border-[var(--pricing-border)] rounded-xl p-4 shadow-sm relative">
+            <div className="font-bold text-navy text-[15px] mb-3 pb-2 border-b border-[var(--pricing-border)]/50">
+              <span className="notranslate">{row.name}</span>
+              <div className="text-[12px] text-muted-foreground font-normal mt-0.5">⏱ {row.sla}</div>
+            </div>
+            <div className="space-y-2">
+              {weightKeys.map(w => {
+                const price = row.prices?.[w];
+                return (
+                  <div key={w} className="flex justify-between items-center">
+                    <span className="text-[13px] font-medium text-navy/70">{w} KG+</span>
+                    <span className="text-[14px] font-bold text-navy whitespace-nowrap">
+                      <span className="notranslate" translate="no">
+                        {price != null ? `${currencySymbol}${(price * rate).toLocaleString("en-US", { maximumFractionDigits: currencySymbol === "₫" ? 0 : 2, minimumFractionDigits: currencySymbol === "₫" ? 0 : 2 })}` : "—"}
+                      </span>
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table (Hidden on mobile) */}
+      <div className="hidden md:block overflow-x-auto">
         <table id={tableId} className="w-full border-collapse text-[13px]">
           <thead>
             <tr className="bg-[#FAFAF8]">
@@ -1408,27 +1460,97 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
                 })}
               </tr>
             ))}
-            {!isExpanded && data.length > 6 && (
-              <tr>
-                <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(true)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
-                    {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
-                  </button>
-                </td>
-              </tr>
-            )}
-            {isExpanded && data.length > 6 && (
-              <tr>
-                <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                  <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
-                    {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
-                  </button>
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
+
+      {/* Expand/Collapse Buttons */}
+      {!isExpanded && data.length > 6 && (
+        <div className="border-t border-[var(--pricing-border)]">
+          <button onClick={() => setIsExpanded(true)} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+            {tVi("pricing.btn_expand").replace("{count}", (data.length - 6).toString())} <ChevronDown size={14} />
+          </button>
+        </div>
+      )}
+      {isExpanded && data.length > 6 && (
+        <div className="border-t border-[var(--pricing-border)]">
+          <button onClick={() => setIsExpanded(false)} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+            {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════
+   SHIPPING TERMS & QnA PANEL
+   ═══════════════════════════════════════════════ */
+const qnaList = [
+  {
+    q: "Thời gian drop từ CN-US là bao nhiêu ngày?",
+    a: "Thời gian đơn hàng từ Taobao về kho THG (Đông Hoản): khoảng 2 ngày.\nTừ kho ở Trung Quốc đến Mỹ: 5-8 ngày sẽ được giao đến tay người nhận ở Mỹ.\n=> Tổng thời gian vận chuyển có thể từ 8 - 10 ngày."
+  },
+  {
+    q: "Có hỗ trợ active tracking phù hợp với policy của TikTok không?",
+    a: "THG có hỗ trợ active tracking. Khi bạn lên đơn hàng buổi sáng THG sẽ trả tracking trong buổi chiều hoặc tối. Sau đó tracking sẽ được active theo đúng policy của TikTok trong vòng 48h."
+  },
+  {
+    q: "THG hỗ trợ những tuyến đường vận chuyển nào và thời gian giao hàng như thế nào?",
+    a: "THG cung cấp đa dạng tuyến vận chuyển bao gồm Việt Nam -> Mỹ, Trung Quốc -> Mỹ, và Việt Nam/Trung Quốc -> Worldwide. Chúng tôi có các line chuyên biệt cho TikTok Shop (US/UK/DE), cả hàng lô và epacket để tối ưu chi phí và thời gian giao hàng theo nhu cầu của từng seller."
+  },
+  {
+    q: "THG có nhận gửi hàng cồng kềnh hay chỉ gửi được hàng nhỏ thôi?",
+    a: "THG có thể xử lý đa dạng loại hàng hóa từ nhỏ đến cồng kềnh. Với quy trình kiểm tra chất lượng và đóng gói chuẩn, chúng tôi đảm bảo hàng hóa được bảo vệ tối ưu trong quá trình vận chuyển dù kích thước hay trọng lượng ra sao."
+  },
+  {
+    q: "Chi phí vận chuyển của THG có cạnh tranh không? Có phát sinh chi phí ẩn nào không?",
+    a: "THG cam kết báo cáo chi phí chi tiết và rõ ràng, không có chi phí phát sinh. Chúng tôi tối ưu chi phí thông qua việc cung cấp cả hàng lô và epacket, giúp seller lựa chọn phương án phù hợp với ngân sách và yêu cầu giao hàng của mình."
+  },
+  {
+    q: "Seller có thể theo dõi trạng thái đơn hàng như thế nào?",
+    a: "THG cung cấp hệ thống tracking real-time, cho phép bạn chủ động tra cứu trạng thái đơn hàng bất cứ lúc nào. Mỗi đơn hàng được vận hành qua hệ thống khép kín từ đồng bộ dữ liệu, đóng gói đến theo dõi trạng thái chi tiết."
+  },
+  {
+    q: "THG tính cước vận chuyển dựa trên tiêu chí gì? Có phải theo trọng lượng thật không?",
+    a: "THG tính cước theo nguyên tắc lấy cao nhất giữa trọng lượng thực tế (Gross Weight) và trọng lượng thể tích (Volume Weight). Ví dụ: kiện hàng có trọng lượng thực 0.9kg nhưng trọng lượng thể tích 1.1kg thì cước vận chuyển sẽ tính theo 1.1kg."
+  },
+  {
+    q: "Chính sách bồi thường của THG?",
+    a: "Khi hàng bị thất lạc, hư hỏng do lỗi từ hãng vận chuyển hoặc THG, chúng tôi sẽ bồi thường dựa trên giá trị hàng hóa đã khai báo với thị trường Mỹ. Mức bồi thường tối đa $20 cho giai đoạn đầu hợp tác và có thể tăng lên tối đa $50 dựa trên volume doanh thu của khách hàng theo thời gian. Khách hàng có thể xem chi tiết chính sách tại mục Chính sách của THG trên thanh tiêu đề."
+  },
+  {
+    q: "Dịch vụ ePacket từ Trung Quốc sang Mỹ có giới hạn kích thước và trọng lượng ra sao?",
+    a: "Với dịch vụ Line ePacket CHINA - US, kiện hàng có thể nặng tối đa 30kg. Kích thước tiêu chuẩn là 55x40x35cm (không tính thêm phí). Nếu hàng lớn hơn, vẫn có thể gửi với kích thước tối đa 68x43x43cm, nhưng sẽ có phí bổ sung. Kích thước tối thiểu là 10x15cm để đảm bảo an toàn vận chuyển."
+  }
+];
+
+const ShippingTermsQnAPanel = () => {
+  return (
+    <div className="flex flex-col gap-2.5 pb-2">
+      <div className="bg-[#F7F5F0] border border-[var(--pricing-border)] rounded-xl px-4 py-3 mb-2 flex gap-3 text-[13px]">
+        <span className="text-xl">📄</span>
+        <div>
+          <strong className="text-navy block mb-1">Mục Điều khoản quy định chung</strong>
+          <p className="text-muted-foreground">Để đảm bảo quyền lợi, vui lòng đọc kỹ Các câu hỏi thường gặp bên dưới. Những thắc mắc khác vui lòng liên hệ trực tiếp cho Support của THG.</p>
+        </div>
+      </div>
+      {qnaList.map((item, index) => (
+        <details key={index} className="group bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden">
+          <summary className="flex items-center justify-between cursor-pointer px-5 py-4 font-bold text-[13px] md:text-[14px] text-navy hover:text-primary transition-colors">
+            <span className="flex items-start gap-3">
+              <span className="flex items-center justify-center w-[22px] h-[22px] mt-0.5 shrink-0 rounded-full bg-primary/10 text-primary text-[12px] font-black">{index + 1}</span>
+              <span className="leading-snug">{item.q}</span>
+            </span>
+            <span className="transition-transform duration-300 group-open:-rotate-180 shrink-0 ml-4">
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </span>
+          </summary>
+          <div className="px-[52px] pb-4 text-[14px] text-navy/80 font-medium leading-relaxed whitespace-pre-line border-t border-[var(--pricing-border)]/30 mt-1 pt-3">
+            {item.a}
+          </div>
+        </details>
+      ))}
     </div>
   );
 };

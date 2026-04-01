@@ -8,6 +8,11 @@ import { useI18n } from "@/lib/i18n";
 import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Monitor, Package, Truck, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Videos
+import vid1Src from "@/assets/videos/DongHang.mp4";
+import vid2Src from "@/assets/videos/HoangHang.mp4";
+import vid3Src from "@/assets/videos/HoangHanghoantien.mp4";
+
 const warehouseFAQs = [
   {
     question: "THG có bao nhiêu kho ở thời điểm hiện tại?",
@@ -264,9 +269,9 @@ const THGWarehousePage = () => {
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {[
-              { title: "warehouse_page.vid1_title", desc: "warehouse_page.vid1_desc", src: "/videos/Donghuang scan.mp4" },
-              { title: "warehouse_page.vid2_title", desc: "warehouse_page.vid2_desc", src: "/videos/Huang Huan scan.mp4" },
-              { title: "warehouse_page.vid3_title", desc: "warehouse_page.vid3_desc", src: "/videos/FeatherSoft Feel Case.mp4" },
+              { title: "warehouse_page.vid1_title", desc: "warehouse_page.vid1_desc", src: vid1Src },
+              { title: "warehouse_page.vid2_title", desc: "warehouse_page.vid2_desc", src: vid2Src },
+              { title: "warehouse_page.vid3_title", desc: "warehouse_page.vid3_desc", src: vid3Src },
             ].map((vid, i) => (
               <ScrollReveal key={i} delay={i * 100}>
                 <div className="glass-card rounded-2xl overflow-hidden hover-lift h-full">
