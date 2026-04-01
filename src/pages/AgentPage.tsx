@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 const appId = 'thg-fulfill-production';
-const GEMINI_KEY = 'AIzaSyDc8SzvOOSfAZ1NxMlnjboiqGnO_yzC244';
+const OPENAI_KEY = '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';
 
 const taskOptions = [
     { id: "blog", label: "Bài Blog SEO", icon: PenTool },
@@ -89,7 +89,7 @@ export default function AgentPage() {
         return () => unsubscribe();
     }, [isAuthReady, userId]);
 
-    // 4. Công cụ Viết AI (Gọi trực tiếp Gemini API)
+    // 4. Công cụ Viết AI (OpenAI GPT-4o-mini)
     const generateContent = async () => {
         if (!topic) return;
         setIsActionLoading(true);
@@ -110,20 +110,23 @@ export default function AgentPage() {
 
             const userPrompt = `Yêu cầu: Viết ${typeMap[taskType] || typeMap.blog}. \nChủ đề: ${topic}. \nNgôn ngữ: Tiếng Việt.`;
 
-            const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userPrompt }] }],
-                        systemInstruction: { parts: [{ text: systemPrompt }] },
-                    }),
-                }
-            );
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_KEY}`,
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt },
+                    ],
+                }),
+            });
 
             const data = await response.json();
-            const content = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+            const content = data.choices?.[0]?.message?.content ?? '';
 
             if (content) {
                 setWriterResult(content);
@@ -133,13 +136,14 @@ export default function AgentPage() {
                     });
                 }
             } else {
-                setErrMsg('Gemini không trả về kết quả. Vui lòng thử lại.');
+                const errDetail = data.error?.message || 'OpenAI không trả về kết quả.';
+                setErrMsg(errDetail);
             }
-        } catch (e: any) { setErrMsg(e.message || 'Lỗi kết nối Gemini API'); }
+        } catch (e: any) { setErrMsg(e.message || 'Lỗi kết nối OpenAI'); }
         finally { setIsActionLoading(false); }
     };
 
-    // 5. Công cụ Thiết kế AI (Gọi trực tiếp Imagen API)
+    // 5. Công cụ Thiết kế AI (DALL-E 3)
     const generateDesign = async () => {
         if (!designPrompt) return;
         setIsActionLoading(true);
@@ -147,25 +151,27 @@ export default function AgentPage() {
         setErrMsg('');
 
         try {
-            const fullPrompt = `Ultra-modern logistics center, THG Fulfill branding, professional photography, high-end commercial style, ${designPrompt}.`;
+            const fullPrompt = `Ultra-modern logistics center for THG Fulfill, professional commercial photography, high-end branding, ${designPrompt}.`;
 
-            const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${GEMINI_KEY}`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        instances: [{ prompt: fullPrompt }],
-                        parameters: { sampleCount: 1 },
-                    }),
-                }
-            );
+            const response = await fetch('https://api.openai.com/v1/images/generations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENAI_KEY}`,
+                },
+                body: JSON.stringify({
+                    model: 'dall-e-3',
+                    prompt: fullPrompt,
+                    n: 1,
+                    size: '1792x1024',
+                    response_format: 'url',
+                }),
+            });
 
             const data = await response.json();
-            const base64 = data.predictions?.[0]?.bytesBase64Encoded;
+            const url = data.data?.[0]?.url;
 
-            if (base64) {
-                const url = `data:image/jpeg;base64,${base64}`;
+            if (url) {
                 setDesignResult(url);
                 if (userId) {
                     await addDoc(collection(db, 'artifacts', appId, 'users', userId, 'thg_work_history'), {
@@ -173,9 +179,10 @@ export default function AgentPage() {
                     });
                 }
             } else {
-                setErrMsg('Imagen không trả về kết quả. Vui lòng thử lại.');
+                const errDetail = data.error?.message || 'DALL-E không trả về kết quả.';
+                setErrMsg(errDetail);
             }
-        } catch (e: any) { setErrMsg(e.message || 'Lỗi kết nối Imagen API'); }
+        } catch (e: any) { setErrMsg(e.message || 'Lỗi kết nối DALL-E'); }
         finally { setIsActionLoading(false); }
     };
 
