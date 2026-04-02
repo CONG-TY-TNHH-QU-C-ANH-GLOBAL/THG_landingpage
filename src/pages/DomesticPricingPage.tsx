@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
-import { domesticPricingRows, fulfillmentServices } from "@/data/domesticPricingData";
+import { domesticPricingRows as fallbackRows, fulfillmentServices } from "@/data/domesticPricingData";
+import { DomesticPricingRow } from "@/data/domesticPricingData";
 import { Link } from "react-router-dom";
 import {
     MapPin, Package, Truck, Globe, DollarSign, Shield,
@@ -10,13 +11,46 @@ import {
     FileSpreadsheet, FileText, FileIcon
 } from "lucide-react";
 import { exportToExcel, exportToWord, exportToPdf } from "@/lib/exportUtils";
+import { useLarkPricingContext, SyncBadge, transformSheetToDomesticData } from "@/components/pricing/LarkPricingProvider";
 
 const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
 
 const DomesticPricingContent = () => {
+    const lark = useLarkPricingContext();
     const [selectedZone, setSelectedZone] = useState<number>(5);
     const [showAll, setShowAll] = useState(false);
+
+    // Overlay Lark data if sheet named "domesticPricing" or "noidia" exists
+    const domesticPricingRows = useMemo(() => {
+        if (!lark.sheets) return fallbackRows;
+        for (const [, sheet] of Object.entries(lark.sheets)) {
+            const title = sheet.title?.trim().toLowerCase();
+            if (title === "domesticpricing" || title === "noidia" || title === "nội địa" || title === "domestic") {
+                const transformed = transformSheetToDomesticData(sheet.data);
+                if (transformed.length > 0) {
+                    return transformed.map(r => ({
+                        STT: r.STT || "",
+                        weight: r["Weight Not Over (in ounces)"] || "",
+                        gram: r.Gram || r.gram || "",
+                        zones: {
+                            1: r["Zone 1"] || "",
+                            2: r["Zone 2"] || "",
+                            3: r["Zone 3"] || "",
+                            4: r["Zone 4"] || "",
+                            5: r["Zone 5"] || "",
+                            6: r["Zone 6"] || "",
+                            7: r["Zone 7"] || "",
+                            8: r["Zone 8"] || "",
+                            9: r["Zone 9"] || "",
+                        },
+                    })) as DomesticPricingRow[];
+                }
+            }
+        }
+        return fallbackRows;
+    }, [lark.sheets]);
+
     const displayRows = showAll ? domesticPricingRows : domesticPricingRows.slice(0, INITIAL_ROWS);
     const hasMore = domesticPricingRows.length > INITIAL_ROWS;
 
@@ -45,6 +79,9 @@ const DomesticPricingContent = () => {
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
                             Bảng giá cước vận chuyển nội địa Mỹ theo phân vùng (Zone). Cước phí USPS cạnh tranh trực tiếp từ các trung tâm fulfillment của <span className="notranslate font-semibold">THG Warehouse</span>.
                         </p>
+                        <div className="mt-3">
+                            <SyncBadge />
+                        </div>
 
                         {/* Tab navigation to International */}
                         <div className="flex justify-center gap-3 mt-8 flex-wrap">

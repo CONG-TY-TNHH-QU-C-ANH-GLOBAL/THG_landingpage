@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
+import { LarkPricingProvider } from "@/components/pricing/LarkPricingProvider";
 
 const Index = lazy(() => import("./pages/Index"));
 const PolicyPage = lazy(() => import("./pages/PolicyPage"));
@@ -29,8 +30,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/chinh-sach" element={<PolicyPage />} />
             <Route path="/tin-tuc" element={<BlogPage />} />
-            <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
-            <Route path="/bang-gia-noi-dia" element={<DomesticPricingPage />} />
+            <Route path="/bang-gia-quoc-te" element={<LarkPricingProvider><InternationalPricingPage /></LarkPricingProvider>} />
+            <Route path="/bang-gia-noi-dia" element={<LarkPricingProvider><DomesticPricingPage /></LarkPricingProvider>} />
             <Route path="/thg-fulfill" element={<THGFulfillPage />} />
             <Route path="/thg-express" element={<THGExpressPage />} />
             <Route path="/thg-warehouse" element={<THGWarehousePage />} />
@@ -47,3 +48,5 @@ const App = () => (
 );
 
 export default App;
+
+

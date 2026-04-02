@@ -8,6 +8,7 @@ import { pricingData } from "@/data/pricingData";
 import { countryNames } from "@/data/pricingHelpers";
 import { ChevronDown, ChevronUp, Search, ExternalLink, FileSpreadsheet, FileText, FileIcon } from "lucide-react";
 import { exportToExcel, exportToPdf, exportToWord } from "@/lib/exportUtils";
+import { useLarkPricingContext, SyncBadge, transformSheetToEpacketData, transformSheetToBulkData, transformSheetToVnUsExpress } from "@/components/pricing/LarkPricingProvider";
 
 /* ═══════════════════════════════════════════════
    TYPES & CONFIG
@@ -20,7 +21,7 @@ type CargoType = "standard" | "cosmetics" | "battery";
 const ROUTES: Record<EpacketRoute, { name: React.ReactNode; nameVi: React.ReactNode; time: string; cargo: CargoType[]; type: string }> = {
   "std-vn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard <span translate='no'>VN</span> → Worldwide</span>, nameVi: <>🇻🇳 Standard <span translate='no'>VN</span> → Worldwide</>, time: "⏱ 5–12 BSD", cargo: ["standard", "cosmetics"], type: "merchant" },
   "std-cn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard <span translate='no'>CN</span> → Worldwide</span>, nameVi: <>🇨🇳 Standard <span translate='no'>CN</span> → Worldwide</>, time: "⏱ 6–12 BSD", cargo: ["standard", "cosmetics", "battery"], type: "merchant" },
-  "pri-vncn-us": { name: <span className="notranslate font-semibold tracking-wide">Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></span>, nameVi: <>🇻🇳/🇨🇳 Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></>, time: "⏱ 5–10 BSD", cargo: ["standard"], type: "merchant" },
+  "pri-vncn-us": { name: <span className="notranslate font-semibold tracking-wide">Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></span>, nameVi: <>🇻🇳/🇨🇳 Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></>, time: "⏱ 5–10 BSD", cargo: [], type: "merchant" },
   "cn-us-label": { name: <span className="notranslate font-semibold tracking-wide"><span translate='no'>CN</span> → <span translate='no'>US</span> Ship by Label</span>, nameVi: <>🇨🇳 <span translate='no'>CN</span> → <span translate='no'>US</span> Ship by Label</>, time: "⏱ Theo lịch USPS", cargo: [], type: "label" },
 };
 
@@ -57,10 +58,11 @@ const Accordion = ({ icon, title, defaultOpen = false, children }: { icon: strin
 /* ═══════════════════════════════════════════════
    PRICE TABLE COMPONENT
    ═══════════════════════════════════════════════ */
-const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbol = "$" }: {
+const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbol = "$", sla }: {
   title: string; badge?: React.ReactNode; note?: React.ReactNode;
   data: any[]; columns: { key: string; label: string }[];
   rate?: number; currencySymbol?: string;
+  sla?: Record<string, string>;
 }) => {
   const { tVi } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -148,6 +150,20 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                 <th key={c.key} className="px-4 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">{c.label}</th>
               ))}
             </tr>
+            {/* SLA working days sub-header */}
+            {sla && Object.keys(sla).length > 0 && (
+              <tr className="bg-[#FFF8E7]">
+                <td className="px-4 py-1.5 text-[11px] text-muted-foreground italic border-b border-[var(--pricing-border)]">—</td>
+                {columns.map(c => {
+                  const slaVal = sla[c.key] || sla[c.key.toLowerCase()] || "";
+                  return (
+                    <td key={c.key} className="px-4 py-1.5 text-[11px] text-amber-700 font-medium italic border-b border-[var(--pricing-border)] whitespace-nowrap">
+                      {slaVal ? `⏱ ${slaVal}` : "—"}
+                    </td>
+                  );
+                })}
+              </tr>
+            )}
           </thead>
           <tbody>
             {displayData.map((row: any, i: number) => (
@@ -529,6 +545,7 @@ const TerminologyPanel = () => {
    ═══════════════════════════════════════════════ */
 const InternationalPricingPage = () => {
   const { t, tVi } = useI18n();
+  const lark = useLarkPricingContext();
 
   // State
   const [service, setService] = useState<ServiceTab>("epacket");
@@ -537,13 +554,141 @@ const InternationalPricingPage = () => {
   const [expressRoute, setExpressRoute] = useState<ExpressRoute>("vn-us");
   const [city, setCity] = useState<"hcm" | "hn">("hcm");
 
-  // Get current data
+  /* ─── Currency Display State ─── */
+  const CC_OPTIONS = [
+    { code: "USD", symbol: "$", label: "USD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#B22234" /><rect y="2.18" width="36" height="1.84" fill="#fff" /><rect y="5.82" width="36" height="1.84" fill="#fff" /><rect y="9.45" width="36" height="1.84" fill="#fff" /><rect y="13.09" width="36" height="1.84" fill="#fff" /><rect y="16.73" width="36" height="1.84" fill="#fff" /><rect y="20.36" width="36" height="1.84" fill="#fff" /><rect width="14.4" height="11.27" fill="#3C3B6E" /></svg> },
+    { code: "VND", symbol: "₫", label: "VND", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DA251D" /><polygon points="18,5 19.76,10.42 25.56,10.42 21,13.61 22.76,19.03 18,15.84 13.24,19.03 15,13.61 10.44,10.42 16.24,10.42" fill="#FFFF00" /></svg> },
+    { code: "CNY", symbol: "¥", label: "CNY", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DE2910" /><polygon points="6,3 7.12,6.47 10.8,6.47 7.84,8.53 8.96,12 6,9.94 3.04,12 4.16,8.53 1.2,6.47 4.88,6.47" fill="#FFDE00" /><polygon points="12,2 12.56,3.73 14.4,3.73 12.92,4.77 13.48,6.5 12,5.46 10.52,6.5 11.08,4.77 9.6,3.73 11.44,3.73" fill="#FFDE00" /><polygon points="15,5 15.56,6.73 17.4,6.73 15.92,7.77 16.48,9.5 15,8.46 13.52,9.5 14.08,7.77 12.6,6.73 14.44,6.73" fill="#FFDE00" /><polygon points="15,9 15.56,10.73 17.4,10.73 15.92,11.77 16.48,13.5 15,12.46 13.52,13.5 14.08,11.77 12.6,10.73 14.44,10.73" fill="#FFDE00" /><polygon points="12,12 12.56,13.73 14.4,13.73 12.92,14.77 13.48,16.5 12,15.46 10.52,16.5 11.08,14.77 9.6,13.73 11.44,13.73" fill="#FFDE00" /></svg> },
+    { code: "EUR", symbol: "€", label: "EUR", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="12" height="24" fill="#003082" /><rect x="12" width="12" height="24" fill="#FECB00" /><rect x="24" width="12" height="24" fill="#EF3340" /></svg> },
+    { code: "AUD", symbol: "A$", label: "AUD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#00008B" /><rect width="18" height="12" fill="#012169" /><polygon points="0,0 18,12 18,0 0,12" fill="#012169" /><polygon points="0,0 18,12" stroke="#fff" strokeWidth="3" /><polygon points="18,0 0,12" stroke="#fff" strokeWidth="3" /><polygon points="0,0 18,12" stroke="#C8102E" strokeWidth="2" /><polygon points="18,0 0,12" stroke="#C8102E" strokeWidth="2" /></svg> },
+  ];
+  const [displayCurrency, setDisplayCurrency] = useState("USD");
+  const [rates, setRates] = useState<Record<string, number> | null>(null);
+  const [ratesLoading, setRatesLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("https://open.er-api.com/v6/latest/USD")
+      .then(r => r.json())
+      .then(data => { if (data.result === "success") setRates(data.rates); })
+      .catch(() => { });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Build a mapping of Lark sheet title → internal dataKey ──
+  // Actual Lark titles look like "Epacket - Standard VN - WW (VNTHZXR)"
+  const TITLE_TO_KEY: Array<{ match: (t: string) => boolean; key: string; type: "epacket" | "bulk" | "express" }> = [
+    // ePacket sheets  
+    { match: t => t.includes("standard vn") && t.includes("ww") && !t.includes("cosm"), key: "vnThuong", type: "epacket" },
+    { match: t => t.includes("standard vn") && (t.includes("cosm") || t.includes("muz")), key: "vnMypham", type: "epacket" },
+    { match: t => t.includes("standard cn") && t.includes("regular"), key: "cnThuong", type: "epacket" },
+    { match: t => t.includes("standard cn") && (t.includes("cosm") || t.includes("muzxr")), key: "cnMypham", type: "epacket" },
+    { match: t => t.includes("standard cn") && (t.includes("battery") || t.includes("thzxr")), key: "cnPin", type: "epacket" },
+    { match: t => t.includes("priority") && t.includes("usps") && t.includes("vn"), key: "uspsCn", type: "priority" as any },
+    { match: t => t.includes("priority") && t.includes("usps") && !t.includes("vn"), key: "uspsCnUs", type: "priority" as any },
+    // Express sheets
+    { match: t => t.includes("express vn-us"), key: "expressVnUs", type: "express" },
+    { match: t => t.includes("express cn-us"), key: "expressCnUs", type: "bulk" },
+    // Ship by Label
+    { match: t => t.includes("ship by label") && t.includes("cn"), key: "shipByLabelCnUs", type: "label" as any },
+    // Misc
+    { match: t => t.includes("re-delivery") || t.includes("redelivery"), key: "redeliveryData", type: "epacket" },
+  ];
+
+  const larkOverlay = useMemo(() => {
+    if (!lark.sheets) return {};
+    const overlay: Record<string, any> = {};
+
+    Object.entries(lark.sheets).forEach(([_sheetId, sheet]) => {
+      const title = sheet.title?.trim();
+      if (!title || !sheet.data?.length) return;
+
+      const titleLower = title.toLowerCase();
+
+      // Find matching key from the title map
+      const mapping = TITLE_TO_KEY.find(m => m.match(titleLower));
+      if (!mapping) return;
+
+      if (mapping.type === "express") {
+        overlay[mapping.key] = transformSheetToVnUsExpress(sheet.data, rates);
+      } else if (mapping.type === "bulk") {
+        overlay[mapping.key] = transformSheetToBulkData(sheet.data);
+      } else if ((mapping as any).type === "priority") {
+        // ──── Priority USPS: single price column → { kg, rate } format ────
+        const rows = sheet.data;
+        if (!rows || rows.length < 2) return;
+        // Detect if VND from the header (column 1 has something like "VN-US(VND)")
+        const col1Header = String(rows[0]?.[1] ?? "").toLowerCase();
+        const isVnd = col1Header.includes("vnd");
+        const vndRate = rates?.["VND"] ?? 25400;
+        // Data starts at row 1 (header at row 0, no sub-headers for Priority)
+        const result: any[] = [];
+        let lastWeight: number | null = null;
+        for (let r = 1; r < rows.length; r++) {
+          const rawKg = rows[r][0];
+          const rawPrice = rows[r][1];
+          if (rawKg === null || rawKg === undefined || rawKg === "") continue;
+          // Parse weight (handle Lark formula refs)
+          let w: number;
+          if (typeof rawKg === "number") {
+            w = rawKg;
+          } else {
+            const s = String(rawKg).replace(/,/g, "");
+            const fm = s.match(/^([0-9.]+)\+[A-Za-z]/);
+            if (fm && lastWeight !== null) {
+              w = Math.round((lastWeight + parseFloat(fm[1])) * 1000) / 1000;
+            } else {
+              w = parseFloat(s.replace(/\+.*/, ""));
+            }
+          }
+          if (isNaN(w)) continue;
+          lastWeight = w;
+          if (rawPrice === null || rawPrice === undefined || rawPrice === "") continue;
+          let price = typeof rawPrice === "number" ? rawPrice : parseFloat(String(rawPrice).replace(/,/g, "").replace(/\$/g, ""));
+          if (isNaN(price)) continue;
+          // Convert VND to USD if needed
+          if (isVnd) price = price / vndRate;
+          result.push({ kg: w, rate: price });
+        }
+        overlay[mapping.key] = result;
+      } else if ((mapping as any).type === "label") {
+        // Ship by Label: columns are Weight, Regular price (USD), Special price (USD)
+        const rows = sheet.data;
+        if (rows && rows.length > 1) {
+          const regular: any[] = [];
+          const special: any[] = [];
+          for (let r = 1; r < rows.length; r++) {
+            const kg = rows[r][0];
+            if (kg === null || kg === undefined || kg === "") continue;
+            const w = typeof kg === "number" ? kg : parseFloat(String(kg));
+            if (isNaN(w)) continue;
+            const regPrice = rows[r][1];
+            const specPrice = rows[r][2];
+            if (regPrice !== null && regPrice !== undefined && regPrice !== "") {
+              regular.push({ kg: w, rate: typeof regPrice === "number" ? regPrice : parseFloat(String(regPrice)) });
+            }
+            if (specPrice !== null && specPrice !== undefined && specPrice !== "") {
+              special.push({ kg: w, rate: typeof specPrice === "number" ? specPrice : parseFloat(String(specPrice)) });
+            }
+          }
+          overlay[mapping.key] = { regular, special };
+        }
+      } else {
+        overlay[mapping.key] = transformSheetToEpacketData(sheet.data, rates);
+      }
+    });
+
+    return overlay;
+  }, [lark.sheets, rates]);
+
+  // Get current data — prefer Lark overlay, fallback to hardcoded
   const currentData = useMemo(() => {
     if (route === "cn-us-label") return [];
     const dataKey = DATA_KEY_MAP[`${route}_${cargo}`];
     if (!dataKey) return [];
+    // Check Lark overlay first
+    if (larkOverlay[dataKey]?.length) return larkOverlay[dataKey];
     return (pricingData as any)[dataKey] || [];
-  }, [route, cargo]);
+  }, [route, cargo, larkOverlay]);
 
   // Get columns from data
   const tableColumns = useMemo(() => {
@@ -557,7 +702,15 @@ const InternationalPricingPage = () => {
     currentData.forEach((row: any) => {
       Object.keys(row).forEach(k => { if (k !== "kg") keys.add(k); });
     });
-    return Array.from(keys).map(k => ({
+    // Deduplicate: remove short 2-letter codes (e.g. "us") if a longer key starting with same prefix exists (e.g. "us-united_states")
+    const allKeys = Array.from(keys);
+    const filtered = allKeys.filter(k => {
+      if (k.length <= 3) {
+        return !allKeys.some(other => other.length > 3 && other.startsWith(k));
+      }
+      return true;
+    });
+    return filtered.map(k => ({
       key: k,
       label: countryNames[k.toLowerCase()] || k.toUpperCase()
     }));
@@ -581,15 +734,15 @@ const InternationalPricingPage = () => {
 
   const routeConfig = ROUTES[route];
 
-  /* ─── Extras data ─── */
-  const vatData = (pricingData as any).vatData || [];
-  const remoteSurcharge = (pricingData as any).remoteSurcharge || [];
-  const redeliveryData = (pricingData as any).redeliveryData || [];
+  /* ─── Extras data (Lark overlay → fallback) ─── */
+  const vatData = larkOverlay.vatData?.length ? larkOverlay.vatData : (pricingData as any).vatData || [];
+  const remoteSurcharge = larkOverlay.remoteSurcharge?.length ? larkOverlay.remoteSurcharge : (pricingData as any).remoteSurcharge || [];
+  const redeliveryData = larkOverlay.redeliveryData?.length ? larkOverlay.redeliveryData : (pricingData as any).redeliveryData || [];
 
-  /* ─── Express data ─── */
-  const loThuong = (pricingData as any).loThuong || [];
-  const loPin = (pricingData as any).loPin || [];
-  const loMypham = (pricingData as any).loMypham || [];
+  /* ─── Express data (Lark overlay → fallback) ─── */
+  const loThuong = larkOverlay.loThuong?.length ? larkOverlay.loThuong : (pricingData as any).loThuong || [];
+  const loPin = larkOverlay.loPin?.length ? larkOverlay.loPin : (pricingData as any).loPin || [];
+  const loMypham = larkOverlay.loMypham?.length ? larkOverlay.loMypham : (pricingData as any).loMypham || [];
 
   /* ─── Search Widget State ─── */
   const [searchFrom, setSearchFrom] = useState("VN");
@@ -599,28 +752,12 @@ const InternationalPricingPage = () => {
   const [searchWeight, setSearchWeight] = useState(1);
   const [showResult, setShowResult] = useState(false);
 
-  /* ─── Currency Display State ─── */
-  const CC_OPTIONS = [
-    { code: "USD", symbol: "$", label: "USD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#B22234" /><rect y="2.18" width="36" height="1.84" fill="#fff" /><rect y="5.82" width="36" height="1.84" fill="#fff" /><rect y="9.45" width="36" height="1.84" fill="#fff" /><rect y="13.09" width="36" height="1.84" fill="#fff" /><rect y="16.73" width="36" height="1.84" fill="#fff" /><rect y="20.36" width="36" height="1.84" fill="#fff" /><rect width="14.4" height="11.27" fill="#3C3B6E" /></svg> },
-    { code: "VND", symbol: "₫", label: "VND", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DA251D" /><polygon points="18,5 19.76,10.42 25.56,10.42 21,13.61 22.76,19.03 18,15.84 13.24,19.03 15,13.61 10.44,10.42 16.24,10.42" fill="#FFFF00" /></svg> },
-    { code: "CNY", symbol: "¥", label: "CNY", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DE2910" /><polygon points="6,3 7.12,6.47 10.8,6.47 7.84,8.53 8.96,12 6,9.94 3.04,12 4.16,8.53 1.2,6.47 4.88,6.47" fill="#FFDE00" /><polygon points="12,2 12.56,3.73 14.4,3.73 12.92,4.77 13.48,6.5 12,5.46 10.52,6.5 11.08,4.77 9.6,3.73 11.44,3.73" fill="#FFDE00" /><polygon points="15,5 15.56,6.73 17.4,6.73 15.92,7.77 16.48,9.5 15,8.46 13.52,9.5 14.08,7.77 12.6,6.73 14.44,6.73" fill="#FFDE00" /><polygon points="15,9 15.56,10.73 17.4,10.73 15.92,11.77 16.48,13.5 15,12.46 13.52,13.5 14.08,11.77 12.6,10.73 14.44,10.73" fill="#FFDE00" /><polygon points="12,12 12.56,13.73 14.4,13.73 12.92,14.77 13.48,16.5 12,15.46 10.52,16.5 11.08,14.77 9.6,13.73 11.44,13.73" fill="#FFDE00" /></svg> },
-    { code: "EUR", symbol: "€", label: "EUR", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="12" height="24" fill="#003082" /><rect x="12" width="12" height="24" fill="#FECB00" /><rect x="24" width="12" height="24" fill="#EF3340" /></svg> },
-    { code: "AUD", symbol: "A$", label: "AUD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#00008B" /><rect width="18" height="12" fill="#012169" /><polygon points="0,0 18,12 18,0 0,12" fill="#012169" /><polygon points="0,0 18,12" stroke="#fff" strokeWidth="3" /><polygon points="18,0 0,12" stroke="#fff" strokeWidth="3" /><polygon points="0,0 18,12" stroke="#C8102E" strokeWidth="2" /><polygon points="18,0 0,12" stroke="#C8102E" strokeWidth="2" /></svg> },
-  ];
-  const [displayCurrency, setDisplayCurrency] = useState("USD");
-  const [rates, setRates] = useState<Record<string, number> | null>(null);
-  const [ratesLoading, setRatesLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("https://open.er-api.com/v6/latest/USD")
-      .then(r => r.json())
-      .then(data => { if (data.result === "success") setRates(data.rates); })
-      .catch(() => { });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
 
   const displayRate = useMemo(() => {
-    if (!rates || displayCurrency === "USD") return 1;
+    if (displayCurrency === "USD") return 1;
+    if (!rates) return 1;
     return rates[displayCurrency] ?? 1;
   }, [rates, displayCurrency]);
 
@@ -739,6 +876,9 @@ const InternationalPricingPage = () => {
             <p className="text-muted-foreground max-w-lg mx-auto">
               Bảng giá minh bạch, cập nhật real-time cho tất cả tuyến vận chuyển từ Việt Nam & Trung Quốc.
             </p>
+            <div className="mt-3">
+              <SyncBadge />
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -955,36 +1095,38 @@ const InternationalPricingPage = () => {
                   </div>
                 </div>
 
-                {/* TikTok sub-tabs */}
-                <TikTokPanel rate={displayRate} currencySymbol={displaySymbol} />
+                {/* Ship by Label sub-tabs */}
+                <ShipByLabelPanel rate={displayRate} currencySymbol={displaySymbol} larkData={larkOverlay["shipByLabelCnUs"]} ccOptions={CC_OPTIONS} displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} rates={rates} ratesLoading={ratesLoading} />
               </div>
             ) : (
               <>
                 {/* ──── CARGO FILTER + CURRENCY ──── */}
                 <div className="flex items-center gap-3 mb-4 flex-wrap justify-between">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-[13px] font-semibold text-muted-foreground whitespace-nowrap">Loại hàng:</span>
-                    <div className="flex gap-2 flex-wrap">
-                      {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
-                        const enabled = routeConfig.cargo.includes(c);
-                        return (
-                          <button
-                            key={c}
-                            onClick={() => handleCargoSwitch(c)}
-                            disabled={!enabled}
-                            className={`px-4 py-1.5 rounded-full text-[13px] font-semibold border-[1.5px] transition-all ${!enabled
-                              ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
-                              : cargo === c
-                                ? "bg-primary border-primary text-white"
-                                : "border-[var(--pricing-border)] bg-white hover:border-primary hover:text-primary"
-                              }`}
-                          >
-                            {CARGO_ICONS[c]} {CARGO_LABELS[c]}
-                          </button>
-                        );
-                      })}
+                  {routeConfig.cargo.length > 0 && (
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-[13px] font-semibold text-muted-foreground whitespace-nowrap">Loại hàng:</span>
+                      <div className="flex gap-2 flex-wrap">
+                        {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
+                          const enabled = routeConfig.cargo.includes(c);
+                          return (
+                            <button
+                              key={c}
+                              onClick={() => handleCargoSwitch(c)}
+                              disabled={!enabled}
+                              className={`px-4 py-1.5 rounded-full text-[13px] font-semibold border-[1.5px] transition-all ${!enabled
+                                ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
+                                : cargo === c
+                                  ? "bg-primary border-primary text-white"
+                                  : "border-[var(--pricing-border)] bg-white hover:border-primary hover:text-primary"
+                                }`}
+                            >
+                              {CARGO_ICONS[c]} {CARGO_LABELS[c]}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  )}
                   {/* Currency switcher pills */}
                   <div className="flex items-center gap-1.5">
                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1 notranslate" translate="no">Tiền tệ:</span>
@@ -1012,7 +1154,10 @@ const InternationalPricingPage = () => {
                 <div className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
                   <span>ℹ️</span>
                   <div>
-                    <strong>Đang hiển thị:</strong> Epacket · {routeConfig.name} · {CARGO_LABELS[cargo]} — Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu & VAT.
+                    <strong>Đang hiển thị:</strong> {route === "pri-vncn-us"
+                      ? <>Priority · {routeConfig.name} — Bao thuế, Active USPS tracking. Giá chưa bao gồm phụ phí vùng sâu.</>
+                      : <>Epacket · {routeConfig.name} {routeConfig.cargo.length > 0 ? `· ${CARGO_LABELS[cargo]}` : ""} — Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu &amp; VAT.</>
+                    }
                   </div>
                 </div>
 
@@ -1020,19 +1165,17 @@ const InternationalPricingPage = () => {
                 {route === "pri-vncn-us" ? (
                   <div className="flex flex-col gap-6">
                     <PriceTable
-                      title="Bảng Giá Chi Tiết VN ➝ US (Priority)"
-                      badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority VN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
-                      note="Cập nhật: 29/03/2026"
-                      data={(pricingData as any)["uspsVn"] || []}
-                      columns={[{ key: "rate", label: `Cước (${displaySymbol})` }]}
+                      title="Bảng Giá Chi Tiết VN → US (Priority)"
+                      badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
+                      data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsVn"] || []}
+                      columns={[{ key: "rate", label: `VN-US · Priority Service (${displaySymbol})` }]}
                       rate={displayRate} currencySymbol={displaySymbol}
                     />
                     <PriceTable
-                      title="Bảng Giá Chi Tiết CN ➝ US (Priority)"
-                      badge={<div className="flex items-center gap-1"><span className="notranslate font-bold" translate='no'>Priority CN ➝ US</span> <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
-                      note="Cập nhật: 29/03/2026"
-                      data={(pricingData as any)["uspsCn"] || []}
-                      columns={[{ key: "rate", label: `Cước (${displaySymbol})` }]}
+                      title="Bảng Giá Chi Tiết CN → US (Priority)"
+                      badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
+                      data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCn"] || []}
+                      columns={[{ key: "rate", label: `CN-US · Priority Service (${displaySymbol})` }]}
                       rate={displayRate} currencySymbol={displaySymbol}
                     />
                   </div>
@@ -1040,10 +1183,10 @@ const InternationalPricingPage = () => {
                   <PriceTable
                     title="Bảng Giá Chi Tiết"
                     badge={<div className="flex items-center gap-1">{routeConfig.name} <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
-                    note="Cập nhật: 29/03/2026"
                     data={currentData}
                     columns={tableColumns.map(c => ({ ...c, label: c.label }))}
                     rate={displayRate} currencySymbol={displaySymbol}
+                    sla={(currentData as any)?.meta}
                   />
                 )}
 
@@ -1056,11 +1199,11 @@ const InternationalPricingPage = () => {
                         <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area)</h4>
                         {remoteSurcharge.length > 0 ? (
                           <CompactAccordionTable
-                            headers={["Zone", "Surcharge ($)"]}
+                            headers={["Weight (kg)", `Surcharge (${displaySymbol})`]}
                             data={remoteSurcharge}
-                            renderRow={(r, i) => (
+                            renderRow={(r: any, i: number) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                <td className="px-4 py-3"><span className="notranslate">{r.zone || r.name || `Zone ${i + 1}`}</span></td>
+                                <td className="px-4 py-3"><span className="notranslate" translate="no">{r.kg} kg</span></td>
                                 <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2, minimumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
                               </tr>
                             )}
@@ -1149,35 +1292,168 @@ const InternationalPricingPage = () => {
               </button>
             </div>
 
+            {/* Currency Switcher for Express */}
+            <div className="flex items-center gap-1.5 mb-4 justify-end">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1 notranslate" translate="no">Tiền tệ:</span>
+              {CC_OPTIONS.map(opt => (
+                <button
+                  key={opt.code}
+                  onClick={() => setDisplayCurrency(opt.code)}
+                  title={opt.code}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold border-[1.5px] transition-all ${displayCurrency === opt.code
+                    ? "bg-navy border-navy text-white shadow-sm"
+                    : "border-[var(--pricing-border)] bg-white text-navy hover:border-navy/60"
+                    }`}
+                >
+                  <span className="overflow-hidden rounded-[2px] shrink-0 relative" style={{ width: 22, height: 15, display: 'inline-flex', alignItems: 'center' }}>{opt.flag}</span>
+                  <span className="notranslate" translate="no">{opt.label}</span>
+                  {!ratesLoading && rates && opt.code !== "USD" && (
+                    <span className="text-[10px] opacity-50 font-medium notranslate" translate="no">= {(rates[opt.code] ?? 1).toLocaleString("en-US", { maximumFractionDigits: opt.code === "VND" ? 0 : 2 })}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+
             {expressRoute === "vn-us" && (
               <div>
-                {/* Bulk Tables for VN */}
-                <div className="space-y-6">
-                  {loThuong.length > 0 && (
-                    <BulkDataTable title="🛒 Hàng Lô Sản Phẩm Thường" badge="VN → US" data={loThuong} rate={displayRate} currencySymbol={displaySymbol} />
-                  )}
-                  {loMypham.length > 0 && (
-                    <BulkDataTable title="💧 Hàng Lô Dung Dịch & Mỹ Phẩm" badge="VN → US" data={loMypham} rate={displayRate} currencySymbol={displaySymbol} />
-                  )}
+                <div className="flex justify-center mb-6">
+                  <div className="bg-[#FAF9F6] border-[1.5px] border-[var(--pricing-border)] p-1 rounded-xl inline-flex shadow-sm">
+                    <button
+                      onClick={() => setCity("hcm")}
+                      className={`px-8 py-2.5 rounded-lg text-[13px] font-bold transition-all ${city === "hcm"
+                        ? "bg-white text-primary shadow-sm border border-[var(--pricing-border)]"
+                        : "text-muted-foreground hover:bg-white/50 border border-transparent"
+                        }`}
+                    >
+                      KHO HỒ CHÍ MINH
+                    </button>
+                    <button
+                      onClick={() => setCity("hn")}
+                      className={`px-8 py-2.5 rounded-lg text-[13px] font-bold transition-all ${city === "hn"
+                        ? "bg-white text-primary shadow-sm border border-[var(--pricing-border)]"
+                        : "text-muted-foreground hover:bg-white/50 border border-transparent"
+                        }`}
+                    >
+                      KHO HÀ NỘI
+                    </button>
+                  </div>
                 </div>
 
-                {/* Post-table Express */}
+                {larkOverlay["expressVnUs"] && (
+                  <div className="space-y-6">
+                    {/* Saver <= 20kg Table */}
+                    <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
+                      <div className="bg-navy px-5 py-3 flex items-center justify-between flex-wrap gap-2">
+                        <span className="text-white font-bold text-[13px] flex items-center gap-2">
+                          ✈️ UPS Saver — Phân Mức KG
+                        </span>
+                        <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">
+                          ⏱ {city === "hcm" ? "3-5" : "3-5"} BSD
+                        </span>
+                      </div>
+                      <table className="w-full border-collapse text-[13px]">
+                        <thead>
+                          <tr className="bg-[#FAFAF8]">
+                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Cân nặng (kg)</th>
+                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá cước ({displaySymbol})</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(larkOverlay["expressVnUs"]?.[city]?.saver || []).map((r: any, i: number) => (
+                            <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
+                              <td className="px-5 py-2">{r.kg}</td>
+                              <td className="px-5 py-2 font-bold text-navy notranslate">
+                                {r.price && r.price !== "Liên hệ"
+                                  ? `${displaySymbol}${(r.price * displayRate).toLocaleString("en-US", { maximumFractionDigits: 2 })}`
+                                  : r.price}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Expedited > 20kg Table */}
+                    <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
+                      <div className="bg-[#16213E] px-5 py-3 flex items-center justify-between flex-wrap gap-2">
+                        <span className="text-white font-bold text-[13px] flex items-center gap-2">
+                          🚢 UPS Expedited — Hàng Bulk
+                        </span>
+                        <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">
+                          ⏱ {city === "hcm" ? "5-7" : "5-7"} BSD
+                        </span>
+                      </div>
+                      <table className="w-full border-collapse text-[13px]">
+                        <thead>
+                          <tr className="bg-[#FAFAF8]">
+                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Hạng mức (kg)</th>
+                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá cước ({displaySymbol}/kg)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(larkOverlay["expressVnUs"]?.[city]?.expedited || []).map((r: any, i: number) => (
+                            <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
+                              <td className="px-5 py-2">{r.bracket}</td>
+                              <td className="px-5 py-2 font-bold text-navy notranslate">
+                                {r.price && r.price !== "Liên hệ"
+                                  ? `${displaySymbol}${(r.price * displayRate).toLocaleString("en-US", { maximumFractionDigits: 2 })}${String(r.bracket).includes("-") || String(r.bracket).includes(">") ? " / kg" : ""}`
+                                  : r.price}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-col gap-3 mt-6">
-                  <Accordion icon="💰" title="Phụ Phí & Dịch Vụ Khác" defaultOpen>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Accordion icon="💰" title="Phụ Phí, Dịch Vụ & Re-delivery" defaultOpen>
+                    <div className="flex flex-col gap-6">
                       <div>
                         <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area – US)</h4>
-                        <table className="w-full border-collapse text-[13px]">
-                          <thead><tr className="bg-[#FAFAF8]">
-                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Khu Vực</th>
-                            <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Surcharge</th>
-                          </tr></thead>
-                          <tbody>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Alaska / Hawaii</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
-                            <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Puerto Rico</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
-                            <tr><td className="px-4 py-3">Remote ZIP Codes</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
-                          </tbody>
-                        </table>
+                        {remoteSurcharge.length > 0 ? (
+                          <CompactAccordionTable
+                            headers={["Weight (kg)", `Surcharge (${displaySymbol})`]}
+                            data={remoteSurcharge}
+                            renderRow={(r: any, i: number) => (
+                              <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
+                                <td className="px-4 py-3"><span className="notranslate" translate="no">{r.kg} kg</span></td>
+                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
+                              </tr>
+                            )}
+                          />
+                        ) : (
+                          <table className="w-full border-collapse text-[13px]">
+                            <thead><tr className="bg-[#FAFAF8]">
+                              <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Khu Vực</th>
+                              <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Surcharge</th>
+                            </tr></thead>
+                            <tbody>
+                              <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Alaska / Hawaii</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                              <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Puerto Rico</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                              <tr><td className="px-4 py-3">Remote ZIP Codes</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[13px] text-navy mb-2">🔁 Phí Re-delivery (Gửi Lại)</h4>
+                        <p className="text-[12px] text-muted-foreground italic mb-2">* Áp dụng khi hàng bị trả về do sai địa chỉ, không nhận, hoặc từ chối.</p>
+                        {redeliveryData.length > 0 ? (
+                          <CompactAccordionTable
+                            headers={["Khu Vực", "Mã QG", `Phí (${displaySymbol})`]}
+                            data={redeliveryData}
+                            renderRow={(r: any, i: number) => (
+                              <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
+                                <td className="px-4 py-3"><span className="notranslate">{r.dest}</span></td>
+                                <td className="px-4 py-3"><span className="notranslate">{r.code}</span></td>
+                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
+                              </tr>
+                            )}
+                          />
+                        ) : (
+                          <p className="text-muted-foreground text-[13px] italic">📝 Dữ liệu Re-delivery đang cập nhật.</p>
+                        )}
                       </div>
                       <div>
                         <h4 className="font-bold text-[13px] text-navy mb-2">📦 Phí Dịch Vụ Thêm</h4>
@@ -1206,7 +1482,7 @@ const InternationalPricingPage = () => {
               <div>
                 <div className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
                   <span>ℹ️</span>
-                  <div>Hiển thị đồng thời tất cả line. Giá $/kg — liên hệ THG để nhận báo giá chính xác theo lô hàng.</div>
+                  <div>Hiển thị đồng thời tất cả line. Giá {displaySymbol}/kg — liên hệ THG để nhận báo giá chính xác theo lô hàng.</div>
                 </div>
 
                 <div className="space-y-4">
@@ -1229,7 +1505,7 @@ const InternationalPricingPage = () => {
                       <table className="w-full border-collapse text-[13px]">
                         <thead><tr className="bg-[#FAFAF8]">
                           <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Cân Nặng</th>
-                          <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá ($/kg)</th>
+                          <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá ({displaySymbol}/kg)</th>
                           <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Ghi chú</th>
                         </tr></thead>
                         <tbody>
@@ -1256,12 +1532,12 @@ const InternationalPricingPage = () => {
                         <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area – US)</h4>
                         {remoteSurcharge.length > 0 ? (
                           <CompactAccordionTable
-                            headers={["Zone", "Surcharge ($)"]}
+                            headers={["Weight (kg)", `Surcharge (${displaySymbol})`]}
                             data={remoteSurcharge}
-                            renderRow={(r, i) => (
+                            renderRow={(r: any, i: number) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                <td className="px-4 py-3"><span className="notranslate">{r.zone || r.name || `Zone ${i + 1}`}</span></td>
-                                <td className="px-4 py-3 font-bold">{r.usd ? `$${r.usd}` : "Liên hệ THG"}</td>
+                                <td className="px-4 py-3"><span className="notranslate" translate="no">{r.kg} kg</span></td>
+                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2, minimumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
                               </tr>
                             )}
                           />
@@ -1309,26 +1585,48 @@ const InternationalPricingPage = () => {
 };
 
 /* ═══════════════════════════════════════════════
-   TIKTOK PANEL (under Ship by Label)
+   SHIP BY LABEL PANEL (CN-US Regular & Special)
    ═══════════════════════════════════════════════ */
-const TikTokPanel = ({ rate = 1, currencySymbol = "$" }: { rate?: number; currencySymbol?: string }) => {
-  const [tab, setTab] = useState("cnUsNormal");
+const ShipByLabelPanel = ({ rate = 1, currencySymbol = "$", larkData, ccOptions, displayCurrency, setDisplayCurrency, rates, ratesLoading }: { rate?: number; currencySymbol?: string; larkData?: { regular: any[]; special: any[] } | null; ccOptions?: any[]; displayCurrency?: string; setDisplayCurrency?: (c: string) => void; rates?: Record<string, number> | null; ratesLoading?: boolean }) => {
+  const [tab, setTab] = useState<"regular" | "special">("regular");
 
   const tabs = [
-    { id: "cnUsNormal", label: "🇺🇸 CN → US (Thường)", dataKey: "tiktokCnUsNormal" },
-    { id: "cnUsSpecial", label: "🇺🇸 CN → US (Đặc Biệt)", dataKey: "tiktokCnUsSpecial" },
-    { id: "cnUk", label: "🇬🇧 CN → UK", dataKey: "tiktokCnUk" },
-    { id: "cnDe", label: "🇩🇪 CN → DE", dataKey: "tiktokCnDe" },
-    { id: "vnSeller", label: <>🇻🇳 <span translate='no'>VN</span> → <span translate='no'>US</span> (Seller)</>, dataKey: "tiktokVnSeller" },
-    { id: "vnTiktok", label: <>🇻🇳 <span translate='no'>VN</span> → <span translate='no'>US</span> (TikTok)</>, dataKey: "tiktokVnTiktok" },
+    { id: "regular" as const, label: "🇺🇸 CN → US (Regular)", fallbackKey: "tiktokCnUsNormal" },
+    { id: "special" as const, label: "🇺🇸 CN → US (Special)", fallbackKey: "tiktokCnUsSpecial" },
   ];
 
   const activeTab = tabs.find(t => t.id === tab)!;
-  const data = (pricingData as any)[activeTab.dataKey] || [];
+  // Prefer Lark overlay data, fallback to hardcoded
+  const data = larkData?.[tab]?.length ? larkData[tab] : (pricingData as any)[activeTab.fallbackKey] || [];
 
   return (
     <div className="mt-6">
-      <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-3">🎵 BẢNG GIÁ TIKTOK SHOP DEDICATED</p>
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
+        <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">📦 BẢNG GIÁ CN — US SHIP BY LABEL</p>
+        {/* Currency switcher pills */}
+        {ccOptions && setDisplayCurrency && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1 notranslate" translate="no">Tiền tệ:</span>
+            {ccOptions.map((opt: any) => (
+              <button
+                key={opt.code}
+                onClick={() => setDisplayCurrency(opt.code)}
+                title={opt.code}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold border-[1.5px] transition-all ${displayCurrency === opt.code
+                  ? "bg-navy border-navy text-white shadow-sm"
+                  : "border-[var(--pricing-border)] bg-white text-navy hover:border-navy/60"
+                  }`}
+              >
+                <span className="overflow-hidden rounded-[2px] shrink-0 relative" style={{ width: 22, height: 15, display: 'inline-flex', alignItems: 'center' }}>{opt.flag}</span>
+                <span className="notranslate" translate="no">{opt.label}</span>
+                {!ratesLoading && rates && opt.code !== "USD" && (
+                  <span className="text-[10px] opacity-50 font-medium notranslate" translate="no">= {(rates[opt.code] ?? 1).toLocaleString("en-US", { maximumFractionDigits: opt.code === "VND" ? 0 : 2 })}</span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <div className="flex flex-wrap gap-2 mb-4">
         {tabs.map(t => (
           <button
@@ -1344,9 +1642,8 @@ const TikTokPanel = ({ rate = 1, currencySymbol = "$" }: { rate?: number; curren
         ))}
       </div>
       <PriceTable
-        title={`TikTok · ${activeTab.label}`}
+        title={`CN → US · ${tab === "regular" ? "Regular Product" : "Special Product"}`}
         badge="Ship by Label"
-        note="Cập nhật: 29/03/2026"
         data={data}
         columns={[{ key: "rate", label: `Cước (${currencySymbol})` }]}
         rate={rate} currencySymbol={currencySymbol}
@@ -1414,7 +1711,7 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
                 const price = row.prices?.[w];
                 return (
                   <div key={w} className="flex justify-between items-center">
-                    <span className="text-[13px] font-medium text-navy/70">{w} KG+</span>
+                    <span className="text-[13px] font-medium text-navy/70 notranslate" translate="no">{w} KG+</span>
                     <span className="text-[14px] font-bold text-navy whitespace-nowrap">
                       <span className="notranslate" translate="no">
                         {price != null ? `${currencySymbol}${(price * rate).toLocaleString("en-US", { maximumFractionDigits: currencySymbol === "₫" ? 0 : 2, minimumFractionDigits: currencySymbol === "₫" ? 0 : 2 })}` : "—"}
@@ -1436,7 +1733,7 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
               <th className="px-4 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">Zone / SLA</th>
               {weightKeys.map(w => (
                 <th key={w} className="px-4 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap">
-                  {w} KG+
+                  <span className="notranslate" translate="no">{w} KG+</span>
                 </th>
               ))}
             </tr>

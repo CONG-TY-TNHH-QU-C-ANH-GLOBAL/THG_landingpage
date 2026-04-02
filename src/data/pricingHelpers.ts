@@ -17,12 +17,33 @@ export interface TableData {
 }
 
 export const countryNames: Record<string, string> = {
-    us: "Mỹ (US)", uk: "Anh (UK)", de: "Đức (DE)", fr: "Pháp (FR)",
-    it: "Ý (IT)", es: "TBN (ES)", ca: "Canada", au: "Úc (AU)",
-    nz: "New Zealand", jp: "Nhật Bản", hk: "Hong Kong", sg: "Singapore",
-    mx: "Mexico", br: "Brazil", ch: "Thụy Sĩ", cl: "Chile",
-    ae: "UAE", sa: "Saudi Arabia", nl: "Hà Lan", at: "Áo",
-    pl: "Ba Lan", be: "Bỉ", ie: "Ireland", se: "Thụy Điển"
+    // Short codes (CN sheets)
+    us: "United States (US)", gb: "United Kingdom (GB)", uk: "United Kingdom (GB)",
+    de: "Germany (DE)", fr: "France (FR)", it: "Italy (IT)", es: "Spain (ES)",
+    nl: "Netherlands (NL)", at: "Austria (AT)", pl: "Poland (PL)",
+    ca: "Canada (CA)", au: "Australia (AU)", nz: "New Zealand (NZ)",
+    jp: "Japan (JP)", hk: "Hong Kong (HK)", sg: "Singapore (SG)",
+    mx: "Mexico (MX)", br: "Brazil (BR)", ch: "Switzerland (CH)", cl: "Chile (CL)",
+    ae: "UAE (AE)", uae: "UAE (AE)", sa: "Saudi Arabia (SA)",
+    be: "Belgium (BE)", ie: "Ireland (IE)", se: "Sweden (SE)",
+    my: "Malaysia (MY)", gr: "Greece (GR)", za: "South Africa (ZA)", lv: "Latvia (LV)",
+    th: "Thailand (TH)", tw: "Taiwan (TW)",
+    // Long keys (VN sheets after cleaning)
+    "us-united_states": "US-United States", "uk-united_kindgom": "UK-United Kingdom",
+    "united_states": "United States (US)", "united_kindgom": "United Kingdom (GB)",
+    "germany": "Germany (DE)", "france": "France (FR)",
+    "italy": "Italy (IT)", "spain": "Spain (ES)",
+    "netherlands": "Netherlands (NL)", "austria": "Austria (AT)",
+    "poland": "Poland (PL)", "canada": "Canada (CA)",
+    "australia": "Australia (AU)", "new_zealand": "New Zealand (NZ)",
+    "japan": "Japan (JP)", "hong_kong": "Hong Kong (HK)",
+    "singapore": "Singapore (SG)", "mexico": "Mexico (MX)",
+    "brazil": "Brazil (BR)", "switzerland": "Switzerland (CH)",
+    "belgium": "Belgium (BE)", "ireland": "Ireland (IE)",
+    "sweden": "Sweden (SE)", "malaysia": "Malaysia (MY)",
+    "greece": "Greece (GR)", "south_africa": "South Africa (ZA)",
+    "saudi_arabia": "Saudi Arabia (SA)", "latvia": "Latvia (LV)",
+    "thailand": "Thailand (TH)", "taiwan": "Taiwan (TW)",
 };
 
 /**
