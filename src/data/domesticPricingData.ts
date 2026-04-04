@@ -35,7 +35,7 @@ export const fulfillmentServices = {
             { desc: "Hàng hóa đóng gói nhỏ lẻ, số lượng ít hơn 20 món/carton", price: "Miễn phí" },
             { desc: "Hàng hóa đóng kiện, chỉ có 1 loại sản phẩm, kiểm tra nhanh", price: "2.5$ /carton" },
             { desc: "Hàng hóa đóng kiện với nhiều món hàng lẫn lộn", price: "6.25$ /carton" },
-            { desc: "Hàng hóa lớn, đóng gói theo CBM", price: "38$ /CBM" },
+            { desc: "Oversized/Bulky goods, priced per CBM", price: "38$ /CBM" },
             { desc: "Phí kiểm kê hàng hóa định kỳ (theo yêu cầu)", price: "30$ /hour hoặc 30$ cho 1500pcs", note: "Sẽ có xê dịch tùy thuộc vào mặt hàng" },
             { desc: "Các trường hợp khác", price: "Tính theo case cụ thể" },
         ]

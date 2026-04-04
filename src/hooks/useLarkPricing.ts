@@ -106,6 +106,8 @@ function useLarkPricing<T>(
 
     const fetcherRef = useRef(fetcher);
     fetcherRef.current = fetcher;
+    const fallbackRef = useRef(fallback);
+    fallbackRef.current = fallback;
 
     const doFetch = useCallback(async () => {
         setLoading(true);
@@ -119,15 +121,14 @@ function useLarkPricing<T>(
         } catch (e: any) {
             console.warn("[useLarkPricing] API failed, using fallback:", e.message);
             setError(e.message);
-            // Only set fallback if we have no cached data
             if (!getCached(cacheKey)) {
-                setData(fallback);
+                setData(fallbackRef.current);
                 setIsLive(false);
             }
         } finally {
             setLoading(false);
         }
-    }, [cacheKey, fallback]);
+    }, [cacheKey]);
 
     useEffect(() => {
         // If cache exists and is fresh, skip API call
@@ -140,7 +141,7 @@ function useLarkPricing<T>(
             return;
         }
         doFetch();
-    }, [cacheKey, doFetch]);
+    }, [cacheKey]); // Removed doFetch to prevent infinite loop
 
     return { data: data ?? fallback, loading, error, lastUpdated, isLive, refetch: doFetch };
 }

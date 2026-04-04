@@ -5,10 +5,11 @@ import ContactSection from "@/components/ContactSection";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { pricingData } from "@/data/pricingData";
-import { countryNames } from "@/data/pricingHelpers";
+
 import { ChevronDown, ChevronUp, Search, ExternalLink, FileSpreadsheet, FileText, FileIcon } from "lucide-react";
 import { exportToExcel, exportToPdf, exportToWord } from "@/lib/exportUtils";
 import { useLarkPricingContext, SyncBadge, transformSheetToEpacketData, transformSheetToBulkData, transformSheetToVnUsExpress } from "@/components/pricing/LarkPricingProvider";
+import larkPoliciesI18n from "@/data/larkPoliciesI18n.json";
 
 /* ═══════════════════════════════════════════════
    TYPES & CONFIG
@@ -18,14 +19,42 @@ type EpacketRoute = "std-vn-ww" | "std-cn-ww" | "pri-vncn-us" | "cn-us-label";
 type ExpressRoute = "vn-us" | "cn-us";
 type CargoType = "standard" | "cosmetics" | "battery";
 
-const ROUTES: Record<EpacketRoute, { name: React.ReactNode; nameVi: React.ReactNode; time: string; cargo: CargoType[]; type: string }> = {
-  "std-vn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard <span translate='no'>VN</span> → Worldwide</span>, nameVi: <>🇻🇳 Standard <span translate='no'>VN</span> → Worldwide</>, time: "⏱ 5–12 BSD", cargo: ["standard", "cosmetics"], type: "merchant" },
-  "std-cn-ww": { name: <span className="notranslate font-semibold tracking-wide">Standard <span translate='no'>CN</span> → Worldwide</span>, nameVi: <>🇨🇳 Standard <span translate='no'>CN</span> → Worldwide</>, time: "⏱ 6–12 BSD", cargo: ["standard", "cosmetics", "battery"], type: "merchant" },
-  "pri-vncn-us": { name: <span className="notranslate font-semibold tracking-wide">Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></span>, nameVi: <>🇻🇳/🇨🇳 Priority <span translate='no'>VN/CN</span> → <span translate='no'>US</span></>, time: "⏱ 5–10 BSD", cargo: [], type: "merchant" },
-  "cn-us-label": { name: <span className="notranslate font-semibold tracking-wide"><span translate='no'>CN</span> → <span translate='no'>US</span> Ship by Label</span>, nameVi: <>🇨🇳 <span translate='no'>CN</span> → <span translate='no'>US</span> Ship by Label</>, time: "⏱ Theo lịch USPS", cargo: [], type: "label" },
+const ROUTES: Record<EpacketRoute, { nameVi: React.ReactNode; nameEn: React.ReactNode; nameZh: React.ReactNode; time: { vi: string; en: string; zh: string }; cargo: CargoType[]; type: string }> = {
+  "std-vn-ww": {
+    nameVi: <span className="notranslate" translate="no">🇻🇳 Standard VN → Worldwide</span>,
+    nameEn: <span className="notranslate" translate="no">VN Standard VN → Worldwide</span>,
+    nameZh: <span className="notranslate" translate="no">🇻🇳 标准 VN → 全球</span>,
+    time: { vi: "⏱ 5–12 BSD", en: "⏱ 5–12 BSD", zh: "⏱ 5–12 工作日" },
+    cargo: ["standard", "cosmetics"], type: "merchant"
+  },
+  "std-cn-ww": {
+    nameVi: <span className="notranslate" translate="no">🇨🇳 Standard CN → Worldwide</span>,
+    nameEn: <span className="notranslate" translate="no">CN Standard CN → Worldwide</span>,
+    nameZh: <span className="notranslate" translate="no">🇨🇳 标准 CN → 全球</span>,
+    time: { vi: "⏱ 6–12 BSD", en: "⏱ 6–12 BSD", zh: "⏱ 6–12 工作日" },
+    cargo: ["standard", "cosmetics", "battery"], type: "merchant"
+  },
+  "pri-vncn-us": {
+    nameVi: <span className="notranslate" translate="no">🇻🇳/🇨🇳 Priority VN/CN → US</span>,
+    nameEn: <span className="notranslate" translate="no">VN/CN Priority VN/CN → US</span>,
+    nameZh: <span className="notranslate" translate="no">🇻🇳/🇨🇳 优先 VN/CN → US</span>,
+    time: { vi: "⏱ 5–10 BSD", en: "⏱ 5–10 BSD", zh: "⏱ 5–10 工作日" },
+    cargo: [], type: "merchant"
+  },
+  "cn-us-label": {
+    nameVi: <span className="notranslate" translate="no">🇨🇳 CN → US Ship by Label</span>,
+    nameEn: <span className="notranslate" translate="no">CN CN → US Ship by Label</span>,
+    nameZh: <span className="notranslate" translate="no">🇨🇳 CN → US 贴标发货</span>,
+    time: { vi: "⏱ Theo lịch USPS", en: "⏱ Per USPS schedule", zh: "⏱ 按USPS时间表" },
+    cargo: [], type: "label"
+  },
 };
 
-const CARGO_LABELS: Record<CargoType, string> = { standard: "Hàng Thường", cosmetics: "Mỹ Phẩm", battery: "Pin Điện" };
+const CARGO_LABELS: Record<CargoType, Record<string, string>> = {
+  standard: { vi: "Hàng Thường", en: "Regular Items", zh: "普货" },
+  cosmetics: { vi: "Mỹ Phẩm", en: "Cosmetics", zh: "化妆品" },
+  battery: { vi: "Pin Điện", en: "Batteries", zh: "电池" },
+};
 const CARGO_ICONS: Record<CargoType, string> = { standard: "📦", cosmetics: "💄", battery: "🔋" };
 
 const DATA_KEY_MAP: Record<string, string> = {
@@ -36,6 +65,43 @@ const DATA_KEY_MAP: Record<string, string> = {
   "std-cn-ww_battery": "cnPin",
   "pri-vncn-us_standard": "uspsCn",
 };
+
+const countryNames: Record<string, string> = {
+  us: "United States (US)", gb: "United Kingdom (GB)", uk: "United Kingdom (GB)",
+  de: "Germany (DE)", fr: "France (FR)", it: "Italy (IT)", es: "Spain (ES)",
+  nl: "Netherlands (NL)", at: "Austria (AT)", pl: "Poland (PL)",
+  ca: "Canada (CA)", au: "Australia (AU)", nz: "New Zealand (NZ)",
+  jp: "Japan (JP)", hk: "Hong Kong (HK)", sg: "Singapore (SG)",
+  mx: "Mexico (MX)", br: "Brazil (BR)", ch: "Switzerland (CH)", cl: "Chile (CL)",
+  ae: "UAE (AE)", uae: "UAE (AE)", sa: "Saudi Arabia (SA)",
+  be: "Belgium (BE)", ie: "Ireland (IE)", se: "Sweden (SE)",
+  my: "Malaysia (MY)", gr: "Greece (GR)", za: "South Africa (ZA)", lv: "Latvia (LV)",
+  th: "Thailand (TH)", tw: "Taiwan (TW)",
+  "us-united_states": "United States (US)", "uk-united_kindgom": "United Kingdom (GB)",
+  "de-germany": "Germany (DE)", "fr-france": "France (FR)",
+  "it-italy": "Italy (IT)", "es-spain": "Spain (ES)",
+  "nl-netherlands": "Netherlands (NL)", "be-belgium": "Belgium (BE)",
+  "se-sweden": "Sweden (SE)", "pl-poland": "Poland (PL)",
+  "at-austria": "Austria (AT)", "dk-denmark": "Denmark (DK)",
+  "fi-finland": "Finland (FI)", "ie-ireland": "Ireland (IE)",
+  "bg-bulgaria": "Bulgaria (BG)", "cz-czechia": "Czechia (CZ)",
+  "ee-estonia": "Estonia (EE)", "gr-greece": "Greece (GR)",
+  "hr-croatia": "Croatia (HR)", "hu-hungary": "Hungary (HU)",
+  "lt-lithuania": "Lithuania (LT)", "lv-latvia": "Latvia (LV)",
+  "pt-portugal": "Portugal (PT)", "ro-romania": "Romania (RO)",
+  "united_states": "United States (US)",
+};
+
+// Maps each route+cargo combo to the relevant policy IDs in larkPoliciesI18n.json
+const ROUTE_POLICY_MAP: Record<string, string[]> = {
+  "std-vn-ww_standard": ["amsgWr"],           // VNTHZXR
+  "std-vn-ww_cosmetics": ["BWc7wA"],          // VNMUZXR
+  "std-cn-ww_standard": ["7RqdMQ"],           // THPHR
+  "std-cn-ww_cosmetics": ["dECGAK"],          // MUZXR
+  "std-cn-ww_battery": ["s46HNu"],            // THZXR
+  "pri-vncn-us_standard": ["LSTxjV", "yjyfP8"], // VN-YTYCPREC + YTYCPREC
+};
+
 
 /* ═══════════════════════════════════════════════
    ACCORDION COMPONENT
@@ -128,7 +194,9 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                         <span className="inline-block px-1.5 py-0 bg-muted/20 rounded text-[12px] backdrop-blur-sm">—</span>
                       ) : typeof val === "number" ? (
                         <span className="notranslate" translate="no">
-                          {`${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: currencySymbol === "₫" ? 0 : 2, minimumFractionDigits: currencySymbol === "₫" ? 0 : 2 })}`}
+                          {currencySymbol === "₫"
+                            ? `${Math.round(val * rate).toLocaleString("vi-VN")} ₫`
+                            : `${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`}
                         </span>
                       ) : val}
                     </span>
@@ -179,7 +247,9 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                         <span className="inline-block px-1.5 py-0 bg-muted/20 rounded text-[12px] backdrop-blur-sm">—</span>
                       ) : typeof val === "number" ? (
                         <span className="notranslate" translate="no">
-                          {`${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: currencySymbol === "₫" ? 0 : 2, minimumFractionDigits: currencySymbol === "₫" ? 0 : 2 })}`}
+                          {currencySymbol === "₫"
+                            ? `${Math.round(val * rate).toLocaleString("vi-VN")} ₫`
+                            : `${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`}
                         </span>
                       ) : val}
                     </td>
@@ -493,6 +563,35 @@ const TerminologyPanel = () => {
             }
           }
         ]
+      },
+      {
+        title: { vi: "🏷️ Nhóm 6 — Mã vận đơn & Tracking", en: "🏷️ Group 6 — Shipping Codes & Tracking", zh: "🏷️ 第6组 — 运单号与追踪" },
+        terms: [
+          {
+            term: { vi: "YTYCPREC (VN) — Epacket VN-WW", en: "YTYCPREC (VN) — Epacket VN-WW", zh: "YTYCPREC (VN) — Epacket VN-WW" },
+            desc: {
+              vi: "Mã tracking bắt đầu bằng YTYCPREC hoặc chứa 'VN' trong mã dịch vụ là thuộc tuyến Epacket xuất phát từ Việt Nam đi toàn cầu (VN → Worldwide). Quy tắc nhận biết: mã nào có chữ VN là hàng xuất từ Việt Nam.",
+              en: "Tracking codes starting with YTYCPREC or containing 'VN' in the service code belong to the Epacket line originating from Vietnam to worldwide (VN → WW). Rule of thumb: any code containing 'VN' indicates shipment from Vietnam.",
+              zh: "以YTYCPREC开头或服务代码中含有'VN'的追踪号属于从越南发往全球的Epacket线路。识别规则：代码中含'VN'表示从越南发货。"
+            }
+          },
+          {
+            term: { vi: "YTYCPREC (CN) — Epacket CN-WW", en: "YTYCPREC (CN) — Epacket CN-WW", zh: "YTYCPREC (CN) — Epacket CN-WW" },
+            desc: {
+              vi: "Mã tracking YTYCPREC không chứa 'VN' trong mã dịch vụ là thuộc tuyến Epacket xuất phát từ Trung Quốc đi toàn cầu (CN → Worldwide). Quy tắc nhận biết: mã nào không có chữ VN là hàng xuất từ Trung Quốc.",
+              en: "Tracking codes YTYCPREC without 'VN' in the service code belong to the Epacket line originating from China to worldwide (CN → WW). Rule of thumb: any code without 'VN' indicates shipment from China.",
+              zh: "不含'VN'的YTYCPREC追踪号属于从中国发往全球的Epacket线路。识别规则：代码中不含'VN'表示从中国发货。"
+            }
+          },
+          {
+            term: { vi: "Cách phân biệt mã VN và CN", en: "How to distinguish VN vs CN codes", zh: "如何区分VN和CN代码" },
+            desc: {
+              vi: "Nguyên tắc chung: mã nào có chứa 'VN' thì thuộc về tuyến Việt Nam, mã nào không có 'VN' thì thuộc về tuyến Trung Quốc (China). Điều này áp dụng cho tất cả các mã dịch vụ epacket của THG Fulfill.",
+              en: "General rule: any code containing 'VN' belongs to the Vietnam route, any code without 'VN' belongs to the China route. This applies to all THG Fulfill epacket service codes.",
+              zh: "通用规则：含'VN'的代码属于越南线路，不含'VN'的代码属于中国线路。适用于THG Fulfill所有epacket服务代码。"
+            }
+          }
+        ]
       }
     ];
 
@@ -517,12 +616,12 @@ const TerminologyPanel = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {group.terms.map((t, ti) => (
                 <div key={ti} className="bg-[#FAFAF8] p-5 rounded-lg border border-[#E9E9E6]">
-                  <h5 className="font-bold text-[14px] text-navy mb-2 notranslate">
-                    {t.term[language as keyof typeof t.term]}
-                  </h5>
-                  <p className="text-[12.5px] text-muted-foreground leading-relaxed">
-                    {t.desc[language as keyof typeof t.desc]}
-                  </p>
+                  <h5 className="font-bold text-[14px] text-navy mb-2 notranslate"
+                    dangerouslySetInnerHTML={{ __html: t.term[language as keyof typeof t.term] }}
+                  />
+                  <p className="text-[12.5px] text-muted-foreground leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: t.desc[language as keyof typeof t.desc] }}
+                  />
                 </div>
               ))}
             </div>
@@ -544,7 +643,23 @@ const TerminologyPanel = () => {
    MAIN PAGE
    ═══════════════════════════════════════════════ */
 const InternationalPricingPage = () => {
-  const { t, tVi } = useI18n();
+  const { t, tVi, effectiveLanguage: lang } = useI18n();
+  // Helper: get route name by language
+  const getRouteName = (r: typeof ROUTES[EpacketRoute]) => {
+    if (lang === 'zh') return r.nameZh;
+    if (lang === 'en') return r.nameEn;
+    return r.nameVi;
+  };
+  const getRouteTime = (r: typeof ROUTES[EpacketRoute]) => {
+    if (lang === 'zh') return r.time.zh;
+    if (lang === 'en') return r.time.en;
+    return r.time.vi;
+  };
+  const getCargoLabel = (c: CargoType) => {
+    if (lang === 'zh') return CARGO_LABELS[c].zh;
+    if (lang === 'en') return CARGO_LABELS[c].en;
+    return CARGO_LABELS[c].vi;
+  };
   const lark = useLarkPricingContext();
 
   // State
@@ -554,37 +669,20 @@ const InternationalPricingPage = () => {
   const [expressRoute, setExpressRoute] = useState<ExpressRoute>("vn-us");
   const [city, setCity] = useState<"hcm" | "hn">("hcm");
 
-  /* ─── Currency Display State ─── */
-  const CC_OPTIONS = [
-    { code: "USD", symbol: "$", label: "USD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#B22234" /><rect y="2.18" width="36" height="1.84" fill="#fff" /><rect y="5.82" width="36" height="1.84" fill="#fff" /><rect y="9.45" width="36" height="1.84" fill="#fff" /><rect y="13.09" width="36" height="1.84" fill="#fff" /><rect y="16.73" width="36" height="1.84" fill="#fff" /><rect y="20.36" width="36" height="1.84" fill="#fff" /><rect width="14.4" height="11.27" fill="#3C3B6E" /></svg> },
-    { code: "VND", symbol: "₫", label: "VND", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DA251D" /><polygon points="18,5 19.76,10.42 25.56,10.42 21,13.61 22.76,19.03 18,15.84 13.24,19.03 15,13.61 10.44,10.42 16.24,10.42" fill="#FFFF00" /></svg> },
-    { code: "CNY", symbol: "¥", label: "CNY", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#DE2910" /><polygon points="6,3 7.12,6.47 10.8,6.47 7.84,8.53 8.96,12 6,9.94 3.04,12 4.16,8.53 1.2,6.47 4.88,6.47" fill="#FFDE00" /><polygon points="12,2 12.56,3.73 14.4,3.73 12.92,4.77 13.48,6.5 12,5.46 10.52,6.5 11.08,4.77 9.6,3.73 11.44,3.73" fill="#FFDE00" /><polygon points="15,5 15.56,6.73 17.4,6.73 15.92,7.77 16.48,9.5 15,8.46 13.52,9.5 14.08,7.77 12.6,6.73 14.44,6.73" fill="#FFDE00" /><polygon points="15,9 15.56,10.73 17.4,10.73 15.92,11.77 16.48,13.5 15,12.46 13.52,13.5 14.08,11.77 12.6,10.73 14.44,10.73" fill="#FFDE00" /><polygon points="12,12 12.56,13.73 14.4,13.73 12.92,14.77 13.48,16.5 12,15.46 10.52,16.5 11.08,14.77 9.6,13.73 11.44,13.73" fill="#FFDE00" /></svg> },
-    { code: "EUR", symbol: "€", label: "EUR", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="12" height="24" fill="#003082" /><rect x="12" width="12" height="24" fill="#FECB00" /><rect x="24" width="12" height="24" fill="#EF3340" /></svg> },
-    { code: "AUD", symbol: "A$", label: "AUD", flag: <svg viewBox="0 0 36 24" width="22" height="15"><rect width="36" height="24" fill="#00008B" /><rect width="18" height="12" fill="#012169" /><polygon points="0,0 18,12 18,0 0,12" fill="#012169" /><polygon points="0,0 18,12" stroke="#fff" strokeWidth="3" /><polygon points="18,0 0,12" stroke="#fff" strokeWidth="3" /><polygon points="0,0 18,12" stroke="#C8102E" strokeWidth="2" /><polygon points="18,0 0,12" stroke="#C8102E" strokeWidth="2" /></svg> },
-  ];
-  const [displayCurrency, setDisplayCurrency] = useState("USD");
-  const [rates, setRates] = useState<Record<string, number> | null>(null);
-  const [ratesLoading, setRatesLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("https://open.er-api.com/v6/latest/USD")
-      .then(r => r.json())
-      .then(data => { if (data.result === "success") setRates(data.rates); })
-      .catch(() => { });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  /* ─── Currency: raw from Lark Sheet, no conversion ─── */
+  const rates: Record<string, number> | null = null;
 
   // ── Build a mapping of Lark sheet title → internal dataKey ──
   // Actual Lark titles look like "Epacket - Standard VN - WW (VNTHZXR)"
   const TITLE_TO_KEY: Array<{ match: (t: string) => boolean; key: string; type: "epacket" | "bulk" | "express" }> = [
-    // ePacket sheets  
-    { match: t => t.includes("standard vn") && t.includes("ww") && !t.includes("cosm"), key: "vnThuong", type: "epacket" },
-    { match: t => t.includes("standard vn") && (t.includes("cosm") || t.includes("muz")), key: "vnMypham", type: "epacket" },
-    { match: t => t.includes("standard cn") && t.includes("regular"), key: "cnThuong", type: "epacket" },
-    { match: t => t.includes("standard cn") && (t.includes("cosm") || t.includes("muzxr")), key: "cnMypham", type: "epacket" },
-    { match: t => t.includes("standard cn") && (t.includes("battery") || t.includes("thzxr")), key: "cnPin", type: "epacket" },
-    { match: t => t.includes("priority") && t.includes("usps") && t.includes("vn"), key: "uspsCn", type: "priority" as any },
-    { match: t => t.includes("priority") && t.includes("usps") && !t.includes("vn"), key: "uspsCnUs", type: "priority" as any },
+    // ePacket sheets — MUST contain "epacket" to avoid matching Policy sheets
+    { match: t => t.includes("epacket") && t.includes("standard vn") && t.includes("ww") && !t.includes("cosm") && !t.includes("cosmestic") && !t.includes("muz"), key: "vnThuong", type: "epacket" },
+    { match: t => t.includes("epacket") && t.includes("standard vn") && (t.includes("cosm") || t.includes("muz")), key: "vnMypham", type: "epacket" },
+    { match: t => t.includes("epacket") && t.includes("standard cn") && t.includes("regular"), key: "cnThuong", type: "epacket" },
+    { match: t => t.includes("epacket") && t.includes("standard cn") && (t.includes("cosm") || t.includes("muzxr")), key: "cnMypham", type: "epacket" },
+    { match: t => t.includes("epacket") && t.includes("standard cn") && (t.includes("battery") || t.includes("thzxr")), key: "cnPin", type: "epacket" },
+    { match: t => t.includes("epacket") && t.includes("priority") && t.includes("usps") && t.includes("vn"), key: "uspsCn", type: "priority" as any },
+    { match: t => t.includes("epacket") && t.includes("priority") && t.includes("usps") && !t.includes("vn"), key: "uspsCnUs", type: "priority" as any },
     // Express sheets
     { match: t => t.includes("express vn-us"), key: "expressVnUs", type: "express" },
     { match: t => t.includes("express cn-us"), key: "expressCnUs", type: "bulk" },
@@ -592,6 +690,10 @@ const InternationalPricingPage = () => {
     { match: t => t.includes("ship by label") && t.includes("cn"), key: "shipByLabelCnUs", type: "label" as any },
     // Misc
     { match: t => t.includes("re-delivery") || t.includes("redelivery"), key: "redeliveryData", type: "epacket" },
+    // Remote area sheets
+    { match: t => t.includes("us remote") || t.includes("u.s. remote"), key: "usRemoteSurcharge", type: "remote" as any },
+    // EU Rate
+    { match: t => t.includes("eu rate"), key: "euRate", type: "epacket" },
   ];
 
   const larkOverlay = useMemo(() => {
@@ -619,7 +721,6 @@ const InternationalPricingPage = () => {
         // Detect if VND from the header (column 1 has something like "VN-US(VND)")
         const col1Header = String(rows[0]?.[1] ?? "").toLowerCase();
         const isVnd = col1Header.includes("vnd");
-        const vndRate = rates?.["VND"] ?? 25400;
         // Data starts at row 1 (header at row 0, no sub-headers for Priority)
         const result: any[] = [];
         let lastWeight: number | null = null;
@@ -645,8 +746,7 @@ const InternationalPricingPage = () => {
           if (rawPrice === null || rawPrice === undefined || rawPrice === "") continue;
           let price = typeof rawPrice === "number" ? rawPrice : parseFloat(String(rawPrice).replace(/,/g, "").replace(/\$/g, ""));
           if (isNaN(price)) continue;
-          // Convert VND to USD if needed
-          if (isVnd) price = price / vndRate;
+          // Keep raw price — VND stays VND, USD stays USD
           result.push({ kg: w, rate: price });
         }
         overlay[mapping.key] = result;
@@ -672,6 +772,27 @@ const InternationalPricingPage = () => {
           }
           overlay[mapping.key] = { regular, special };
         }
+      } else if ((mapping as any).type === "remote") {
+        // ──── US Remote: parse Weight+Surcharge VND + Zipcode list ────
+        const rows = sheet.data;
+        if (!rows || rows.length < 3) return;
+        const priceRows: any[] = [];
+        const zipcodeRows: any[] = [];
+        // Find header row (row 1 typically has "Weight (KG)" and "Remote Surcharge VND")
+        let startRow = 2; // data starts at row 2 (row 0=title, row 1=header)
+        for (let r = startRow; r < rows.length; r++) {
+          const kg = rows[r][0];
+          const surcharge = rows[r][1];
+          if (kg !== null && kg !== undefined && kg !== '' && typeof kg === 'number') {
+            priceRows.push({ kg, vnd: typeof surcharge === 'number' ? surcharge : 0 });
+          }
+          const zip = rows[r][3];
+          const state = rows[r][4];
+          if (zip !== null && zip !== undefined && zip !== '') {
+            zipcodeRows.push({ zipcode: String(zip), state: String(state || '') });
+          }
+        }
+        overlay[mapping.key] = { priceRows, zipcodeRows };
       } else {
         overlay[mapping.key] = transformSheetToEpacketData(sheet.data, rates);
       }
@@ -688,6 +809,14 @@ const InternationalPricingPage = () => {
     // Check Lark overlay first
     if (larkOverlay[dataKey]?.length) return larkOverlay[dataKey];
     return (pricingData as any)[dataKey] || [];
+  }, [route, cargo, larkOverlay]);
+
+  // Detect if data is from Lark overlay (VND for VN routes) or hardcoded fallback (always USD)
+  const isLarkData = useMemo(() => {
+    if (route === "cn-us-label") return false;
+    const dataKey = DATA_KEY_MAP[`${route}_${cargo}`];
+    if (!dataKey) return false;
+    return !!(larkOverlay[dataKey]?.length);
   }, [route, cargo, larkOverlay]);
 
   // Get columns from data
@@ -736,8 +865,76 @@ const InternationalPricingPage = () => {
 
   /* ─── Extras data (Lark overlay → fallback) ─── */
   const vatData = larkOverlay.vatData?.length ? larkOverlay.vatData : (pricingData as any).vatData || [];
-  const remoteSurcharge = larkOverlay.remoteSurcharge?.length ? larkOverlay.remoteSurcharge : (pricingData as any).remoteSurcharge || [];
-  const redeliveryData = larkOverlay.redeliveryData?.length ? larkOverlay.redeliveryData : (pricingData as any).redeliveryData || [];
+  /* Remote surcharge from Lark Sheet tab Wsz3Aw — VND converted to USD at ~22,650 VND/USD */
+  const FALLBACK_REMOTE_SURCHARGE = [
+    { kg: "0.05", usd: "1.95" },
+    { kg: "0.1", usd: "1.95" },
+    { kg: "0.15", usd: "2.25" },
+    { kg: "0.2", usd: "2.25" },
+    { kg: "0.25", usd: "2.85" },
+    { kg: "0.3", usd: "2.85" },
+    { kg: "0.35", usd: "3.15" },
+    { kg: "0.4", usd: "3.15" },
+    { kg: "0.45", usd: "3.50" },
+    { kg: "0.5", usd: "3.50" },
+    { kg: "0.6", usd: "4.00" },
+    { kg: "0.7", usd: "4.50" },
+    { kg: "0.8", usd: "5.00" },
+    { kg: "0.9", usd: "5.50" },
+    { kg: "1", usd: "6.00" },
+    { kg: "1.5", usd: "7.51" },
+    { kg: "2", usd: "8.50" },
+    { kg: "2.5", usd: "9.80" },
+    { kg: "3", usd: "10.50" },
+    { kg: "3.5", usd: "11.30" },
+    { kg: "4", usd: "11.80" },
+    { kg: "4.5", usd: "12.00" },
+    { kg: "5", usd: "12.16" },
+    { kg: "6", usd: "14.50" },
+    { kg: "7", usd: "16.80" },
+    { kg: "8", usd: "19.10" },
+    { kg: "9", usd: "21.40" },
+    { kg: "10", usd: "24.17" },
+    { kg: "11", usd: "26.90" },
+    { kg: "12", usd: "29.60" },
+    { kg: "13", usd: "32.30" },
+    { kg: "14", usd: "35.00" },
+    { kg: "15", usd: "37.70" },
+    { kg: "16", usd: "40.50" },
+    { kg: "17", usd: "43.30" },
+    { kg: "18", usd: "46.00" },
+    { kg: "19", usd: "48.80" },
+    { kg: "20", usd: "63.35" },
+    { kg: "21", usd: "66.05" },
+    { kg: "22", usd: "68.80" },
+    { kg: "23", usd: "71.50" },
+    { kg: "24", usd: "74.25" },
+    { kg: "25", usd: "77.00" },
+    { kg: "26", usd: "79.70" },
+    { kg: "27", usd: "82.45" },
+    { kg: "28", usd: "85.15" },
+    { kg: "29", usd: "85.50" },
+    { kg: "30", usd: "87.82" },
+  ];
+  const remoteSurcharge = larkOverlay.remoteSurcharge?.length ? larkOverlay.remoteSurcharge : (pricingData as any).remoteSurcharge?.length ? (pricingData as any).remoteSurcharge : FALLBACK_REMOTE_SURCHARGE;
+  /* Re-delivery fees from Lark Sheet — by country/region */
+  const FALLBACK_REDELIVERY = [
+    { dest: "Canada", charge: "355.697 VND (for first 1KG) 56.342 VND/KG (for next 1kg)", period: "20 days" },
+    { dest: "Mexico", charge: "108.252 VND/parcel", period: "15 days" },
+    { dest: "Switzerland", charge: "216.820 VND/parcel", period: "14 days" },
+    { dest: "France", charge: "216.820 VND/parcel", period: "14 days" },
+    { dest: "Norway", charge: "216.820 VND/parcel", period: "14 days" },
+    { dest: "Australia", charge: "216.820 VND/parcel", period: "14 days" },
+    { dest: "Saudi Arabia", charge: "268.729 VND/parcel (for within 5KG) 32.286 VND/KG (over 5KG, for each 1kg)", period: "15 days" },
+    { dest: "United Arab Emirates", charge: "126.610 VND/parcel (for within 5KG) 32.286 VND/KG (over 5KG, for each 1kg)", period: "15 days" },
+    { dest: "Japan", charge: "173.455 VND/parcel", period: "14 days" },
+    { dest: "Hong Kong", charge: "A new YT tracking number will be generated for re-delivery, and the re-delivery fee will be charged at the VN-HK freight rate.", period: "14 days" },
+    { dest: "United Kingdom", charge: "173.455 VND/parcel", period: "14 days" },
+    { dest: "Singapore", charge: "260.183 VND/parcel", period: "14 days" },
+    { dest: "Brazil", charge: "260.183 VND/parcel", period: "14 days" },
+    { dest: "Malta, Cyprus, Slovenia, Romania...", charge: "Re-delivery service for overseas returns is not provided", period: "—" },
+  ];
+  const redeliveryData = larkOverlay.redeliveryData?.length ? larkOverlay.redeliveryData : (pricingData as any).redeliveryData?.length ? (pricingData as any).redeliveryData : FALLBACK_REDELIVERY;
 
   /* ─── Express data (Lark overlay → fallback) ─── */
   const loThuong = larkOverlay.loThuong?.length ? larkOverlay.loThuong : (pricingData as any).loThuong || [];
@@ -755,15 +952,39 @@ const InternationalPricingPage = () => {
 
 
 
-  const displayRate = useMemo(() => {
-    if (displayCurrency === "USD") return 1;
-    if (!rates) return 1;
-    return rates[displayCurrency] ?? 1;
-  }, [rates, displayCurrency]);
 
-  const displaySymbol = useMemo(() => {
-    return CC_OPTIONS.find(o => o.code === displayCurrency)?.symbol ?? "$";
-  }, [displayCurrency]);
+
+  // Derive country options for the search dropdown based on search widget state (independent of main tabs)
+  const searchCountries = useMemo(() => {
+    let dataKey = "";
+    if (searchFrom === "VN") {
+      if (searchCargo === "standard") dataKey = "vnThuong";
+      else if (searchCargo === "cosmetic") dataKey = "vnMypham";
+      else dataKey = "vnThuong"; // fallback
+    } else {
+      if (searchCargo === "standard") dataKey = "cnThuong";
+      else if (searchCargo === "cosmetic") dataKey = "cnMypham";
+      else if (searchCargo === "battery") dataKey = "cnPin";
+      else dataKey = "cnThuong";
+    }
+    const data = larkOverlay[dataKey]?.length ? larkOverlay[dataKey] : (pricingData as any)[dataKey] || [];
+    if (!data.length) return [];
+    const keys = new Set<string>();
+    data.forEach((row: any) => {
+      Object.keys(row).forEach(k => { if (k !== "kg" && k !== "weight") keys.add(k); });
+    });
+    const allKeys = Array.from(keys);
+    const filtered = allKeys.filter(k => {
+      if (k.length <= 3) {
+        return !allKeys.some(other => other.length > 3 && other.startsWith(k));
+      }
+      return true;
+    });
+    return filtered.map(k => ({
+      key: k,
+      label: countryNames[k.toLowerCase()] || k.toUpperCase()
+    }));
+  }, [searchFrom, searchCargo, larkOverlay]);
 
   const handleSearch = () => {
     setShowResult(true);
@@ -784,11 +1005,14 @@ const InternationalPricingPage = () => {
         else if (searchCargo === "battery") dataKey = "cnPin";
       }
 
-      const data = (pricingData as any)[dataKey] || [];
+      const data = larkOverlay[dataKey]?.length ? larkOverlay[dataKey] : (pricingData as any)[dataKey] || [];
       if (!data.length) return { error: "Dữ liệu đang cập nhật" };
 
+      // Detect if data is VND (VN routes from Lark)
+      const isVndData = searchFrom === "VN" && larkOverlay[dataKey]?.length;
+
       const row = data.find((r: any) => parseFloat(r.kg || r.weight) >= searchWeight);
-      if (!row) return { error: "Vượt quá cân nặng tối đa của Epacket (thường là 2-3kg)" };
+      if (!row) return { error: "Vượt quá cân nặng tối đa" };
 
       if (searchTo === "ALL") {
         const prices: number[] = [];
@@ -798,12 +1022,24 @@ const InternationalPricingPage = () => {
         if (!prices.length) return { error: "Chưa có báo giá" };
         const min = Math.min(...prices);
         const max = Math.max(...prices);
+        if (isVndData) {
+          return { type: "flat", text: min === max ? `${Math.round(min).toLocaleString("vi-VN")} ₫` : `${Math.round(min).toLocaleString("vi-VN")} ₫ - ${Math.round(max).toLocaleString("vi-VN")} ₫` };
+        }
         return { type: "flat", text: min === max ? `$${min.toFixed(2)}` : `$${min.toFixed(2)} - $${max.toFixed(2)}` };
       } else {
-        const key = searchTo.toLowerCase();
-        const v = row[key];
-        if (typeof v === "number") return { type: "flat", text: `$${v.toFixed(2)}` };
-        if (typeof v === "string" && v.includes("Liên hệ")) return { error: "Tuyển này vui lòng Liên hệ THG báo giá" };
+        // Try exact key match, then lowercase, then substring match
+        const searchKey = searchTo.toLowerCase();
+        let v: any = row[searchKey];
+        if (v === undefined) {
+          // Try finding key that starts with searchKey (e.g. "us" matches "us-united_states")
+          const matchedKey = Object.keys(row).find(k => k.toLowerCase().startsWith(searchKey + "-") || k.toLowerCase() === searchKey);
+          if (matchedKey) v = row[matchedKey];
+        }
+        if (typeof v === "number") {
+          if (isVndData) return { type: "flat", text: `${Math.round(v).toLocaleString("vi-VN")} ₫` };
+          return { type: "flat", text: `$${v.toFixed(2)}` };
+        }
+        if (typeof v === "string" && v.includes("Liên hệ")) return { error: "Tuyến này vui lòng Liên hệ THG báo giá" };
         return { error: "Chưa có báo giá cho quốc gia này" };
       }
     }
@@ -857,7 +1093,7 @@ const InternationalPricingPage = () => {
     }
 
     return null;
-  }, [searchFrom, searchTo, searchSvc, searchCargo, searchWeight, showResult]);
+  }, [searchFrom, searchTo, searchSvc, searchCargo, searchWeight, showResult, larkOverlay]);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -907,11 +1143,9 @@ const InternationalPricingPage = () => {
                 className="w-full h-[46px] bg-white border border-[var(--pricing-border)] rounded-lg px-4 text-sm font-medium outline-none focus:border-gold transition-colors appearance-none cursor-pointer"
               >
                 <option value="ALL">{tVi("pricing.opt_all")}</option>
-                <option value="US">{tVi("pricing.opt_us")}</option>
-                <option value="UK">{tVi("pricing.opt_uk")}</option>
-                <option value="DE">{tVi("pricing.opt_de")}</option>
-                <option value="FR">{tVi("pricing.opt_fr")}</option>
-                <option value="AU">{tVi("pricing.opt_au")}</option>
+                {searchCountries.map((col: any) => (
+                  <option key={col.key} value={col.key.toUpperCase()}>{col.label}</option>
+                ))}
               </select>
             </div>
 
@@ -969,7 +1203,7 @@ const InternationalPricingPage = () => {
                 <h3 className="text-xl md:text-2xl font-black text-navy flex items-center justify-center md:justify-start gap-3">
                   {searchFrom === 'VN' ? tVi("pricing.opt_vn") : tVi("pricing.opt_cn")}
                   <span className="text-gray-400">✈️</span>
-                  {searchTo === 'ALL' ? tVi("pricing.opt_all") : tVi("pricing.opt_us")}
+                  {searchTo === 'ALL' ? tVi("pricing.opt_all") : (countryNames[searchTo.toLowerCase()] || searchTo.toUpperCase())}
                 </h3>
                 <div className="mt-3 flex justify-center md:justify-start gap-4 text-sm text-muted-foreground font-medium">
                   <span className="flex items-center gap-1.5"><span className="text-navy">⚖️</span> {searchWeight} KG</span>
@@ -1035,7 +1269,7 @@ const InternationalPricingPage = () => {
         {service === "epacket" && (
           <div>
             {/* ──── ROUTE TABS (Level 2) ──── */}
-            <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-3">CHỌN TUYẾN VẬN CHUYỂN</p>
+            <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-3">{lang === 'zh' ? '选择运输路线' : lang === 'en' ? 'SELECT SHIPPING ROUTE' : 'CHỌN TUYẾN VẬN CHUYỂN'}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-5">
               {(Object.entries(ROUTES) as [EpacketRoute, typeof ROUTES[EpacketRoute]][]).map(([rid, r]) => (
                 <button
@@ -1046,20 +1280,20 @@ const InternationalPricingPage = () => {
                     : "border-[var(--pricing-border)] bg-white hover:border-primary/40"
                     }`}
                 >
-                  <span className={`font-bold text-[13px] truncate ${route === rid ? "text-primary" : "text-navy"}`}>{r.nameVi}</span>
-                  <span className="text-[12px] text-muted-foreground">{r.time}</span>
+                  <span className={`font-bold text-[13px] leading-snug ${route === rid ? "text-primary" : "text-navy"}`}>{getRouteName(r)}</span>
+                  <span className="text-[12px] text-muted-foreground">{getRouteTime(r)}</span>
                   <div className="flex gap-1 flex-wrap mt-0.5">
-                    {r.type === "merchant" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">🛒 Ship by Merchant</span>}
+                    {r.type === "merchant" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 notranslate" translate="no">🛒 Ship by Merchant</span>}
                     {r.type === "label" && (
                       <>
-                        <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700">🏷️ Ship by Label</span>
-                        <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700">📬 Drop-off USPS</span>
+                        <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 notranslate" translate="no">🏷️ Ship by Label</span>
+                        <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700 notranslate" translate="no">📬 Drop-off USPS</span>
                       </>
                     )}
-                    {rid === "pri-vncn-us" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">✅ Bao thuế · Active USPS</span>}
+                    {rid === "pri-vncn-us" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">{lang === 'zh' ? '✅ 含税 · Active USPS' : lang === 'en' ? '✅ Tax Included · Active USPS' : '✅ Bao thuế · Active USPS'}</span>}
                     {r.cargo.length > 0 && (
                       <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
-                        {r.cargo.map(c => CARGO_ICONS[c]).join(" ")} {r.cargo.map(c => CARGO_LABELS[c]).join(" · ")}
+                        {r.cargo.map(c => CARGO_ICONS[c]).join(" ")} {r.cargo.map(c => getCargoLabel(c)).join(" · ")}
                       </span>
                     )}
                   </div>
@@ -1096,11 +1330,11 @@ const InternationalPricingPage = () => {
                 </div>
 
                 {/* Ship by Label sub-tabs */}
-                <ShipByLabelPanel rate={displayRate} currencySymbol={displaySymbol} larkData={larkOverlay["shipByLabelCnUs"]} ccOptions={CC_OPTIONS} displayCurrency={displayCurrency} setDisplayCurrency={setDisplayCurrency} rates={rates} ratesLoading={ratesLoading} />
+                <ShipByLabelPanel larkData={larkOverlay["shipByLabelCnUs"]} />
               </div>
             ) : (
               <>
-                {/* ──── CARGO FILTER + CURRENCY ──── */}
+                {/* ──── CARGO FILTER ──── */}
                 <div className="flex items-center gap-3 mb-4 flex-wrap justify-between">
                   {routeConfig.cargo.length > 0 && (
                     <div className="flex items-center gap-3 flex-wrap">
@@ -1120,75 +1354,85 @@ const InternationalPricingPage = () => {
                                   : "border-[var(--pricing-border)] bg-white hover:border-primary hover:text-primary"
                                 }`}
                             >
-                              {CARGO_ICONS[c]} {CARGO_LABELS[c]}
+                              {CARGO_ICONS[c]} {getCargoLabel(c)}
                             </button>
                           );
                         })}
                       </div>
                     </div>
                   )}
-                  {/* Currency switcher pills */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1 notranslate" translate="no">Tiền tệ:</span>
-                    {CC_OPTIONS.map(opt => (
-                      <button
-                        key={opt.code}
-                        onClick={() => setDisplayCurrency(opt.code)}
-                        title={opt.code}
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold border-[1.5px] transition-all ${displayCurrency === opt.code
-                          ? "bg-navy border-navy text-white shadow-sm"
-                          : "border-[var(--pricing-border)] bg-white text-navy hover:border-navy/60"
-                          }`}
-                      >
-                        <span className="overflow-hidden rounded-[2px] shrink-0 relative" style={{ width: 22, height: 15, display: 'inline-flex', alignItems: 'center' }}>{opt.flag}</span>
-                        <span className="notranslate" translate="no">{opt.label}</span>
-                        {!ratesLoading && rates && opt.code !== "USD" && (
-                          <span className="text-[10px] opacity-50 font-medium notranslate" translate="no">= {(rates[opt.code] ?? 1).toLocaleString("en-US", { maximumFractionDigits: opt.code === "VND" ? 0 : 2 })}</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* ──── ANNOTATION ──── */}
-                <div className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
+                <div key={`anno-${route}`} className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
                   <span>ℹ️</span>
                   <div>
-                    <strong>Đang hiển thị:</strong> {route === "pri-vncn-us"
-                      ? <>Priority · {routeConfig.name} — Bao thuế, Active USPS tracking. Giá chưa bao gồm phụ phí vùng sâu.</>
-                      : <>Epacket · {routeConfig.name} {routeConfig.cargo.length > 0 ? `· ${CARGO_LABELS[cargo]}` : ""} — Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu &amp; VAT.</>
+                    <strong>{lang === 'zh' ? '当前显示：' : lang === 'en' ? 'Showing:' : 'Đang hiển thị:'}</strong> {route === "pri-vncn-us"
+                      ? <>Priority · {getRouteName(routeConfig)} — {lang === 'zh' ? '含税, Active USPS 追踪。不含偏远附加费。' : lang === 'en' ? 'Tax included, Active USPS tracking. Excludes remote surcharges.' : 'Bao thuế, Active USPS tracking. Giá chưa bao gồm phụ phí vùng sâu.'}</>
+                      : <>Epacket · {getRouteName(routeConfig)} {routeConfig.cargo.length > 0 ? `· ${getCargoLabel(cargo)}` : ""} — {lang === 'zh' ? '送达目的国。不含偏远附加费和增值税。' : lang === 'en' ? 'Delivered to destination. Excludes remote surcharges & VAT.' : 'Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu & VAT.'}</>
                     }
                   </div>
                 </div>
 
-                {/* ──── PRICE TABLE ──── */}
-                {route === "pri-vncn-us" ? (
-                  <div className="flex flex-col gap-6">
-                    <PriceTable
-                      title="Bảng Giá Chi Tiết VN → US (Priority)"
-                      badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
-                      data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsVn"] || []}
-                      columns={[{ key: "rate", label: `VN-US · Priority Service (${displaySymbol})` }]}
-                      rate={displayRate} currencySymbol={displaySymbol}
-                    />
-                    <PriceTable
-                      title="Bảng Giá Chi Tiết CN → US (Priority)"
-                      badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
-                      data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCn"] || []}
-                      columns={[{ key: "rate", label: `CN-US · Priority Service (${displaySymbol})` }]}
-                      rate={displayRate} currencySymbol={displaySymbol}
-                    />
+                {/* ──── FEE INFO BANNER ──── */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <div className="bg-white border border-[var(--pricing-border)] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px]">
+                    <span className="text-lg">💳</span>
+                    <div>
+                      <span className="font-bold text-navy notranslate" translate="no">
+                        {lang === 'zh' ? '订单处理费' : lang === 'en' ? 'Order processing fee' : 'Phí xử lý đơn hàng'}:
+                      </span>{" "}
+                      <span className="text-primary font-extrabold notranslate" translate="no">0.7$</span>
+                      <p className="text-muted-foreground text-[11px] mt-0.5">
+                        {lang === 'zh' ? '(如使用THG仓库系统处理订单)' : lang === 'en' ? '(If using THG warehouse system)' : '(Nếu sử dụng hệ thống kho THG để xử lý đơn hàng)'}
+                      </p>
+                    </div>
                   </div>
-                ) : (
-                  <PriceTable
-                    title="Bảng Giá Chi Tiết"
-                    badge={<div className="flex items-center gap-1">{routeConfig.name} <span className="opacity-50">·</span> <span>{CARGO_LABELS[cargo]}</span></div>}
-                    data={currentData}
-                    columns={tableColumns.map(c => ({ ...c, label: c.label }))}
-                    rate={displayRate} currencySymbol={displaySymbol}
-                    sla={(currentData as any)?.meta}
-                  />
-                )}
+                  {route === "pri-vncn-us" && (
+                    <div className="bg-white border border-[var(--pricing-border)] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px]">
+                      <span className="text-lg">📡</span>
+                      <div>
+                        <span className="font-bold text-navy notranslate" translate="no">
+                          {lang === 'zh' ? 'Active tracking费' : lang === 'en' ? 'Active tracking fee' : 'Phí active tracking'}:
+                        </span>{" "}
+                        <span className="text-primary font-extrabold notranslate" translate="no">1$</span>
+                        <p className="text-muted-foreground text-[11px] mt-0.5">
+                          {lang === 'zh' ? '(如使用USPS的active tracking服务)' : lang === 'en' ? '(If using Active USPS tracking)' : '(Nếu sử dụng dịch vụ active tracking trước với USPS)'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* ──── PRICE TABLE ──── */}
+                <div key={`table-${route}`}>
+                  {route === "pri-vncn-us" ? (
+                    <div className="flex flex-col gap-6">
+                      <PriceTable
+                        title="Bảng Giá Chi Tiết VN → US (Priority)"
+                        badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
+                        data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsVn"] || []}
+                        columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
+                        currencySymbol="₫"
+                      />
+                      <PriceTable
+                        title="Bảng Giá Chi Tiết CN → US (Priority)"
+                        badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
+                        data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCn"] || []}
+                        columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
+                      />
+                    </div>
+                  ) : (
+                    <PriceTable
+                      title="Bảng Giá Chi Tiết"
+                      badge={<div className="flex items-center gap-1">{getRouteName(routeConfig)} <span className="opacity-50">·</span> <span>{getCargoLabel(cargo)}</span></div>}
+                      data={currentData}
+                      columns={tableColumns.map(c => ({ ...c, label: c.label }))}
+                      currencySymbol={route.startsWith("std-vn") ? "₫" : "$"}
+                      sla={(currentData as any)?.meta}
+                    />
+                  )}
+                </div>
 
                 {/* ──── POST-TABLE ACCORDIONS ──── */}
                 <div className="flex flex-col gap-3 mt-6">
@@ -1196,21 +1440,34 @@ const InternationalPricingPage = () => {
                   <Accordion icon="💰" title="Phụ Phí & Dịch Vụ Khác" defaultOpen>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area)</h4>
-                        {remoteSurcharge.length > 0 ? (
-                          <CompactAccordionTable
-                            headers={["Weight (kg)", `Surcharge (${displaySymbol})`]}
-                            data={remoteSurcharge}
-                            renderRow={(r: any, i: number) => (
-                              <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                <td className="px-4 py-3"><span className="notranslate" translate="no">{r.kg} kg</span></td>
-                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2, minimumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
-                              </tr>
-                            )}
-                          />
-                        ) : (
-                          <p className="text-muted-foreground text-[13px] italic">Dữ liệu đang cập nhật</p>
-                        )}
+                        <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area Zipcode)</h4>
+                        <p className="text-[12px] text-muted-foreground mb-3">
+                          Tải file danh sách zipcode remote area để kiểm tra. Dữ liệu được tự động đồng bộ từ nguồn gốc khi có cập nhật.
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          {[
+                            { label: "🇺🇸 U.S. Remote Area Price Table", icon: "📊", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=Wsz3Aw" },
+                            { label: "🇯🇵 Japan (JP) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=rfsGfU" },
+                            { label: "🇭🇷 Croatia (HR) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=PQLJFL" },
+                            { label: "🇬🇧 Great Britain (GB) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=XzQ2aN" },
+                            { label: "🇸🇪 Sweden (SE) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=DqD99A" },
+                          ].map((file, i) => (
+                            <a
+                              key={i}
+                              href={file.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[var(--pricing-border)] hover:border-primary hover:bg-[#FFFBF0] transition-all group text-[13px]"
+                            >
+                              <span className="text-xl shrink-0">{file.icon}</span>
+                              <span className="flex-1 font-medium text-navy group-hover:text-primary transition-colors">{file.label}</span>
+                              <span className="text-[11px] text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1">
+                                📥 Tải file
+                              </span>
+                            </a>
+                          ))}
+                        </div>
+
                       </div>
                       <div>
                         <h4 className="font-bold text-[13px] text-navy mb-2">🌍 Thuế VAT & Phí Xử Lý</h4>
@@ -1237,15 +1494,15 @@ const InternationalPricingPage = () => {
                   <Accordion icon="🔁" title="Phí Reship (Gửi Lại)">
                     {redeliveryData.length > 0 ? (
                       <div>
-                        <p className="text-[13px] text-muted-foreground italic mb-3">* Phí reship áp dụng khi kiện hàng bị trả về do địa chỉ sai, không có người nhận, hoặc bị từ chối nhận.</p>
+                        <p className="text-[13px] text-muted-foreground italic mb-3">* Phí reship áp dụng khi kiện hàng bị trả về do địa chỉ sai, không có người nhận, hoặc bị từ chối nhận. Nếu không có phản hồi trong thời gian quy định, kiện hàng sẽ bị tiêu hủy theo mặc định.</p>
                         <CompactAccordionTable
-                          headers={["Khu Vực", "Mã QG", "Phí ($)"]}
+                          headers={["Country", "Re-delivery charge", "Request re-delivery period"]}
                           data={redeliveryData}
                           renderRow={(r, i) => (
                             <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                              <td className="px-4 py-3"><span className="notranslate">{r.dest}</span></td>
-                              <td className="px-4 py-3"><span className="notranslate">{r.code}</span></td>
-                              <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2, minimumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
+                              <td className="px-4 py-3"><span className="notranslate font-medium">{r.dest || r.country}</span></td>
+                              <td className="px-4 py-3 text-[12px]"><span className="notranslate">{r.charge || r.usd}</span></td>
+                              <td className="px-4 py-3 text-[12px] font-bold"><span className="notranslate">{r.period || "—"}</span></td>
                             </tr>
                           )}
                         />
@@ -1255,7 +1512,20 @@ const InternationalPricingPage = () => {
                     )}
                   </Accordion>
 
-                  {/* 3. Terms */}
+                  {/* 3. Shipping Policy — filtered by active route+cargo */}
+                  {(() => {
+                    const effectiveCargo = routeConfig.cargo.length > 0 ? cargo : "standard";
+                    const ids = ROUTE_POLICY_MAP[`${route}_${effectiveCargo}`] ?? [];
+                    const policies = larkPoliciesI18n.filter(p => ids.includes(p.id));
+                    if (policies.length === 0) return null;
+                    return (
+                      <Accordion key={`policy-${route}-${effectiveCargo}`} icon="🛡️" title="Chính Sách Vận Chuyển">
+                        <RoutePolicyContent policies={policies} />
+                      </Accordion>
+                    );
+                  })()}
+
+                  {/* 4. Terms & FAQ */}
                   <Accordion icon="📄" title="Điều Khoản Vận Chuyển & FAQ">
                     <ShippingTermsQnAPanel />
                   </Accordion>
@@ -1292,27 +1562,7 @@ const InternationalPricingPage = () => {
               </button>
             </div>
 
-            {/* Currency Switcher for Express */}
-            <div className="flex items-center gap-1.5 mb-4 justify-end">
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1 notranslate" translate="no">Tiền tệ:</span>
-              {CC_OPTIONS.map(opt => (
-                <button
-                  key={opt.code}
-                  onClick={() => setDisplayCurrency(opt.code)}
-                  title={opt.code}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold border-[1.5px] transition-all ${displayCurrency === opt.code
-                    ? "bg-navy border-navy text-white shadow-sm"
-                    : "border-[var(--pricing-border)] bg-white text-navy hover:border-navy/60"
-                    }`}
-                >
-                  <span className="overflow-hidden rounded-[2px] shrink-0 relative" style={{ width: 22, height: 15, display: 'inline-flex', alignItems: 'center' }}>{opt.flag}</span>
-                  <span className="notranslate" translate="no">{opt.label}</span>
-                  {!ratesLoading && rates && opt.code !== "USD" && (
-                    <span className="text-[10px] opacity-50 font-medium notranslate" translate="no">= {(rates[opt.code] ?? 1).toLocaleString("en-US", { maximumFractionDigits: opt.code === "VND" ? 0 : 2 })}</span>
-                  )}
-                </button>
-              ))}
-            </div>
+
 
             {expressRoute === "vn-us" && (
               <div>
@@ -1355,7 +1605,7 @@ const InternationalPricingPage = () => {
                         <thead>
                           <tr className="bg-[#FAFAF8]">
                             <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Cân nặng (kg)</th>
-                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá cước ({displaySymbol})</th>
+                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá cước (VNĐ)</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1364,7 +1614,7 @@ const InternationalPricingPage = () => {
                               <td className="px-5 py-2">{r.kg}</td>
                               <td className="px-5 py-2 font-bold text-navy notranslate">
                                 {r.price && r.price !== "Liên hệ"
-                                  ? `${displaySymbol}${(r.price * displayRate).toLocaleString("en-US", { maximumFractionDigits: 2 })}`
+                                  ? `${Number(r.price).toLocaleString("vi-VN")} ₫`
                                   : r.price}
                               </td>
                             </tr>
@@ -1387,7 +1637,7 @@ const InternationalPricingPage = () => {
                         <thead>
                           <tr className="bg-[#FAFAF8]">
                             <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Hạng mức (kg)</th>
-                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá cước ({displaySymbol}/kg)</th>
+                            <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá cước (VNĐ/kg)</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1396,7 +1646,7 @@ const InternationalPricingPage = () => {
                               <td className="px-5 py-2">{r.bracket}</td>
                               <td className="px-5 py-2 font-bold text-navy notranslate">
                                 {r.price && r.price !== "Liên hệ"
-                                  ? `${displaySymbol}${(r.price * displayRate).toLocaleString("en-US", { maximumFractionDigits: 2 })}${String(r.bracket).includes("-") || String(r.bracket).includes(">") ? " / kg" : ""}`
+                                  ? `${Number(r.price).toLocaleString("vi-VN")} ₫${String(r.bracket).includes("-") || String(r.bracket).includes(">") ? " / kg" : ""}`
                                   : r.price}
                               </td>
                             </tr>
@@ -1411,43 +1661,67 @@ const InternationalPricingPage = () => {
                     <div className="flex flex-col gap-6">
                       <div>
                         <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area – US)</h4>
-                        {remoteSurcharge.length > 0 ? (
+                        {larkOverlay.usRemoteSurcharge?.priceRows?.length ? (
+                          <>
+                            <CompactAccordionTable
+                              headers={["Weight (kg)", "Phụ phí (VNĐ)"]}
+                              data={larkOverlay.usRemoteSurcharge.priceRows}
+                              renderRow={(r: any, i: number) => (
+                                <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
+                                  <td className="px-4 py-3"><span className="notranslate" translate="no">{r.kg} kg</span></td>
+                                  <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{Math.round(r.vnd).toLocaleString("vi-VN")} ₫</span></td>
+                                </tr>
+                              )}
+                            />
+                            {larkOverlay.usRemoteSurcharge.zipcodeRows?.length > 0 && (
+                              <div className="mt-4">
+                                <h5 className="font-bold text-[12px] text-navy mb-2">📮 US Remote Zipcode List ({larkOverlay.usRemoteSurcharge.zipcodeRows.length} entries)</h5>
+                                <div className="max-h-[200px] overflow-y-auto border border-[var(--pricing-border)] rounded-lg">
+                                  <table className="w-full border-collapse text-[12px]">
+                                    <thead className="sticky top-0"><tr className="bg-[#FAFAF8]">
+                                      <th className="px-3 py-2 text-left text-[10px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Zipcode Range</th>
+                                      <th className="px-3 py-2 text-left text-[10px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">State</th>
+                                    </tr></thead>
+                                    <tbody>
+                                      {larkOverlay.usRemoteSurcharge.zipcodeRows.map((z: any, i: number) => (
+                                        <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0]">
+                                          <td className="px-3 py-1.5 font-mono notranslate">{z.zipcode}</td>
+                                          <td className="px-3 py-1.5 notranslate">{z.state}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : remoteSurcharge.length > 0 ? (
                           <CompactAccordionTable
-                            headers={["Weight (kg)", `Surcharge (${displaySymbol})`]}
+                            headers={["Weight (kg)", "Surcharge ($)"]}
                             data={remoteSurcharge}
                             renderRow={(r: any, i: number) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
                                 <td className="px-4 py-3"><span className="notranslate" translate="no">{r.kg} kg</span></td>
-                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
+                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `$${parseFloat(r.usd).toLocaleString("en-US", { maximumFractionDigits: 2 })}` : "Liên hệ THG"}</span></td>
                               </tr>
                             )}
                           />
                         ) : (
-                          <table className="w-full border-collapse text-[13px]">
-                            <thead><tr className="bg-[#FAFAF8]">
-                              <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Khu Vực</th>
-                              <th className="px-4 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Surcharge</th>
-                            </tr></thead>
-                            <tbody>
-                              <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Alaska / Hawaii</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
-                              <tr className="border-b border-[var(--pricing-border)]"><td className="px-4 py-3">Puerto Rico</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
-                              <tr><td className="px-4 py-3">Remote ZIP Codes</td><td className="px-4 py-3 font-bold">Liên hệ THG</td></tr>
-                            </tbody>
-                          </table>
+                          <p className="text-muted-foreground text-[13px] italic">📝 Dữ liệu Remote Surcharge đang cập nhật.</p>
                         )}
                       </div>
                       <div>
                         <h4 className="font-bold text-[13px] text-navy mb-2">🔁 Phí Re-delivery (Gửi Lại)</h4>
-                        <p className="text-[12px] text-muted-foreground italic mb-2">* Áp dụng khi hàng bị trả về do sai địa chỉ, không nhận, hoặc từ chối.</p>
+                        <p className="text-[12px] text-muted-foreground italic mb-2">* Áp dụng khi hàng bị trả về do sai địa chỉ, không nhận, hoặc từ chối. Nếu không có phản hồi trong thời gian quy định, kiện hàng sẽ bị tiêu hủy theo mặc định.</p>
                         {redeliveryData.length > 0 ? (
                           <CompactAccordionTable
-                            headers={["Khu Vực", "Mã QG", `Phí (${displaySymbol})`]}
+                            headers={["Country", "Re-delivery charge", "Request re-delivery period"]}
                             data={redeliveryData}
                             renderRow={(r: any, i: number) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                <td className="px-4 py-3"><span className="notranslate">{r.dest}</span></td>
-                                <td className="px-4 py-3"><span className="notranslate">{r.code}</span></td>
-                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
+                                <td className="px-4 py-3"><span className="notranslate font-medium">{r.dest || r.country}</span></td>
+                                <td className="px-4 py-3 text-[12px]"><span className="notranslate">{r.charge || r.usd}</span></td>
+                                <td className="px-4 py-3 font-bold text-[12px]"><span className="notranslate">{r.period || "—"}</span></td>
                               </tr>
                             )}
                           />
@@ -1482,16 +1756,16 @@ const InternationalPricingPage = () => {
               <div>
                 <div className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
                   <span>ℹ️</span>
-                  <div>Hiển thị đồng thời tất cả line. Giá {displaySymbol}/kg — liên hệ THG để nhận báo giá chính xác theo lô hàng.</div>
+                  <div>Hiển thị đồng thời tất cả line. Giá $/kg — liên hệ THG để nhận báo giá chính xác theo lô hàng.</div>
                 </div>
 
                 <div className="space-y-4">
                   {/* CN Express Cards */}
                   {[
-                    { name: "✈️ DHL Air – Hỏa Tốc", time: "3–5 BSD", bg: "bg-[#C8102E]", tax: false },
-                    { name: "✈️ UPS Air – Nhanh", time: "6–10 BSD", bg: "bg-navy", tax: true },
-                    { name: "✈️ UPS Air – Tiêu Chuẩn", time: "8–10 BSD", bg: "bg-[#16213E]", tax: true },
-                    { name: "🚢 Mason Sea", time: "20–25 BSD", bg: "bg-[#0F3460]", tax: true },
+                    { name: "✈️ DHL Air – Hỏa Tốc", time: "3–5 BSD", bg: "bg-[#C8102E]", tax: false, price: 11 },
+                    { name: "✈️ UPS Air – Nhanh", time: "6–10 BSD", bg: "bg-navy", tax: true, price: 10.50 },
+                    { name: "✈️ UPS Air – Tiêu Chuẩn", time: "8–10 BSD", bg: "bg-[#16213E]", tax: true, price: 9 },
+                    { name: "🚢 Mason Sea", time: "20–25 BSD", bg: "bg-[#0F3460]", tax: true, price: 3 },
                   ].map((line, i) => (
                     <div key={i} className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                       <div className={`${line.bg} px-5 py-3 flex items-center justify-between flex-wrap gap-2`}>
@@ -1505,19 +1779,17 @@ const InternationalPricingPage = () => {
                       <table className="w-full border-collapse text-[13px]">
                         <thead><tr className="bg-[#FAFAF8]">
                           <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Cân Nặng</th>
-                          <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá ({displaySymbol}/kg)</th>
+                          <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá ($/kg)</th>
                           <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Ghi chú</th>
                         </tr></thead>
                         <tbody>
-                          {[
-                            { w: "< 100 kg" }, { w: "100–500 kg" }, { w: "> 500 kg" },
-                          ].map((r, j) => (
-                            <tr key={j} className="border-b border-[var(--pricing-border)] last:border-0">
-                              <td className="px-5 py-2">{r.w}</td>
-                              <td className="px-5 py-2 text-primary font-bold">Liên hệ THG</td>
-                              <td className="px-5 py-2 text-muted-foreground text-[13px]">Báo giá theo lô</td>
-                            </tr>
-                          ))}
+                          <tr className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
+                            <td className="px-5 py-3 font-medium">21KG+</td>
+                            <td className="px-5 py-3 font-bold text-navy notranslate">
+                              <span translate="no">{`$${line.price.toLocaleString("en-US", { maximumFractionDigits: 2 })}`}</span>
+                            </td>
+                            <td className="px-5 py-3 text-muted-foreground text-[12px] italic">Báo giá theo lô</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
@@ -1532,12 +1804,12 @@ const InternationalPricingPage = () => {
                         <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area – US)</h4>
                         {remoteSurcharge.length > 0 ? (
                           <CompactAccordionTable
-                            headers={["Weight (kg)", `Surcharge (${displaySymbol})`]}
+                            headers={["Weight (kg)", "Surcharge ($)"]}
                             data={remoteSurcharge}
                             renderRow={(r: any, i: number) => (
                               <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
                                 <td className="px-4 py-3"><span className="notranslate" translate="no">{r.kg} kg</span></td>
-                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `${displaySymbol}${(parseFloat(r.usd) * displayRate).toLocaleString("en-US", { maximumFractionDigits: displaySymbol === "₫" ? 0 : 2, minimumFractionDigits: displaySymbol === "₫" ? 0 : 2 })}` : "Liên hệ THG"}</span></td>
+                                <td className="px-4 py-3 font-bold"><span className="notranslate" translate="no">{r.usd ? `$${parseFloat(r.usd).toLocaleString("en-US", { maximumFractionDigits: 2 })}` : "Liên hệ THG"}</span></td>
                               </tr>
                             )}
                           />
@@ -1561,6 +1833,17 @@ const InternationalPricingPage = () => {
                       </div>
                     </div>
                   </Accordion>
+                  {/* Shipping Policy for Priority route */}
+                  {(() => {
+                    const ids = ROUTE_POLICY_MAP[`${route}_standard`] ?? [];
+                    const policies = larkPoliciesI18n.filter(p => ids.includes(p.id));
+                    if (policies.length === 0) return null;
+                    return (
+                      <Accordion key={`policy-pri-${route}`} icon="🛡️" title="Chính Sách Vận Chuyển">
+                        <RoutePolicyContent policies={policies} />
+                      </Accordion>
+                    );
+                  })()}
                   <Accordion icon="📄" title="Điều Khoản Vận Chuyển & FAQ">
                     <ShippingTermsQnAPanel />
                   </Accordion>
@@ -1587,7 +1870,7 @@ const InternationalPricingPage = () => {
 /* ═══════════════════════════════════════════════
    SHIP BY LABEL PANEL (CN-US Regular & Special)
    ═══════════════════════════════════════════════ */
-const ShipByLabelPanel = ({ rate = 1, currencySymbol = "$", larkData, ccOptions, displayCurrency, setDisplayCurrency, rates, ratesLoading }: { rate?: number; currencySymbol?: string; larkData?: { regular: any[]; special: any[] } | null; ccOptions?: any[]; displayCurrency?: string; setDisplayCurrency?: (c: string) => void; rates?: Record<string, number> | null; ratesLoading?: boolean }) => {
+const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: any[] } | null }) => {
   const [tab, setTab] = useState<"regular" | "special">("regular");
 
   const tabs = [
@@ -1596,36 +1879,12 @@ const ShipByLabelPanel = ({ rate = 1, currencySymbol = "$", larkData, ccOptions,
   ];
 
   const activeTab = tabs.find(t => t.id === tab)!;
-  // Prefer Lark overlay data, fallback to hardcoded
   const data = larkData?.[tab]?.length ? larkData[tab] : (pricingData as any)[activeTab.fallbackKey] || [];
 
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
         <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground">📦 BẢNG GIÁ CN — US SHIP BY LABEL</p>
-        {/* Currency switcher pills */}
-        {ccOptions && setDisplayCurrency && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-1 notranslate" translate="no">Tiền tệ:</span>
-            {ccOptions.map((opt: any) => (
-              <button
-                key={opt.code}
-                onClick={() => setDisplayCurrency(opt.code)}
-                title={opt.code}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-bold border-[1.5px] transition-all ${displayCurrency === opt.code
-                  ? "bg-navy border-navy text-white shadow-sm"
-                  : "border-[var(--pricing-border)] bg-white text-navy hover:border-navy/60"
-                  }`}
-              >
-                <span className="overflow-hidden rounded-[2px] shrink-0 relative" style={{ width: 22, height: 15, display: 'inline-flex', alignItems: 'center' }}>{opt.flag}</span>
-                <span className="notranslate" translate="no">{opt.label}</span>
-                {!ratesLoading && rates && opt.code !== "USD" && (
-                  <span className="text-[10px] opacity-50 font-medium notranslate" translate="no">= {(rates[opt.code] ?? 1).toLocaleString("en-US", { maximumFractionDigits: opt.code === "VND" ? 0 : 2 })}</span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
       <div className="flex flex-wrap gap-2 mb-4">
         {tabs.map(t => (
@@ -1645,8 +1904,7 @@ const ShipByLabelPanel = ({ rate = 1, currencySymbol = "$", larkData, ccOptions,
         title={`CN → US · ${tab === "regular" ? "Regular Product" : "Special Product"}`}
         badge="Ship by Label"
         data={data}
-        columns={[{ key: "rate", label: `Cước (${currencySymbol})` }]}
-        rate={rate} currencySymbol={currencySymbol}
+        columns={[{ key: "rate", label: "Cước ($)" }]}
       />
     </div>
   );
@@ -1810,17 +2068,124 @@ const qnaList = [
   },
   {
     q: "THG tính cước vận chuyển dựa trên tiêu chí gì? Có phải theo trọng lượng thật không?",
-    a: "THG tính cước theo nguyên tắc lấy cao nhất giữa trọng lượng thực tế (Gross Weight) và trọng lượng thể tích (Volume Weight). Ví dụ: kiện hàng có trọng lượng thực 0.9kg nhưng trọng lượng thể tích 1.1kg thì cước vận chuyển sẽ tính theo 1.1kg."
+    a: "THG tính cước theo nguyên tắc lấy cao nhất giữa trọng lượng thực tế (Gross Weight) và trọng lượng thể tích (Volume Weight = L×W×H / 6000).\n\n• Ví dụ: kiện hàng có trọng lượng thực 0.9kg nhưng trọng lượng thể tích 1.1kg thì cước vận chuyển sẽ tính theo 1.1kg.\n• Áp dụng cho tất cả tuyến US/Canada/Mexico/EU.\n• Trọng lượng tối đa: 30kg/kiện."
   },
   {
     q: "Chính sách bồi thường của THG?",
-    a: "Khi hàng bị thất lạc, hư hỏng do lỗi từ hãng vận chuyển hoặc THG, chúng tôi sẽ bồi thường dựa trên giá trị hàng hóa đã khai báo với thị trường Mỹ. Mức bồi thường tối đa $20 cho giai đoạn đầu hợp tác và có thể tăng lên tối đa $50 dựa trên volume doanh thu của khách hàng theo thời gian. Khách hàng có thể xem chi tiết chính sách tại mục Chính sách của THG trên thanh tiêu đề."
+    a: "THG bồi thường 100% giá trị hàng hóa bị thất lạc/hư hỏng do lỗi trong quá trình xử lý tại THG.\n\n• Mức bồi thường tối đa: $500/kiện hàng.\n• Thời hạn khiếu nại: trong vòng 14 ngày kể từ ngày giao hàng dự kiến.\n• Không áp dụng cho: hàng cấm, hàng không khai báo đúng, hoặc hàng bị hải quan tịch thu."
   },
   {
     q: "Dịch vụ ePacket từ Trung Quốc sang Mỹ có giới hạn kích thước và trọng lượng ra sao?",
-    a: "Với dịch vụ Line ePacket CHINA - US, kiện hàng có thể nặng tối đa 30kg. Kích thước tiêu chuẩn là 55x40x35cm (không tính thêm phí). Nếu hàng lớn hơn, vẫn có thể gửi với kích thước tối đa 68x43x43cm, nhưng sẽ có phí bổ sung. Kích thước tối thiểu là 10x15cm để đảm bảo an toàn vận chuyển."
+    a: "Với dịch vụ Line ePacket CHINA - US, kiện hàng có thể nặng tối đa 30kg.\n\n• Kích thước tiêu chuẩn: 55×40×35cm (không tính thêm phí).\n• Kích thước tối đa: 68×43×43cm (có phí bổ sung).\n• Kích thước tối thiểu: 10×15cm để đảm bảo an toàn vận chuyển."
+  },
+  {
+    q: "Giá trị khai báo tối đa trên mỗi kiện hàng là bao nhiêu?",
+    a: "Theo quy định từ hãng vận chuyển và hải quan nước đến, giá trị khai báo tối đa khác nhau tùy quốc gia:\n\n• USA: Max USD $60 (nghiêm ngặt).\n• EU: Max EUR €150 / ~USD $155.\n• UK: Max GBP £135 / ~USD $155.\n• Japan: Max USD $110.\n\n⚠️ Lưu ý: Khai báo vượt giới hạn có thể dẫn đến kiện hàng bị giữ lại hoặc thuế phát sinh. Vui lòng liên hệ THG nếu cần tư vấn."
+  },
+  {
+    q: "Chính sách hoàn hàng (Return) và gửi lại (Re-delivery) như thế nào?",
+    a: "Khi kiện hàng bị trả về kho hải ngoại (do sai địa chỉ, không có người nhận, hoặc bị từ chối nhận):\n\n• Khách hàng có 14-20 ngày (tùy quốc gia) để yêu cầu Re-delivery.\n• Nếu không có phản hồi trong thời hạn, kiện hàng sẽ bị hủy.\n• THG KHÔNG hỗ trợ hoàn hàng từ nước ngoài về lại Trung Quốc/Việt Nam.\n\nPhí Re-delivery:\n• USA: $10.50/đơn\n• UK: $7.00/đơn\n• Germany: $10.50/đơn\n• Japan: $7.60/đơn\n• Các nước khác: $8.00/đơn"
+  },
+  {
+    q: "Pickup tại kho và Return to Sender phí bao nhiêu?",
+    a: "THG cung cấp dịch vụ xử lý hàng trả về:\n\n• Pickup tại kho US (PA/NC): $1.15/đơn\n• Return to Sender: $1.50/đơn\n\nCác đơn hàng pickup tại kho cần đặt lịch trước ít nhất 24h qua hệ thống THG."
+  },
+  {
+    q: "Remote Area (Vùng sâu) được xác định như thế nào?",
+    a: "Vùng sâu (Remote Area) được xác định theo hệ thống ZIP code của các hãng vận chuyển quốc tế (USPS, FedEx, DHL).\n\nBao gồm:\n• Alaska, Hawaii, Puerto Rico, Guam\n• APO/FPO (địa chỉ quân sự)\n• Các vùng nông thôn hoặc khó tiếp cận\n\nPhụ phí vùng sâu được tính theo trọng lượng kiện hàng, từ $1.95 (0.05kg) đến $87.82 (30kg). Xem chi tiết trong bảng Phụ Phí Vùng Sâu."
+  },
+  {
+    q: "THG hỗ trợ dịch vụ POD (Print on Demand) không?",
+    a: "Có, THG cung cấp dịch vụ POD (Print on Demand) với chất lượng cao:\n\n• Thời gian sản xuất: 2-4 ngày làm việc.\n• Chính sách đổi trả: 7 ngày cho vấn đề chất lượng.\n• Tích hợp TikTok Shipping: tự động tạo nhãn vận chuyển và đồng bộ real-time.\n• Hỗ trợ gửi từ cả VN và CN đi USA/Worldwide."
   }
 ];
+
+const renderPolicyContent = (text: string) => {
+  return text.split('\n').map((line, i) => {
+    if (!line.trim()) return null;
+    if (line.startsWith('### ')) {
+      return <strong key={i} className="block mt-5 mb-2 text-navy text-[14px] uppercase tracking-wide">{line.replace('### ', '')}</strong>;
+    }
+    const parts = line.split(/(\*\*.*?\*\*)/g);
+    return (
+      <span key={i} className="block mb-2 pl-2">
+        {parts.map((part, j) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={j} className="text-navy font-bold">{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        })}
+      </span>
+    );
+  });
+};
+
+/* ─── Route Policy Content (standalone, used by separate Accordion) ─── */
+const RoutePolicyContent = ({ policies }: { policies: typeof larkPoliciesI18n }) => {
+  const { effectiveLanguage: language } = useI18n();
+
+  // Trilingual labels
+  const headerTitle = language === 'vi' ? 'Chính sách vận chuyển (Shipping Policies)'
+    : language === 'zh' ? '运输政策 (Shipping Policies)'
+      : 'Shipping Policies';
+  const headerDesc = language === 'vi' ? 'Các điều khoản và chính sách áp dụng cho tuyến vận chuyển này.'
+    : language === 'zh' ? '适用于此运输路线的条款和政策。'
+      : 'Terms and policies applicable to this shipping route.';
+  const policyPrefix = language === 'vi' ? 'Điều khoản tuyến'
+    : language === 'zh' ? '路线条款'
+      : 'Route Terms';
+
+  return (
+    <div className="flex flex-col gap-2.5 pb-2">
+      <div className="bg-[#F7F5F0] border border-[var(--pricing-border)] rounded-xl px-4 py-3 mb-2 flex gap-3 text-[13px]">
+        <span className="text-xl">🛡️</span>
+        <div>
+          <strong className="text-navy block mb-1 notranslate" translate="no">{headerTitle}</strong>
+          <p className="text-muted-foreground notranslate" translate="no">{headerDesc}</p>
+        </div>
+      </div>
+      {policies.map((item, idx) => {
+        const content = language === 'vi'
+          ? (item.content?.vi || item.content?.en || '')
+          : (item.content?.en || '');
+        const langAttr = language === 'zh' ? 'en' : language;
+        // Always extract the descriptive route name from Vietnamese title (en/zh titles have technical codes like "Policy VNTHZXR")
+        const rawTitle = item.title?.vi || item.title?.en || '';
+        let cleanTitle = rawTitle
+          .replace(/^Điều khoản tuyến\s*/i, '')
+          .replace(/^Policy\s*/i, '');
+        // Translate Vietnamese cargo labels in parentheses for EN/ZH
+        if (language === 'en') {
+          cleanTitle = cleanTitle
+            .replace(/\(Hàng Thường\)/gi, '(Regular Goods)')
+            .replace(/\(Mỹ Phẩm\)/gi, '(Cosmetics)')
+            .replace(/\(Pin\)/gi, '(Batteries)');
+        } else if (language === 'zh') {
+          cleanTitle = cleanTitle
+            .replace(/\(Hàng Thường\)/gi, '(普通货物)')
+            .replace(/\(Mỹ Phẩm\)/gi, '(化妆品)')
+            .replace(/\(Pin\)/gi, '(电池)');
+        }
+        return (
+          <details key={"policy-" + idx} className="group bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden [&_summary::-webkit-details-marker]:hidden" open={policies.length === 1}>
+            <summary className="flex items-center justify-between cursor-pointer px-5 py-4 font-bold text-[13px] md:text-[14px] text-navy hover:text-primary transition-colors">
+              <span className="flex items-start gap-3">
+                <span className="flex items-center justify-center w-[22px] h-[22px] mt-0.5 shrink-0 rounded-full bg-[#1A2E44] text-white text-[12px] font-black">{idx + 1}</span>
+                <span className="leading-snug notranslate" translate="no">{policyPrefix} {cleanTitle}</span>
+              </span>
+              <span className="transition-transform duration-300 group-open:-rotate-180 shrink-0 ml-4">
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              </span>
+            </summary>
+            <div lang={langAttr} translate="yes" className="px-[52px] pb-6 text-[13px] text-navy/80 font-medium leading-relaxed border-t border-[var(--pricing-border)]/30 mt-1 pt-3">
+              {renderPolicyContent(content)}
+            </div>
+          </details>
+        );
+      })}
+    </div>
+  );
+};
 
 const ShippingTermsQnAPanel = () => {
   return (

@@ -98,76 +98,95 @@ export function transformSheetToEpacketData(rows: any[][], liveRates?: Record<st
         startRow++;
     }
 
-    // Process data rows
-    let lastWeight: number | null = null; // Track weight across rows for Lark formula resolution
+    // ── Build column groups: each weight column defines weights for the following country columns ──
+    const weightColIndices: number[] = [];
+    headers.forEach((h, i) => {
+        if (h === "kg" || h === "weight" || (h.includes("weight") && h.includes("kg"))) {
+            weightColIndices.push(i);
+        }
+    });
+    // For each country column, find which weight column governs it
+    const colWeightSource: number[] = headers.map((_, i) => {
+        let best = weightColIndices[0] ?? 0;
+        for (const wi of weightColIndices) {
+            if (wi <= i) best = wi; else break;
+        }
+        return best;
+    });
+
+    // Process data rows — track lastWeight per weight column independently
+    const lastWeightPerCol: Record<number, number> = {};
     for (let r = startRow; r < rows.length; r++) {
         const row = rows[r];
-        let currentWeight: number | null = null;
-
-        headers.forEach((h, i) => {
-            const rawVal = row[i];
-            // If it's a weight column, update currentWeight for subsequent countries
-            if (h === "kg" || h === "weight" || (h.includes("weight") && h.includes("kg"))) {
-                if (rawVal !== null && rawVal !== undefined && rawVal !== "") {
-                    if (typeof rawVal === "number") {
-                        currentWeight = rawVal;
-                    } else {
-                        const str = String(rawVal).replace(/,/g, "");
-                        // Handle Lark formula references like "0.1+A7" → increment + previous weight
-                        const formulaMatch = str.match(/^([0-9.]+)\+[A-Za-z]/);
-                        if (formulaMatch && lastWeight !== null) {
-                            const increment = parseFloat(formulaMatch[1]);
-                            currentWeight = isNaN(increment) ? null : Math.round((lastWeight + increment) * 1000) / 1000;
-                        } else {
-                            const parsed = parseFloat(str.replace(/\+.*/, ""));
-                            currentWeight = isNaN(parsed) ? null : parsed;
-                        }
-                    }
-                    if (currentWeight !== null) lastWeight = currentWeight;
+        // Parse weight for each weight column first
+        const weightForCol: Record<number, number | null> = {};
+        for (const wi of weightColIndices) {
+            const rawVal = row[wi];
+            if (rawVal !== null && rawVal !== undefined && rawVal !== "") {
+                let w: number | null = null;
+                if (typeof rawVal === "number") {
+                    w = rawVal;
                 } else {
-                    currentWeight = null;
-                }
-            }
-            // If it's a country column
-            else if (h && h !== "" && h !== "stt") {
-                if (currentWeight !== null && !isNaN(currentWeight) && rawVal !== null && rawVal !== undefined && rawVal !== "" && rawVal !== "-") {
-                    const isContact = String(rawVal).toLowerCase().includes("liên hệ") || String(rawVal).toLowerCase() === "contact";
-                    if (isContact) {
-                        if (!mapByKg[currentWeight]) mapByKg[currentWeight] = { kg: currentWeight };
-                        const cKey = h.replace(/\(.*?\)/g, "").trim().replace(/\s+/g, "_");
-                        mapByKg[currentWeight][cKey] = "Liên hệ";
-                        return;
+                    const str = String(rawVal).replace(/,/g, "");
+                    const formulaMatch = str.match(/^([0-9.]+)\+[A-Za-z]/);
+                    if (formulaMatch && lastWeightPerCol[wi] !== undefined) {
+                        const increment = parseFloat(formulaMatch[1]);
+                        w = isNaN(increment) ? null : Math.round((lastWeightPerCol[wi] + increment) * 1000) / 1000;
+                    } else {
+                        const parsed = parseFloat(str.replace(/\+.*/, ""));
+                        w = isNaN(parsed) ? null : parsed;
                     }
+                }
+                if (w !== null) lastWeightPerCol[wi] = w;
+                weightForCol[wi] = w;
+            } else {
+                weightForCol[wi] = null;
+            }
+        }
 
-                    let num = typeof rawVal === "number" ? rawVal : parseFloat(String(rawVal).replace(/,/g, "").replace(/\$/g, ""));
-                    if (!isNaN(num)) {
-                        // NATIVE CONVERSION: If header or sub-header marks this column as VND, convert to USD using LIVE RATES
-                        if (h.includes("vnd") || h.includes("vnđ") || isVndColumn[i]) {
-                            num = num / (liveRates?.["VND"] ?? 25400);
-                        }
+        // Process country columns
+        headers.forEach((h, i) => {
+            // Skip weight columns and empty/stt headers
+            if (weightColIndices.includes(i)) return;
+            if (!h || h === "" || h === "stt") return;
 
-                        if (!mapByKg[currentWeight]) mapByKg[currentWeight] = { kg: currentWeight };
+            const rawVal = row[i];
+            const currentWeight = weightForCol[colWeightSource[i]];
+            if (currentWeight === null || currentWeight === undefined || isNaN(currentWeight)) return;
+            if (rawVal === null || rawVal === undefined || rawVal === "" || rawVal === "-") return;
 
-                        // Clean header key: strip (vnd), newlines, trailing _vnd/_usd, etc.
-                        const cKey = h
-                            .replace(/\(.*?\)/g, "")    // strip (vnd), (usd), etc.
-                            .replace(/[\n\r]/g, " ")    // newlines → space
-                            .replace(/\bvnd\b/gi, "")   // strip standalone "vnd"
-                            .replace(/\busd\b/gi, "")   // strip standalone "usd"
-                            .trim()
-                            .replace(/\s+/g, "_")       // spaces → underscore
-                            .replace(/_+$/, "")         // strip trailing underscores
-                            .replace(/^_+/, "");        // strip leading underscores
-                        if (!cKey) return; // skip if key is empty after cleaning
-                        mapByKg[currentWeight][cKey] = num;
+            const isContact = String(rawVal).toLowerCase().includes("liên hệ") || String(rawVal).toLowerCase() === "contact";
+            if (isContact) {
+                if (!mapByKg[currentWeight]) mapByKg[currentWeight] = { kg: currentWeight };
+                const cKey = h.replace(/\(.*?\)/g, "").trim().replace(/\s+/g, "_");
+                mapByKg[currentWeight][cKey] = "Liên hệ";
+                return;
+            }
 
-                        // Also try mapping standard 2-letter codes for backward compatibility
-                        const fallbackMatches = ["us", "uk", "fr", "de", "it", "es", "au", "ca", "nz", "sg", "jp", "hk", "th", "tw", "nl", "be", "se"];
-                        for (const fb of fallbackMatches) {
-                            if (h.startsWith(fb) || h.includes(` ${fb} `)) {
-                                mapByKg[currentWeight][fb] = num;
-                            }
-                        }
+            let num = typeof rawVal === "number" ? rawVal : parseFloat(String(rawVal).replace(/,/g, "").replace(/\$/g, ""));
+            if (!isNaN(num)) {
+                // Raw values from Lark — no VND→USD conversion
+
+                if (!mapByKg[currentWeight]) mapByKg[currentWeight] = { kg: currentWeight };
+
+                // Clean header key: strip (vnd), newlines, trailing _vnd/_usd, etc.
+                const cKey = h
+                    .replace(/\(.*?\)/g, "")    // strip (vnd), (usd), etc.
+                    .replace(/[\n\r]/g, " ")    // newlines → space
+                    .replace(/\bvnd\b/gi, "")   // strip standalone "vnd"
+                    .replace(/\busd\b/gi, "")   // strip standalone "usd"
+                    .trim()
+                    .replace(/\s+/g, "_")       // spaces → underscore
+                    .replace(/_+$/, "")         // strip trailing underscores
+                    .replace(/^_+/, "");        // strip leading underscores
+                if (!cKey) return; // skip if key is empty after cleaning
+                mapByKg[currentWeight][cKey] = num;
+
+                // Also try mapping standard 2-letter codes for backward compatibility
+                const fallbackMatches = ["us", "uk", "fr", "de", "it", "es", "au", "ca", "nz", "sg", "jp", "hk", "th", "tw", "nl", "be", "se"];
+                for (const fb of fallbackMatches) {
+                    if (h.startsWith(fb) || h.includes(` ${fb} `)) {
+                        mapByKg[currentWeight][fb] = num;
                     }
                 }
             }
@@ -241,18 +260,8 @@ export function transformSheetToVnUsExpress(rows: any[][], liveRates?: Record<st
         return isNaN(num) ? str : num;
     };
 
-    // Helper to format price to USD
-    const toUsd = (val: any) => {
-        if (val === "Liên hệ") return val;
-        if (typeof val === "number") {
-            // Assuming values > 100,000 are VND, else USD
-            if (val > 1000) {
-                return val / (liveRates?.["VND"] ?? 25400);
-            }
-            return val;
-        }
-        return val;
-    };
+    // Keep raw price from Lark — no VND→USD conversion
+    const toUsd = (val: any) => val;
 
     rows.slice(1).forEach(row => {
         // Col 0: Saver weight

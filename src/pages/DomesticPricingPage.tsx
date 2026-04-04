@@ -7,7 +7,7 @@ import { DomesticPricingRow } from "@/data/domesticPricingData";
 import { Link } from "react-router-dom";
 import {
     MapPin, Package, Truck, Globe, DollarSign, Shield,
-    ChevronDown, ChevronUp, ArrowRight, Warehouse, CheckCircle2,
+    ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Warehouse, CheckCircle2,
     FileSpreadsheet, FileText, FileIcon
 } from "lucide-react";
 import { exportToExcel, exportToWord, exportToPdf } from "@/lib/exportUtils";
@@ -18,7 +18,7 @@ const INITIAL_ROWS = 6;
 
 const DomesticPricingContent = () => {
     const lark = useLarkPricingContext();
-    const [selectedZone, setSelectedZone] = useState<number>(5);
+    const [selectedZone, setSelectedZone] = useState<number>(1);
     const [showAll, setShowAll] = useState(false);
 
     // Overlay Lark data if sheet named "domesticPricing" or "noidia" exists
@@ -66,6 +66,15 @@ const DomesticPricingContent = () => {
     return (
         <main className="pt-24 pb-20 bg-background">
             <div className="container mx-auto px-4 max-w-6xl">
+                {/* Back Button */}
+                <div className="mb-6">
+                    <Link
+                        to="/"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-semibold text-[13px] transition-colors"
+                    >
+                        <ArrowLeft className="w-4 h-4" /> Quay lại Trang chủ
+                    </Link>
+                </div>
                 {/* Hero */}
                 <ScrollReveal>
                     <div className="text-center mb-12">
@@ -155,10 +164,7 @@ const DomesticPricingContent = () => {
                                         </p>
                                     </div>
                                 </div>
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold">
-                                    <DollarSign className="w-3.5 h-3.5" />
-                                    {domesticPricingRows.length} mốc trọng lượng
-                                </span>
+
                                 <div className="flex items-center gap-1.5 ml-2">
                                     <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 bg-secondary hover:bg-primary/20 rounded-md text-primary transition-colors" title="Xuất Excel">
                                         <FileSpreadsheet size={16} />
@@ -195,8 +201,8 @@ const DomesticPricingContent = () => {
                         {/* Desktop Table (Hidden on mobile) */}
                         <div className="hidden md:block overflow-x-auto">
                             <table id="table-domestic" className="w-full text-[13px] min-w-[500px] whitespace-nowrap">
-                                <thead>
-                                    <tr className="bg-navy text-white">
+                                <thead className="sticky top-0 z-10">
+                                    <tr className="bg-navy text-white shadow-sm">
                                         <th className="px-5 py-3 text-left font-semibold w-16">STT</th>
                                         <th className="px-5 py-3 text-left font-semibold">Cân nặng (oz)</th>
                                         <th className="px-5 py-3 text-left font-semibold">Cân nặng (gram)</th>
@@ -334,6 +340,30 @@ const DomesticPricingContent = () => {
                                     {fulfillmentServices.packLabel.note}
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </ScrollReveal>
+
+                {/* YouTube Video Reference */}
+                <ScrollReveal>
+                    <div className="bg-card border border-border/40 rounded-2xl p-6 md:p-8 shadow-sm mb-8 overflow-hidden">
+                        <div className="flex items-center gap-3 mb-5">
+                            <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-red-600" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-foreground text-lg">Video Hướng Dẫn Bảng Giá Fulfill</h3>
+                                <p className="text-xs text-muted-foreground">Xem chi tiết cách tính phí dịch vụ fulfillment tại kho Mỹ</p>
+                            </div>
+                        </div>
+                        <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: '56.25%' }}>
+                            <iframe
+                                className="absolute top-0 left-0 w-full h-full rounded-xl"
+                                src="https://www.youtube.com/embed/k-oETHQF7tE?start=19"
+                                title="THG Fulfillment Pricing Guide"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            />
                         </div>
                     </div>
                 </ScrollReveal>

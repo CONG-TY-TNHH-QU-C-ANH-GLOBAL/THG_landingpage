@@ -348,7 +348,198 @@ const THGFulfillPage = () => {
         </div>
       </section>
 
+      {/* Ecount Guide - I: Video hướng dẫn */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Hướng dẫn sử dụng hệ thống</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">
+                I. Video hướng dẫn cách <span className="text-gradient-gold">lên đơn trên Ecount</span>
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+                Xem video hướng dẫn chi tiết cách lên đơn hàng trên hệ thống Ecount ERP của THG. Lưu ý chọn đúng
+                loại <strong>SBSL</strong> (Ship By Seller) / <strong>SBTT</strong> (Ship By TikTok) khi chọn SKU.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={100}>
+            <div className="rounded-2xl overflow-hidden shadow-xl border border-border/40 max-w-3xl mx-auto">
+              <YouTubeEmbed videoId="hMWmBlUVhAI" title="THG - Hướng dẫn cách lên đơn trên Ecount ERP" aspectRatio="16/9" />
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={200}>
+            <div className="mt-8 flex justify-center">
+              <a
+                href="https://docs.google.com/spreadsheets/d/1CE_mzKMyfFK93iS1Dm8Sk9-zijjsxdKRO786EweoCUI/edit?gid=0#gid=0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full px-6 py-3 font-semibold text-sm shadow-md hover:bg-gold-dark transition-colors"
+              >
+                📋 Link SKU for THG FULFILL
+              </a>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Ecount Guide - II: Lên đơn lẻ trên hệ thống ERP */}
+      <section className="py-24 bg-card">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <ScrollReveal>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">
+                II. Lên đơn lẻ <span className="text-gradient-gold">trên hệ thống ERP của THG</span>
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+                Hướng dẫn chi tiết từng bước để lên đơn hàng trên hệ thống Ecount ERP.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* Step-by-step Guide */}
+          <div className="space-y-10">
+            {/* Step 1 */}
+            <ScrollReveal>
+              <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
+                <div className="flex items-center gap-4 mb-5">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">1</span>
+                  <h3 className="text-xl font-bold text-navy">Đăng nhập vào hệ thống</h3>
+                </div>
+                <p className="text-muted-foreground mb-5 leading-relaxed">
+                  Truy cập tài khoản do THG cung cấp tại{" "}
+                  <a href="https://login.ecount.com/Login/" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
+                    login.ecount.com
+                  </a>
+                  . Nhập thông tin đăng nhập (mã công ty, ID, mật khẩu) mà THG đã gửi cho bạn.
+                </p>
+                <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm">
+                  <img
+                    src="https://w.ladicdn.com/s1050x650/67e69e24e8a7ba001127c80a/1280x1280-1-20251230034756-auffc.png"
+                    alt="Ecount Login Form"
+                    className="w-full object-contain bg-white"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Step 2 */}
+            <ScrollReveal delay={50}>
+              <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
+                <div className="flex items-center gap-4 mb-5">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">2</span>
+                  <h3 className="text-xl font-bold text-navy">Điền Email khôi phục</h3>
+                </div>
+                <p className="text-muted-foreground mb-5 leading-relaxed">
+                  Sau khi đăng nhập lần đầu, hệ thống sẽ yêu cầu nhập email để khôi phục mật khẩu. Điền email của bạn và nhấn <strong>"Gửi Email khôi phục"</strong> để tránh mất tài khoản.
+                </p>
+                <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm">
+                  <img
+                    src="https://w.ladicdn.com/s1100x600/67e69e24e8a7ba001127c80a/1280x1280-2-20251230034755-5fcp-.png"
+                    alt="Email Recovery Setup"
+                    className="w-full object-contain bg-white"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Step 3 */}
+            <ScrollReveal delay={100}>
+              <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
+                <div className="flex items-center gap-4 mb-5">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">3</span>
+                  <h3 className="text-xl font-bold text-navy">Vào trang cá nhân → Bán hàng mới</h3>
+                </div>
+                <p className="text-muted-foreground mb-5 leading-relaxed">
+                  Click vào <strong>"Trang cá nhân"</strong>, sau đó chọn <strong>"Bán hàng mới"</strong> để bắt đầu tạo đơn hàng. Điền đầy đủ các trường thông tin bắt buộc.
+                </p>
+                <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm mb-5">
+                  <img
+                    src="https://w.ladicdn.com/s1100x650/67e69e24e8a7ba001127c80a/319aab8c-ea63-45af-9ec6-c0e2ccb1a7cd-20251230034755-miwjh.png"
+                    alt="Ecount Personal Page - New Sale"
+                    className="w-full object-contain bg-white"
+                    loading="lazy"
+                  />
+                </div>
+                {/* Form fields breakdown */}
+                <div className="bg-[#FFFBF0] rounded-xl p-5 border border-[#F5D78E]/50">
+                  <h4 className="font-bold text-navy text-sm mb-3">📋 Mô tả các trường thông tin:</h4>
+                  <div className="grid md:grid-cols-2 gap-3 text-sm">
+                    {[
+                      { label: "Location", desc: "Mã hoá xưởng THG (VD: 001 cho phonecase)" },
+                      { label: "Order ID", desc: "Mã đơn hàng của bạn" },
+                      { label: "Lastmile tracking", desc: "Mã tracking đơn vận chuyển" },
+                      { label: "Seller code", desc: "Mã khách hàng THG cung cấp (VD: CUS001)" },
+                      { label: "Service", desc: "SBTT (Ship by TikTok) / SBSL (Ship by Seller)" },
+                      { label: "Shipping label", desc: "Dán link label (Google Drive, v.v.)" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex gap-2">
+                        <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
+                        <span className="text-muted-foreground">{item.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-5 rounded-xl overflow-hidden border border-border/30 shadow-sm">
+                  <img
+                    src="https://w.ladicdn.com/s1100x650/67e69e24e8a7ba001127c80a/15351a69-d84c-47e9-a975-3cd9bf0d1d71-20251230034755-ksrwa.png"
+                    alt="Ecount Form Fields Breakdown"
+                    className="w-full object-contain bg-white"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Step 4 */}
+            <ScrollReveal delay={150}>
+              <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
+                <div className="flex items-center gap-4 mb-5">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">4</span>
+                  <h3 className="text-xl font-bold text-navy">Chọn SKU & Lưu đơn hàng</h3>
+                </div>
+                <p className="text-muted-foreground mb-5 leading-relaxed">
+                  Bấm đúp chuột vào khoảng trống của <strong>SKU</strong> để chọn SKU cho đơn hàng hoặc dùng link SKU do THG cung cấp. <strong>Chú ý chọn đúng SBSL/SBTT</strong> để chọn đúng SKU.
+                </p>
+                <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm mb-5">
+                  <img
+                    src="https://w.ladicdn.com/s1150x750/67e69e24e8a7ba001127c80a/410028fe-7792-478e-9acb-fca06bec4a87-20251230034755-6btjj.png"
+                    alt="SKU Selection"
+                    className="w-full object-contain bg-white"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="bg-[#F0F7FF] rounded-xl p-4 border border-blue-200/50 text-sm">
+                  <p className="text-navy">
+                    <strong>💡 Ví dụ:</strong> iPhone 12 Pro SKU sẽ là <code className="bg-navy/10 px-2 py-0.5 rounded text-xs font-mono">2-PC01-ip12pr-wht</code> cho ship by TikTok, dòng toughcase 2 lớp.
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* SKU Link button */}
+          <ScrollReveal delay={200}>
+            <div className="mt-10 flex justify-center">
+              <a
+                href="https://docs.google.com/spreadsheets/d/1CE_mzKMyfFK93iS1Dm8Sk9-zijjsxdKRO786EweoCUI/edit?gid=0#gid=0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full px-6 py-3 font-semibold text-sm shadow-md hover:bg-gold-dark transition-colors"
+              >
+                📋 Link SKU for THG FULFILL
+              </a>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       {/* FAQ */}
+
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
