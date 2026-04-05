@@ -18,6 +18,7 @@ const InternationalPricingPage = lazy(() => import("./pages/InternationalPricing
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
 const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const AgentPage = lazy(() => import("./pages/AgentPage"));
+const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
 
 const App = () => (
   <I18nProvider>
@@ -29,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/chinh-sach" element={<PolicyPage />} />
+            <Route path="/chinh-sach-van-chuyen" element={<ShippingPolicyPage />} />
             <Route path="/tin-tuc" element={<BlogPage />} />
             <Route path="/bang-gia-quoc-te" element={<LarkPricingProvider><InternationalPricingPage /></LarkPricingProvider>} />
             <Route path="/bang-gia-noi-dia" element={<LarkPricingProvider><DomesticPricingPage /></LarkPricingProvider>} />

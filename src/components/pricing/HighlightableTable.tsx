@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { usePricingStore } from "@/stores/usePricingStore";
-import type { TableRow } from "@/data/pricingHelpers";
 import { ChevronDown, ChevronUp } from "lucide-react";
+
+type TableRow = Record<string, string | number | null | undefined>;
 
 interface Column {
   key: string;

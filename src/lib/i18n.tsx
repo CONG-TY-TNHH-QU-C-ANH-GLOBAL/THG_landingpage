@@ -178,6 +178,27 @@ const translations: Translations = {
   "policy.compensation": { en: "Compensation Policy", vi: "Chính sách đền bù hàng lô", zh: "批量货物赔偿政策" },
   "policy.tiktok": { en: "POD - TikTok Shipping", vi: "POD - TikTok Shipping", zh: "POD - TikTok运输" },
 
+  // Shipping Policy page
+  "spolicy.title": { en: "Shipping Policy", vi: "Chính Sách Vận Chuyển", zh: "运输政策" },
+  "spolicy.subtitle": { en: "Organized by shipping route — select a route below to view its terms", vi: "Phân loại theo tuyến vận chuyển — chọn tuyến bên dưới để xem điều khoản", zh: "按运输路线分类 — 选择下方路线查看条款" },
+  "spolicy.r0": { en: "VN → WW · Regular", vi: "VN → WW · Hàng Thường", zh: "越南→全球·普通" },
+  "spolicy.r1": { en: "VN → WW · Cosmetics", vi: "VN → WW · Mỹ Phẩm", zh: "越南→全球·化妆品" },
+  "spolicy.r2": { en: "CN → WW · Cosmetics", vi: "CN → WW · Mỹ Phẩm", zh: "中国→全球·化妆品" },
+  "spolicy.r3": { en: "CN → WW · Batteries", vi: "CN → WW · Pin Điện", zh: "中国→全球·电池" },
+  "spolicy.r4": { en: "VN → US · Priority", vi: "VN → US · Priority", zh: "越南→美国·Priority" },
+  "spolicy.r5": { en: "CN → US/EU · Priority", vi: "CN → US/EU · Priority", zh: "中国→美欧·Priority" },
+  "spolicy.sec_vat": { en: "VAT / IOSS", vi: "VAT / IOSS", zh: "增值税 / IOSS" },
+  "spolicy.sec_weight": { en: "Chargeable Weight", vi: "Trọng Lượng Tính Cước", zh: "计费重量" },
+  "spolicy.sec_countries": { en: "Countries & Restrictions", vi: "Quốc Gia & Hạn Chế", zh: "国家与限制" },
+  "spolicy.sec_value": { en: "Declared Value", vi: "Giá Trị Khai Báo", zh: "申报价值" },
+  "spolicy.sec_cargo": { en: "Shipping Requirements", vi: "Yêu Cầu Hàng Hóa", zh: "货物要求" },
+  "spolicy.sec_size": { en: "Weight & Size Limits", vi: "Giới Hạn Cân Nặng & Kích Thước", zh: "重量与尺寸限制" },
+  "spolicy.sec_address": { en: "Delivery Address", vi: "Địa Chỉ Giao Hàng", zh: "配送地址" },
+  "spolicy.sec_returns": { en: "Returns & Redelivery", vi: "Trả Hàng & Giao Lại", zh: "退货与重新投递" },
+  "spolicy.sec_comp": { en: "Compensation Standards", vi: "Tiêu Chuẩn Bồi Thường", zh: "赔偿标准" },
+  "spolicy.sec_other": { en: "Other Requirements", vi: "Yêu Cầu Khác", zh: "其他要求" },
+  "spolicy.view_full": { en: "View full shipping policy", vi: "Xem đầy đủ chính sách vận chuyển", zh: "查看完整运输政策" },
+
   // Blog page
   "blog.title": { en: "News & Insights", vi: "Tin tức & Kiến thức", zh: "新闻与见解" },
   "blog.subtitle": { en: "Stay updated with the latest from THG", vi: "Cập nhật tin tức mới nhất từ THG", zh: "关注THG的最新动态" },
