@@ -73,7 +73,7 @@ const EpacketPanel = ({
                             {rid === "pri-vncn-us" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 notranslate" translate="no">{lang === 'zh' ? '✅ 含进口税 · Active USPS' : lang === 'en' ? '✅ Import tax included · Active USPS' : '✅ Bao thuế NK · Active USPS'}</span>}
                             {r.cargo.length > 0 && (
                                 <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
-                                    {r.cargo.map(c => CARGO_ICONS[c]).join(" ")} {r.cargo.map(c => getCargoLabel(c)).join(" · ")}
+                                    <span className="notranslate" translate="no">{r.cargo.map(c => CARGO_ICONS[c]).join(" ")} {r.cargo.map(c => getCargoLabel(c)).join(" · ")}</span>
                                 </span>
                             )}
                         </div>
@@ -149,7 +149,11 @@ const EpacketPanel = ({
                             <span>🔋</span>
                             <div>
                                 <strong>{lang === 'zh' ? '电池产品提示：' : lang === 'en' ? 'Battery products:' : 'Hàng pin điện:'}</strong>{" "}
-                                {lang === 'zh' ? '电池产品请使用 Standard CN → Worldwide 路线发货。' : lang === 'en' ? 'Battery products must be shipped via Standard CN → Worldwide route.' : 'Hàng Pin Điện vui lòng sử dụng tuyến Standard CN → Worldwide để vận chuyển.'}
+                                {lang === 'zh'
+                                    ? '电池产品可通过 "Standard VN-WW" 渠道发货，但请参阅附带的运输政策了解具体要求。'
+                                    : lang === 'en'
+                                        ? 'Battery products can be shipped via the "Standard VN-WW" channel; however, please refer to the attached Shipping Policy for specific requirements.'
+                                        : 'Hàng Pin Điện có thể vận chuyển qua kênh "Standard VN-WW"; tuy nhiên, vui lòng tham khảo Chính sách Vận chuyển đính kèm để biết yêu cầu cụ thể.'}
                             </div>
                         </div>
                     )}
@@ -160,7 +164,7 @@ const EpacketPanel = ({
                         <div>
                             <strong>{lang === 'zh' ? '当前显示：' : lang === 'en' ? 'Showing:' : 'Đang hiển thị:'}</strong> {route === "pri-vncn-us"
                                 ? <>Priority · {getRouteName(routeConfig)} — {lang === 'zh' ? '含进口税, Active USPS 追踪。不含偏远附加费。' : lang === 'en' ? 'Import tax included, Active USPS tracking. Excludes remote surcharges.' : 'Bao thuế NK, Active USPS tracking. Giá chưa bao gồm phụ phí vùng sâu.'}</>
-                                : <>Epacket · {getRouteName(routeConfig)} {routeConfig.cargo.length > 0 ? `· ${getCargoLabel(cargo)}` : ""} — {lang === 'zh' ? '送达目的国。不含偏远附加费和增值税。' : lang === 'en' ? 'Delivered to destination. Excludes remote surcharges & VAT.' : 'Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu & VAT.'}</>
+                                : <><span className="notranslate" translate="no">Epacket · {getRouteName(routeConfig)} {routeConfig.cargo.length > 0 ? `· ${getCargoLabel(cargo)}` : ""}</span> — {lang === 'zh' ? '送达目的国。不含偏远附加费和增值税。' : lang === 'en' ? 'Delivered to destination. Excludes remote surcharges & VAT.' : 'Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu & VAT.'}</>
                             }
                         </div>
                     </div>
