@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import { LarkPricingProvider } from "@/components/pricing/LarkPricingProvider";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const Index = lazy(() => import("./pages/Index"));
 const PolicyPage = lazy(() => import("./pages/PolicyPage"));
@@ -27,22 +28,24 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/chinh-sach" element={<PolicyPage />} />
-            <Route path="/chinh-sach-van-chuyen" element={<ShippingPolicyPage />} />
-            <Route path="/tin-tuc" element={<BlogPage />} />
-            <Route path="/bang-gia-quoc-te" element={<LarkPricingProvider><InternationalPricingPage /></LarkPricingProvider>} />
-            <Route path="/bang-gia-noi-dia" element={<LarkPricingProvider><DomesticPricingPage /></LarkPricingProvider>} />
-            <Route path="/thg-fulfill" element={<THGFulfillPage />} />
-            <Route path="/thg-express" element={<THGExpressPage />} />
-            <Route path="/thg-warehouse" element={<THGWarehousePage />} />
-            <Route path="/thg-order" element={<THGOrderPage />} />
-            <Route path="/catalog" element={<CatalogPage />} />
-            {/* Internal agent tool — not linked in public nav */}
-            <Route path="/agent" element={<AgentPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/chinh-sach" element={<PolicyPage />} />
+              <Route path="/chinh-sach-van-chuyen" element={<ShippingPolicyPage />} />
+              <Route path="/tin-tuc" element={<BlogPage />} />
+              <Route path="/bang-gia-quoc-te" element={<LarkPricingProvider><InternationalPricingPage /></LarkPricingProvider>} />
+              <Route path="/bang-gia-noi-dia" element={<LarkPricingProvider><DomesticPricingPage /></LarkPricingProvider>} />
+              <Route path="/thg-fulfill" element={<THGFulfillPage />} />
+              <Route path="/thg-express" element={<THGExpressPage />} />
+              <Route path="/thg-warehouse" element={<THGWarehousePage />} />
+              <Route path="/thg-order" element={<THGOrderPage />} />
+              <Route path="/catalog" element={<CatalogPage />} />
+              {/* Internal agent tool — not linked in public nav */}
+              <Route path="/agent" element={<AgentPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </ErrorBoundary>
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
