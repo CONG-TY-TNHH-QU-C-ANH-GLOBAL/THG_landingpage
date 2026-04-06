@@ -1,5 +1,5 @@
-import { Suspense, lazy } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,37 +21,61 @@ const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const AgentPage = lazy(() => import("./pages/AgentPage"));
 const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
 
+/**
+ * ScrollToTop — resets scroll on every route change.
+ */
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+};
+
+/**
+ * AppRoutes — uses location.key on ErrorBoundary to force clean React remounts
+ * on every route change, preventing GTranslate-modified DOM nodes from causing
+ * React reconciliation crashes (the root cause of the blank page bug).
+ */
+const AppRoutes = () => {
+  const location = useLocation();
+  return (
+    <>
+      <ScrollToTop />
+      <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>}>
+        <ErrorBoundary key={location.pathname}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/chinh-sach" element={<PolicyPage />} />
+            <Route path="/chinh-sach-van-chuyen" element={<ShippingPolicyPage />} />
+            <Route path="/tin-tuc" element={<BlogPage />} />
+            <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
+            <Route path="/bang-gia-noi-dia" element={<DomesticPricingPage />} />
+            <Route path="/thg-fulfill" element={<THGFulfillPage />} />
+            <Route path="/thg-express" element={<THGExpressPage />} />
+            <Route path="/thg-warehouse" element={<THGWarehousePage />} />
+            <Route path="/thg-order" element={<THGOrderPage />} />
+            <Route path="/catalog" element={<CatalogPage />} />
+            {/* Internal agent tool — not linked in public nav */}
+            <Route path="/agent" element={<AgentPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ErrorBoundary>
+      </Suspense>
+    </>
+  );
+};
+
 const App = () => (
   <I18nProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>}>
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/chinh-sach" element={<PolicyPage />} />
-              <Route path="/chinh-sach-van-chuyen" element={<ShippingPolicyPage />} />
-              <Route path="/tin-tuc" element={<BlogPage />} />
-              <Route path="/bang-gia-quoc-te" element={<LarkPricingProvider><InternationalPricingPage /></LarkPricingProvider>} />
-              <Route path="/bang-gia-noi-dia" element={<LarkPricingProvider><DomesticPricingPage /></LarkPricingProvider>} />
-              <Route path="/thg-fulfill" element={<THGFulfillPage />} />
-              <Route path="/thg-express" element={<THGExpressPage />} />
-              <Route path="/thg-warehouse" element={<THGWarehousePage />} />
-              <Route path="/thg-order" element={<THGOrderPage />} />
-              <Route path="/catalog" element={<CatalogPage />} />
-              {/* Internal agent tool — not linked in public nav */}
-              <Route path="/agent" element={<AgentPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </ErrorBoundary>
-        </Suspense>
+        <LarkPricingProvider>
+          <AppRoutes />
+        </LarkPricingProvider>
       </BrowserRouter>
     </TooltipProvider>
   </I18nProvider>
 );
 
 export default App;
-
-
