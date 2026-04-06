@@ -23,7 +23,7 @@ import ExpressCnUsPanel from "@/components/pricing/ExpressCnUsPanel";
    MAIN PAGE
    ═══════════════════════════════════════════════ */
 const InternationalPricingPage = () => {
-  const { tVi } = useI18n();
+  const { tVi, effectiveLanguage: lang } = useI18n();
   const lark = useLarkPricingContext();
 
   // State
@@ -350,7 +350,13 @@ const InternationalPricingPage = () => {
       if (searchFrom === "VN") {
         if (searchCargo === "standard") dataKey = "vnThuong";
         else if (searchCargo === "cosmetic") dataKey = "vnMypham";
-        else return { error: "VN không hỗ trợ mã Pin Epacket. Vui lòng chọn gửi từ CN." };
+        else return {
+          error: lang === 'zh'
+            ? '电池产品可通过 "Standard VN-WW" 渠道发货，但请参阅附带的运输政策了解具体要求。'
+            : lang === 'en'
+              ? 'Battery products can be shipped via the "Standard VN-WW" channel; however, please refer to the attached Shipping Policy for specific requirements.'
+              : 'Hàng Pin Điện có thể vận chuyển qua kênh "Standard VN-WW"; tuy nhiên, vui lòng tham khảo Chính sách Vận chuyển đính kèm để biết yêu cầu cụ thể.'
+        };
       } else {
         if (searchCargo === "standard") dataKey = "cnThuong";
         else if (searchCargo === "cosmetic") dataKey = "cnMypham";
