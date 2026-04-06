@@ -1,5 +1,5 @@
 import { useI18n } from "@/lib/i18n";
-import { countryNames } from "@/components/pricing/types";
+import { countryNames, CARGO_LABELS, type CargoType } from "@/components/pricing/types";
 
 interface SearchWidgetProps {
     searchFrom: string;
@@ -27,7 +27,8 @@ const SearchWidget = ({
     showResult, handleSearch,
     searchCountries, estimatedPrice,
 }: SearchWidgetProps) => {
-    const { tVi } = useI18n();
+    const { tVi, effectiveLanguage: lang } = useI18n();
+    const getCargoLabel = (c: CargoType) => CARGO_LABELS[c]?.[lang] || CARGO_LABELS[c]?.vi || c;
 
     return (
         <>
@@ -73,11 +74,12 @@ const SearchWidget = ({
                         <label className="block text-[11px] font-bold text-muted-foreground uppercase mb-2 tracking-widest">{tVi("pricing.search_cargo")}</label>
                         <select
                             value={searchCargo} onChange={(e) => setSearchCargo(e.target.value)}
-                            className="w-full h-[46px] bg-white border border-[var(--pricing-border)] rounded-lg px-4 text-sm font-medium outline-none focus:border-gold transition-colors appearance-none cursor-pointer"
+                            className="w-full h-[46px] bg-white border border-[var(--pricing-border)] rounded-lg px-4 text-sm font-medium outline-none focus:border-gold transition-colors appearance-none cursor-pointer notranslate"
+                            translate="no"
                         >
-                            <option value="standard">{tVi("pricing.cargo_std")}</option>
-                            <option value="cosmetic">{tVi("pricing.cargo_cos")}</option>
-                            <option value="battery">{tVi("pricing.cargo_bat")}</option>
+                            <option value="standard">{getCargoLabel("standard")}</option>
+                            <option value="cosmetic">{getCargoLabel("cosmetics")}</option>
+                            <option value="battery">{getCargoLabel("battery")}</option>
                         </select>
                     </div>
 
