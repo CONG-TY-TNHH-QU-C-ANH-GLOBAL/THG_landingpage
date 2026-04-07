@@ -3,14 +3,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
-import { fetchCatalog, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
+import { fetchCatalog, fetchProduct, formatPrice, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Search, Tag, Filter, ChevronLeft, ChevronRight, X, Download,
   Shirt, Phone, Coffee, Home, Gem, Car, Frame, Package, Crown,
-  Loader2, Clock, Truck, MessageCircle,
+  Loader2, Clock, Truck, MessageCircle, Share2, Check,
 } from "lucide-react";
 
 // Category-based product details (since DB has no description fields)
@@ -121,8 +121,62 @@ const CatalogPage = () => {
 
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const searchTimer = useRef<NodeJS.Timeout>();
+
+  // Open product modal + push product id to URL for shareable link
+  const openProduct = useCallback((product: CatalogProduct) => {
+    setSelectedProduct(product);
+    setActiveImage(0);
+    setShareCopied(false);
+    // Fetch full detail (with variants) for modal display
+    fetchProduct(product.id)
+      .then((full) => setSelectedProduct(full))
+      .catch(() => { /* keep list-level data */ });
+    const url = new URL(window.location.href);
+    url.searchParams.set("productId", product.id);
+    window.history.replaceState(null, "", url.toString());
+  }, []);
+
+  const closeProduct = useCallback(() => {
+    setSelectedProduct(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("productId");
+    window.history.replaceState(null, "", url.pathname + (url.search || "") + url.hash);
+  }, []);
+
+  const handleShare = useCallback(async () => {
+    if (!selectedProduct) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("productId", selectedProduct.id);
+    const shareUrl = url.toString();
+    try {
+      // Prefer Web Share API on mobile
+      if (navigator.share) {
+        await navigator.share({ title: selectedProduct.name, url: shareUrl });
+        return;
+      }
+    } catch { /* user cancelled — fall through to clipboard */ }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch { /* ignore */ }
+  }, [selectedProduct]);
+
+  // Deep-link: read ?productId= on mount and open modal
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pid = params.get("productId");
+    if (!pid) return;
+    fetchProduct(pid)
+      .then((p) => {
+        setSelectedProduct(p);
+        setActiveImage(0);
+      })
+      .catch(() => { /* invalid id — ignore */ });
+  }, []);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -346,7 +400,7 @@ const CatalogPage = () => {
                 <ScrollReveal key={item.id} delay={Math.min(idx * 30, 300)}>
                   <div
                     className="group bg-white rounded-2xl border border-border/30 overflow-hidden hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-500 cursor-pointer"
-                    onClick={() => { setSelectedProduct(item); setActiveImage(0); }}
+                    onClick={() => openProduct(item)}
                   >
                     {/* Image */}
                     <div className="relative aspect-square bg-gray-50 overflow-hidden">
@@ -375,10 +429,10 @@ const CatalogPage = () => {
                         {item.name}
                       </h3>
                       <p className="text-sm font-bold text-green-600">
-                        Liên hệ báo giá
+                        {formatPrice(item)}
                       </p>
                       <p className="text-[10px] md:text-xs text-muted-foreground truncate">
-                        SKU: <span className="font-mono text-red-500">{item.sku}</span>
+                        SKU: <span className="font-mono text-red-500">{item.thgSku || item.sku}</span>
                       </p>
                       {item.sizes.length > 0 && (
                         <p className="text-[10px] md:text-xs text-muted-foreground">
@@ -443,7 +497,7 @@ const CatalogPage = () => {
       </div>
 
       {/* Product Detail Modal */}
-      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && closeProduct()}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
           {selectedProduct && (() => {
             const fallback = categoryMeta[selectedProduct.category] || categoryMeta["Accessories"];
@@ -510,14 +564,35 @@ const CatalogPage = () => {
 
                     {/* Price */}
                     <div>
-                      <p className="text-3xl font-bold text-foreground">Liên hệ báo giá</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Contact us for pricing</p>
+                      <p className="text-3xl font-bold text-foreground">{formatPrice(selectedProduct)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {selectedProduct.priceFrom != null ? "Selling price (excl. shipping)" : "Contact us for pricing"}
+                      </p>
                     </div>
 
                     {/* SKU */}
-                    <div>
-                      <span className="text-sm font-semibold">SKU:</span>{" "}
-                      <span className="text-sm font-mono">{selectedProduct.sku}</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <span className="text-sm font-semibold">SKU:</span>{" "}
+                        <span className="text-sm font-mono">{selectedProduct.thgSku || selectedProduct.sku}</span>
+                      </div>
+                      <button
+                        onClick={handleShare}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/40 text-xs font-medium hover:bg-secondary transition-all"
+                        title="Copy product link"
+                      >
+                        {shareCopied ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-green-600" />
+                            <span className="text-green-600">Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Share2 className="w-3.5 h-3.5" />
+                            <span>Share</span>
+                          </>
+                        )}
+                      </button>
                     </div>
 
                     {/* Sizes */}
