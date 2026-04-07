@@ -375,7 +375,7 @@ const CatalogPage = () => {
                         {item.name}
                       </h3>
                       <p className="text-sm font-bold text-green-600">
-                        Basecost: ${item.baseCost.toFixed(2)}
+                        Liên hệ báo giá
                       </p>
                       <p className="text-[10px] md:text-xs text-muted-foreground truncate">
                         SKU: <span className="font-mono text-red-500">{item.sku}</span>
@@ -510,8 +510,8 @@ const CatalogPage = () => {
 
                     {/* Price */}
                     <div>
-                      <p className="text-3xl font-bold text-foreground">${selectedProduct.baseCost.toFixed(2)}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">Base cost (excl. shipping)</p>
+                      <p className="text-3xl font-bold text-foreground">Liên hệ báo giá</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Contact us for pricing</p>
                     </div>
 
                     {/* SKU */}

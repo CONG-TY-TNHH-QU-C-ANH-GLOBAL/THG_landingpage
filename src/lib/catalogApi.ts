@@ -5,13 +5,11 @@ export interface CatalogProduct {
   name: string;
   sku: string;
   category: string;
-  baseCost: number;
   status: string;
   origin: string | null;
   sizes: string[];
   colors: string[];
   images: string[];
-  supplier: string | null;
   description: {
     material?: string[];
     features?: string[];
