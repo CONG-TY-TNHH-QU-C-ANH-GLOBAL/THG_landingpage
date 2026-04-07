@@ -1,9 +1,24 @@
 const API_BASE = "https://dev.thgfulfill.com/api/public/catalog";
 
+export interface CatalogVariant {
+  id: string;
+  variant: string | null;
+  color: string | null;
+  supplierSku: string;
+  thgSku: string | null;
+  priceSbsl: number | null;
+  priceSbtt: number | null;
+  weight: number | null;
+  length: number | null;
+  width: number | null;
+  height: number | null;
+}
+
 export interface CatalogProduct {
   id: string;
   name: string;
   sku: string;
+  thgSku: string | null;
   category: string;
   status: string;
   origin: string | null;
@@ -21,6 +36,10 @@ export interface CatalogProduct {
     shipPrices?: { toCustomer?: string; toUSPS?: string };
   } | null;
   templateUrl: string | null;
+  priceFrom: number | null;
+  priceTo: number | null;
+  currency: string;
+  variants?: CatalogVariant[];
   createdAt: string;
   updatedAt: string;
 }
@@ -30,6 +49,14 @@ export interface CatalogResponse {
   pagination: { page: number; limit: number; total: number; pages: number };
   categoryCounts: Record<string, number>;
   originCounts: Record<string, number>;
+}
+
+export function formatPrice(product: { priceFrom: number | null; priceTo: number | null }): string {
+  if (product.priceFrom == null) return "Liên hệ báo giá";
+  if (product.priceTo == null || product.priceTo === product.priceFrom) {
+    return `From $${product.priceFrom.toFixed(2)}`;
+  }
+  return `$${product.priceFrom.toFixed(2)} – $${product.priceTo.toFixed(2)}`;
 }
 
 export interface CatalogParams {
