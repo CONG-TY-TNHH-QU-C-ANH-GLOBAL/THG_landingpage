@@ -65,17 +65,19 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <I18nProvider>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <LarkPricingProvider>
-          <AppRoutes />
-        </LarkPricingProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </I18nProvider>
+  <ErrorBoundary>
+    <I18nProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <LarkPricingProvider>
+            <AppRoutes />
+          </LarkPricingProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </I18nProvider>
+  </ErrorBoundary>
 );
 
 export default App;

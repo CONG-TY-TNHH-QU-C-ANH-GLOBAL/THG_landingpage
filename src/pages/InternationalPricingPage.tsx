@@ -221,7 +221,7 @@ const InternationalPricingPage = () => {
 
 
   /* ─── Extras data (Lark overlay → fallback) ─── */
-  const rawVatData = larkOverlay.vatData?.length ? larkOverlay.vatData : (pricingData as any).vatData || [];
+  const rawVatData = larkOverlay.vatData?.length ? larkOverlay.vatData : ((pricingData as any).euRate || []).map((e: any) => ({ country: e.country, vat: e.vat, service: e.serviceCharge }));
   // Deduplicate: keep only the first occurrence of each country
   const vatData = rawVatData.filter((item: any, index: number, arr: any[]) =>
     arr.findIndex((v: any) => v.country === item.country) === index
@@ -296,7 +296,7 @@ const InternationalPricingPage = () => {
     { dest: "Malta, Cyprus, Slovenia, Croatia, Romania, Bulgaria, Chile", charge: "Re-delivery service is NOT provided", period: "—" },
     { dest: "Other countries except above mentioned country", charge: "237,394 VND/parcel", period: "14 days" },
   ];
-  const redeliveryData = larkOverlay.redeliveryData?.length ? larkOverlay.redeliveryData : (pricingData as any).redeliveryData?.length ? (pricingData as any).redeliveryData : FALLBACK_REDELIVERY;
+  const redeliveryData = larkOverlay.redeliveryData?.length ? larkOverlay.redeliveryData : (pricingData as any).redelivery?.length ? (pricingData as any).redelivery : FALLBACK_REDELIVERY;
 
   /* ─── Search Widget State ─── */
   const [searchFrom, setSearchFrom] = useState("VN");
@@ -305,6 +305,7 @@ const InternationalPricingPage = () => {
   const [searchCargo, setSearchCargo] = useState("standard");
   const [searchWeight, setSearchWeight] = useState(1);
   const [showResult, setShowResult] = useState(false);
+  const [searchTrigger, setSearchTrigger] = useState(0);
 
   // Derive country options for the search dropdown based on search widget state (independent of main tabs)
   const searchCountries = useMemo(() => {
@@ -339,6 +340,7 @@ const InternationalPricingPage = () => {
   }, [searchFrom, searchCargo, larkOverlay]);
 
   const handleSearch = () => {
+    setSearchTrigger(prev => prev + 1);
     setShowResult(true);
   };
 
@@ -367,7 +369,8 @@ const InternationalPricingPage = () => {
       if (!data.length) return { error: "Dữ liệu đang cập nhật" };
 
       // Detect if data is VND (VN routes from Lark)
-      const isVndData = searchFrom === "VN" && larkOverlay[dataKey]?.length;
+      // VN routes always use VND (both Lark overlay and pricingData)
+      const isVndData = searchFrom === "VN";
 
       const row = data.find((r: any) => parseFloat(r.kg || r.weight) >= searchWeight);
       if (!row) return { error: "Vượt quá cân nặng tối đa" };
@@ -451,18 +454,19 @@ const InternationalPricingPage = () => {
     }
 
     return null;
-  }, [searchFrom, searchTo, searchSvc, searchCargo, searchWeight, showResult, larkOverlay]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchFrom, searchTo, searchSvc, searchCargo, searchWeight, showResult, searchTrigger, larkOverlay]);
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-12 sm:pb-20">
       <Navbar />
 
       {/* ══════════ HERO ══════════ */}
       <HeroSection />
 
       {/* ══════════ VIDEO GIỚI THIỆU ══════════ */}
-      <div className="max-w-[800px] mx-auto px-4 sm:px-6 pt-10 pb-2">
-        <h2 className="text-center text-[15px] font-bold text-navy mb-4">🎬 Giới thiệu tổng quan Bảng giá vận chuyển</h2>
-        <div className="relative w-full rounded-2xl overflow-hidden shadow-lg border border-[var(--pricing-border)]" style={{ paddingBottom: '56.25%' }}>
+      <div className="max-w-[800px] mx-auto px-3 sm:px-6 pt-5 sm:pt-10 pb-1 sm:pb-2">
+        <h2 className="text-center text-[13px] sm:text-[15px] font-bold text-navy mb-3 sm:mb-4">🎬 Giới thiệu tổng quan Bảng giá vận chuyển</h2>
+        <div className="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-[var(--pricing-border)]" style={{ paddingBottom: '56.25%' }}>
           <iframe
             className="absolute inset-0 w-full h-full"
             src="https://www.youtube.com/embed/pnA2doqMT-o"
@@ -474,7 +478,7 @@ const InternationalPricingPage = () => {
       </div>
 
       {/* ══════════ MAIN ══════════ */}
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-12 py-10 pb-20">
+      <div className="max-w-[1100px] mx-auto px-2 sm:px-6 lg:px-12 py-4 sm:py-10 pb-12 sm:pb-20">
 
         {/* ──── SEARCH WIDGET ──── */}
         <SearchWidget
@@ -486,15 +490,17 @@ const InternationalPricingPage = () => {
           showResult={showResult} handleSearch={handleSearch}
           searchCountries={searchCountries}
           estimatedPrice={estimatedPrice}
+          searchTrigger={searchTrigger}
         />
 
         {/* ──── SERVICE TABS (Level 1) ──── */}
-        <div className="flex items-center gap-4 mb-3 mt-4">
+        <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3 mt-2 sm:mt-4">
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
-          <p className="text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">{tVi("pricing.tab_header")}</p>
+          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">{tVi("pricing.tab_header")}</p>
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
         </div>
-        <div className="flex flex-col md:flex-row gap-3 mb-8">
+        {/* Mobile: horizontal scrollable pills | Desktop: full cards */}
+        <div className="flex sm:flex-row gap-2 sm:gap-3 mb-5 sm:mb-8 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 -mx-2 px-2 sm:mx-0 sm:px-0">
           {([
             { id: "epacket" as ServiceTab, icon: "📦", name: tVi("pricing.svc_epa"), desc: tVi("pricing.tab_epa_desc") },
             { id: "express" as ServiceTab, icon: "🚢✈️", name: tVi("pricing.svc_exp"), desc: tVi("pricing.tab_exp_desc") },
@@ -503,15 +509,17 @@ const InternationalPricingPage = () => {
             <button
               key={tab.id}
               onClick={() => setService(tab.id)}
-              className={`flex-1 w-full border-2 rounded-xl p-4 text-left transition-all relative overflow-hidden cursor-pointer ${service === tab.id
+              className={`flex-shrink-0 sm:flex-1 border-[1.5px] sm:border-2 rounded-lg sm:rounded-xl px-3 py-2 sm:p-4 text-left transition-all relative overflow-hidden cursor-pointer ${service === tab.id
                 ? "border-primary bg-[#FFFBF0]"
                 : "border-[var(--pricing-border)] bg-white hover:border-primary/40"
                 }`}
             >
-              {service === tab.id && <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary" />}
-              <div className="text-xl mb-1">{tab.icon}</div>
-              <div className={`font-bold text-[15px] ${service === tab.id ? "text-primary" : "text-navy"}`}>{tab.name}</div>
-              <div className="text-[13px] text-muted-foreground mt-1">{tab.desc}</div>
+              {service === tab.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] sm:h-[3px] bg-primary" />}
+              <div className="flex items-center gap-1.5 sm:flex-col sm:items-start sm:gap-0">
+                <div className="text-base sm:text-xl">{tab.icon}</div>
+                <div className={`font-bold text-[13px] sm:text-[15px] whitespace-nowrap ${service === tab.id ? "text-primary" : "text-navy"}`}>{tab.name}</div>
+              </div>
+              <div className="text-[12px] sm:text-[13px] text-muted-foreground mt-1 hidden sm:block">{tab.desc}</div>
             </button>
           ))}
         </div>
@@ -533,42 +541,40 @@ const InternationalPricingPage = () => {
             vatData={vatData}
             remoteSurcharge={remoteSurcharge}
             redeliveryData={redeliveryData}
+            larkLoading={lark.loading}
+            larkError={lark.error}
           />
         )}
 
         {/* ═══════════ PANEL: EXPRESS / HÀNG LÔ ═══════════ */}
         {service === "express" && (
           <div>
-            <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-3">CHỌN TUYẾN VẬN CHUYỂN</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
+            <p className="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-2 sm:mb-3">CHỌN TUYẾN</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 sm:mb-5">
               <button
                 onClick={() => setExpressRoute("vn-us")}
-                className={`flex flex-col gap-1 border-[1.5px] rounded-[10px] p-3 text-left transition-all ${expressRoute === "vn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
+                className={`flex flex-col gap-0.5 sm:gap-1 border-[1.5px] rounded-lg sm:rounded-[10px] p-2.5 sm:p-3 text-left transition-all ${expressRoute === "vn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
               >
-                <span className={`font-bold text-[13px] ${expressRoute === "vn-us" ? "text-primary" : "text-navy"}`}>🇻🇳 VN → US (UPS)</span>
-                <span className="text-[12px] text-muted-foreground">⏱ 3–7 BSD</span>
-                <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 w-fit">⚠️ Chưa gồm tax NK US</span>
+                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "vn-us" ? "text-primary" : "text-navy"}`}>🇻🇳 VN → US (UPS)</span>
+                <span className="text-[11px] sm:text-[12px] text-muted-foreground">⏱ 3–7 BSD</span>
+                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 w-fit">⚠️ Chưa gồm tax NK US</span>
               </button>
               <button
                 onClick={() => setExpressRoute("cn-us")}
-                className={`flex flex-col gap-1 border-[1.5px] rounded-[10px] p-3 text-left transition-all ${expressRoute === "cn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
+                className={`flex flex-col gap-0.5 sm:gap-1 border-[1.5px] rounded-lg sm:rounded-[10px] p-2.5 sm:p-3 text-left transition-all ${expressRoute === "cn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
               >
-                <span className={`font-bold text-[13px] ${expressRoute === "cn-us" ? "text-primary" : "text-navy"}`}>🇨🇳 CN → US (Air & Sea)</span>
-                <span className="text-[12px] text-muted-foreground">⏱ 6–25 BSD</span>
-                <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 w-fit">✈️ Air · 🚢 Sea</span>
+                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "cn-us" ? "text-primary" : "text-navy"}`}>🇨🇳 CN → US (Air & Sea)</span>
+                <span className="text-[11px] sm:text-[12px] text-muted-foreground">⏱ 6–25 BSD</span>
+                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 w-fit">✈️ Air · 🚢 Sea</span>
               </button>
             </div>
 
             {expressRoute === "vn-us" && (
-              <ExpressVnUsPanel
-                larkOverlay={larkOverlay}
-              />
+              <ExpressVnUsPanel larkOverlay={larkOverlay} />
             )}
 
             {expressRoute === "cn-us" && (
-              <ExpressCnUsPanel
-                route={route}
-              />
+              <ExpressCnUsPanel route={route} />
             )}
           </div>
         )}

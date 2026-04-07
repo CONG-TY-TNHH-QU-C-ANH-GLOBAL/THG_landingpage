@@ -6,6 +6,7 @@ import Accordion from "@/components/pricing/Accordion";
 import PriceTable from "@/components/pricing/PriceTable";
 import CompactAccordionTable from "@/components/pricing/CompactAccordionTable";
 import ShipByLabelPanel from "@/components/pricing/ShipByLabelPanel";
+import { pricingData } from "@/data/pricingData";
 import ShippingTermsQnAPanel from "@/components/pricing/ShippingTermsQnAPanel";
 
 interface EpacketPanelProps {
@@ -20,6 +21,8 @@ interface EpacketPanelProps {
     vatData: any[];
     remoteSurcharge: any[];
     redeliveryData: any[];
+    larkLoading?: boolean;
+    larkError?: string | null;
 }
 
 const EpacketPanel = ({
@@ -27,6 +30,7 @@ const EpacketPanel = ({
     handleRouteSwitch, handleCargoSwitch,
     routeConfig, currentData, tableColumns,
     larkOverlay, vatData, remoteSurcharge, redeliveryData,
+    larkLoading, larkError,
 }: EpacketPanelProps) => {
     const { effectiveLanguage: lang } = useI18n();
 
@@ -113,21 +117,20 @@ const EpacketPanel = ({
             ) : (
                 <>
                     {/* ──── CARGO FILTER ──── */}
-                    <div className="flex items-center gap-3 mb-4 flex-wrap justify-between">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4 justify-between">
                         {routeConfig.cargo.length > 0 && (
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <span className="text-[13px] font-semibold text-muted-foreground whitespace-nowrap">Loại hàng:</span>
-                                <div className="flex gap-2 flex-wrap">
+                            <div className="flex items-center gap-1 sm:gap-3 w-full overflow-x-auto">
+                                <span className="text-[11px] sm:text-[13px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">Loại hàng:</span>
+                                <div className="flex gap-1 sm:gap-2">
                                     {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
                                         const enabled = routeConfig.cargo.includes(c);
-                                        // Hide battery button entirely for VN routes — battery only available on CN routes
                                         if (c === "battery" && !enabled) return null;
                                         return (
                                             <button
                                                 key={c}
                                                 onClick={() => handleCargoSwitch(c)}
                                                 disabled={!enabled}
-                                                className={`px-4 py-1.5 rounded-full text-[13px] font-semibold border-[1.5px] transition-all ${!enabled
+                                                className={`px-2 sm:px-4 py-0.5 sm:py-1.5 rounded-full text-[10px] sm:text-[13px] font-semibold border-[1.5px] transition-all whitespace-nowrap ${!enabled
                                                     ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
                                                     : cargo === c
                                                         ? "bg-primary border-primary text-white"
@@ -204,14 +207,14 @@ const EpacketPanel = ({
                                 <PriceTable
                                     title="Bảng Giá Chi Tiết VN → US (Priority)"
                                     badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
-                                    data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : []}
+                                    data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsCn"] || []}
                                     columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
                                     currencySymbol="₫"
                                 />
                                 <PriceTable
                                     title="Bảng Giá Chi Tiết CN → US (Priority)"
                                     badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
-                                    data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : []}
+                                    data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCnUs"] || []}
                                     columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
                                 />
                             </div>
@@ -222,8 +225,67 @@ const EpacketPanel = ({
                                 data={currentData}
                                 columns={tableColumns.map(c => ({ ...c, label: c.label }))}
                                 currencySymbol={route.startsWith("std-vn") ? "₫" : "$"}
-                                sla={(currentData as any)?.meta}
+                                sla={(currentData as any)?.meta || (() => {
+                                    const keyMap: Record<string, string> = { "std-vn-ww_standard": "vnThuongMeta", "std-vn-ww_cosmetics": "vnMyphamMeta", "std-cn-ww_standard": "cnThuongMeta", "std-cn-ww_cosmetics": "cnMyphamMeta", "std-cn-ww_battery": "cnPinMeta" };
+                                    return (pricingData as any)?.[keyMap[`${route}_${cargo}`]];
+                                })()}
                             />
+                        )}
+                        {/* Fallback when no price data is available */}
+                        {(!currentData || currentData.length === 0) && route !== "pri-vncn-us" && (
+                            <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
+                                <div className="bg-navy px-4 py-2.5">
+                                    <span className="text-white font-bold text-[13px]">📋 {lang === 'zh' ? '价格表' : lang === 'en' ? 'Price Table' : 'Bảng Giá Chi Tiết'}</span>
+                                </div>
+                                <div className="p-8 text-center">
+                                    {larkLoading ? (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
+                                            <p className="text-[13px] text-muted-foreground">
+                                                {lang === 'zh' ? '正在从 Lark 加载价格数据...' : lang === 'en' ? 'Loading price data from Lark...' : 'Đang tải dữ liệu bảng giá từ Lark...'}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <span className="text-3xl">📊</span>
+                                            <p className="text-[13px] text-muted-foreground">
+                                                {lang === 'zh' ? '价格数据暂时无法加载。请稍后重试或联系 THG 客服。' : lang === 'en' ? 'Price data is temporarily unavailable. Please try again later or contact THG support.' : 'Dữ liệu bảng giá tạm thời không khả dụng. Vui lòng thử lại sau hoặc liên hệ THG hỗ trợ.'}
+                                            </p>
+                                            {larkError && (
+                                                <p className="text-[11px] text-orange-500 mt-1">⚠️ {larkError}</p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        {/* Fallback for Priority route when both tables are empty */}
+                        {route === "pri-vncn-us" && !larkOverlay["uspsCn"]?.length && !larkOverlay["uspsCnUs"]?.length && !(pricingData as any)["uspsCn"]?.length && !(pricingData as any)["uspsCnUs"]?.length && (
+                            <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
+                                <div className="bg-navy px-4 py-2.5">
+                                    <span className="text-white font-bold text-[13px]">📋 {lang === 'zh' ? '价格表 (Priority)' : lang === 'en' ? 'Price Table (Priority)' : 'Bảng Giá Chi Tiết (Priority)'}</span>
+                                </div>
+                                <div className="p-8 text-center">
+                                    {larkLoading ? (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
+                                            <p className="text-[13px] text-muted-foreground">
+                                                {lang === 'zh' ? '正在从 Lark 加载价格数据...' : lang === 'en' ? 'Loading price data from Lark...' : 'Đang tải dữ liệu bảng giá từ Lark...'}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <span className="text-3xl">📊</span>
+                                            <p className="text-[13px] text-muted-foreground">
+                                                {lang === 'zh' ? '价格数据暂时无法加载。请稍后重试或联系 THG 客服。' : lang === 'en' ? 'Price data is temporarily unavailable. Please try again later or contact THG support.' : 'Dữ liệu bảng giá tạm thời không khả dụng. Vui lòng thử lại sau hoặc liên hệ THG hỗ trợ.'}
+                                            </p>
+                                            {larkError && (
+                                                <p className="text-[11px] text-orange-500 mt-1">⚠️ {larkError}</p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         )}
                     </div>
 

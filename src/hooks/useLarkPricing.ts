@@ -52,19 +52,22 @@ function setCache<T>(key: string, data: T, fetchedAt: string) {
 }
 
 /**
- * Fetch ALL sheets from the Lark spreadsheet.
- * Returns a map of sheetId → { title, data[][] }
+ * Previously fetched from Lark API. Now disabled — pricing data comes from
+ * Google Sheets via pricingData.ts static import.
+ * Returns fallback immediately without making any network requests.
  */
 export function useLarkAllSheets<T = Record<string, { title: string; data: any[][] }>>(
     fallback: T
 ): UseLarkPricingResult<T> {
-    return useLarkPricing<T>("__all__", null, null, fallback, async () => {
-        const res = await fetch("https://lark-pricing-api.aged-glitter-6ca8.workers.dev/?sheets=all");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (!json.ok) throw new Error(json.error || "API error");
-        return { data: json.sheets as T, fetchedAt: json.fetchedAt };
-    });
+    // Lark API disabled — return fallback data directly
+    return {
+        data: fallback,
+        loading: false,
+        error: null,
+        lastUpdated: null,
+        isLive: false,
+        refetch: () => { },
+    };
 }
 
 /**
