@@ -107,18 +107,18 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                     <table id={tableId} className="w-full border-collapse text-[12px] md:text-[13px]">
                         <thead>
                             <tr className="bg-[#FAFAF8]">
-                                <th className="px-2 md:px-4 py-2 md:py-3 text-left text-[10px] md:text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap sticky left-0 bg-[#FAFAF8] z-10 min-w-[52px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">KG</th>
-                                {columns.map(c => (
-                                    <th key={c.key} className="px-3 md:px-5 py-2.5 md:py-3 text-left text-[10px] md:text-[12px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap min-w-[120px]">{c.label}</th>
+                                <th className="px-2 py-2 md:py-2.5 text-center text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] border-r border-r-[var(--pricing-border)] whitespace-nowrap sticky left-0 bg-[#FAFAF8] z-10 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">KG</th>
+                                {columns.map((c, ci) => (
+                                    <th key={c.key} className={`px-2 md:px-3 py-2 md:py-2.5 text-center text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] whitespace-nowrap min-w-[100px] ${ci < columns.length - 1 ? "border-r border-r-[var(--pricing-border)]" : ""}`}>{c.label}</th>
                                 ))}
                             </tr>
                             {sla && Object.keys(sla).length > 0 && (
                                 <tr className="bg-[#FFF8E7]">
-                                    <td className="px-2 md:px-4 py-1 md:py-1.5 text-[9px] md:text-[11px] text-muted-foreground italic border-b border-[var(--pricing-border)] sticky left-0 bg-[#FFF8E7] z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">—</td>
-                                    {columns.map(c => {
+                                    <td className="px-2 py-1 md:py-1.5 text-[9px] md:text-[11px] text-muted-foreground italic border-b border-[var(--pricing-border)] border-r border-r-[var(--pricing-border)] sticky left-0 bg-[#FFF8E7] z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">—</td>
+                                    {columns.map((c, ci) => {
                                         const slaVal = sla[c.key] || sla[c.key.toLowerCase()] || "";
                                         return (
-                                            <td key={c.key} className="px-3 md:px-5 py-1.5 md:py-2 text-[9px] md:text-[11px] text-amber-700 font-medium italic border-b border-[var(--pricing-border)] whitespace-nowrap">
+                                            <td key={c.key} className={`px-2 md:px-3 py-1 md:py-1.5 text-center text-[9px] md:text-[11px] text-amber-700 font-medium italic border-b border-[var(--pricing-border)] whitespace-nowrap ${ci < columns.length - 1 ? "border-r border-r-[var(--pricing-border)]" : ""}`}>
                                                 {slaVal ? `⏱ ${slaVal}` : "—"}
                                             </td>
                                         );
@@ -129,13 +129,13 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                         <tbody>
                             {displayData.map((row: any, i: number) => (
                                 <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                    <td className="px-2 md:px-4 py-2 md:py-2.5 font-bold whitespace-nowrap sticky left-0 bg-white z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">{row.kg ?? row.weight ?? "—"}</td>
-                                    {columns.map(c => {
+                                    <td className="px-2 py-1.5 md:py-2 text-center font-bold whitespace-nowrap sticky left-0 bg-white z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)] border-r border-r-[var(--pricing-border)]">{row.kg ?? row.weight ?? "—"}</td>
+                                    {columns.map((c, ci) => {
                                         const val = row[c.key];
                                         const isNull = val === null || val === undefined;
                                         const isContact = typeof val === 'string' && val.includes('Liên hệ');
                                         return (
-                                            <td key={c.key} className={`px-3 md:px-5 py-2.5 md:py-3 whitespace-nowrap ${isNull ? "text-muted-foreground/30" : isContact ? "text-primary font-bold" : "font-bold"}`}>
+                                            <td key={c.key} className={`px-2 md:px-3 py-1.5 md:py-2 text-center whitespace-nowrap ${ci < columns.length - 1 ? "border-r border-r-[var(--pricing-border)]" : ""} ${isNull ? "text-muted-foreground/30" : isContact ? "text-primary font-bold" : "font-bold"}`}>
                                                 {isNull ? (
                                                     <span className="inline-block px-1 py-0 bg-muted/20 rounded text-[11px]">—</span>
                                                 ) : typeof val === "number" ? (
