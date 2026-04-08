@@ -595,16 +595,47 @@ const CatalogPage = () => {
                       </button>
                     </div>
 
-                    {/* Sizes */}
-                    {selectedProduct.sizes.length > 0 && (
+                    {/* Variants table — per-size pricing (preferred when available) */}
+                    {selectedProduct.variants && selectedProduct.variants.length > 0 ? (
                       <div>
-                        <p className="text-sm font-semibold mb-2">Size:</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {selectedProduct.sizes.map((s) => (
-                            <span key={s} className="px-3 py-1.5 rounded-lg border border-foreground/20 text-sm font-medium hover:bg-secondary transition-colors">{s}</span>
-                          ))}
+                        <p className="text-sm font-semibold mb-2">Sizes & pricing:</p>
+                        <div className="rounded-lg border border-border/30 overflow-hidden">
+                          <table className="w-full text-sm">
+                            <thead className="bg-secondary/40">
+                              <tr className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                <th className="px-3 py-2 text-left">Size</th>
+                                <th className="px-3 py-2 text-left">Color</th>
+                                <th className="px-3 py-2 text-right">Price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {selectedProduct.variants.map((v) => {
+                                const price = v.priceSbsl ?? v.priceSbtt;
+                                return (
+                                  <tr key={v.id} className="border-t border-border/20">
+                                    <td className="px-3 py-2 font-semibold">{v.variant || "—"}</td>
+                                    <td className="px-3 py-2 text-muted-foreground">{v.color || "—"}</td>
+                                    <td className="px-3 py-2 text-right font-mono font-bold text-green-600">
+                                      {price != null ? `$${price.toFixed(2)}` : "—"}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
                         </div>
                       </div>
+                    ) : (
+                      selectedProduct.sizes.length > 0 && (
+                        <div>
+                          <p className="text-sm font-semibold mb-2">Size:</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {selectedProduct.sizes.map((s) => (
+                              <span key={s} className="px-3 py-1.5 rounded-lg border border-foreground/20 text-sm font-medium hover:bg-secondary transition-colors">{s}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )
                     )}
 
                     {/* Colors */}
