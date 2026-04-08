@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -12,14 +12,28 @@ import {
 } from "lucide-react";
 import { exportToExcel } from "@/lib/exportUtils";
 import { useLarkPricingContext, SyncBadge, transformSheetToDomesticData } from "@/components/pricing/LarkPricingProvider";
+import { useI18n } from "@/lib/i18n";
 
 const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
 
 const DomesticPricingContent = () => {
     const lark = useLarkPricingContext();
+    const { tVi } = useI18n();
     const [selectedZone, setSelectedZone] = useState<number>(1);
     const [showAll, setShowAll] = useState(false);
+    const tableRef = useRef<HTMLDivElement>(null);
+
+    const toggleShowAll = useCallback(() => {
+        setShowAll((prev) => {
+            if (prev && tableRef.current) {
+                const rect = tableRef.current.getBoundingClientRect();
+                const targetY = Math.max(0, window.scrollY + rect.top - 80);
+                requestAnimationFrame(() => window.scrollTo({ top: targetY, behavior: "smooth" }));
+            }
+            return !prev;
+        });
+    }, []);
 
     const domesticPricingRows = useMemo(() => {
         if (!lark.sheets) return fallbackRows;
@@ -77,13 +91,13 @@ const DomesticPricingContent = () => {
                             to="/bang-gia-noi-dia"
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground font-semibold text-[12px] shadow-sm"
                         >
-                            <MapPin className="w-3.5 h-3.5" /> Nội Địa
+                            <MapPin className="w-3.5 h-3.5" /> {tVi("pricing.nav_domestic")}
                         </Link>
                         <Link
                             to="/bang-gia-quoc-te"
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-secondary text-foreground font-semibold text-[12px] hover:bg-secondary/80 transition-colors"
                         >
-                            <Globe className="w-3.5 h-3.5" /> Quốc Tế
+                            <Globe className="w-3.5 h-3.5" /> {tVi("pricing.nav_international")}
                         </Link>
                     </div>
                 </div>
@@ -118,11 +132,10 @@ const DomesticPricingContent = () => {
                                 <button
                                     key={z}
                                     onClick={() => setSelectedZone(z)}
-                                    className={`px-3 py-2 rounded-lg font-bold text-[12px] transition-all duration-200 border ${
-                                        selectedZone === z
-                                            ? "bg-primary text-primary-foreground border-primary shadow-md"
-                                            : "bg-secondary/50 text-foreground border-transparent hover:border-primary/30 hover:bg-secondary"
-                                    }`}
+                                    className={`px-3 py-2 rounded-lg font-bold text-[12px] transition-all duration-200 border ${selectedZone === z
+                                        ? "bg-primary text-primary-foreground border-primary shadow-md"
+                                        : "bg-secondary/50 text-foreground border-transparent hover:border-primary/30 hover:bg-secondary"
+                                        }`}
                                 >
                                     Zone {z}
                                 </button>
@@ -133,7 +146,7 @@ const DomesticPricingContent = () => {
 
                 {/* Pricing Table */}
                 <ScrollReveal>
-                    <div className="bg-card border border-border/40 rounded-xl shadow-sm overflow-hidden mb-6">
+                    <div ref={tableRef} className="bg-card border border-border/40 rounded-xl shadow-sm overflow-hidden mb-6" translate="no">
                         {/* Table header bar */}
                         <div className="px-4 py-3 border-b border-border/40 bg-secondary/30 flex items-center justify-between gap-3">
                             <div className="flex items-center gap-2.5 min-w-0">
@@ -160,7 +173,7 @@ const DomesticPricingContent = () => {
                         <div className="overflow-x-auto">
                             <table id="table-domestic" className="w-full text-[12px] md:text-[13px]">
                                 <thead>
-                                     <tr className="bg-navy text-white">
+                                    <tr className="bg-navy text-white">
                                         <th className="px-2 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider w-8 border-r border-white/20">{"\u200B"}</th>
                                         <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider border-r border-white/20">Oz</th>
                                         <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider border-r border-white/20">Weight (grams)</th>
@@ -189,15 +202,15 @@ const DomesticPricingContent = () => {
 
                         {/* Expand/Collapse */}
                         {hasMore && (
-                            <div className="flex justify-center py-3 border-t border-border/20">
+                            <div className="flex justify-center py-3 border-t border-border/20 relative z-10">
                                 <button
-                                    onClick={() => setShowAll((prev) => !prev)}
-                                    className="flex items-center gap-1.5 px-5 py-2 rounded-full bg-secondary hover:bg-secondary/80 text-[12px] font-semibold text-navy transition-all"
+                                    onClick={toggleShowAll}
+                                    className="flex items-center gap-1.5 px-5 py-2 rounded-full bg-secondary hover:bg-secondary/80 text-[12px] font-semibold text-navy transition-all active:scale-95 select-none cursor-pointer"
                                 >
                                     {showAll ? (
-                                        <>Thu gọn <ChevronUp className="w-3.5 h-3.5" /></>
+                                        <>{tVi("pricing.btn_collapse")} <ChevronUp className="w-3.5 h-3.5" /></>
                                     ) : (
-                                        <>Xem thêm ({domesticPricingRows.length - INITIAL_ROWS} dòng) <ChevronDown className="w-3.5 h-3.5" /></>
+                                        <>{tVi("pricing.btn_expand").replace("{count}", String(domesticPricingRows.length - INITIAL_ROWS))} <ChevronDown className="w-3.5 h-3.5" /></>
                                     )}
                                 </button>
                             </div>

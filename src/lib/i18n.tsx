@@ -529,8 +529,10 @@ const translations: Translations = {
   "pricing.res_base": { en: "Estimated Base Cost", vi: "Cước Cơ Bản Ước Tính", zh: "预估基本费用" },
   "pricing.res_note": { en: "*Excludes remote area surcharges & VAT", vi: "*Chưa tính phụ phí vùng sâu & VAT", zh: "*不包含偏远附加费和增值税" },
   "pricing.tab_header": { en: "View Full Pricing Table", vi: "Xem Toàn Bộ Bảng Giá", zh: "查看完整报价表" },
-  "pricing.btn_expand": { en: "See {count} more options", vi: "Xem thêm {count} tuỳ chọn", zh: "查看更多{count}个选项" },
+  "pricing.btn_expand": { en: "See {count} more rows", vi: "Xem thêm {count} dòng", zh: "查看更多 {count} 行" },
   "pricing.btn_collapse": { en: "Collapse table", vi: "Thu gọn bảng giá", zh: "收起表格" },
+  "pricing.nav_domestic": { en: "Domestic", vi: "Nội Địa", zh: "国内运费" },
+  "pricing.nav_international": { en: "International", vi: "Quốc Tế", zh: "国际运费" },
 };
 
 interface I18nContextType {

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet, FileText, FileIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { exportToExcel } from "@/lib/exportUtils";
@@ -6,6 +6,7 @@ import { exportToExcel } from "@/lib/exportUtils";
 const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table", extractRowData }: { headers: string[], data: any[], renderRow: (row: any, i: number) => React.ReactNode, title?: string, extractRowData?: (row: any) => (string | number)[] }) => {
     const { tVi } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     const tableId = useMemo(() => "table-compact-" + Math.random().toString(36).substring(2, 9), []);
     if (!data || data.length === 0) return null;
 
@@ -16,7 +17,7 @@ const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table",
     const displayData = isExpanded ? data : data.slice(0, 6);
 
     return (
-        <div className="relative">
+        <div ref={containerRef} className="relative" translate="no">
             <div className="absolute top-[-36px] right-0 flex items-center gap-1">
                 <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Xuất Excel">
                     <FileSpreadsheet size={13} />
@@ -44,7 +45,16 @@ const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table",
                     {isExpanded && data.length > 6 && (
                         <tr>
                             <td colSpan={100} className="p-0 border-t border-[var(--pricing-border)]">
-                                <button onClick={() => setIsExpanded(false)} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                                <button onClick={() => {
+                                        if (containerRef.current) {
+                                            const rect = containerRef.current.getBoundingClientRect();
+                                            const targetY = Math.max(0, window.scrollY + rect.top - 80);
+                                            setIsExpanded(false);
+                                            requestAnimationFrame(() => window.scrollTo({ top: targetY, behavior: "smooth" }));
+                                        } else {
+                                            setIsExpanded(false);
+                                        }
+                                    }} className="w-full py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                                     {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
                                 </button>
                             </td>
