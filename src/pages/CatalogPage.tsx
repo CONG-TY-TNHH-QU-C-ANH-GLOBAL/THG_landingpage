@@ -545,8 +545,10 @@ const CatalogPage = () => {
             const safeIdx = Math.min(selectedVariantIdx, Math.max(0, variants.length - 1));
             const selectedVariant = variants[safeIdx];
 
+            // priceSbsl = Ship by Merchant (higher price, seller ships)
+            // priceSbtt = Ship by Label (lower price, TikTok provides label)
             const getPrice = (v: typeof variants[number] | undefined) =>
-              v ? (shipping === "lbl" ? v.priceSbsl : v.priceSbtt) : null;
+              v ? (shipping === "lbl" ? v.priceSbtt : v.priceSbsl) : null;
 
             const channelPrices = variants
               .map(getPrice)
@@ -554,8 +556,8 @@ const CatalogPage = () => {
             const minP = channelPrices.length ? Math.min(...channelPrices) : null;
             const maxP = channelPrices.length ? Math.max(...channelPrices) : null;
 
-            const hasLblPrices = variants.some((v) => typeof v.priceSbsl === "number" && v.priceSbsl > 0);
-            const hasMerPrices = variants.some((v) => typeof v.priceSbtt === "number" && v.priceSbtt > 0);
+            const hasLblPrices = variants.some((v) => typeof v.priceSbtt === "number" && v.priceSbtt > 0);
+            const hasMerPrices = variants.some((v) => typeof v.priceSbsl === "number" && v.priceSbsl > 0);
             const hasAnyPrices = hasLblPrices || hasMerPrices;
 
             const currentPrice = getPrice(selectedVariant);
