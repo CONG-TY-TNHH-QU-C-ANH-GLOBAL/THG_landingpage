@@ -547,20 +547,32 @@ const CatalogPage = () => {
 
             // priceSbsl = Ship by Merchant (seller ships, higher price)
             // priceSbtt = Ship by Label (TikTok provides label, lower price)
-            const getPrice = (v: typeof variants[number] | undefined) =>
-              v ? (shipping === "lbl" ? v.priceSbtt : v.priceSbsl) : null;
-
-            const channelPrices = variants
-              .map(getPrice)
+            // Pre-compute BOTH channels explicitly so the per-tab range
+            // doesn't share a closure that could be mis-captured by minifier.
+            const lblPrices = variants
+              .map((v) => v.priceSbtt)
               .filter((p): p is number => typeof p === "number" && p > 0);
-            const minP = channelPrices.length ? Math.min(...channelPrices) : null;
-            const maxP = channelPrices.length ? Math.max(...channelPrices) : null;
+            const merPrices = variants
+              .map((v) => v.priceSbsl)
+              .filter((p): p is number => typeof p === "number" && p > 0);
 
-            const hasLblPrices = variants.some((v) => typeof v.priceSbtt === "number" && v.priceSbtt > 0);
-            const hasMerPrices = variants.some((v) => typeof v.priceSbsl === "number" && v.priceSbsl > 0);
+            const minLbl = lblPrices.length ? Math.min(...lblPrices) : null;
+            const maxLbl = lblPrices.length ? Math.max(...lblPrices) : null;
+            const minMer = merPrices.length ? Math.min(...merPrices) : null;
+            const maxMer = merPrices.length ? Math.max(...merPrices) : null;
+
+            const minP = shipping === "lbl" ? minLbl : minMer;
+            const maxP = shipping === "lbl" ? maxLbl : maxMer;
+
+            const hasLblPrices = lblPrices.length > 0;
+            const hasMerPrices = merPrices.length > 0;
             const hasAnyPrices = hasLblPrices || hasMerPrices;
 
-            const currentPrice = getPrice(selectedVariant);
+            const currentPrice = selectedVariant
+              ? shipping === "lbl"
+                ? selectedVariant.priceSbtt
+                : selectedVariant.priceSbsl
+              : null;
             const fmt = (n: number | null) => (n != null ? `$${n.toFixed(2)}` : "—");
 
             const copySku = (sku: string) => {
@@ -650,8 +662,8 @@ const CatalogPage = () => {
                         </div>
                       )}
 
-                      {/* 3. Price block */}
-                      <div className="flex flex-col gap-1">
+                      {/* 3. Price block — key=shipping forces remount on tab change to avoid any stale-render edge case */}
+                      <div key={`price-${shipping}`} className="flex flex-col gap-1">
                         {hasAnyPrices && currentPrice != null ? (
                           <>
                             <div className="flex items-baseline gap-3 flex-wrap">
