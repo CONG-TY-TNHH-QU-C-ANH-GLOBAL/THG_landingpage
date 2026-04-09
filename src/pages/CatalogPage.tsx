@@ -662,8 +662,8 @@ const CatalogPage = () => {
                         </div>
                       )}
 
-                      {/* 3. Price block — key=shipping forces remount on tab change to avoid any stale-render edge case */}
-                      <div key={`price-${shipping}`} className="flex flex-col gap-1">
+                      {/* 3. Price block — key includes shipping + size to force remount on EITHER change */}
+                      <div key={`price-${shipping}-${safeIdx}`} className="flex flex-col gap-1">
                         {hasAnyPrices && currentPrice != null ? (
                           <>
                             <div className="flex items-baseline gap-3 flex-wrap">
@@ -698,9 +698,9 @@ const CatalogPage = () => {
                         )}
                       </div>
 
-                      {/* 4. Variant Details card */}
+                      {/* 4. Variant Details card — key forces remount on size change to avoid any stale-render edge case */}
                       {selectedVariant && (
-                        <div className="border border-border/40 rounded-lg overflow-hidden">
+                        <div key={`variant-${selectedVariant.id ?? safeIdx}`} className="border border-border/40 rounded-lg overflow-hidden">
                           <div className="flex items-center px-4 py-2.5 border-b border-border/40 text-sm gap-2">
                             <span className="text-muted-foreground font-medium w-[120px] flex-shrink-0">THG SKU</span>
                             <button
