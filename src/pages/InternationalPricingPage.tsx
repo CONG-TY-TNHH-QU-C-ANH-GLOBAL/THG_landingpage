@@ -23,7 +23,7 @@ import ExpressCnUsPanel from "@/components/pricing/ExpressCnUsPanel";
    MAIN PAGE
    ═══════════════════════════════════════════════ */
 const InternationalPricingPage = () => {
-  const { tVi, effectiveLanguage: lang } = useI18n();
+  const { t, tVi, effectiveLanguage: lang } = useI18n();
   const lark = useLarkPricingContext();
 
   // State
@@ -181,7 +181,7 @@ const InternationalPricingPage = () => {
     if (!currentData || currentData.length === 0) return [];
     // For USPS data that uses 'rate' key
     if (currentData[0]?.rate !== undefined) {
-      return [{ key: "rate", label: route === "pri-vncn-us" ? "Cước CN → US ($)" : "Cước ($)" }];
+      return [{ key: "rate", label: route === "pri-vncn-us" ? t("intl_pricing.rate_label") : t("intl_pricing.rate_label_generic") }];
     }
     // For standard multi-country data
     const keys = new Set<string>();
@@ -353,11 +353,7 @@ const InternationalPricingPage = () => {
         if (searchCargo === "standard") dataKey = "vnThuong";
         else if (searchCargo === "cosmetic") dataKey = "vnMypham";
         else return {
-          error: lang === 'zh'
-            ? '电池产品可通过 "Standard VN-WW" 渠道发货，但请参阅附带的运输政策了解具体要求。'
-            : lang === 'en'
-              ? 'Battery products can be shipped via the "Standard VN-WW" channel; however, please refer to the attached Shipping Policy for specific requirements.'
-              : 'Hàng Pin Điện có thể vận chuyển qua kênh "Standard VN-WW"; tuy nhiên, vui lòng tham khảo Chính sách Vận chuyển đính kèm để biết yêu cầu cụ thể.'
+          error: t("intl_pricing.err_battery_note")
         };
       } else {
         if (searchCargo === "standard") dataKey = "cnThuong";
@@ -366,21 +362,21 @@ const InternationalPricingPage = () => {
       }
 
       const data = larkOverlay[dataKey]?.length ? larkOverlay[dataKey] : (pricingData as any)[dataKey] || [];
-      if (!data.length) return { error: "Dữ liệu đang cập nhật" };
+      if (!data.length) return { error: t("intl_pricing.err_updating") };
 
       // Detect if data is VND (VN routes from Lark)
       // VN routes always use VND (both Lark overlay and pricingData)
       const isVndData = searchFrom === "VN";
 
       const row = data.find((r: any) => parseFloat(r.kg || r.weight) >= searchWeight);
-      if (!row) return { error: "Vượt quá cân nặng tối đa" };
+      if (!row) return { error: t("intl_pricing.err_max_weight") };
 
       if (searchTo === "ALL") {
         const prices: number[] = [];
         Object.entries(row).forEach(([k, v]) => {
           if (k !== "kg" && k !== "weight" && typeof v === "number") prices.push(v);
         });
-        if (!prices.length) return { error: "Chưa có báo giá" };
+        if (!prices.length) return { error: t("intl_pricing.err_no_quote") };
         const min = Math.min(...prices);
         const max = Math.max(...prices);
         if (isVndData) {
@@ -400,30 +396,30 @@ const InternationalPricingPage = () => {
           if (isVndData) return { type: "flat", text: `${Math.round(v).toLocaleString("vi-VN")} ₫` };
           return { type: "flat", text: `$${v.toFixed(2)}` };
         }
-        if (typeof v === "string" && v.includes("Liên hệ")) return { error: "Tuyến này vui lòng Liên hệ THG báo giá" };
-        return { error: "Chưa có báo giá cho quốc gia này" };
+        if (typeof v === "string" && v.includes("Liên hệ")) return { error: t("intl_pricing.err_contact_quote") };
+        return { error: t("intl_pricing.err_no_country") };
       }
     }
 
     else if (searchSvc === "express") {
       if (searchFrom === "CN") {
-        return { type: "contact", text: "Liên hệ THG báo giá theo lô" };
+        return { type: "contact", text: t("intl_pricing.err_contact") };
       }
 
       if (searchTo !== "US" && searchTo !== "ALL") {
-        return { error: "VN Express hiện chỉ hỗ trợ tuyến US" };
+        return { error: t("intl_pricing.err_vn_us_only") };
       }
 
       let dataKey = "";
       if (searchCargo === "standard") dataKey = "loThuong";
       else if (searchCargo === "cosmetic") dataKey = "loMypham";
-      else return { error: "VN Express không hỗ trợ hàng Pin" };
+      else return { error: t("intl_pricing.err_no_battery") };
 
       const data = (pricingData as any)[dataKey] || [];
-      if (!data.length) return { error: "Dữ liệu đang cập nhật" };
+      if (!data.length) return { error: t("intl_pricing.err_updating") };
 
       if (searchWeight < 12) {
-        return { error: "Hàng Lô Express yêu cầu mức tối thiểu 12 KG" };
+        return { error: t("intl_pricing.err_min_12kg") };
       }
 
       const rates: number[] = [];
@@ -439,7 +435,7 @@ const InternationalPricingPage = () => {
         if (typeof r === "number") rates.push(r);
       });
 
-      if (!rates.length) return { error: "Chưa có báo giá" };
+      if (!rates.length) return { error: t("intl_pricing.err_no_quote") };
 
       const minRate = Math.min(...rates);
       const maxRate = Math.max(...rates);
@@ -465,7 +461,7 @@ const InternationalPricingPage = () => {
 
       {/* ══════════ VIDEO GIỚI THIỆU ══════════ */}
       <div className="max-w-[800px] mx-auto px-3 sm:px-6 pt-5 sm:pt-10 pb-1 sm:pb-2">
-        <h2 className="text-center text-[13px] sm:text-[15px] font-bold text-navy mb-3 sm:mb-4">🎬 Giới thiệu tổng quan Bảng giá vận chuyển</h2>
+        <h2 className="text-center text-[13px] sm:text-[15px] font-bold text-navy mb-3 sm:mb-4">{t("intl_pricing.video_heading")}</h2>
         <div className="relative w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-[var(--pricing-border)]" style={{ paddingBottom: '56.25%' }}>
           <iframe
             className="absolute inset-0 w-full h-full"
@@ -549,23 +545,23 @@ const InternationalPricingPage = () => {
         {/* ═══════════ PANEL: EXPRESS / HÀNG LÔ ═══════════ */}
         {service === "express" && (
           <div>
-            <p className="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-2 sm:mb-3">CHỌN TUYẾN</p>
+            <p className="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-2 sm:mb-3">{t("intl_pricing.select_route")}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 sm:mb-5">
               <button
                 onClick={() => setExpressRoute("vn-us")}
                 className={`flex flex-col gap-0.5 sm:gap-1 border-[1.5px] rounded-lg sm:rounded-[10px] p-2.5 sm:p-3 text-left transition-all ${expressRoute === "vn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
               >
-                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "vn-us" ? "text-primary" : "text-navy"}`}>🇻🇳 VN → US (UPS)</span>
-                <span className="text-[11px] sm:text-[12px] text-muted-foreground">⏱ 3–7 BSD</span>
-                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 w-fit">⚠️ Chưa gồm tax NK US</span>
+                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "vn-us" ? "text-primary" : "text-navy"}`}>{t("intl_pricing.vn_us_ups")}</span>
+                <span className="text-[11px] sm:text-[12px] text-muted-foreground">{t("intl_pricing.vn_us_time")}</span>
+                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 w-fit">{t("intl_pricing.no_us_tax")}</span>
               </button>
               <button
                 onClick={() => setExpressRoute("cn-us")}
                 className={`flex flex-col gap-0.5 sm:gap-1 border-[1.5px] rounded-lg sm:rounded-[10px] p-2.5 sm:p-3 text-left transition-all ${expressRoute === "cn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
               >
-                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "cn-us" ? "text-primary" : "text-navy"}`}>🇨🇳 CN → US (Air & Sea)</span>
-                <span className="text-[11px] sm:text-[12px] text-muted-foreground">⏱ 6–25 BSD</span>
-                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 w-fit">✈️ Air · 🚢 Sea</span>
+                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "cn-us" ? "text-primary" : "text-navy"}`}>{t("intl_pricing.cn_us_air_sea")}</span>
+                <span className="text-[11px] sm:text-[12px] text-muted-foreground">{t("intl_pricing.cn_us_time")}</span>
+                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 w-fit">{t("intl_pricing.air_sea")}</span>
               </button>
             </div>
 

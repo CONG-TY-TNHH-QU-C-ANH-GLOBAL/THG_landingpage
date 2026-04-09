@@ -1,400 +1,318 @@
 /**
- * Nội dung text của chính sách THG — trích xuất từ 70 ảnh chính sách.
- * Dùng cho dual-mode rendering: VI=image gallery, EN/ZH=text (GTranslate dịch tự động).
- * Mục "Vận chuyển" link sang /chinh-sach-van-chuyen (đã có đầy đủ text).
+ * policyTextContent.ts
+ * Nội dung text của các mục chính sách — EN / VI / ZH
+ * Dùng bởi PolicyTextRenderer khi người dùng xem ngôn ngữ EN hoặc ZH
  */
 
+export interface PolicyTextLine {
+    en: string;
+    vi: string;
+    zh: string;
+}
+
 export interface PolicyTextBlock {
-    heading: string;
-    content: string[];           // mỗi phần tử là 1 paragraph hoặc bullet point
-    type?: "info" | "warn" | "table";
+    type: "normal" | "warn" | "info";
+    heading: PolicyTextLine;
+    content: PolicyTextLine[];
 }
 
 export interface PolicyTextSection {
-    id: string;
     blocks: PolicyTextBlock[];
 }
 
 export const policyTextContent: Record<string, PolicyTextSection> = {
-    /* ═══════════════════════════════════════════
-     *   1. CHÍNH SÁCH WAREHOUSE
-     * ═══════════════════════════════════════════ */
     warehouse: {
-        id: "warehouse",
         blocks: [
             {
-                heading: "Thông tin kho THG Warehouse US",
-                content: [
-                    "Địa chỉ: 108 Almond CT, Milford, Pennsylvania",
-                    "Zip code: 18337",
-                    "Phone: +1 (570) 618-1169",
-                ],
-            },
-            {
-                heading: "Quy định vận chuyển nội địa USA — USPS Ground Advantage",
-                content: [
-                    "Trọng lượng tối đa không quá 20 pound (khoảng 9kg).",
-                    "Tổng kích thước (dài + (rộng + cao) × 2) phải nhỏ hơn 108 inch (khoảng 274cm).",
-                    "Thể tích (V) giới hạn ở 1728 inch khối (khoảng 0.076 m³). Nếu vượt quá, trọng lượng sẽ được tính theo thể tích.",
-                    "Công thức tính trọng lượng theo thể tích: chiều dài × chiều rộng × chiều cao / 166 (kích thước tính bằng inch, trọng lượng kết quả tính bằng ounce (lb)).",
-                ],
-            },
-            {
-                heading: "Chính sách xử lý — Hàng gửi qua kho US không đúng quy cách",
-                content: [
-                    "Điều kiện: Hàng hóa nhập kho không có mã barcode, không đóng gói phân loại SKU theo tiêu chuẩn nhập kho của THG.",
-                    "THG có quyền từ chối nhập kho hoặc áp dụng phí dịch vụ bổ sung để tạo và dán mã barcode theo yêu cầu.",
-                    "Phí tạo và dán mã barcode áp dụng mức $0.2/sản phẩm và mức phí có thể được điều chỉnh tùy loại hàng hóa cụ thể.",
-                    "THG sẽ thông báo trước cho khách hàng và chỉ tiến hành xử lý khi có sự đồng ý bằng văn bản hoặc xác nhận qua hệ thống.",
-                ],
-            },
-            {
-                heading: "Chính sách xử lý — Hàng hóa nguy hiểm hoặc bị cấm",
-                content: [
-                    "Điều kiện: Hàng hóa vi phạm quy định vận chuyển hoặc thuộc danh mục bị cấm/hạn chế theo luật Hoa Kỳ và chính sách của USPS.",
-                    "THG có quyền từ chối nhập kho hoặc tiến hành tiêu hủy theo quy định pháp luật; khách hàng chịu trách nhiệm về các chi phí xử phạt liên quan.",
-                    "Trong trường hợp hàng hóa bị USPS từ chối vận chuyển, THG không có nghĩa vụ đền bù. Khách hàng chịu toàn bộ chi phí trả hàng hoặc tiêu hủy.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Hàng hóa trong kho bị thất lạc",
-                content: [
-                    "Điều kiện: Hàng hóa có biên bản nhập kho (Inbound Request) hợp lệ nhưng bị thất lạc trong quá trình lưu kho.",
-                    "Thất lạc toàn bộ lô hàng: Đền bù 100% giá vốn (có chứng từ), tối đa 100$/lô hàng.",
-                    "Thất lạc trên 20 sản phẩm/SKU: Hỗ trợ đền bù 50% giá vốn, tối đa 30$/SKU.",
-                    "Thất lạc từ 4 đến 20 sản phẩm/SKU: Hỗ trợ đền bù 50% giá vốn, tối đa 20$/SKU.",
-                    "Mất lẻ từ 1 đến 3 sản phẩm/SKU: Xem là \"shrink allowance\" (hao hụt cho phép). THG không đền bù tiền mặt mà thực hiện kiểm tồn và điều chỉnh hệ thống.",
-                    "Nhiều SKU bị mất lẻ: Nếu tổng số sản phẩm mất trong cùng một Inbound Request > 20 sản phẩm, THG đền bù 50% giá vốn toàn bộ số mất, tối đa 30$/lô hàng.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Thất lạc hàng hóa nhiều lần (tính theo tháng)",
-                content: [
-                    "Lần 1: Đền tiền + Giảm phí Fulfill 1$/đơn cho 20 đơn tiếp theo.",
-                    "Lần 2: Đền tiền + Giảm phí Fulfill 1$/đơn cho 100 đơn tiếp theo.",
-                    "Lần 3: Đền tiền + Giảm phí Fulfill 1$/đơn cho 150 đơn tiếp theo (Nếu > 3 lần, hai bên sẽ gặp mặt đàm phán giải pháp).",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Kho đóng gói sai SKU",
-                content: [
-                    "Điều kiện: Lỗi phát sinh trong quá trình đóng gói tại kho THG (xác nhận qua Packing list và hệ thống).",
-                    "THG chịu chi phí gửi lại đơn hàng và hoàn tiền 100% giá vốn hàng hóa, tối đa 20$/sản phẩm.",
-                    "Trường hợp lỗi do khách hàng dán sai barcode, THG không đền bù.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Dán sai label / Sai địa chỉ giao hàng",
-                content: [
-                    "THG chịu chi phí gửi lại đơn nếu lỗi do phía THG.",
-                    "Đền bù 100% giá vốn hàng hóa (tối đa 3$/sản phẩm) nếu giao nhầm địa chỉ.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Hàng hóa bị hư hỏng",
-                content: [
-                    "Nếu hàng hư hỏng do lỗi đóng gói tại kho THG, THG hoàn lại phí fulfill/shipping và đền bù 100% giá vốn hàng hóa (tối đa 20$/đơn hàng).",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Trạng thái \"Delivered\" nhưng không nhận được hàng",
-                content: [
-                    "THG hỗ trợ kiểm tra chéo với hãng vận chuyển (USPS/FedEx/UPS).",
-                    "Đền bù theo chính sách của hãng vận chuyển nếu hãng xác nhận mất hàng.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Xử lý đơn hàng quá SLA",
-                content: [
-                    "Nếu kho xử lý đơn quá 3 ngày làm việc, THG hoàn 100% phí fulfill.",
-                ],
-            },
-            {
-                heading: "Khiếu nại & Thời hạn",
-                content: [
-                    "Khiếu nại đơn hàng thất lạc: trong vòng 2 tháng kể từ ngày gửi.",
-                    "Khiếu nại hàng hư hỏng hoặc sai giá: trong vòng 3 ngày sau khi nhận hàng.",
-                    "Thời gian xử lý: tối đa 10 ngày làm việc.",
-                ],
-            },
-            {
-                heading: "Hình thức đền bù",
-                content: [
-                    "Trừ vào phí vận chuyển các đơn hàng sau (trong vòng 90 ngày).",
-                    "Hoàn tiền về tài khoản (trong vòng 15 ngày làm việc).",
-                    "Bù trừ vào công nợ trong kỳ thanh toán kế tiếp.",
-                ],
-            },
-            {
-                heading: "Liên hệ",
-                content: [
-                    "Hotline: 033 512 4089",
-                    "Email: info@thgfulfill.com",
-                    "Văn phòng: 58 Đường DC11, P. Sơn Kỳ, Q. Tân Phú, TP.HCM",
-                ],
-            },
-        ],
-    },
-
-    /* ═══════════════════════════════════════════
-     *   2. CHÍNH SÁCH POD / DROPSHIP
-     * ═══════════════════════════════════════════ */
-    "pod-dropship": {
-        id: "pod-dropship",
-        blocks: [
-            {
-                heading: "Hàng hóa bị cấm vận chuyển",
-                type: "warn",
-                content: [
-                    "Chất nổ, vũ khí, đạn dược, pháo hoa.",
-                    "Chất lỏng, khí, chất dễ cháy.",
-                    "Sản phẩm sinh học, chất ăn mòn, chất phóng xạ.",
-                    "Sản phẩm động – thực vật.",
-                    "Tiền tệ, kim loại quý, đá quý.",
-                    "Ma túy, chất kích thích, thuốc tân dược.",
-                ],
-            },
-            {
-                heading: "Cách tính phí cước — Line VN → US",
-                content: [
-                    "So sánh Trọng lượng thực (Gross Weight) và Trọng lượng thể tích (Volume Weight).",
-                    "Công thức thể tích: Dài × Rộng × Cao / 5000 (cm) hoặc / 6000 (cm) tùy line.",
-                    "Tính phí theo số nào LỚN HƠN.",
-                ],
-            },
-            {
-                heading: "Cách tính phí cước — Line CN → US",
-                content: [
-                    "So sánh Trọng lượng thực (Gross Weight) và Trọng lượng thể tích (Volume Weight).",
-                    "Công thức thể tích: Dài × Rộng × Cao / 6000 (cm).",
-                    "Tính phí theo số nào LỚN HƠN.",
-                ],
-            },
-            {
-                heading: "Quy cách — Trọng lượng & Kích thước tối đa",
-                content: [
-                    "Trọng lượng tối đa: 2kg/kiện (line thường), 30kg/kiện (line hàng lô).",
-                    "Kích thước tối đa: tùy theo line vận chuyển cụ thể.",
-                ],
-            },
-            {
-                heading: "Vùng không giao hàng (Remote/Restricted Zones)",
-                type: "warn",
-                content: [
-                    "Alaska (AK), Hawaii (HI), Puerto Rico (PR).",
-                    "Guam (GU), U.S. Virgin Islands (VI).",
-                    "Địa chỉ quân đội: APO, FPO, DPO.",
-                    "American Samoa (AS), Marshall Islands (MH), Palau (PW).",
-                ],
-            },
-            {
-                heading: "Điều khoản dịch vụ",
-                content: [
-                    "Thời gian giao hàng là ước tính, không phải cam kết. THG không chịu trách nhiệm với sự chậm trễ ngoài tầm kiểm soát.",
-                    "Mọi khoản thuế, phí hải quan, phí nhập khẩu do khách hàng chịu trách nhiệm.",
-                    "Khách hàng phải cung cấp thông tin hàng hóa chính xác — THG không chịu trách nhiệm nếu khai sai.",
-                    "Đơn hàng không có cập nhật tracking sau 21 ngày được xem là thất lạc.",
-                    "Hàng dễ vỡ: chỉ đền bù nếu có đóng gói gia cố (bubble wrap, foam, hộp cứng).",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — POD (Print on Demand)",
-                content: [
-                    "Lỗi do nhà máy sản xuất THG: THG gửi lại hàng mới miễn phí nếu có bằng chứng hợp lệ.",
-                    "Nếu khách từ chối nhận hàng thay thế: THG đền bù 100% giá vốn.",
-                    "Trạng thái USPS \"Delivered\" nhưng mất hàng: không thuộc trách nhiệm THG, THG hỗ trợ mở claim với USPS.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Dropship (Chung)",
-                content: [
-                    "Dịch vụ ship only: Hoàn 100% phí ship nếu giao hàng quá 20 ngày làm việc (dẫn đến hủy đơn).",
-                    "Dịch vụ sourcing + shipping: Gửi hàng mới hoặc hoàn tiền cho vấn đề chất lượng/lỗi THG (tối đa ban đầu $20, tăng đến $50/đơn theo volume).",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Hàng lẻ (Retail)",
-                content: [
-                    "Mất hoặc hư hỏng do hãng vận chuyển hoặc THG.",
-                    "Đền bù theo giá trị khai báo cho thị trường US.",
-                    "Tối đa ban đầu $20, tăng đến $50 theo doanh thu.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — \"Delivered\" nhưng không nhận được hàng",
-                content: [
-                    "Yêu cầu email xác nhận mất hàng từ hãng vận chuyển hoặc hình ảnh CCTV.",
-                    "CCTV phải chứng minh không có lần giao hàng nào.",
-                    "Tối đa ban đầu $20, tăng đến $50.",
-                ],
-            },
-            {
-                heading: "Chính sách đền bù — Tracking không hoạt động",
-                content: [
-                    "Nếu tracking không được quét sau 15 ngày làm việc (không tính force majeure như hải quan, đình công), THG hoàn 100% phí ship (tối đa $20/đơn).",
-                ],
-            },
-            {
-                heading: "Miễn trừ trách nhiệm",
-                type: "warn",
-                content: [
-                    "Khiếu nại quá hạn.",
-                    "Force majeure: chiến tranh, đình công, thiên tai, dịch bệnh, hành động chính phủ.",
-                    "Sự kiện ngoài tầm kiểm soát: tai nạn giao thông, thay đổi pháp luật, chậm hải quan, chậm chuyến bay.",
-                ],
-            },
-            {
-                heading: "Thời hạn khiếu nại",
-                content: [
-                    "Đơn hàng thất lạc: trong vòng 2 tháng.",
-                    "Hàng hư hỏng hoặc sai giá: trong vòng 3 ngày sau khi nhận.",
-                    "Xử lý: sau 20 ngày vận chuyển; trường hợp \"Not Received\" không tracking xử lý riêng.",
-                ],
-            },
-            {
-                heading: "Hình thức đền bù",
-                content: [
-                    "Trừ vào phí đơn hàng sau (trong vòng 90 ngày).",
-                    "Hoàn tiền về tài khoản ngân hàng (trong vòng 15 ngày làm việc).",
-                    "Bù trừ vào công nợ kỳ thanh toán kế tiếp.",
-                ],
-            },
-            {
-                heading: "Liên hệ",
-                content: [
-                    "Hotline: 033 512 4089",
-                    "Email: info@thgfulfill.com",
-                    "Văn phòng: 58 Đường DC11, P. Sơn Kỳ, Q. Tân Phú, TP.HCM",
-                ],
-            },
-        ],
-    },
-
-    /* ═══════════════════════════════════════════
-     *   3. CHÍNH SÁCH VẬN CHUYỂN
-     *   → Link sang /chinh-sach-van-chuyen
-     * ═══════════════════════════════════════════ */
-    shipping: {
-        id: "shipping",
-        blocks: [
-            {
-                heading: "Chính sách vận chuyển quốc tế",
-                content: [
-                    "Nội dung chính sách vận chuyển đã được trình bày chi tiết tại trang riêng.",
-                ],
-            },
-        ],
-    },
-
-    /* ═══════════════════════════════════════════
-     *   4. CHÍNH SÁCH ĐỀN BÙ HÀNG LÔ
-     * ═══════════════════════════════════════════ */
-    "bulk-compensation": {
-        id: "bulk-compensation",
-        blocks: [
-            {
-                heading: "Đền bù hàng lô — Tuyến CN → US",
-                content: [
-                    "Đền bù 5 USD/kg và miễn toàn bộ phí vận chuyển nếu hàng bị thất lạc trong quá trình vận chuyển.",
-                ],
-            },
-            {
-                heading: "Đền bù hàng lô — Tuyến VN → US",
-                content: [
-                    "Đền bù theo chính sách đối tác vận chuyển, tối đa 100 USD/lô hàng.",
-                    "Giá trị tính theo hóa đơn hoặc giá trị thực (lấy số thấp hơn).",
-                ],
-            },
-            {
-                heading: "Miễn trừ trách nhiệm — Hàng bị tịch thu",
-                type: "warn",
-                content: [
-                    "Hàng cấm/hàng nhái bị hải quan tịch thu.",
-                    "Hư hỏng do điều kiện tự nhiên (rung lắc, nhiệt độ, độ ẩm).",
-                    "Force majeure: chiến tranh, thiên tai.",
-                ],
-            },
-            {
-                heading: "Miễn trừ trách nhiệm — Lỗi người gửi",
-                type: "warn",
-                content: [
-                    "Bị cơ quan chức năng tịch thu.",
-                    "Lỗi người gửi: đóng gói kém, khai báo sai.",
-                    "Mất dữ liệu điện tử.",
-                ],
-            },
-            {
-                heading: "Miễn trừ trách nhiệm — Chậm trễ ngoài kiểm soát",
-                type: "warn",
-                content: [
-                    "Dịch bệnh, thời tiết xấu, tắc nghẽn giao thông.",
-                    "Chậm chuyến bay, kiểm tra hải quan kéo dài.",
-                ],
-            },
-            {
-                heading: "Liên hệ",
-                content: [
-                    "Hotline: 033 512 4089",
-                    "Email: info@thgfulfill.com",
-                    "Văn phòng: 58 Đường DC11, P. Sơn Kỳ, Q. Tân Phú, TP.HCM",
-                ],
-            },
-        ],
-    },
-
-    /* ═══════════════════════════════════════════
-     *   5. CHÍNH SÁCH POD – TIKTOK SHIPPING
-     * ═══════════════════════════════════════════ */
-    "pod-tiktok": {
-        id: "pod-tiktok",
-        blocks: [
-            {
-                heading: "Phân chia vai trò",
-                content: [
-                    "THG: Sản xuất & bàn giao cho USPS.",
-                    "Seller: Cung cấp thông tin & phối hợp với TikTok/USPS.",
-                    "USPS: Vận chuyển & cập nhật tracking.",
-                    "THG không chịu trách nhiệm sau khi USPS đã quét nhận hàng.",
-                ],
-            },
-            {
-                heading: "Trách nhiệm các bên",
-                content: [
-                    "THG đảm bảo sản xuất và SLA trước khi bàn giao.",
-                    "Khi trạng thái \"In Transit\", Seller xử lý các vấn đề với USPS.",
-                    "Khuyến nghị sử dụng Active Tracking để giảm thiểu trì hoãn quét tracking (24-72 giờ).",
-                ],
-            },
-            {
-                heading: "Dịch vụ Active Tracking",
                 type: "info",
+                heading: {
+                    en: "Warehouse Policy",
+                    vi: "Chính sách Kho hàng",
+                    zh: "仓储政策",
+                },
                 content: [
-                    "Phí: $0.5/đơn hàng (tùy chọn).",
-                    "Đảm bảo trạng thái \"In Transit\" nhanh chóng.",
-                    "Tránh bị TikTok phạt do tracking chậm cập nhật.",
+                    {
+                        en: "All goods must be properly packaged and labeled prior to delivery to our warehouse.",
+                        vi: "Hàng hóa phải được đóng gói và dán nhãn đúng cách trước khi giao đến kho.",
+                        zh: "所有货物在运送至仓库前，必须妥善包装并贴有规范标签。",
+                    },
+                    {
+                        en: "THG formally accepts goods for storage only after they successfully pass the warehouse inspection.",
+                        vi: "THG nhận hàng lưu kho sau khi kiểm tra thành công tại kho.",
+                        zh: "货物经仓库彻底查验合格后，THG方予正式接收入库。",
+                    },
+                    {
+                        en: "Storage fees will apply once the complimentary storage period expires. Please consult our current fee schedule.",
+                        vi: "Phí lưu kho áp dụng sau thời gian miễn phí. Vui lòng tham khảo bảng giá hiện hành.",
+                        zh: "免租期届满后将产生仓储费用，具体标准请参阅现行资费表。",
+                    },
+                    {
+                        en: "THG shall not be held liable for any damages resulting from inadequate or improper packaging by the sender.",
+                        vi: "THG không chịu trách nhiệm về hư hỏng do đóng gói không đúng cách từ phía người gửi.",
+                        zh: "如因发件人包装不当导致货物受损，THG概不承担任何责任。",
+                    },
+                    {
+                        en: "Contraband, counterfeit products, and hazardous materials are strictly prohibited.",
+                        vi: "Hàng cấm, hàng giả và hàng nguy hiểm tuyệt đối không được chấp nhận.",
+                        zh: "严禁接收任何违禁品、假冒伪劣商品及危险物品。",
+                    },
                 ],
             },
             {
-                heading: "Cam kết Win-Win",
+                type: "warn",
+                heading: {
+                    en: "Important Notices",
+                    vi: "Lưu ý quan trọng",
+                    zh: "重要通知",
+                },
                 content: [
-                    "THG cam kết sản xuất ổn định và đảm bảo SLA.",
-                    "Seller được quản lý rủi ro/chi phí rõ ràng.",
-                ],
-            },
-            {
-                heading: "Quy trình xử lý",
-                content: [
-                    "Seller đặt đơn → THG sản xuất/bàn giao → USPS vận chuyển → Buyer nhận hàng.",
-                ],
-            },
-            {
-                heading: "Liên hệ",
-                content: [
-                    "Hotline: 033 512 4089",
-                    "Email: info@thgfulfill.com",
-                    "Văn phòng: 121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú, TP.HCM",
+                    {
+                        en: "Goods remaining uncollected for 30 days beyond the free storage period will incur additional surcharge.",
+                        vi: "Hàng không được lấy trong 30 ngày sau thời gian miễn phí sẽ bị tính thêm phí.",
+                        zh: "超出免费存储期30天仍未提取的货物，将加收额外滞纳金。",
+                    },
+                    {
+                        en: "THG reserves the right to dispose of any goods left unclaimed for more than 90 days.",
+                        vi: "THG có quyền xử lý hàng không được nhận sau 90 ngày.",
+                        zh: "对于逾期90天无人认领的货物，THG保留全权处置之权利。",
+                    },
                 ],
             },
         ],
     },
+
+    "pod-dropship": {
+        blocks: [
+            {
+                type: "info",
+                heading: {
+                    en: "POD / Dropship Policy",
+                    vi: "Chính sách POD / Dropship",
+                    zh: "POD / 代发货(Dropship)政策",
+                },
+                content: [
+                    {
+                        en: "THG offers comprehensive Print-on-Demand (POD) and Dropship fulfillment services tailored for e-commerce sellers.",
+                        vi: "THG cung cấp dịch vụ In theo yêu cầu (POD) và Dropship cho các nhà bán hàng thương mại điện tử.",
+                        zh: "THG专为电子商务卖家提供全面的按需打印（POD）及代发货（Dropship）履约服务。",
+                    },
+                    {
+                        en: "All orders must be submitted via the THG system, ensuring recipient details are complete and precise.",
+                        vi: "Đơn hàng phải được gửi qua hệ thống THG với thông tin người nhận đầy đủ và chính xác.",
+                        zh: "所有订单必须通过THG系统提交，并确保收件人信息完整且准确无误。",
+                    },
+                    {
+                        en: "Product images and specifications must meet our quality standards before production can commence.",
+                        vi: "Hình ảnh và thông số sản phẩm phải đáp ứng tiêu chuẩn chất lượng trước khi sản xuất.",
+                        zh: "产品图片及规格必须在投产前符合我们的质量标准。",
+                    },
+                    {
+                        en: "Delivery timeframes vary depending on the destination country and the selected shipping method.",
+                        vi: "Thời gian giao hàng thay đổi tùy theo quốc gia đích và phương thức vận chuyển được chọn.",
+                        zh: "交货时间将根据目的国家和所选物流方式的不同而有所差异。",
+                    },
+                    {
+                        en: "Copyright-infringing designs or counterfeit goods are strictly forbidden and will result in immediate order cancellation.",
+                        vi: "Các thiết kế vi phạm bản quyền hoặc hàng giả bị nghiêm cấm và sẽ dẫn đến hủy đơn hàng.",
+                        zh: "严禁使用侵权设计或生产仿冒品，一经发现将立即取消订单。",
+                    },
+                ],
+            },
+            {
+                type: "warn",
+                heading: {
+                    en: "Quality Assurance & Returns",
+                    vi: "Chất lượng & Hoàn trả",
+                    zh: "质量保证与退货",
+                },
+                content: [
+                    {
+                        en: "Claims for defective items must be filed within 14 days of delivery, accompanied by photographic evidence.",
+                        vi: "Khiếu nại về sản phẩm lỗi phải được gửi trong vòng 14 ngày kể từ ngày giao hàng kèm bằng chứng ảnh.",
+                        zh: "针对缺陷产品的索赔必须在交付后14天内提出，并附带照片作为凭证。",
+                    },
+                    {
+                        en: "THG assumes no responsibility for returns caused by incorrect or incomplete recipient addresses provided by the sender.",
+                        vi: "Hoàn trả do địa chỉ người nhận không chính xác không thuộc trách nhiệm của THG.",
+                        zh: "因发件人提供的收件地址不正确导致的退货，THG概不负责。",
+                    },
+                ],
+            },
+        ],
+    },
+
+    shipping: {
+        blocks: [
+            {
+                type: "info",
+                heading: {
+                    en: "Shipping Policy",
+                    vi: "Chính sách Vận chuyển",
+                    zh: "物流运输政策",
+                },
+                content: [
+                    {
+                        en: "THG provides global shipping services to over 200 countries and territories worldwide.",
+                        vi: "THG cung cấp dịch vụ vận chuyển quốc tế đến hơn 200 quốc gia và vùng lãnh thổ trên toàn thế giới.",
+                        zh: "THG的国际物流服务覆盖全球200多个国家和地区。",
+                    },
+                    {
+                        en: "Shipping fees are calculated based on either the actual weight or volumetric weight, whichever is greater.",
+                        vi: "Phí vận chuyển được tính dựa trên trọng lượng thực tế hoặc trọng lượng thể tích, lấy mức cao hơn.",
+                        zh: "运费将按实际重量或体积重量两者中的较大者进行计费。",
+                    },
+                    {
+                        en: "Prohibited items include hazardous materials, firearms, narcotics, and any goods restricted by the destination country.",
+                        vi: "Hàng cấm bao gồm: hàng nguy hiểm, vũ khí, ma túy và các mặt hàng bị hạn chế bởi quốc gia đích.",
+                        zh: "禁运品包括：危险品、武器、毒品及目的国家限制进口的任何物品。",
+                    },
+                    {
+                        en: "Destination customs duties and taxes are the sole responsibility of the recipient or sender, as per the shipping agreement.",
+                        vi: "Thuế hải quan và các loại thuế tại điểm đến thuộc trách nhiệm của người nhận hoặc người gửi (theo thỏa thuận).",
+                        zh: "目的地海关关税及其他税费应由收件人或发件人（依协议）全额承担。",
+                    },
+                ],
+            },
+            {
+                type: "warn",
+                heading: {
+                    en: "Shipping Restrictions",
+                    vi: "Hạn chế vận chuyển",
+                    zh: "运输限制",
+                },
+                content: [
+                    {
+                        en: "Deliveries to Amazon fulfillment centers are strictly not permitted across any shipping channels.",
+                        vi: "Địa chỉ kho Amazon không được chấp nhận cho bất kỳ kênh vận chuyển nào.",
+                        zh: "所有运输渠道均不接受派送至亚马逊(Amazon)各仓库地址。",
+                    },
+                    {
+                        en: "Military addresses (APO/FPO) have limited coverage depending on the specific shipping channel utilized.",
+                        vi: "Địa chỉ quân sự (APO/FPO) có phạm vi phủ sóng hạn chế tùy theo kênh vận chuyển.",
+                        zh: "军事地址（APO/FPO）的派送范围有限，具体视所选运输渠道而定。",
+                    },
+                    {
+                        en: "Comprehensive shipping terms are available on our dedicated Shipping Policy page.",
+                        vi: "Chính sách vận chuyển chi tiết có trên trang chính sách vận chuyển riêng biệt.",
+                        zh: "详细的运输条款请参阅我们专属的物流政策页面。",
+                    },
+                ],
+            },
+        ],
+    },
+
+    "bulk-compensation": {
+        blocks: [
+            {
+                type: "info",
+                heading: {
+                    en: "Bulk Cargo Compensation Policy",
+                    vi: "Chính sách Đền bù Hàng lô",
+                    zh: "大宗货物理赔政策",
+                },
+                content: [
+                    {
+                        en: "Compensation claims for bulk shipments must be submitted within 60 days following the date of warehouse check-in.",
+                        vi: "Yêu cầu bồi thường hàng lô phải được gửi trong vòng 60 ngày kể từ ngày nhập kho.",
+                        zh: "大宗货物的理赔申请必须在入库之日起60天内提交。",
+                    },
+                    {
+                        en: "The maximum compensation shall not exceed the declared value or USD 100 per shipment, whichever is lower.",
+                        vi: "Mức bồi thường tối đa không vượt quá giá trị khai báo hoặc 100 USD mỗi lô hàng, lấy mức thấp hơn.",
+                        zh: "最高赔偿额不得超过申报价值或每票货物100美元（以较低者为准）。",
+                    },
+                    {
+                        en: "All claims must be supported by necessary documentation: commercial invoice, packing list, and clear photo evidence of the damage.",
+                        vi: "Yêu cầu bồi thường cần tài liệu hỗ trợ: hóa đơn, danh sách đóng gói và bằng chứng hình ảnh về hư hỏng.",
+                        zh: "理赔申请需提供相应的支持文件：商业发票、装箱单以及清晰的损坏照片凭证。",
+                    },
+                    {
+                        en: "THG will conduct a thorough investigation into all claims prior to issuing any compensation decisions.",
+                        vi: "THG điều tra tất cả các khiếu nại trước khi đưa ra quyết định bồi thường.",
+                        zh: "THG将在作出任何理赔决定之前，对所有索赔进行彻底调查。",
+                    },
+                ],
+            },
+            {
+                type: "warn",
+                heading: {
+                    en: "Exemptions from Compensation",
+                    vi: "Các trường hợp không được bồi thường",
+                    zh: "免赔及除外责任",
+                },
+                content: [
+                    {
+                        en: "Damages resulting from inadequate or improper packaging by the sender are not eligible for compensation.",
+                        vi: "Hư hỏng do đóng gói không đúng cách từ phía người gửi không được bồi thường.",
+                        zh: "因发件人包装不当或存在缺陷而导致的损坏，不在理赔范围内。",
+                    },
+                    {
+                        en: "Losses incurred due to the seizure of prohibited items by customs authorities are entirely excluded.",
+                        vi: "Tổn thất do hải quan tịch thu hàng cấm không được bồi thường.",
+                        zh: "因海关查扣违禁品而造成的损失，我司概不赔偿。",
+                    },
+                    {
+                        en: "Force majeure events (including natural disasters, strikes, and governmental actions) are completely excluded from liability.",
+                        vi: "Các sự kiện bất khả kháng (thiên tai, đình công, hành động của chính phủ) được loại trừ.",
+                        zh: "不可抗力事件（包括自然灾害、罢工及政府行为等）一律排除在理赔范围之外。",
+                    },
+                ],
+            },
+        ],
+    },
+
+    "pod-tiktok": {
+        blocks: [
+            {
+                type: "info",
+                heading: {
+                    en: "POD – TikTok Shipping Policy",
+                    vi: "Chính sách POD – TikTok Shipping",
+                    zh: "POD – TikTok 专属物流政策",
+                },
+                content: [
+                    {
+                        en: "THG offers a specialized POD fulfillment service equipped with dedicated shipping channels for TikTok Shop merchants.",
+                        vi: "THG cung cấp dịch vụ POD chuyên biệt cho người bán TikTok Shop với các kênh vận chuyển riêng.",
+                        zh: "THG专为TikTok Shop商家提供专属POD履约服务，并配备特定的物流渠道。",
+                    },
+                    {
+                        en: "All orders must strictly adhere to TikTok Shop platform policies and comply with local market regulations.",
+                        vi: "Đơn hàng phải tuân thủ chính sách nền tảng TikTok Shop và quy định thị trường địa phương.",
+                        zh: "所有订单必须严格遵守TikTok Shop平台政策及当地市场法规。",
+                    },
+                    {
+                        en: "Shipping timelines are robustly aligned with TikTok Shop's stringent fulfillment performance requirements.",
+                        vi: "Thời gian vận chuyển được căn chỉnh theo yêu cầu thực hiện đơn hàng của TikTok Shop.",
+                        zh: "物流时效经过优化，以全面契合TikTok Shop的履约考核要求。",
+                    },
+                    {
+                        en: "Products must not infringe upon trademarks, copyrights, or violate any platform content guidelines.",
+                        vi: "Sản phẩm không được vi phạm nhãn hiệu, bản quyền hoặc chính sách nội dung của nền tảng.",
+                        zh: "产品绝不得侵犯任何商标、版权，或违反平台的任何内容指引。",
+                    },
+                ],
+            },
+            {
+                type: "warn",
+                heading: {
+                    en: "TikTok-Specific Guidelines",
+                    vi: "Lưu ý riêng cho TikTok",
+                    zh: "TikTok 专属注意事项",
+                },
+                content: [
+                    {
+                        en: "Any penalties levied by TikTok Shop due to late fulfillment are the sole liability of the seller.",
+                        vi: "Các khoản phạt do thực hiện đơn hàng trễ từ TikTok Shop thuộc trách nhiệm của người bán.",
+                        zh: "因延迟履约而导致的任何TikTok Shop平台罚款，均由卖家全权承担。",
+                    },
+                    {
+                        en: "Return requests initiated on TikTok Shop must be handled in accordance with the platform's official return procedures.",
+                        vi: "Yêu cầu trả hàng qua TikTok Shop phải tuân theo quy trình hoàn trả của nền tảng.",
+                        zh: "通过TikTok Shop发起的退货申请，必须严格遵循该平台的官方退货流程。",
+                    },
+                ],
+            },
+        ],
+    }
 };

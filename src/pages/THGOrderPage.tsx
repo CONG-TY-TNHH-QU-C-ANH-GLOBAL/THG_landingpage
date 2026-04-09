@@ -57,9 +57,9 @@ const THGOrderPage = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <ScrollReveal direction="scale">
             <div className="inline-flex items-center gap-3 rounded-full px-5 py-2 text-sm border border-[hsl(var(--gold))]/25 mb-8 bg-[hsl(var(--gold))]/10 shadow-[0_4px_12px_rgba(216,180,111,0.15)] glow-pulse">
-              <span className="font-medium text-navy">🇨🇳 Taobao · 1688</span>
+              <span className="font-medium text-navy">{t("order_page.badge_taobao")}</span>
               <span className="text-[hsl(var(--gold))]/50">|</span>
-              <span className="font-medium text-navy">✈️ Direct to USA</span>
+              <span className="font-medium text-navy">{t("order_page.badge_direct")}</span>
             </div>
           </ScrollReveal>
 

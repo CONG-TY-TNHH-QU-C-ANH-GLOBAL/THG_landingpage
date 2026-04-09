@@ -7,7 +7,7 @@ interface ExpressCnUsPanelProps {
 }
 
 const ExpressCnUsPanel = ({ route }: ExpressCnUsPanelProps) => {
-    const { effectiveLanguage: lang } = useI18n();
+    const { t, effectiveLanguage: lang } = useI18n();
     return (
         <div>
 
@@ -15,10 +15,10 @@ const ExpressCnUsPanel = ({ route }: ExpressCnUsPanelProps) => {
             <div className="space-y-4">
                 {/* CN Express Cards */}
                 {[
-                    { name: "✈️ DHL Air – Hỏa Tốc", time: "3–5 BSD", bg: "bg-[#C8102E]", tax: false, price: 11 },
-                    { name: "✈️ UPS Air – Nhanh", time: "6–10 BSD", bg: "bg-navy", tax: true, price: 10.50 },
-                    { name: "✈️ UPS Air – Tiêu Chuẩn", time: "8–10 BSD", bg: "bg-[#16213E]", tax: true, price: 9 },
-                    { name: "🚢 Mason Sea", time: "20–25 BSD", bg: "bg-[#0F3460]", tax: true, price: 3 },
+                    { name: t("ecn.dhl_name"), time: "3–5 BSD", bg: "bg-[#C8102E]", tax: false, price: 11 },
+                    { name: t("ecn.ups_fast"), time: "6–10 BSD", bg: "bg-navy", tax: true, price: 10.50 },
+                    { name: t("ecn.ups_std"), time: "8–10 BSD", bg: "bg-[#16213E]", tax: true, price: 9 },
+                    { name: t("ecn.mason_sea"), time: "20–25 BSD", bg: "bg-[#0F3460]", tax: true, price: 3 },
                 ].map((line, i) => (
                     <div key={i} className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                         <div className={`${line.bg} px-5 py-3 flex items-center justify-between flex-wrap gap-2`}>
@@ -31,9 +31,9 @@ const ExpressCnUsPanel = ({ route }: ExpressCnUsPanelProps) => {
                         </div>
                         <table className="w-full border-collapse text-[13px]">
                             <thead><tr className="bg-[#FAFAF8]">
-                                <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Cân Nặng</th>
-                                <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Giá ($/kg)</th>
-                                <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">Ghi chú</th>
+                                <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">{t("ecn.weight_header")}</th>
+                                <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">{t("ecn.price_header")}</th>
+                                <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[var(--pricing-border)]">{t("ecn.note_header")}</th>
                             </tr></thead>
                             <tbody>
                                 <tr className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
@@ -41,7 +41,7 @@ const ExpressCnUsPanel = ({ route }: ExpressCnUsPanelProps) => {
                                     <td className="px-5 py-3 font-bold text-navy notranslate">
                                         <span translate="no">{`$${line.price.toLocaleString("en-US", { maximumFractionDigits: 2 })}`}</span>
                                     </td>
-                                    <td className="px-5 py-3 text-muted-foreground text-[12px] italic">Báo giá theo lô</td>
+                                    <td className="px-5 py-3 text-muted-foreground text-[12px] italic">{t("ecn.bulk_quote")}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -52,17 +52,17 @@ const ExpressCnUsPanel = ({ route }: ExpressCnUsPanelProps) => {
             {/* Post-table CN-US — Express policy notice */}
             <div className="bg-[#F0F7FF] border border-blue-200 rounded-xl p-5 mt-6 text-center">
                 <p className="text-[14px] font-semibold text-navy mb-1">
-                    {lang === 'zh' ? '📋 如需了解 Express 详细运输政策，请联系 THG' : lang === 'en' ? '📋 Please contact THG for detailed shipping policy on express cargo.' : '📋 Liên hệ THG để biết thêm chi tiết chính sách vận chuyển hàng Express.'}
+                    {t("evn.express_policy")}
                 </p>
                 <p className="text-[12px] text-muted-foreground">
-                    {lang === 'zh' ? 'Express 路线不适用 Epacket 的偏远附加费和退件重寄政策。' : lang === 'en' ? 'Express routes do not apply Epacket remote surcharge or re-delivery policies.' : 'Tuyến Express không áp dụng phụ phí vùng sâu và chính sách reship của Epacket.'}
+                    {t("evn.express_note")}
                 </p>
             </div>
 
             <div className="text-center mt-5">
                 <a href="https://order.thgfulfill.com/" target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-primary hover:bg-gold-dark text-white rounded-lg px-7 py-3 font-bold text-sm transition-all shadow-lg">
-                    📞 Liên hệ báo giá CN–US <ExternalLink className="w-4 h-4" />
+                    {t("ecn.contact_btn")} <ExternalLink className="w-4 h-4" />
                 </a>
             </div>
         </div>

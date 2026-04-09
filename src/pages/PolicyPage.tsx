@@ -21,7 +21,7 @@ const SectionIcon = ({ icon }: { icon: string }) => {
 };
 
 const PolicyPage = () => {
-  const { tVi: t, effectiveLanguage } = useI18n();
+  const { t, effectiveLanguage } = useI18n();
   const [activeSection, setActiveSection] = useState(0);
   const current = policySections[activeSection];
 
@@ -34,8 +34,8 @@ const PolicyPage = () => {
       <div className="max-w-[900px] mx-auto px-4 sm:px-6 pt-28 pb-20">
         {/* ── Header ── */}
         <h1 className="text-xl font-semibold text-navy mb-1">{t("policy.title")}</h1>
-        <p className="text-[13px] text-muted-foreground mb-6">
-          Chọn mục bên dưới để xem chi tiết chính sách
+        <p className="text-[13px] text-muted-foreground mb-6 notranslate" translate="no">
+          {t("policy.subtitle")}
         </p>
 
         {/* ── Mode indicator for EN/ZH ── */}
@@ -57,12 +57,12 @@ const PolicyPage = () => {
               key={section.id}
               onClick={() => setActiveSection(i)}
               className={`flex items-center gap-1.5 px-4 py-2 border-[1.5px] rounded-lg text-[13px] font-medium transition-all ${activeSection === i
-                  ? "bg-primary border-primary text-white"
-                  : "border-[#d4b96a] bg-white text-navy hover:bg-[#fdf6e8]"
+                ? "bg-primary border-primary text-white"
+                : "border-[#d4b96a] bg-white text-navy hover:bg-[#fdf6e8]"
                 }`}
             >
               <SectionIcon icon={section.icon} />
-              <span>{section.title}</span>
+              <span className="notranslate" translate="no">{t(section.titleKey)}</span>
             </button>
           ))}
         </div>
@@ -76,8 +76,8 @@ const PolicyPage = () => {
               images={current.images}
               title={current.title}
             />
-            <p className="text-center text-[12px] text-muted-foreground mt-4">
-              {current.title} — {current.images.length} trang
+            <p className="text-center text-[12px] text-muted-foreground mt-4 notranslate" translate="no">
+              {t(current.titleKey)} — {current.images.length} {effectiveLanguage === 'vi' ? 'trang' : effectiveLanguage === 'zh' ? '页' : 'pages'}
             </p>
           </>
         ) : (

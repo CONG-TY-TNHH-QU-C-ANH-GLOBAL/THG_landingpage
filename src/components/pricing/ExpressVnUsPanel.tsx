@@ -8,7 +8,7 @@ interface ExpressVnUsPanelProps {
 
 const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
     const [city, setCity] = useState<"hcm" | "hn">("hcm");
-    const { effectiveLanguage: lang } = useI18n();
+    const { t, effectiveLanguage: lang } = useI18n();
 
     // Use larkOverlay if available, otherwise fallback to pricingData
     const expressData = larkOverlay["expressVnUs"] || (pricingData as any).expressVnUs;
@@ -25,7 +25,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                             : "text-muted-foreground hover:bg-card/50 border border-transparent"
                             }`}
                     >
-                        KHO HỒ CHÍ MINH
+                        {t("evn.hcm_warehouse")}
                     </button>
                     <button
                         onClick={() => setCity("hn")}
@@ -34,7 +34,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                             : "text-muted-foreground hover:bg-card/50 border border-transparent"
                             }`}
                     >
-                        KHO HÀ NỘI
+                        {t("evn.hn_warehouse")}
                     </button>
                 </div>
             </div>
@@ -46,7 +46,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                     <div className="bg-card border border-[hsl(var(--pricing-border))] rounded-xl overflow-hidden shadow-sm">
                         <div className="bg-navy px-4 sm:px-5 py-3 flex items-center justify-between flex-wrap gap-2">
                             <span className="text-primary-foreground font-bold text-[13px] flex items-center gap-2">
-                                ✈️ UPS Saver — Phân Mức KG
+                                ✈️ UPS Saver — {t("evn.saver_title").replace('✈️ UPS Saver — ', '')}
                             </span>
                             <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">
                                 ⏱ {city === "hcm" ? "3-5" : "3-5"} BSD
@@ -58,7 +58,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                             {(expressData?.[city]?.saver || []).map((r: any, i: number) => (
                                 <div key={i} className="bg-card border border-[hsl(var(--pricing-border))] rounded-lg p-3 flex justify-between items-center">
                                     <div>
-                                        <span className="text-[11px] font-bold text-muted-foreground uppercase">Cân nặng</span>
+                                        <span className="text-[11px] font-bold text-muted-foreground uppercase">{t("evn.weight_label")}</span>
                                         <div className="text-[14px] font-bold text-primary notranslate" translate="no">{r.kg} kg</div>
                                     </div>
                                     <div className="text-right">
@@ -78,8 +78,8 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                             <table className="w-full border-collapse text-[13px]">
                                 <thead>
                                     <tr className="bg-secondary/30">
-                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">Cân nặng (kg)</th>
-                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">Shipping fee (VNĐ)</th>
+                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">{t("evn.weight_col")}</th>
+                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">{t("evn.shipping_fee_col")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -102,7 +102,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                     <div className="bg-card border border-[hsl(var(--pricing-border))] rounded-xl overflow-hidden shadow-sm">
                         <div className="bg-[#16213E] px-4 sm:px-5 py-3 flex items-center justify-between flex-wrap gap-2">
                             <span className="text-primary-foreground font-bold text-[13px] flex items-center gap-2">
-                                🚢 UPS Expedited — Hàng Bulk
+                                🚢 UPS Expedited — {t("evn.expedited_title").replace('🚢 UPS Expedited — ', '')}
                             </span>
                             <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">
                                 ⏱ {city === "hcm" ? "5-7" : "5-7"} BSD
@@ -114,7 +114,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                             {(expressData?.[city]?.expedited || []).map((r: any, i: number) => (
                                 <div key={i} className="bg-card border border-[hsl(var(--pricing-border))] rounded-lg p-3 flex justify-between items-center">
                                     <div>
-                                        <span className="text-[11px] font-bold text-muted-foreground uppercase">Hạng mức</span>
+                                        <span className="text-[11px] font-bold text-muted-foreground uppercase">{t("evn.bracket_label")}</span>
                                         <div className="text-[14px] font-bold text-primary notranslate" translate="no">{r.bracket}</div>
                                     </div>
                                     <div className="text-right">
@@ -134,8 +134,8 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                             <table className="w-full border-collapse text-[13px]">
                                 <thead>
                                     <tr className="bg-secondary/30">
-                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">Hạng mức (kg)</th>
-                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">Shipping fee (VNĐ)</th>
+                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">{t("evn.bracket_col")}</th>
+                                        <th className="px-5 py-3 text-left text-[11px] font-bold uppercase text-muted-foreground border-b border-[hsl(var(--pricing-border))]">{t("evn.shipping_fee_col")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -159,10 +159,10 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
             {/* Express policy notice */}
             <div className="bg-[#F0F7FF] border border-blue-200 rounded-xl p-4 sm:p-5 mt-6 text-center">
                 <p className="text-[13px] sm:text-[14px] font-semibold text-navy mb-1">
-                    {lang === 'zh' ? '📋 如需了解 Express 详细运输政策，请联系 THG' : lang === 'en' ? '📋 Please contact THG for detailed shipping policy on express cargo.' : '📋 Liên hệ THG để biết thêm chi tiết chính sách vận chuyển hàng Express.'}
+                    {t("evn.express_policy")}
                 </p>
                 <p className="text-[11px] sm:text-[12px] text-muted-foreground">
-                    {lang === 'zh' ? 'Express 路线不适用 Epacket 的偏远附加费和退件重寄政策。' : lang === 'en' ? 'Express routes do not apply Epacket remote surcharge or re-delivery policies.' : 'Tuyến Express không áp dụng phụ phí vùng sâu và chính sách reship của Epacket.'}
+                    {t("evn.express_note")}
                 </p>
             </div>
         </div>

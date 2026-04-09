@@ -171,6 +171,7 @@ const translations: Translations = {
   "footer.social": { en: "Follow Us", vi: "Theo dõi", zh: "关注我们" },
 
   // Policy page
+  "policy.subtitle": { en: "Select a section below to view policy details", vi: "Chọn mục bên dưới để xem chi tiết chính sách", zh: "选择以下部分查看政策详情" },
   "policy.title": { en: "Policies & Terms", vi: "Chính sách & Điều khoản", zh: "政策与条款" },
   "policy.warehouse": { en: "Warehouse Policy", vi: "Chính sách Warehouse", zh: "仓储政策" },
   "policy.pod": { en: "POD/Dropship Policy", vi: "Chính sách POD/Dropship", zh: "POD/代发政策" },
@@ -529,11 +530,319 @@ const translations: Translations = {
   "pricing.res_base": { en: "Estimated Base Cost", vi: "Cước Cơ Bản Ước Tính", zh: "预估基本费用" },
   "pricing.res_note": { en: "*Excludes remote area surcharges & VAT", vi: "*Chưa tính phụ phí vùng sâu & VAT", zh: "*不包含偏远附加费和增值税" },
   "pricing.tab_header": { en: "View Full Pricing Table", vi: "Xem Toàn Bộ Bảng Giá", zh: "查看完整报价表" },
-  "pricing.btn_expand": { en: "See {count} more rows", vi: "Xem thêm {count} dòng", zh: "查看更多 {count} 行" },
+  "pricing.btn_expand": { en: "See {count} more options", vi: "Xem thêm {count} tuỳ chọn", zh: "查看更多{count}个选项" },
   "pricing.btn_collapse": { en: "Collapse table", vi: "Thu gọn bảng giá", zh: "收起表格" },
-  "pricing.nav_domestic": { en: "Domestic", vi: "Nội Địa", zh: "国内运费" },
-  "pricing.nav_international": { en: "International", vi: "Quốc Tế", zh: "国际运费" },
+
+  // Domestic Pricing Page
+  "domestic.back_home": { en: "Home", vi: "Trang chủ", zh: "首页" },
+  "domestic.tab_domestic": { en: "Domestic", vi: "Nội Địa", zh: "国内" },
+  "domestic.tab_intl": { en: "International", vi: "Quốc Tế", zh: "国际" },
+  "domestic.hero_title": { en: "US Domestic", vi: "Bảng Giá Cước", zh: "美国国内" },
+  "domestic.hero_highlight": { en: "Shipping Rates", vi: "Nội Địa Mỹ", zh: "运费表" },
+  "domestic.hero_desc": { en: "Competitive USPS rates from THG Warehouse fulfillment centers", vi: "Cước phí USPS cạnh tranh từ các trung tâm fulfillment của", zh: "来自THG Warehouse履约中心的有竞争力的USPS费率" },
+  "domestic.table_title": { en: "Shipping Rates by Zone", vi: "Bảng Giá Cước Theo Zone", zh: "按区域运费" },
+  "domestic.table_desc": { en: "USPS reference rates • Zone 1–9", vi: "Giá tham khảo USPS • Zone 1–9", zh: "USPS参考费率 • Zone 1–9" },
+  "domestic.swipe_hint": { en: "👉 Swipe to see more zones", vi: "👉 Vuốt ngang để xem thêm zone", zh: "👉 滑动查看更多区域" },
+  "domestic.collapse": { en: "Collapse", vi: "Thu gọn", zh: "收起" },
+  "domestic.see_more": { en: "See more ({count} rows)", vi: "Xem thêm ({count} dòng)", zh: "查看更多 ({count} 行)" },
+  "domestic.video_title": { en: "Fulfillment Pricing Guide Video", vi: "Video Hướng Dẫn Bảng Giá Fulfill", zh: "Fulfillment定价指南视频" },
+  "domestic.video_desc": { en: "Detailed breakdown of fulfillment service fees at the US warehouse", vi: "Chi tiết cách tính phí dịch vụ fulfillment tại kho Mỹ", zh: "美国仓库Fulfillment服务费详细说明" },
+  "domestic.fulfill_title": { en: "Fulfillment Costs", vi: "Chi Phí Fulfillment", zh: "Fulfillment费用" },
+  "domestic.fulfill_desc": { en: "Service fees at the US warehouse", vi: "Bảng phí dịch vụ tại kho Mỹ", zh: "美国仓库服务费" },
+  "domestic.th_stt": { en: "No.", vi: "STT", zh: "序号" },
+  "domestic.th_service": { en: "Service", vi: "Dịch vụ", zh: "服务" },
+  "domestic.th_fee": { en: "Fee", vi: "Chi phí", zh: "费用" },
+  "domestic.th_note": { en: "Note", vi: "Ghi chú", zh: "备注" },
+  "domestic.cta_title": { en: "Need a Custom Quote?", vi: "Bạn Cần Báo Giá Tùy Chỉnh?", zh: "需要定制报价？" },
+  "domestic.cta_desc": { en: "Contact the THG team for a personalized quote based on your volume and needs.", vi: "Liên hệ với đội ngũ THG để nhận bảng giá cá nhân hóa dựa trên sản lượng và nhu cầu của bạn.", zh: "联系THG团队，根据您的销量和需求获取个性化报价。" },
+  "domestic.cta_btn": { en: "Get Free Quote", vi: "Nhận Báo Giá Miễn Phí", zh: "获取免费报价" },
+
+  // Fulfillment service labels
+  "fulfill.s1": { en: "Inbound Receiving", vi: "Nhập kho", zh: "入库" },
+  "fulfill.s1_price": { en: "Free", vi: "Miễn phí", zh: "免费" },
+  "fulfill.s2": { en: "Inspection Fee", vi: "Phí kiểm đếm", zh: "验货费" },
+  "fulfill.s2_r1": { en: "- Small parcels, fewer than 20 items/carton", vi: "- Hàng hóa đóng gói nhỏ lẻ, số lượng ít hơn 20 món/carton", zh: "- 零散包装，少于20件/箱" },
+  "fulfill.s2_r1_price": { en: "Free", vi: "Miễn phí", zh: "免费" },
+  "fulfill.s2_r2": { en: "- Carton with single product type, quick check", vi: "- Hàng hóa đóng kiện, chỉ có 1 loại sản phẩm, kiểm tra nhanh", zh: "- 整箱单一产品，快速检查" },
+  "fulfill.s2_r3": { en: "- Mixed carton with multiple product types", vi: "- Hàng hóa đóng kiện với nhiều món hàng lẫn lộn", zh: "- 混合多种产品的整箱" },
+  "fulfill.s2_r4": { en: "- Large items packed by CBM", vi: "- Hàng hóa lớn, đóng gói theo CBM", zh: "- 按CBM包装的大件货物" },
+  "fulfill.s2_r5": { en: "- Periodic inventory check (on request)", vi: "- Phí kiểm kê hàng hóa định kỳ (theo yêu cầu)", zh: "- 定期盘点（按需）" },
+  "fulfill.s2_r5_note": { en: "May vary depending on product type", vi: "Sẽ có xê dịch tùy thuộc vào mặt hàng", zh: "视产品类型可能有所浮动" },
+  "fulfill.s2_r6": { en: "- Other cases", vi: "- Các trường hợp khác", zh: "- 其他情况" },
+  "fulfill.s2_r6_note": { en: "Quoted per specific case", vi: "Tính theo case cụ thể", zh: "按具体情况报价" },
+  "fulfill.s3": { en: "Storage Fee", vi: "Phí lưu kho", zh: "仓储费" },
+  "fulfill.s3_price": { en: "$0.1/pc/month or\n$20/CBM/month", vi: "0.1$ /pc/tháng hoặc\n20 $/ 1 CBM/ 1 tháng", zh: "$0.1/件/月 或\n$20/CBM/月" },
+  "fulfill.s4": { en: "Packing, labeling & carrier drop-off", vi: "Phí đóng gói, dán label và mang hàng ra hãng vận chuyển", zh: "包装、贴标及送交承运商" },
+  "fulfill.s4_r6_note": { en: "Quoted per specific case", vi: "Tính theo case cụ thể", zh: "按具体情况报价" },
+  "fulfill.s4_note": { en: "For orders with more than 1 pc, add $0.5/pc for each additional piece", vi: "Nếu đơn hàng có nhiều hơn 1 pc thì sẽ cộng thêm $0.5/pc cho mỗi pc tiếp theo", zh: "超过1件的订单，每增加一件加收$0.5/件" },
+  "fulfill.s5": { en: "Box/Packaging fee (varies by size & requirements)", vi: "Phí hộp/bao bì (tùy kích thước & yêu cầu đóng gói)", zh: "包装箱/包材费（按尺寸及要求）" },
+  "fulfill.s5_note": { en: "For orders requiring box packaging", vi: "Áp dụng với đơn cần đóng gói hộp", zh: "适用于需要纸箱包装的订单" },
+  "fulfill.s6": { en: "Return handling", vi: "Xử lý hàng trả (Return)", zh: "退货处理" },
+  "fulfill.s6_price": { en: "Free", vi: "Miễn phí", zh: "免费" },
+  "fulfill.s6_note": { en: "Merchandise", vi: "Hàng hóa", zh: "货物" },
+  "fulfill.s7": { en: "Shipping", vi: "Giao hàng", zh: "物流配送" },
+  "fulfill.s7_price": { en: "Based on USPS or other competitive carrier rates", vi: "Dựa vào phí của đơn vị USPS hoặc dịch vụ khác cạnh tranh", zh: "基于USPS或其他竞争性承运商费率" },
+  "fulfill.s8": { en: "Return export fee", vi: "Phí xuất hàng trả", zh: "退货出库费" },
+  "fulfill.s8_note": { en: "Quoted before processing based on actual case", vi: "Theo case thực tế, báo giá trước khi thực hiện", zh: "按实际情况，处理前报价" },
+
+  // ── THG Fulfill Page: Ecount Guide ──
+  "fulfill_ecount.section_title": { en: "System Usage Guide", vi: "Hướng dẫn sử dụng hệ thống", zh: "系统使用指南" },
+  "fulfill_ecount.video_title": { en: "I. Video guide on how to place orders on Ecount", vi: "I. Video hướng dẫn cách lên đơn trên Ecount", zh: "I. Ecount下单视频教程" },
+  "fulfill_ecount.video_desc": { en: "Watch the detailed video guide on placing orders on the THG Ecount ERP system. Note: select the correct SBSL (Ship By Seller) / SBTT (Ship By TikTok) when choosing SKU.", vi: "Xem video hướng dẫn chi tiết cách lên đơn hàng trên hệ thống Ecount ERP của THG. Lưu ý chọn đúng loại SBSL (Ship By Seller) / SBTT (Ship By TikTok) khi chọn SKU.", zh: "观看THG Ecount ERP系统下单的详细视频教程。注意：选择SKU时请正确选择SBSL（卖家发货）/ SBTT（TikTok发货）。" },
+  "fulfill_ecount.sku_link": { en: "📋 Link SKU for THG FULFILL", vi: "📋 Link SKU cho THG FULFILL", zh: "📋 THG FULFILL SKU链接" },
+  "fulfill_ecount.single_title": { en: "II. Place a single order on THG's ERP system", vi: "II. Lên đơn lẻ trên hệ thống ERP của THG", zh: "II. 在THG ERP系统上创建单个订单" },
+  "fulfill_ecount.single_desc": { en: "Detailed step-by-step guide to place orders on the Ecount ERP system.", vi: "Hướng dẫn chi tiết từng bước để lên đơn hàng trên hệ thống Ecount ERP.", zh: "在Ecount ERP系统上下单的详细分步指南。" },
+  "fulfill_ecount.step1_title": { en: "Log in to the system", vi: "Đăng nhập vào hệ thống", zh: "登录系统" },
+  "fulfill_ecount.step1_desc": { en: "Access the account provided by THG at", vi: "Truy cập tài khoản do THG cung cấp tại", zh: "使用THG提供的账户访问" },
+  "fulfill_ecount.step1_desc2": { en: ". Enter the login credentials (company code, ID, password) that THG sent you.", vi: ". Nhập thông tin đăng nhập (mã công ty, ID, mật khẩu) mà THG đã gửi cho bạn.", zh: "。输入THG发送给您的登录信息（公司代码、ID、密码）。" },
+  "fulfill_ecount.step2_title": { en: "Enter recovery email", vi: "Điền Email khôi phục", zh: "填写恢复邮箱" },
+  "fulfill_ecount.step2_desc": { en: "After first login, the system will require an email for password recovery. Enter your email and click \"Send recovery email\" to avoid losing your account.", vi: "Sau khi đăng nhập lần đầu, hệ thống sẽ yêu cầu nhập email để khôi phục mật khẩu. Điền email của bạn và nhấn \"Gửi Email khôi phục\" để tránh mất tài khoản.", zh: "首次登录后，系统将要求输入用于密码恢复的邮箱。输入您的邮箱并点击\"发送恢复邮件\"以避免丢失账户。" },
+  "fulfill_ecount.step3_title": { en: "Go to Personal Page → New Sale", vi: "Vào trang cá nhân → Bán hàng mới", zh: "进入个人页面 → 新建销售" },
+  "fulfill_ecount.step3_desc": { en: "Click on \"Personal Page\", then select \"New Sale\" to start creating an order. Fill in all required fields.", vi: "Click vào \"Trang cá nhân\", sau đó chọn \"Bán hàng mới\" để bắt đầu tạo đơn hàng. Điền đầy đủ các trường thông tin bắt buộc.", zh: "点击\"个人页面\"，然后选择\"新建销售\"开始创建订单。填写所有必填字段。" },
+  "fulfill_ecount.fields_title": { en: "📋 Field descriptions:", vi: "📋 Mô tả các trường thông tin:", zh: "📋 字段说明：" },
+  "fulfill_ecount.field_location": { en: "THG workshop code (e.g., 001 for phonecase)", vi: "Mã hoá xưởng THG (VD: 001 cho phonecase)", zh: "THG车间代码（例如：001代表手机壳）" },
+  "fulfill_ecount.field_orderid": { en: "Your order ID", vi: "Mã đơn hàng của bạn", zh: "您的订单号" },
+  "fulfill_ecount.field_tracking": { en: "Carrier tracking number", vi: "Mã tracking đơn vận chuyển", zh: "物流追踪号" },
+  "fulfill_ecount.field_seller": { en: "Customer code provided by THG (e.g., CUS001)", vi: "Mã khách hàng THG cung cấp (VD: CUS001)", zh: "THG提供的客户代码（例如：CUS001）" },
+  "fulfill_ecount.field_service": { en: "SBTT (Ship by TikTok) / SBSL (Ship by Seller)", vi: "SBTT (Ship by TikTok) / SBSL (Ship by Seller)", zh: "SBTT（TikTok发货）/ SBSL（卖家发货）" },
+  "fulfill_ecount.field_label": { en: "Paste label link (Google Drive, etc.)", vi: "Dán link label (Google Drive, v.v.)", zh: "粘贴标签链接（Google Drive等）" },
+  "fulfill_ecount.step4_title": { en: "Select SKU & Save order", vi: "Chọn SKU & Lưu đơn hàng", zh: "选择SKU并保存订单" },
+  "fulfill_ecount.step4_desc": { en: "Double-click on the SKU blank to select SKU for the order or use the SKU link provided by THG. Note: select the correct SBSL/SBTT to choose the right SKU.", vi: "Bấm đúp chuột vào khoảng trống của SKU để chọn SKU cho đơn hàng hoặc dùng link SKU do THG cung cấp. Chú ý chọn đúng SBSL/SBTT để chọn đúng SKU.", zh: "双击SKU空白处为订单选择SKU，或使用THG提供的SKU链接。注意：正确选择SBSL/SBTT以选择正确的SKU。" },
+  "fulfill_ecount.step4_example": { en: "💡 Example: iPhone 12 Pro SKU is", vi: "💡 Ví dụ: iPhone 12 Pro SKU sẽ là", zh: "💡 示例：iPhone 12 Pro的SKU为" },
+  "fulfill_ecount.step4_example2": { en: "for Ship by TikTok, 2-layer toughcase.", vi: "cho ship by TikTok, dòng toughcase 2 lớp.", zh: "用于TikTok发货，双层防摔壳。" },
+
+  // ── THG Express Page: Stats & Labels ──
+  "express_page.stat1_value": { en: "days", vi: "ngày", zh: "天" },
+  "express_page.stat1_label": { en: "Air Express", vi: "Hàng không Express", zh: "航空快递" },
+  "express_page.stat2_label": { en: "Shipping routes", vi: "Tuyến vận chuyển", zh: "运输线路" },
+  "express_page.stat3_label": { en: "On-time delivery", vi: "Giao đúng hạn", zh: "准时交付" },
+  "express_page.stat4_label": { en: "Global warehouses", vi: "Kho hàng toàn cầu", zh: "全球仓库" },
+  "express_page.overlay_badge": { en: "4 Warehouses — 3 Countries", vi: "4 Kho — 3 Quốc gia", zh: "4个仓库 — 3个国家" },
+  "express_page.video_intro": { en: "3 videos introducing THG Express shipping services", vi: "3 video giới thiệu dịch vụ vận chuyển THG Express", zh: "3个THG Express运输服务介绍视频" },
+
+  // ── THG Warehouse Page: FAQ Section ──
+  "wh_faq.title": { en: "Frequently Asked Questions", vi: "Câu hỏi thường gặp", zh: "常见问题" },
+  "wh_faq.subtitle": { en: "Quick answers about THG Warehouse US services", vi: "Giải đáp nhanh các thắc mắc về dịch vụ THG Warehouse US", zh: "THG Warehouse美国服务常见问题快速解答" },
+  "wh_faq.step_prefix": { en: "Step", vi: "Bước", zh: "步骤" },
+  "wh_faq.q1": { en: "How many warehouses does THG currently have?", vi: "THG có bao nhiêu kho ở thời điểm hiện tại?", zh: "THG目前有多少个仓库？" },
+  "wh_faq.a1": { en: "THG currently has 2 warehouses in the US: Pennsylvania (PA) and Winston-Salem, North Carolina (NC). The dual warehouse system covers the entire US, optimizing delivery time to 2-5 days.", vi: "THG hiện có 2 kho tại Mỹ: Pennsylvania (PA) và Winston-Salem, North Carolina (NC). Hệ thống kho kép giúp phủ sóng toàn nước Mỹ, tối ưu thời gian giao hàng 2–5 ngày.", zh: "THG目前在美国有2个仓库：宾夕法尼亚州（PA）和北卡罗来纳州温斯顿-塞勒姆（NC）。双仓库系统覆盖全美，优化配送时间至2-5天。" },
+  "wh_faq.q2": { en: "Is there anything to note when shipping goods through THG Warehouse?", vi: "Hàng hóa gửi qua THG Warehouse có cần lưu ý gì không?", zh: "通过THG Warehouse寄送货物需要注意什么？" },
+  "wh_faq.a2": { en: "Items need clear barcodes on each product. Before shipping, you need to create an Inbound Request (IR) on the OMS system. THG provides barcode PDF files if the product doesn't have one.", vi: "Hàng cần có barcode rõ ràng trên từng sản phẩm. Trước khi gửi hàng, bạn cần tạo yêu cầu nhập kho (IR) trên hệ thống OMS. THG hỗ trợ cung cấp file PDF barcode nếu sản phẩm chưa có.", zh: "每件产品需要有清晰的条码。发货前，您需要在OMS系统上创建入库请求（IR）。如果产品没有条码，THG提供PDF条码文件。" },
+  "wh_faq.q3": { en: "Does THG support storage for sellers?", vi: "THG có hỗ trợ Seller về lưu kho không?", zh: "THG是否为卖家提供仓储支持？" },
+  "wh_faq.a3": { en: "Yes. THG offers free storage for the first 90 days. From day 91 onwards, storage fees will apply as notified by the THG team.", vi: "Có. THG miễn phí lưu kho cho 90 ngày đầu tiên. Từ ngày thứ 91 trở đi sẽ có phí lưu kho theo thông báo từ team THG.", zh: "是的。THG提供前90天免费仓储。从第91天起，将按THG团队通知收取仓储费。" },
+  "wh_faq.q4": { en: "Does THG support product photography/videography when needed?", vi: "THG có hỗ trợ quay, chụp sản phẩm khi cần thiết không?", zh: "THG是否在需要时提供产品拍摄/录像支持？" },
+  "wh_faq.a4": { en: "Yes. THG records video of the entire packing process (100% of orders). Additionally, THG can support product photography on request. Please contact the team for details.", vi: "Có. THG hỗ trợ quay video toàn bộ quá trình đóng gói (100% đơn hàng). Ngoài ra, THG có thể hỗ trợ chụp ảnh sản phẩm theo yêu cầu. Vui lòng liên hệ team để biết thêm chi tiết.", zh: "是的。THG录制完整包装过程视频（100%订单）。此外，THG可应要求提供产品拍摄支持。请联系团队了解详情。" },
+  "wh_faq.q5": { en: "Can THG receive returns and goods from Amazon warehouses?", vi: "THG có thể nhận hàng Return và hàng gửi từ kho Amazon vào kho THG không?", zh: "THG能否接收退货和从亚马逊仓库转来的货物？" },
+  "wh_faq.a5": { en: "Yes. THG receives and processes returns for free for all THG-fulfilled orders. THG also supports receiving goods transferred from Amazon FBA to THG Warehouse.", vi: "Có. THG nhận và xử lý hàng return miễn phí cho tất cả đơn hàng do THG thực hiện. THG cũng hỗ trợ nhận hàng chuyển từ kho Amazon FBA về kho THG Warehouse.", zh: "是的。THG免费接收和处理所有THG履约订单的退货。THG还支持接收从Amazon FBA转到THG仓库的货物。" },
+  "wh_faq.q6": { en: "How many types of packaging does THG offer?", vi: "THG có bao nhiêu loại bao bì đóng gói?", zh: "THG提供多少种包装类型？" },
+  "wh_faq.a6": { en: "THG offers various packaging: poly bags, carton boxes in various sizes, bubble wrap and international-standard shock-resistant materials. Sellers can request custom branded packaging.", vi: "THG cung cấp nhiều loại bao bì: túi poly, hộp carton các kích cỡ, bubble wrap và vật liệu chống sốc tiêu chuẩn quốc tế. Seller có thể yêu cầu sử dụng bao bì riêng của thương hiệu.", zh: "THG提供多种包装：塑料袋、各种尺寸的纸箱、气泡膜和符合国际标准的防震材料。卖家可以要求使用自己品牌的定制包装。" },
+  "wh_faq.q7": { en: "How long is the pick & pack and USPS drop-off time?", vi: "Thời gian pick & pack và mang hàng ra bưu cục USPS?", zh: "拣货打包和USPS投递需要多长时间？" },
+  "wh_faq.a7": { en: "Typically orders are processed and picked & packed within 24-48 business hours. Goods are dropped off at USPS/FedEx/UPS the same day or next day depending on order volume.", vi: "Thông thường đơn hàng được xử lý và pick & pack trong vòng 24–48 giờ làm việc. Hàng được mang ra bưu cục USPS/FedEx/UPS trong ngày hoặc ngày hôm sau tùy khối lượng đơn.", zh: "通常订单在24-48个工作小时内处理和拣货打包。货物在当天或第二天送到USPS/FedEx/UPS，具体取决于订单量。" },
+  "wh_faq.q8": { en: "How to determine the delivery zone (USPS Shipping Zone)?", vi: "Cách xác định vùng giao hàng (USPS Shipping Zone)?", zh: "如何确定配送区域（USPS Shipping Zone）？" },
+  "wh_faq.a8": { en: "USPS Shipping Zone is calculated based on the distance from THG warehouse (PA & NC) to the recipient's address. Lower zone = cheaper shipping and faster delivery. THG team will advise on the appropriate zone when you start using the service.", vi: "USPS Shipping Zone được tính dựa trên khoảng cách từ kho THG (PA & NC) đến địa chỉ người nhận. Zone càng thấp, phí ship càng rẻ và giao hàng càng nhanh. Team THG sẽ tư vấn zone phù hợp khi bắt đầu sử dụng dịch vụ.", zh: "USPS配送区域根据THG仓库（PA和NC）到收件人地址的距离计算。区域编号越低，运费越便宜，配送越快。THG团队将在您开始使用服务时建议合适的区域。" },
+  "wh_faq.q9": { en: "What is the barcode processing procedure?", vi: "Quy trình xử lý Barcode?", zh: "条码处理流程是什么？" },
+  "wh_faq.a9": { en: "1. Create or assign barcode for each product.\n2. THG provides barcode PDF files if needed.\n3. Print and attach barcodes to products before sending to warehouse, or THG can assist with labeling at the warehouse.", vi: "1. Tạo hoặc gán barcode cho từng sản phẩm.\n2. THG cung cấp file PDF barcode nếu cần.\n3. In và dán barcode lên sản phẩm trước khi gửi vào kho, hoặc THG có thể hỗ trợ dán tại kho.", zh: "1. 为每个产品创建或分配条码。\n2. 如需要，THG提供条码PDF文件。\n3. 在发送到仓库之前打印并贴上条码，或THG可以在仓库协助贴标。" },
+  "wh_faq.q10": { en: "What is the US Warehouse shipping procedure?", vi: "Quy trình gửi hàng Warehouse US?", zh: "美国仓库发货流程是什么？" },
+  "wh_faq.a10": { en: "1. Create IR (Inbound Request) on OMS.\n2. Pack and ship goods to THG warehouse address (PA or NC).\n3. THG receives, inspects and stores goods.\n4. Inventory is updated in real-time on OMS.", vi: "1. Tạo IR (Inbound Request) trên OMS.\n2. Đóng gói và gửi hàng đến địa chỉ kho THG (PA hoặc NC).\n3. THG nhận hàng, kiểm tra và nhập kho.\n4. Tồn kho được cập nhật real-time trên OMS.", zh: "1. 在OMS上创建IR（入库请求）。\n2. 包装并将货物发送到THG仓库地址（PA或NC）。\n3. THG接收、检查并入库商品。\n4. 库存在OMS上实时更新。" },
+  "wh_faq.q11": { en: "What is the order placement procedure?", vi: "Quy trình lên đơn hàng?", zh: "下单流程是什么？" },
+  "wh_faq.a11": { en: "Orders can be auto-synced from Shopify/Etsy/Amazon via OMS, or placed manually on the OMS system. THG processes orders, picks & packs, records packaging video and delivers to carrier.", vi: "Đơn có thể được sync tự động từ Shopify/Etsy/Amazon qua OMS, hoặc lên đơn thủ công trực tiếp trên hệ thống OMS. THG xử lý đơn, pick & pack, quay video đóng gói và giao cho carrier.", zh: "订单可以通过OMS从Shopify/Etsy/Amazon自动同步，或在OMS系统上手动下单。THG处理订单、拣货打包、录制包装视频并交给承运商。" },
+  "wh_faq.q12": { en: "What is the returns processing procedure?", vi: "Quy trình xử lý hàng Return?", zh: "退货处理流程是什么？" },
+  "wh_faq.a12": { en: "1. THG receives and inspects returned items.\n2. Updates status on OMS.\n3. Seller decides to re-export or dispose.\nFree 100% for all THG-fulfilled orders.", vi: "1. THG tiếp nhận và kiểm tra tình trạng hàng return.\n2. Cập nhật trạng thái trên OMS.\n3. Seller quyết định tái xuất hoặc hủy hàng.\nMiễn phí 100% phí xử lý return cho mọi đơn THG thực hiện.", zh: "1. THG接收并检查退货商品状况。\n2. 在OMS上更新状态。\n3. 卖家决定重新出口或销毁。\nTHG履约的所有订单100%免费处理退货。" },
+  "wh_faq.q13": { en: "What is the payment settlement procedure?", vi: "Quy trình xử lý công nợ?", zh: "结算流程是什么？" },
+  "wh_faq.a13": { en: "THG notifies balances periodically via OMS and email. Sellers pay by bank transfer or agreed methods. Please contact customer support for details on payment policies.", vi: "THG thông báo công nợ định kỳ qua hệ thống OMS và email. Seller thanh toán theo hình thức chuyển khoản hoặc các phương thức được thỏa thuận. Vui lòng liên hệ team CSKH để biết chi tiết về chính sách thanh toán.", zh: "THG通过OMS系统和邮件定期通知账户余额。卖家通过银行转账或约定方式付款。请联系客服团队了解付款政策详情。" },
+
+  // ── THG Order Page: Hero Badge ──
+  "order_page.badge_taobao": { en: "🇨🇳 Taobao · 1688", vi: "🇨🇳 Taobao · 1688", zh: "🇨🇳 淘宝 · 1688" },
+  "order_page.badge_direct": { en: "✈️ Direct to USA", vi: "✈️ Giao thẳng về Mỹ", zh: "✈️ 直邮美国" },
+
+  // ── International Pricing Page: Error messages & labels ──
+  "intl_pricing.video_heading": { en: "🎬 Overview of Shipping Price List", vi: "🎬 Giới thiệu tổng quan Bảng giá vận chuyển", zh: "🎬 运费价格表总览" },
+  "intl_pricing.select_route": { en: "SELECT ROUTE", vi: "CHỌN TUYẾN", zh: "选择路线" },
+  "intl_pricing.vn_us_ups": { en: "🇻🇳 VN → US (UPS)", vi: "🇻🇳 VN → US (UPS)", zh: "🇻🇳 越南 → 美国 (UPS)" },
+  "intl_pricing.cn_us_air_sea": { en: "🇨🇳 CN → US (Air & Sea)", vi: "🇨🇳 CN → US (Air & Sea)", zh: "🇨🇳 中国 → 美国 (空运&海运)" },
+  "intl_pricing.vn_us_time": { en: "⏱ 3–7 BSD", vi: "⏱ 3–7 ngày", zh: "⏱ 3-7个工作日" },
+  "intl_pricing.cn_us_time": { en: "⏱ 6–25 BSD", vi: "⏱ 6–25 ngày", zh: "⏱ 6-25个工作日" },
+  "intl_pricing.no_us_tax": { en: "⚠️ Excluding US import tax", vi: "⚠️ Chưa gồm tax NK US", zh: "⚠️ 不含美国进口税" },
+  "intl_pricing.air_sea": { en: "✈️ Air · 🚢 Sea", vi: "✈️ Air · 🚢 Sea", zh: "✈️ 空运 · 🚢 海运" },
+  "intl_pricing.err_updating": { en: "Data is being updated", vi: "Dữ liệu đang cập nhật", zh: "数据更新中" },
+  "intl_pricing.err_max_weight": { en: "Exceeds maximum weight", vi: "Vượt quá cân nặng tối đa", zh: "超过最大重量" },
+  "intl_pricing.err_no_quote": { en: "No quote available", vi: "Chưa có báo giá", zh: "暂无报价" },
+  "intl_pricing.err_no_country": { en: "No quote for this country", vi: "Chưa có báo giá cho quốc gia này", zh: "暂无此国家的报价" },
+  "intl_pricing.err_contact": { en: "Please contact THG for a bulk quote", vi: "Liên hệ THG báo giá theo lô", zh: "请联系THG获取批量报价" },
+  "intl_pricing.err_vn_us_only": { en: "VN Express currently only supports US routes", vi: "VN Express hiện chỉ hỗ trợ tuyến US", zh: "VN Express目前仅支持美国路线" },
+  "intl_pricing.err_no_battery": { en: "VN Express does not support battery products", vi: "VN Express không hỗ trợ hàng Pin", zh: "VN Express不支持电池产品" },
+  "intl_pricing.err_min_12kg": { en: "Bulk Express requires minimum 12 KG", vi: "Hàng Lô Express yêu cầu mức tối thiểu 12 KG", zh: "批量快递最低要求12公斤" },
+  "intl_pricing.err_contact_quote": { en: "Please contact THG for a quote on this route", vi: "Tuyến này vui lòng Liên hệ THG báo giá", zh: "此路线请联系THG获取报价" },
+  "intl_pricing.err_battery_note": { en: "Battery products can be shipped via the \"Standard VN-WW\" channel; however, please refer to the attached Shipping Policy for specific requirements.", vi: "Hàng Pin Điện có thể vận chuyển qua kênh \"Standard VN-WW\"; tuy nhiên, vui lòng tham khảo Chính sách Vận chuyển đính kèm để biết yêu cầu cụ thể.", zh: "电池产品可通过\"Standard VN-WW\"渠道发货，但请参阅附带的运输政策了解具体要求。" },
+  "intl_pricing.rate_label": { en: "Rate CN → US ($)", vi: "Cước CN → US ($)", zh: "费率 CN → US ($)" },
+  "intl_pricing.rate_label_generic": { en: "Rate ($)", vi: "Cước ($)", zh: "费率 ($)" },
+
+  // ── Catalog Page: Labels ──
+  "catalog.pod_badge": { en: "POD Products", vi: "Sản phẩm POD", zh: "POD产品" },
+  "catalog.search_placeholder": { en: "Search by name or SKU...", vi: "Tìm theo tên hoặc SKU...", zh: "按名称或SKU搜索..." },
+  "catalog.products_count": { en: "products", vi: "sản phẩm", zh: "个产品" },
+  "catalog.product_count": { en: "product", vi: "sản phẩm", zh: "个产品" },
+  "catalog.origin_label": { en: "Origin", vi: "Xuất xứ", zh: "产地" },
+  "catalog.origin_vn": { en: "Vietnam", vi: "Việt Nam", zh: "越南" },
+  "catalog.origin_us": { en: "USA", vi: "Mỹ", zh: "美国" },
+  "catalog.origin_cn": { en: "China", vi: "Trung Quốc", zh: "中国" },
+  "catalog.contact_price": { en: "Contact for pricing", vi: "Liên hệ báo giá", zh: "联系报价" },
+  "catalog.contact_price_sub": { en: "Contact us for pricing", vi: "Liên hệ để nhận báo giá", zh: "联系我们获取报价" },
+  "catalog.size_label": { en: "Size:", vi: "Kích cỡ:", zh: "尺寸:" },
+  "catalog.color_label": { en: "Color:", vi: "Màu sắc:", zh: "颜色:" },
+  "catalog.prod_time": { en: "Production time:", vi: "Thời gian sản xuất:", zh: "生产时间:" },
+  "catalog.ship_time": { en: "Shipping time:", vi: "Thời gian giao hàng:", zh: "配送时间:" },
+  "catalog.biz_days": { en: "business days", vi: "ngày làm việc", zh: "个工作日" },
+  "catalog.order_support": { en: "Order Support", vi: "Hỗ trợ đặt hàng", zh: "订单支持" },
+  "catalog.download_template": { en: "Download Template", vi: "Tải Template", zh: "下载模板" },
+  "catalog.download": { en: "Download", vi: "Tải xuống", zh: "下载" },
+  "catalog.material": { en: "Material", vi: "Chất liệu", zh: "材质" },
+  "catalog.features": { en: "Features", vi: "Đặc điểm", zh: "特点" },
+  "catalog.care": { en: "Care Instructions", vi: "Hướng dẫn bảo quản", zh: "保养说明" },
+  "catalog.fulfillment": { en: "Fulfillment", vi: "Fulfillment", zh: "履约" },
+  "catalog.fulfillment_desc": { en: "Available for fulfillment via TikTok Shop US. Contact us for the full list of POD products supporting TikTok fulfillment.", vi: "Có sẵn để fulfill qua TikTok Shop US. Liên hệ chúng tôi để nhận danh sách đầy đủ sản phẩm POD hỗ trợ TikTok fulfillment.", zh: "可通过TikTok Shop美国进行履约。联系我们获取支持TikTok履约的POD产品完整列表。" },
+  "catalog.no_products": { en: "No products found", vi: "Không tìm thấy sản phẩm", zh: "未找到产品" },
+  "catalog.try_adjust": { en: "Try adjusting your search or filter", vi: "Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc", zh: "请尝试调整搜索或筛选条件" },
+  "catalog.all": { en: "All", vi: "Tất cả", zh: "全部" },
+
+  // ── Blog Page: Categories ──
+  "blog.eyebrow": { en: "THG Blog", vi: "THG Blog", zh: "THG博客" },
+  "blog.cat_all": { en: "All", vi: "Tất cả", zh: "全部" },
+  "blog.cat_pod": { en: "POD", vi: "POD", zh: "POD" },
+  "blog.cat_logistics": { en: "Logistics", vi: "Logistics", zh: "物流" },
+  "blog.cat_warehouse": { en: "Warehouse", vi: "Kho vận", zh: "仓储" },
+  "blog.cat_ecommerce": { en: "eCommerce", vi: "Thương mại điện tử", zh: "电商" },
+  "blog.cat_news": { en: "THG News", vi: "Tin THG", zh: "THG新闻" },
+  "blog.cat_tips": { en: "Tips", vi: "Mẹo hay", zh: "技巧" },
+
+  // ── NotFound Page ──
+  "notfound.message": { en: "Oops! Page not found", vi: "Rất tiếc! Không tìm thấy trang", zh: "抱歉！页面未找到" },
+  "notfound.home": { en: "Return to Home", vi: "Về trang chủ", zh: "返回首页" },
+
+  // ── Pricing: HeroSection ──
+  "pricing_hero.badge": { en: "INTERNATIONAL PRICING", vi: "BẢNG GIÁ QUỐC TẾ", zh: "国际价格表" },
+  "pricing_hero.heading": { en: "International ", vi: "Tra cứu cước ", zh: "查询国际" },
+  "pricing_hero.heading_gold": { en: "shipping rates", vi: "vận chuyển quốc tế", zh: "运费" },
+  "pricing_hero.desc": { en: "Transparent pricing, real-time updates for all shipping routes from Vietnam & China.", vi: "Bảng giá minh bạch, cập nhật real-time cho tất cả tuyến vận chuyển từ Việt Nam & Trung Quốc.", zh: "透明价格，越南和中国所有运输路线实时更新。" },
+
+  // ── Pricing: SearchWidget ──
+  "pricing_sw.placeholder": { en: "e.g. 1", vi: "Vd: 1", zh: "例：1" },
+
+  // ── Pricing: EpacketPanel ──
+  "ep.select_route": { en: "SELECT SHIPPING ROUTE", vi: "CHỌN TUYẾN VẬN CHUYỂN", zh: "选择运输路线" },
+  "ep.import_tax_badge": { en: "✅ Import tax included · Active USPS", vi: "✅ Bao thuế NK · Active USPS", zh: "✅ 含进口税 · Active USPS" },
+  "ep.cargo_label": { en: "Cargo type:", vi: "Loại hàng:", zh: "货物类型:" },
+  "ep.battery_label": { en: "Battery products:", vi: "Hàng pin điện:", zh: "电池产品提示：" },
+  "ep.battery_note": { en: "Battery products can be shipped via the \"Standard VN-WW\" channel; however, please refer to the attached Shipping Policy for specific requirements.", vi: "Hàng Pin Điện có thể vận chuyển qua kênh \"Standard VN-WW\"; tuy nhiên, vui lòng tham khảo Chính sách Vận chuyển đính kèm để biết yêu cầu cụ thể.", zh: "电池产品可通过\"Standard VN-WW\"渠道发货，但请参阅附带的运输政策了解具体要求。" },
+  "ep.showing": { en: "Showing:", vi: "Đang hiển thị:", zh: "当前显示：" },
+  "ep.pri_desc": { en: "Import tax included, Active USPS tracking. Excludes remote surcharges.", vi: "Bao thuế NK, Active USPS tracking. Giá chưa bao gồm phụ phí vùng sâu.", zh: "含进口税, Active USPS 追踪。不含偏远附加费。" },
+  "ep.epacket_desc": { en: "Delivered to destination. Excludes remote surcharges & VAT.", vi: "Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu & VAT.", zh: "送达目的国。不含偏远附加费和增值税。" },
+  "ep.order_fee": { en: "Order Handling Fee", vi: "Phí xử lý đơn hàng", zh: "订单处理费" },
+  "ep.tracking_fee": { en: "Active tracking fee", vi: "Phí active tracking", zh: "Active tracking费" },
+  "ep.tracking_note": { en: "(If using Active USPS tracking)", vi: "(Nếu sử dụng dịch vụ active tracking trước với USPS)", zh: "(如使用USPS的active tracking服务)" },
+  "ep.detail_table": { en: "Detailed Pricing Table", vi: "Bảng Giá Chi Tiết", zh: "价格表" },
+  "ep.detail_table_vn_us": { en: "Detailed Pricing VN → US (Priority)", vi: "Bảng Giá Chi Tiết VN → US (Priority)", zh: "价格表 VN → US (Priority)" },
+  "ep.detail_table_cn_us": { en: "Detailed Pricing CN → US (Priority)", vi: "Bảng Giá Chi Tiết CN → US (Priority)", zh: "价格表 CN → US (Priority)" },
+  "ep.price_table": { en: "Price Table", vi: "Bảng Giá Chi Tiết", zh: "价格表" },
+  "ep.price_table_pri": { en: "Price Table (Priority)", vi: "Bảng Giá Chi Tiết (Priority)", zh: "价格表 (Priority)" },
+  "ep.loading_lark": { en: "Loading price data from Lark...", vi: "Đang tải dữ liệu bảng giá từ Lark...", zh: "正在从 Lark 加载价格数据..." },
+  "ep.data_unavailable": { en: "Price data is temporarily unavailable. Please try again later or contact THG support.", vi: "Dữ liệu bảng giá tạm thời không khả dụng. Vui lòng thử lại sau hoặc liên hệ THG hỗ trợ.", zh: "价格数据暂时无法加载。请稍后重试或联系 THG 客服。" },
+  "ep.surcharges": { en: "Surcharges & Other Services", vi: "Phụ Phí & Dịch Vụ Khác", zh: "附加费和其他服务" },
+  "ep.remote_title": { en: "📍 Remote Area Surcharge (Remote Area Zipcode)", vi: "📍 Phụ Phí Vùng Sâu (Remote Area Zipcode)", zh: "📍 偏远地区附加费" },
+  "ep.remote_desc": { en: "Download the remote area zipcode list to check. Data is automatically synced from the source when updated.", vi: "Tải file danh sách zipcode remote area để kiểm tra. Dữ liệu được tự động đồng bộ từ nguồn gốc khi có cập nhật.", zh: "下载偏远地区邮编列表进行查看。数据更新时会自动从源头同步。" },
+  "ep.download_file": { en: "📥 Download", vi: "📥 Tải file", zh: "📥 下载" },
+  "ep.vat_title": { en: "🌍 VAT & Handling Fees", vi: "🌍 Thuế VAT & Phí Xử Lý", zh: "🌍 增值税和处理费" },
+  "ep.vat_country": { en: "Country", vi: "Quốc Gia", zh: "国家" },
+  "ep.data_updating": { en: "Data is being updated", vi: "Dữ liệu đang cập nhật", zh: "数据更新中" },
+  "ep.reship_title": { en: "Reshipment Fee", vi: "Phí Reship (Gửi Lại)", zh: "重新发货费" },
+  "ep.reship_note": { en: "* Reshipment fee applies when a package is returned due to wrong address, no recipient, or refusal. If no response within the specified period, the package will be destroyed by default.", vi: "* Phí reship áp dụng khi kiện hàng bị trả về do địa chỉ sai, không có người nhận, hoặc bị từ chối nhận. Nếu không có phản hồi trong thời gian quy định, kiện hàng sẽ bị tiêu hủy theo mặc định.", zh: "* 重新发货费适用于因地址错误、无人收件或拒收而退回的包裹。如在规定时间内无回复，包裹将默认被销毁。" },
+  "ep.reship_data_updating": { en: "📝 Reshipment fee data is being updated.", vi: "📝 Dữ liệu phí reship đang được cập nhật.", zh: "📝 重新发货费数据更新中。" },
+  "ep.view_policy": { en: "View full shipping policy", vi: "Xem đầy đủ chính sách vận chuyển", zh: "查看完整运输政策" },
+
+  // ── Pricing: Ship by Label panel ──
+  "sbl.desc": { en: "Service for orders that already have a shipping label from TikTok Shop and Marketplace.", vi: "Dịch vụ dành cho đơn hàng đã có sẵn shipping label từ TikTok Shop và Marketplace.", zh: "适用于已有TikTok Shop和Marketplace运输标签的订单服务。" },
+  "sbl.note_title": { en: "Note:", vi: "Lưu ý:", zh: "注意：" },
+  "sbl.note_desc": { en: "Goods shipped from China to USPS post office in the US — USPS performs last-mile delivery. Does not deliver directly to recipient.", vi: "Hàng vận chuyển từ Trung Quốc đến bưu cục USPS tại Mỹ — USPS thực hiện last-mile delivery. Không giao tận tay người nhận.", zh: "货物从中国运送到美国USPS邮局 — USPS负责最后一英里配送。不直接送达收件人。" },
+  "sbl.condition": { en: "Condition", vi: "Điều kiện", zh: "条件" },
+  "sbl.condition_val": { en: "Must have valid label", vi: "Phải có label hợp lệ", zh: "必须有有效标签" },
+  "sbl.lastmile": { en: "Last-mile", vi: "Chặng cuối", zh: "最后一公里" },
+  "sbl.lastmile_val": { en: "USPS Last-mile", vi: "USPS Last-mile", zh: "USPS最后一公里" },
+  "sbl.suitable": { en: "Suitable for", vi: "Phù hợp", zh: "适用于" },
+  "sbl.suitable_val": { en: "TikTok Shop, Marketplace", vi: "TikTok Shop, Marketplace", zh: "TikTok Shop, Marketplace" },
+  "sbl.panel_title": { en: "📦 CN — US SHIP BY LABEL PRICING", vi: "📦 BẢNG GIÁ CN — US SHIP BY LABEL", zh: "📦 CN — US SHIP BY LABEL 价格表" },
+  "sbl.transit_time": { en: "Transit time:", vi: "Thời gian vận chuyển:", zh: "运输时间：" },
+  "sbl.transit_desc": { en: "7–10 BSD (per USPS schedule). Includes US Import Tax.", vi: "7–10 BSD (theo lịch USPS). Bao gồm Import Tax US.", zh: "7-10个工作日（按USPS时间表）。包含美国进口税。" },
+  "sbl.order_fee_label": { en: "Order Handling Fee:", vi: "Order Handling Fee:", zh: "订单处理费：" },
+  "sbl.order_fee_note": { en: "(If using THG warehouse system)", vi: "(Nếu sử dụng hệ thống kho THG)", zh: "（如使用THG仓库系统）" },
+  "sbl.tracking_fee_label": { en: "Active tracking fee:", vi: "Active tracking fee:", zh: "主动追踪费：" },
+  "sbl.tracking_fee_note": { en: "(If using USPS active tracking service)", vi: "(Nếu sử dụng dịch vụ active tracking USPS)", zh: "（如使用USPS主动追踪服务）" },
+  "sbl.tab_regular": { en: "🇺🇸 CN → US (Regular)", vi: "🇺🇸 CN → US (Regular)", zh: "🇺🇸 CN → US (普通)" },
+  "sbl.tab_special": { en: "🇺🇸 CN → US (Special)", vi: "🇺🇸 CN → US (Special)", zh: "🇺🇸 CN → US (特殊)" },
+  "sbl.title_regular": { en: "Regular Product", vi: "Hàng Thường", zh: "普通产品" },
+  "sbl.title_special": { en: "Special Product", vi: "Hàng Đặc Biệt", zh: "特殊产品" },
+
+  // ── Pricing: PriceTable ──
+  "pt.weight_header": { en: "Weight (KG)", vi: "Cân Nặng (KG)", zh: "重量 (KG)" },
+  "pt.export_excel": { en: "Export to Excel", vi: "Xuất Excel", zh: "导出Excel" },
+  "pt.swipe_hint": { en: "👉 Swipe to see more", vi: "👉 Vuốt ngang để xem thêm", zh: "👉 滑动查看更多" },
+
+  // ── Pricing: ExpressVnUsPanel ──
+  "evn.hcm_warehouse": { en: "HO CHI MINH WAREHOUSE", vi: "KHO HỒ CHÍ MINH", zh: "胡志明仓库" },
+  "evn.hn_warehouse": { en: "HANOI WAREHOUSE", vi: "KHO HÀ NỘI", zh: "河内仓库" },
+  "evn.saver_title": { en: "✈️ UPS Saver — Rate per KG", vi: "✈️ UPS Saver — Phân Mức KG", zh: "✈️ UPS Saver — 按公斤计费" },
+  "evn.expedited_title": { en: "🚢 UPS Expedited — Bulk", vi: "🚢 UPS Expedited — Hàng Bulk", zh: "🚢 UPS Expedited — 散装" },
+  "evn.weight_label": { en: "Weight", vi: "Cân nặng", zh: "重量" },
+  "evn.weight_col": { en: "Weight (kg)", vi: "Cân nặng (kg)", zh: "重量 (kg)" },
+  "evn.bracket_label": { en: "Tier", vi: "Hạng mức", zh: "等级" },
+  "evn.bracket_col": { en: "Tier (kg)", vi: "Hạng mức (kg)", zh: "等级 (kg)" },
+  "evn.shipping_fee_col": { en: "Shipping fee (VNĐ)", vi: "Shipping fee (VNĐ)", zh: "运费 (VNĐ)" },
+  "evn.express_policy": { en: "📋 Please contact THG for detailed shipping policy on express cargo.", vi: "📋 Liên hệ THG để biết thêm chi tiết chính sách vận chuyển hàng Express.", zh: "📋 如需了解 Express 详细运输政策，请联系 THG" },
+  "evn.express_note": { en: "Express routes do not apply Epacket remote surcharge or re-delivery policies.", vi: "Tuyến Express không áp dụng phụ phí vùng sâu và chính sách reship của Epacket.", zh: "Express 路线不适用 Epacket 的偏远附加费和退件重寄政策。" },
+
+  // ── Pricing: ExpressCnUsPanel ──
+  "ecn.dhl_name": { en: "✈️ DHL Air – Express", vi: "✈️ DHL Air – Hỏa Tốc", zh: "✈️ DHL 空运 – 特快" },
+  "ecn.ups_fast": { en: "✈️ UPS Air – Fast", vi: "✈️ UPS Air – Nhanh", zh: "✈️ UPS 空运 – 快速" },
+  "ecn.ups_std": { en: "✈️ UPS Air – Standard", vi: "✈️ UPS Air – Tiêu Chuẩn", zh: "✈️ UPS 空运 – 标准" },
+  "ecn.mason_sea": { en: "🚢 Mason Sea", vi: "🚢 Mason Sea", zh: "🚢 Mason 海运" },
+  "ecn.weight_header": { en: "Weight", vi: "Cân Nặng", zh: "重量" },
+  "ecn.price_header": { en: "Price ($/kg)", vi: "Giá ($/kg)", zh: "价格 ($/kg)" },
+  "ecn.note_header": { en: "Note", vi: "Ghi chú", zh: "备注" },
+  "ecn.bulk_quote": { en: "Quote per bulk", vi: "Báo giá theo lô", zh: "按批报价" },
+  "ecn.contact_btn": { en: "📞 Contact for CN–US quote", vi: "📞 Liên hệ báo giá CN–US", zh: "📞 联系获取CN-US报价" },
+
+  // ── Shipping Terms FAQ Panel ──
+  "ship_faq.header_title": { en: "General Terms & Conditions", vi: "Mục Điều khoản quy định chung", zh: "一般条款和条件" },
+  "ship_faq.header_desc": { en: "To protect your interests, please read the frequently asked questions below carefully. For other questions, please contact THG Support directly.", vi: "Để đảm bảo quyền lợi, vui lòng đọc kỹ Các câu hỏi thường gặp bên dưới. Những thắc mắc khác vui lòng liên hệ trực tiếp cho Support của THG.", zh: "为保障您的权益，请仔细阅读以下常见问题。其他问题请直接联系THG客服。" },
+  "ship_faq.q1": { en: "How many days does it take for CN-US drop shipping?", vi: "Thời gian drop từ CN-US là bao nhiêu ngày?", zh: "CN-US代发需要多少天？" },
+  "ship_faq.a1": { en: "Order time from Taobao to THG warehouse (Dongguan): about 2 days.\nFrom Chinese warehouse to the US: 5-8 days for delivery to the recipient in the US.\n=> Total shipping time can be 8-10 days.", vi: "Thời gian đơn hàng từ Taobao về kho THG (Đông Hoản): khoảng 2 ngày.\nTừ kho ở Trung Quốc đến Mỹ: 5-8 ngày sẽ được giao đến tay người nhận ở Mỹ.\n=> Tổng thời gian vận chuyển có thể từ 8 - 10 ngày.", zh: "从淘宝到THG仓库（东莞）的时间：约2天。\n从中国仓库到美国：5-8天送达美国收件人。\n=> 总运输时间约8-10天。" },
+  "ship_faq.q2": { en: "Does THG support active tracking compatible with TikTok policy?", vi: "Có hỗ trợ active tracking phù hợp với policy của TikTok không?", zh: "THG是否支持符合TikTok政策的active tracking？" },
+  "ship_faq.a2": { en: "THG supports active tracking. When you place orders in the morning, THG will return tracking in the afternoon or evening. Then the tracking will be activated according to TikTok policy within 48 hours.", vi: "THG có hỗ trợ active tracking. Khi bạn lên đơn hàng buổi sáng THG sẽ trả tracking trong buổi chiều hoặc tối. Sau đó tracking sẽ được active theo đúng policy của TikTok trong vòng 48h.", zh: "THG支持active tracking。当您上午下单时，THG将在下午或晚上返回tracking号。然后tracking将在48小时内按照TikTok政策激活。" },
+  "ship_faq.q3": { en: "What shipping routes does THG support and what are the delivery times?", vi: "THG hỗ trợ những tuyến đường vận chuyển nào và thời gian giao hàng như thế nào?", zh: "THG支持哪些运输路线，交货时间是多少？" },
+  "ship_faq.a3": { en: "THG offers diverse shipping routes including Vietnam -> US, China -> US, and Vietnam/China -> Worldwide. We have specialized lines for TikTok Shop (US/UK/DE), both bulk and epacket to optimize costs and delivery time according to each seller's needs.", vi: "THG cung cấp đa dạng tuyến vận chuyển bao gồm Việt Nam -> Mỹ, Trung Quốc -> Mỹ, và Việt Nam/Trung Quốc -> Worldwide. Chúng tôi có các line chuyên biệt cho TikTok Shop (US/UK/DE), cả hàng lô và epacket để tối ưu chi phí và thời gian giao hàng theo nhu cầu của từng seller.", zh: "THG提供多种运输路线，包括越南->美国、中国->美国和越南/中国->全球。我们有TikTok Shop（US/UK/DE）专线，包括批量和epacket，以优化成本和配送时间。" },
+  "ship_faq.q4": { en: "Can THG ship bulky/oversized items or only small packages?", vi: "THG có nhận gửi hàng cồng kềnh hay chỉ gửi được hàng nhỏ thôi?", zh: "THG可以寄送大件货物还是只能寄小件？" },
+  "ship_faq.a4": { en: "THG can handle a wide variety of goods from small to bulky. With standard quality inspection and packaging processes, we ensure optimal protection for goods during shipping regardless of size or weight.", vi: "THG có thể xử lý đa dạng loại hàng hóa từ nhỏ đến cồng kềnh. Với quy trình kiểm tra chất lượng và đóng gói chuẩn, chúng tôi đảm bảo hàng hóa được bảo vệ tối ưu trong quá trình vận chuyển dù kích thước hay trọng lượng ra sao.", zh: "THG可以处理各种类型的货物，从小件到大件。通过标准质量检查和包装流程，我们确保货物在运输过程中得到最佳保护。" },
+  "ship_faq.q5": { en: "Is THG's shipping cost competitive? Are there any hidden fees?", vi: "Chi phí vận chuyển của THG có cạnh tranh không? Có phát sinh chi phí ẩn nào không?", zh: "THG的运费有竞争力吗？有没有隐藏费用？" },
+  "ship_faq.a5": { en: "THG commits to detailed and transparent cost reporting with no hidden fees. We optimize costs by providing both bulk and epacket options, helping sellers choose the best solution for their budget and delivery requirements.", vi: "THG cam kết báo cáo chi phí chi tiết và rõ ràng, không có chi phí phát sinh. Chúng tôi tối ưu chi phí thông qua việc cung cấp cả hàng lô và epacket, giúp seller lựa chọn phương án phù hợp với ngân sách và yêu cầu giao hàng của mình.", zh: "THG承诺提供详细透明的费用报告，没有隐藏费用。我们通过提供批量和epacket选项来优化成本，帮助卖家选择最适合自己预算和配送需求的方案。" },
+  "ship_faq.q6": { en: "How can sellers track their order status?", vi: "Seller có thể theo dõi trạng thái đơn hàng như thế nào?", zh: "卖家如何跟踪订单状态？" },
+  "ship_faq.a6": { en: "THG provides a real-time tracking system, allowing you to proactively check order status at any time. Each order is processed through a closed-loop system from data synchronization, packaging to detailed status tracking.", vi: "THG cung cấp hệ thống tracking real-time, cho phép bạn chủ động tra cứu trạng thái đơn hàng bất cứ lúc nào. Mỗi đơn hàng được vận hành qua hệ thống khép kín từ đồng bộ dữ liệu, đóng gói đến theo dõi trạng thái chi tiết.", zh: "THG提供实时追踪系统，让您随时主动查看订单状态。每个订单通过从数据同步、包装到详细状态跟踪的闭环系统运作。" },
+  "ship_faq.q7": { en: "How does THG calculate shipping costs? Is it based on actual weight?", vi: "THG tính cước vận chuyển dựa trên tiêu chí gì? Có phải theo trọng lượng thật không?", zh: "THG如何计算运费？是按实际重量吗？" },
+  "ship_faq.a7": { en: "THG calculates shipping based on whichever is higher between actual weight (Gross Weight) and volumetric weight (Volume Weight = L×W×H / 6000).\n\n• Example: A package with actual weight 0.9kg but volumetric weight 1.1kg will be charged at 1.1kg.\n• Applies to all US/Canada/Mexico/EU routes.\n• Maximum weight: 30kg/package.", vi: "THG tính cước theo nguyên tắc lấy cao nhất giữa trọng lượng thực tế (Gross Weight) và trọng lượng thể tích (Volume Weight = L×W×H / 6000).\n\n• Ví dụ: kiện hàng có trọng lượng thực 0.9kg nhưng trọng lượng thể tích 1.1kg thì cước vận chuyển sẽ tính theo 1.1kg.\n• Áp dụng cho tất cả tuyến US/Canada/Mexico/EU.\n• Trọng lượng tối đa: 30kg/kiện.", zh: "THG按实际重量（毛重）和体积重量（体积重量 = 长×宽×高 / 6000）中较高者计算运费。\n\n• 例如：一个包裹实际重量0.9kg但体积重量1.1kg，则按1.1kg计费。\n• 适用于所有US/Canada/Mexico/EU路线。\n• 最大重量：30kg/件。" },
+  "ship_faq.q8": { en: "What is THG's compensation policy?", vi: "Chính sách bồi thường của THG?", zh: "THG的赔偿政策是什么？" },
+  "ship_faq.a8": { en: "THG compensates 100% of the value of goods lost/damaged due to errors during processing at THG.\n\n• Maximum compensation: $500/package.\n• Claim period: within 14 days from expected delivery date.\n• Does not apply to: prohibited goods, incorrectly declared goods, or goods seized by customs.", vi: "THG bồi thường 100% giá trị hàng hóa bị thất lạc/hư hỏng do lỗi trong quá trình xử lý tại THG.\n\n• Mức bồi thường tối đa: $500/kiện hàng.\n• Thời hạn khiếu nại: trong vòng 14 ngày kể từ ngày giao hàng dự kiến.\n• Không áp dụng cho: hàng cấm, hàng không khai báo đúng, hoặc hàng bị hải quan tịch thu.", zh: "THG对因THG处理过程中的失误导致的货物丢失/损坏赔偿100%的货物价值。\n\n• 最高赔偿：$500/包裹。\n• 索赔期限：预计交付日起14天内。\n• 不适用于：违禁品、申报不正确的货物或被海关扣押的货物。" },
+  "ship_faq.q9": { en: "What are the size and weight limits for ePacket service from China to the US?", vi: "Dịch vụ ePacket từ Trung Quốc sang Mỹ có giới hạn kích thước và trọng lượng ra sao?", zh: "从中国到美国的ePacket服务有什么尺寸和重量限制？" },
+  "ship_faq.a9": { en: "For the ePacket CHINA - US line, packages can weigh up to 30kg.\n\n• Standard size: 55×40×35cm (no extra charge).\n• Maximum size: 68×43×43cm (additional fees apply).\n• Minimum size: 10×15cm to ensure shipping safety.", vi: "Với dịch vụ Line ePacket CHINA - US, kiện hàng có thể nặng tối đa 30kg.\n\n• Kích thước tiêu chuẩn: 55×40×35cm (không tính thêm phí).\n• Kích thước tối đa: 68×43×43cm (có phí bổ sung).\n• Kích thước tối thiểu: 10×15cm để đảm bảo an toàn vận chuyển.", zh: "ePacket CHINA - US线路，包裹最重可达30kg。\n\n• 标准尺寸：55×40×35cm（无额外费用）。\n• 最大尺寸：68×43×43cm（需额外收费）。\n• 最小尺寸：10×15cm以确保运输安全。" },
+  "ship_faq.q10": { en: "What is the maximum declared value per package?", vi: "Giá trị khai báo tối đa trên mỗi kiện hàng là bao nhiêu?", zh: "每件包裹的最高申报价值是多少？" },
+  "ship_faq.a10": { en: "According to carrier and destination customs regulations, the maximum declared value varies by country:\n\n• USA: Max USD $60 (strict).\n• EU: Max EUR €150 / ~USD $155.\n• UK: Max GBP £135 / ~USD $155.\n• Japan: Max USD $110.\n\n⚠️ Note: Declarations exceeding the limit may result in the package being held or additional taxes. Please contact THG for advice.", vi: "Theo quy định từ hãng vận chuyển và hải quan nước đến, giá trị khai báo tối đa khác nhau tùy quốc gia:\n\n• USA: Max USD $60 (nghiêm ngặt).\n• EU: Max EUR €150 / ~USD $155.\n• UK: Max GBP £135 / ~USD $155.\n• Japan: Max USD $110.\n\n⚠️ Lưu ý: Khai báo vượt giới hạn có thể dẫn đến kiện hàng bị giữ lại hoặc thuế phát sinh. Vui lòng liên hệ THG nếu cần tư vấn.", zh: "根据承运商和目的地海关规定，各国最高申报价值不同：\n\n• 美国：最高USD $60（严格执行）。\n• 欧盟：最高EUR €150 / ~USD $155。\n• 英国：最高GBP £135 / ~USD $155。\n• 日本：最高USD $110。\n\n⚠️ 注意：超过限额的申报可能导致包裹被扣留或产生额外税费。如需建议请联系THG。" },
+  "ship_faq.q11": { en: "What is the return and re-delivery policy?", vi: "Chính sách hoàn hàng (Return) và gửi lại (Re-delivery) như thế nào?", zh: "退货和重新发货政策是什么？" },
+  "ship_faq.a11": { en: "When a package is returned to the overseas warehouse (due to wrong address, no recipient, or refused delivery):\n\n• Customers have 14-20 days (depending on country) to request re-delivery.\n• If no response within the deadline, the package will be destroyed.\n• THG does NOT support returning goods from abroad back to China/Vietnam.\n\nRe-delivery fees:\n• USA: $10.50/order\n• UK: $7.00/order\n• Germany: $10.50/order\n• Japan: $7.60/order\n• Other countries: $8.00/order", vi: "Khi kiện hàng bị trả về kho hải ngoại (do sai địa chỉ, không có người nhận, hoặc bị từ chối nhận):\n\n• Khách hàng có 14-20 ngày (tùy quốc gia) để yêu cầu Re-delivery.\n• Nếu không có phản hồi trong thời hạn, kiện hàng sẽ bị hủy.\n• THG KHÔNG hỗ trợ hoàn hàng từ nước ngoài về lại Trung Quốc/Việt Nam.\n\nPhí Re-delivery:\n• USA: $10.50/đơn\n• UK: $7.00/đơn\n• Germany: $10.50/đơn\n• Japan: $7.60/đơn\n• Các nước khác: $8.00/đơn", zh: "当包裹被退回海外仓库时（因地址错误、无人收件或拒收）：\n\n• 客户有14-20天（因国家而异）申请重新发货。\n• 如在截止日期内无回复，包裹将被销毁。\n• THG不支持将货物从国外退回中国/越南。\n\n重新发货费用：\n• 美国：$10.50/单\n• 英国：$7.00/单\n• 德国：$10.50/单\n• 日本：$7.60/单\n• 其他国家：$8.00/单" },
+  "ship_faq.q12": { en: "How much are warehouse pickup and Return to Sender fees?", vi: "Pickup tại kho và Return to Sender phí bao nhiêu?", zh: "仓库自提和退件费用是多少？" },
+  "ship_faq.a12": { en: "THG provides return processing services:\n\n• Pickup at US warehouse (PA/NC): $1.15/order\n• Return to Sender: $1.50/order\n\nWarehouse pickup orders need to be scheduled at least 24 hours in advance through the THG system.", vi: "THG cung cấp dịch vụ xử lý hàng trả về:\n\n• Pickup tại kho US (PA/NC): $1.15/đơn\n• Return to Sender: $1.50/đơn\n\nCác đơn hàng pickup tại kho cần đặt lịch trước ít nhất 24h qua hệ thống THG.", zh: "THG提供退货处理服务：\n\n• 美国仓库（PA/NC）自提：$1.15/单\n• 退回发件人：$1.50/单\n\n仓库自提订单需要通过THG系统提前至少24小时预约。" },
+  "ship_faq.q13": { en: "How is Remote Area determined?", vi: "Remote Area (Vùng sâu) được xác định như thế nào?", zh: "偏远地区如何确定？" },
+  "ship_faq.a13": { en: "Remote Area is determined by the ZIP code systems of international carriers (USPS, FedEx, DHL).\n\nIncludes:\n• Alaska, Hawaii, Puerto Rico, Guam\n• APO/FPO (military addresses)\n• Rural or hard-to-access areas\n\nRemote area surcharges are calculated by package weight, from $1.95 (0.05kg) to $87.82 (30kg). See details in the Remote Area Surcharge table.", vi: "Vùng sâu (Remote Area) được xác định theo hệ thống ZIP code của các hãng vận chuyển quốc tế (USPS, FedEx, DHL).\n\nBao gồm:\n• Alaska, Hawaii, Puerto Rico, Guam\n• APO/FPO (địa chỉ quân sự)\n• Các vùng nông thôn hoặc khó tiếp cận\n\nPhụ phí vùng sâu được tính theo trọng lượng kiện hàng, từ $1.95 (0.05kg) đến $87.82 (30kg). Xem chi tiết trong bảng Phụ Phí Vùng Sâu.", zh: "偏远地区由国际承运商（USPS、FedEx、DHL）的邮政编码系统确定。\n\n包括：\n• 阿拉斯加、夏威夷、波多黎各、关岛\n• APO/FPO（军事地址）\n• 农村或难以到达的地区\n\n偏远地区附加费按包裹重量计算，从$1.95（0.05kg）到$87.82（30kg）。详见偏远地区附加费表。" },
+  "ship_faq.q14": { en: "Does THG support POD (Print on Demand) services?", vi: "THG hỗ trợ dịch vụ POD (Print on Demand) không?", zh: "THG是否支持POD（按需打印）服务？" },
+  "ship_faq.a14": { en: "Yes, THG provides high-quality POD (Print on Demand) services:\n\n• Production time: 2-4 business days.\n• Return policy: 7 days for quality issues.\n• TikTok Shipping integration: automatic shipping label creation and real-time sync.\n• Supports shipping from both VN and CN to USA/Worldwide.", vi: "Có, THG cung cấp dịch vụ POD (Print on Demand) với chất lượng cao:\n\n• Thời gian sản xuất: 2-4 ngày làm việc.\n• Chính sách đổi trả: 7 ngày cho vấn đề chất lượng.\n• Tích hợp TikTok Shipping: tự động tạo nhãn vận chuyển và đồng bộ real-time.\n• Hỗ trợ gửi từ cả VN và CN đi USA/Worldwide.", zh: "是的，THG提供高质量的POD（按需打印）服务：\n\n• 生产时间：2-4个工作日。\n• 退换政策：质量问题7天内可退换。\n• TikTok Shipping集成：自动创建运输标签和实时同步。\n• 支持从越南和中国发往美国/全球。" },
 };
+
 
 interface I18nContextType {
   language: Language;
@@ -546,49 +855,32 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>("en");
-  // Track GTranslate language from html[lang] attribute
-  const [gtLang, setGtLang] = useState<string>(() => {
-    if (typeof document !== "undefined") {
-      return document.documentElement.lang || "vi";
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof localStorage !== "undefined") {
+      const saved = localStorage.getItem("thg_lang") as Language | null;
+      if (saved && ["en", "vi", "zh"].includes(saved)) return saved;
     }
-    return "vi";
+    return "en";
   });
 
-  // Observe GTranslate language changes on <html lang="...">
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const lang = document.documentElement.lang || "vi";
-      setGtLang(lang);
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["lang"],
-    });
-    return () => observer.disconnect();
-  }, []);
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem("thg_lang", lang);
+    // Set html lang attribute for SEO / accessibility (no GTranslate dependency)
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+  };
 
-  // Standard t() — always returns base language (Vietnamese) so GTranslate can translate it
+  // Standard t() — returns text in the selected language
   const t = (key: string): string => {
-    return translations[key]?.vi || translations[key]?.en || key;
+    return translations[key]?.[language] || translations[key]?.en || key;
   };
 
-  // Smart translation — returns curated text matching the current GTranslate language.
-  // Use with translate="no" on its container to prevent GTranslate from overwriting.
-  // English mode → exact English | Vietnamese mode → exact Vietnamese | Chinese → exact Chinese
+  // tVi() — same as t() now (both use selected language)
   const tVi = (key: string): string => {
-    if (gtLang.startsWith("zh")) {
-      return translations[key]?.zh || translations[key]?.en || key;
-    }
-    if (gtLang.startsWith("en")) {
-      return translations[key]?.en || key;
-    }
-    // Default to Vietnamese since it's the master language
-    return translations[key]?.vi || translations[key]?.en || key;
+    return translations[key]?.[language] || translations[key]?.en || key;
   };
 
-  // Derive effective Language type from GTranslate's detected language
-  const effectiveLanguage: Language = gtLang.startsWith("zh") ? "zh" : gtLang.startsWith("en") ? "en" : "vi";
+  const effectiveLanguage: Language = language;
 
   return (
     <I18nContext.Provider value={{ language, effectiveLanguage, setLanguage, t, tVi }}>

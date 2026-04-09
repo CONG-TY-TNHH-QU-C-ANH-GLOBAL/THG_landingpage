@@ -108,7 +108,16 @@ const blogPosts: BlogPost[] = [
   },
 ];
 
-const categories = ["All", "POD", "Logistics", "Warehouse", "eCommerce", "THG News", "Tips"];
+const categoryKeys = ["All", "POD", "Logistics", "Warehouse", "eCommerce", "THG News", "Tips"];
+const categoryTranslationMap: Record<string, string> = {
+  "All": "blog.cat_all",
+  "POD": "blog.cat_pod",
+  "Logistics": "blog.cat_logistics",
+  "Warehouse": "blog.cat_warehouse",
+  "eCommerce": "blog.cat_ecommerce",
+  "THG News": "blog.cat_news",
+  "Tips": "blog.cat_tips",
+};
 
 const BlogPage = () => {
   const { t, language } = useI18n();
@@ -125,7 +134,7 @@ const BlogPage = () => {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">THG Blog</p>
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("blog.eyebrow")}</p>
               <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">{t("blog.title")}</h2>
               <p className="text-muted-foreground mt-3">{t("blog.subtitle")}</p>
             </div>
@@ -134,15 +143,14 @@ const BlogPage = () => {
           {/* Category filter */}
           <ScrollReveal delay={100}>
             <div className="flex flex-wrap gap-2 mb-12 justify-center">
-              {categories.map((c) => (
+              {categoryKeys.map((c) => (
                 <button
                   key={c}
                   onClick={() => setActiveCategory(c)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                    activeCategory === c ? "bg-primary text-primary-foreground shadow-lg" : "bg-secondary text-foreground/70 hover:bg-secondary/80"
-                  }`}
+                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === c ? "bg-primary text-primary-foreground shadow-lg" : "bg-secondary text-foreground/70 hover:bg-secondary/80"
+                    }`}
                 >
-                  {c}
+                  {t(categoryTranslationMap[c] || c)}
                 </button>
               ))}
             </div>

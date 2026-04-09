@@ -353,13 +353,12 @@ const THGFulfillPage = () => {
         <div className="container mx-auto px-4 max-w-5xl">
           <ScrollReveal>
             <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Hướng dẫn sử dụng hệ thống</p>
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_ecount.section_title")}</p>
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">
-                I. Video hướng dẫn cách <span className="text-gradient-gold">lên đơn trên Ecount</span>
+                <span className="text-gradient-gold">{t("fulfill_ecount.video_title")}</span>
               </h2>
               <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                Xem video hướng dẫn chi tiết cách lên đơn hàng trên hệ thống Ecount ERP của THG. Lưu ý chọn đúng
-                loại <strong>SBSL</strong> (Ship By Seller) / <strong>SBTT</strong> (Ship By TikTok) khi chọn SKU.
+                {t("fulfill_ecount.video_desc")}
               </p>
             </div>
           </ScrollReveal>
@@ -378,7 +377,7 @@ const THGFulfillPage = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full px-6 py-3 font-semibold text-sm shadow-md hover:bg-gold-dark transition-colors"
               >
-                📋 Link SKU for THG FULFILL
+                {t("fulfill_ecount.sku_link")}
               </a>
             </div>
           </ScrollReveal>
@@ -391,10 +390,10 @@ const THGFulfillPage = () => {
           <ScrollReveal>
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">
-                II. Lên đơn lẻ <span className="text-gradient-gold">trên hệ thống ERP của THG</span>
+                <span className="text-gradient-gold">{t("fulfill_ecount.single_title")}</span>
               </h2>
               <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                Hướng dẫn chi tiết từng bước để lên đơn hàng trên hệ thống Ecount ERP.
+                {t("fulfill_ecount.single_desc")}
               </p>
             </div>
           </ScrollReveal>
@@ -406,14 +405,14 @@ const THGFulfillPage = () => {
               <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
                 <div className="flex items-center gap-4 mb-5">
                   <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">1</span>
-                  <h3 className="text-xl font-bold text-navy">Đăng nhập vào hệ thống</h3>
+                  <h3 className="text-xl font-bold text-navy">{t("fulfill_ecount.step1_title")}</h3>
                 </div>
                 <p className="text-muted-foreground mb-5 leading-relaxed">
-                  Truy cập tài khoản do THG cung cấp tại{" "}
+                  {t("fulfill_ecount.step1_desc")}{" "}
                   <a href="https://login.ecount.com/Login/" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
                     login.ecount.com
                   </a>
-                  . Nhập thông tin đăng nhập (mã công ty, ID, mật khẩu) mà THG đã gửi cho bạn.
+                  {t("fulfill_ecount.step1_desc2")}
                 </p>
                 <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm">
                   <img
@@ -431,10 +430,10 @@ const THGFulfillPage = () => {
               <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
                 <div className="flex items-center gap-4 mb-5">
                   <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">2</span>
-                  <h3 className="text-xl font-bold text-navy">Điền Email khôi phục</h3>
+                  <h3 className="text-xl font-bold text-navy">{t("fulfill_ecount.step2_title")}</h3>
                 </div>
                 <p className="text-muted-foreground mb-5 leading-relaxed">
-                  Sau khi đăng nhập lần đầu, hệ thống sẽ yêu cầu nhập email để khôi phục mật khẩu. Điền email của bạn và nhấn <strong>"Gửi Email khôi phục"</strong> để tránh mất tài khoản.
+                  {t("fulfill_ecount.step2_desc")}
                 </p>
                 <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm">
                   <img
@@ -452,10 +451,10 @@ const THGFulfillPage = () => {
               <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
                 <div className="flex items-center gap-4 mb-5">
                   <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">3</span>
-                  <h3 className="text-xl font-bold text-navy">Vào trang cá nhân → Bán hàng mới</h3>
+                  <h3 className="text-xl font-bold text-navy">{t("fulfill_ecount.step3_title")}</h3>
                 </div>
                 <p className="text-muted-foreground mb-5 leading-relaxed">
-                  Click vào <strong>"Trang cá nhân"</strong>, sau đó chọn <strong>"Bán hàng mới"</strong> để bắt đầu tạo đơn hàng. Điền đầy đủ các trường thông tin bắt buộc.
+                  {t("fulfill_ecount.step3_desc")}
                 </p>
                 <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm mb-5">
                   <img
@@ -467,15 +466,15 @@ const THGFulfillPage = () => {
                 </div>
                 {/* Form fields breakdown */}
                 <div className="bg-[#FFFBF0] rounded-xl p-5 border border-[#F5D78E]/50">
-                  <h4 className="font-bold text-navy text-sm mb-3">📋 Mô tả các trường thông tin:</h4>
+                  <h4 className="font-bold text-navy text-sm mb-3">{t("fulfill_ecount.fields_title")}</h4>
                   <div className="grid md:grid-cols-2 gap-3 text-sm">
                     {[
-                      { label: "Location", desc: "Mã hoá xưởng THG (VD: 001 cho phonecase)" },
-                      { label: "Order ID", desc: "Mã đơn hàng của bạn" },
-                      { label: "Lastmile tracking", desc: "Mã tracking đơn vận chuyển" },
-                      { label: "Seller code", desc: "Mã khách hàng THG cung cấp (VD: CUS001)" },
-                      { label: "Service", desc: "SBTT (Ship by TikTok) / SBSL (Ship by Seller)" },
-                      { label: "Shipping label", desc: "Dán link label (Google Drive, v.v.)" },
+                      { label: "Location", desc: t("fulfill_ecount.field_location") },
+                      { label: "Order ID", desc: t("fulfill_ecount.field_orderid") },
+                      { label: "Lastmile tracking", desc: t("fulfill_ecount.field_tracking") },
+                      { label: "Seller code", desc: t("fulfill_ecount.field_seller") },
+                      { label: "Service", desc: t("fulfill_ecount.field_service") },
+                      { label: "Shipping label", desc: t("fulfill_ecount.field_label") },
                     ].map((item, i) => (
                       <div key={i} className="flex gap-2">
                         <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
@@ -500,10 +499,10 @@ const THGFulfillPage = () => {
               <div className="glass-card rounded-2xl p-6 md:p-8 border border-border/40 shadow-lg">
                 <div className="flex items-center gap-4 mb-5">
                   <span className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white font-bold text-lg shadow-md">4</span>
-                  <h3 className="text-xl font-bold text-navy">Chọn SKU & Lưu đơn hàng</h3>
+                  <h3 className="text-xl font-bold text-navy">{t("fulfill_ecount.step4_title")}</h3>
                 </div>
                 <p className="text-muted-foreground mb-5 leading-relaxed">
-                  Bấm đúp chuột vào khoảng trống của <strong>SKU</strong> để chọn SKU cho đơn hàng hoặc dùng link SKU do THG cung cấp. <strong>Chú ý chọn đúng SBSL/SBTT</strong> để chọn đúng SKU.
+                  {t("fulfill_ecount.step4_desc")}
                 </p>
                 <div className="rounded-xl overflow-hidden border border-border/30 shadow-sm mb-5">
                   <img
@@ -515,7 +514,7 @@ const THGFulfillPage = () => {
                 </div>
                 <div className="bg-[#F0F7FF] rounded-xl p-4 border border-blue-200/50 text-sm">
                   <p className="text-navy">
-                    <strong>💡 Ví dụ:</strong> iPhone 12 Pro SKU sẽ là <code className="bg-navy/10 px-2 py-0.5 rounded text-xs font-mono">2-PC01-ip12pr-wht</code> cho ship by TikTok, dòng toughcase 2 lớp.
+                    <strong>{t("fulfill_ecount.step4_example")}</strong> <code className="bg-navy/10 px-2 py-0.5 rounded text-xs font-mono">2-PC01-ip12pr-wht</code> {t("fulfill_ecount.step4_example2")}
                   </p>
                 </div>
               </div>

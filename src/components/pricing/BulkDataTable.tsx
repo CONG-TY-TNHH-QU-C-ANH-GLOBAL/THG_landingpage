@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet, FileText, FileIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { exportToExcel } from "@/lib/exportUtils";
@@ -8,7 +8,6 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
 }) => {
     const { tVi } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
     const tableId = useMemo(() => "table-bulk-" + Math.random().toString(36).substring(2, 9), []);
     if (!data || data.length === 0) return null;
 
@@ -42,7 +41,7 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
     };
 
     return (
-        <div ref={containerRef} className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
             <div className="bg-navy px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
                 <span className="text-white font-bold text-[13px] flex items-center gap-2">
                     {title}
@@ -53,7 +52,7 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
                 </div>
             </div>
             {/* Mobile Cards */}
-            <div className="md:hidden flex flex-col gap-3 p-4 bg-secondary/10" translate="no">
+            <div className="md:hidden flex flex-col gap-3 p-4 bg-secondary/10">
                 {displayData.map((row: any, i: number) => (
                     <div key={i} className="bg-white border border-[var(--pricing-border)] rounded-xl p-4 shadow-sm relative">
                         <div className="font-bold text-navy text-[15px] mb-3 pb-2 border-b border-[var(--pricing-border)]/50">
@@ -74,7 +73,7 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
                 ))}
             </div>
             {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto" translate="no">
+            <div className="hidden md:block overflow-x-auto">
                 <table id={tableId} className="w-full border-collapse text-[13px]">
                     <thead>
                         <tr className="bg-[#FAFAF8]">
@@ -112,16 +111,7 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
             )}
             {isExpanded && data.length > 6 && (
                 <div className="border-t border-[var(--pricing-border)]">
-                    <button onClick={() => {
-                        if (containerRef.current) {
-                            const rect = containerRef.current.getBoundingClientRect();
-                            const targetY = Math.max(0, window.scrollY + rect.top - 80);
-                            setIsExpanded(false);
-                            requestAnimationFrame(() => window.scrollTo({ top: targetY, behavior: "smooth" }));
-                        } else {
-                            setIsExpanded(false);
-                        }
-                    }} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                    <button onClick={() => setIsExpanded(false)} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                         {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
                     </button>
                 </div>

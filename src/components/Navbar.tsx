@@ -1,14 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-
-// Module-level singleton: widget element persists across all re-renders/route changes
-let _gtWidget: HTMLDivElement | null = null;
-const getGTWidget = (): HTMLDivElement => {
-  if (!_gtWidget) {
-    _gtWidget = document.createElement("div");
-    _gtWidget.className = "gtranslate_wrapper";
-  }
-  return _gtWidget;
-};
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign, MapPin, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -29,7 +20,7 @@ const pricingItems = [
 ];
 
 const Navbar = () => {
-  const { t, tVi } = useI18n();
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [showServices, setShowServices] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
@@ -39,8 +30,6 @@ const Navbar = () => {
   const pricingDropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
   const pricingTimeoutRef = useRef<NodeJS.Timeout>();
-  const gtDesktopSlotRef = useRef<HTMLDivElement>(null);
-  const gtMobileSlotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -48,50 +37,6 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  // Inject GTranslate widget — runs once, polling keeps widget always visible
-  useEffect(() => {
-    if (!(window as any).gtranslateSettings) {
-      document.cookie = "googtrans=/vi/en; path=/;";
-      document.cookie = `googtrans=/vi/en; path=/; domain=.${window.location.hostname};`;
-      (window as any).gtranslateSettings = {
-        default_language: "vi",
-        native_language_names: true,
-        languages: ["en", "vi", "zh-CN"],
-        wrapper_selector: ".gtranslate_wrapper",
-        alt_flags: { en: "usa" },
-      };
-      const script = document.createElement("script");
-      script.src = "https://cdn.gtranslate.net/widgets/latest/popup.js";
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-
-    // Always ensure widget is in the correct slot.
-    // Refs (.current) are always up-to-date even without deps,
-    // so polling interval reliably fixes widget after every React re-render.
-    const placeWidget = () => {
-      const widget = getGTWidget();
-      const isDesktop = window.innerWidth >= 1024;
-      const slot = isDesktop ? gtDesktopSlotRef.current : gtMobileSlotRef.current;
-      if (slot && !slot.contains(widget)) {
-        slot.appendChild(widget);
-      }
-    };
-
-    placeWidget();
-    // Fast polling for first 3 seconds (catches GTranslate DOM manipulation on load)
-    const fastInterval = setInterval(placeWidget, 50);
-    setTimeout(() => clearInterval(fastInterval), 3000);
-    // Steady polling forever — handles route changes & GTranslate page translation
-    const interval = setInterval(placeWidget, 200);
-    window.addEventListener("resize", placeWidget);
-
-    return () => {
-      clearInterval(fastInterval);
-      clearInterval(interval);
-      window.removeEventListener("resize", placeWidget);
-    };
-  }, []); // intentionally empty — polling handles all re-renders/route changes
 
   useEffect(() => {
     setShowServices(false);
@@ -115,9 +60,9 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { label: tVi("nav.policy"), href: "/chinh-sach" },
-    { label: tVi("nav.news"), href: "/tin-tuc" },
-    { label: tVi("nav.faq"), href: "/#faq" },
+    { label: t("nav.policy"), href: "/chinh-sach" },
+    { label: t("nav.news"), href: "/tin-tuc" },
+    { label: t("nav.faq"), href: "/#faq" },
   ];
 
   return (
@@ -146,7 +91,7 @@ const Navbar = () => {
             onMouseLeave={handleMouseLeave}
           >
             <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50">
-              <span translate="no">{tVi("nav.services")}</span>
+              <span translate="no">{t("nav.services")}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showServices ? "rotate-180" : ""}`} />
             </button>
 
@@ -166,8 +111,8 @@ const Navbar = () => {
                       <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
                     </div>
                     <div>
-                      <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{tVi(item.titleKey)}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{tVi(item.descKey)}</p>
+                      <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{t(item.titleKey)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{t(item.descKey)}</p>
                     </div>
                   </Link>
                 ))}
@@ -183,7 +128,7 @@ const Navbar = () => {
             onMouseLeave={handlePricingLeave}
           >
             <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50">
-              <span translate="no">{tVi("nav.pricing")}</span>
+              <span translate="no">{t("nav.pricing")}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showPricing ? "rotate-180" : ""}`} />
             </button>
 
@@ -206,8 +151,8 @@ const Navbar = () => {
                         <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
                       </div>
                       <div>
-                        <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{tVi(item.titleKey)}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{tVi(item.descKey)}</p>
+                        <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{t(item.titleKey)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{t(item.descKey)}</p>
                       </div>
                     </a>
                   ) : (
@@ -221,8 +166,8 @@ const Navbar = () => {
                         <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
                       </div>
                       <div>
-                        <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{tVi(item.titleKey)}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{tVi(item.descKey)}</p>
+                        <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{t(item.titleKey)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{t(item.descKey)}</p>
                       </div>
                     </Link>
                   )
@@ -263,17 +208,17 @@ const Navbar = () => {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
-          <div ref={gtDesktopSlotRef} />
+          <LanguageSwitcher />
           <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-6 text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
             style={{ boxShadow: "0 4px 15px hsl(36 45% 42% / 0.3)" }}
           >
-            {tVi("nav.consult")}
+            {t("nav.consult")}
           </Button>
         </div>
 
         {/* Mobile toggle */}
         <div className="flex lg:hidden items-center gap-2">
-          <div ref={gtMobileSlotRef} />
+          <LanguageSwitcher />
           <button className="p-2" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -283,7 +228,7 @@ const Navbar = () => {
       {/* Mobile menu */}
       {isOpen && (
         <div className="lg:hidden bg-card/95 backdrop-blur-2xl border-t border-border/40 px-4 py-6 space-y-1 animate-fade-in shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.1)]">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{tVi("nav.services")}</span></p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{t("nav.services")}</span></p>
           {serviceItems.map((item) => (
             <Link
               key={item.titleKey}
@@ -292,11 +237,11 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               <item.icon className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium" translate="no">{tVi(item.titleKey)}</span>
+              <span className="text-sm font-medium" translate="no">{t(item.titleKey)}</span>
             </Link>
           ))}
           <div className="border-t border-border/50 my-3" />
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{tVi("nav.pricing")}</span></p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{t("nav.pricing")}</span></p>
           {pricingItems.map((item: any) => (
             item.external ? (
               <a
@@ -308,7 +253,7 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               >
                 <item.icon className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium" translate="no">{tVi(item.titleKey)}</span>
+                <span className="text-sm font-medium" translate="no">{t(item.titleKey)}</span>
               </a>
             ) : (
               <Link
@@ -318,7 +263,7 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               >
                 <item.icon className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium" translate="no">{tVi(item.titleKey)}</span>
+                <span className="text-sm font-medium" translate="no">{t(item.titleKey)}</span>
               </Link>
             )
           ))}
@@ -355,7 +300,7 @@ const Navbar = () => {
           )}
           <div className="pt-3">
             <Button className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full shadow-lg">
-              {tVi("nav.consult")}
+              {t("nav.consult")}
             </Button>
           </div>
         </div>

@@ -1,7 +1,6 @@
-import { useMemo, useState, useRef, useCallback } from "react";
+import { useMemo, useState } from "react";
 import { usePricingStore } from "@/stores/usePricingStore";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useI18n } from "@/lib/i18n";
 
 type TableRow = Record<string, string | number | null | undefined>;
 
@@ -19,20 +18,7 @@ const INITIAL_ROWS = 6;
 
 const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
   const store = usePricingStore();
-  const { tVi } = useI18n();
   const [showAll, setShowAll] = useState(false);
-  const tableRef = useRef<HTMLDivElement>(null);
-
-  const toggleShowAll = useCallback(() => {
-    setShowAll((prev) => {
-      if (prev && tableRef.current) {
-        const rect = tableRef.current.getBoundingClientRect();
-        const targetY = Math.max(0, window.scrollY + rect.top - 80);
-        requestAnimationFrame(() => window.scrollTo({ top: targetY, behavior: "smooth" }));
-      }
-      return !prev;
-    });
-  }, []);
 
   const isRowActive = (rowWeight: number) => {
     if (!store.weight) return false;
@@ -49,8 +35,8 @@ const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
   const hasMore = data.length > INITIAL_ROWS;
 
   return (
-    <div ref={tableRef}>
-      <div className="overflow-x-auto relative" translate="no">
+    <div  >
+      <div className="overflow-x-auto relative">
         <table className="w-full text-left text-sm whitespace-nowrap min-w-[700px]">
           <thead className="bg-navy text-primary-foreground uppercase text-xs">
             <tr>
@@ -119,16 +105,15 @@ const HighlightableTable = ({ columns, data }: HighlightableTableProps) => {
         </table>
       </div>
       {hasMore && (
-        <div className="flex justify-center mt-4 relative z-10">
+        <div className="flex justify-center mt-4">
           <button
-            onPointerUp={toggleShowAll}
-            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-sm font-semibold text-navy transition-all duration-300 hover:shadow-md active:scale-95 select-none cursor-pointer"
+            onClick={() => setShowAll(!showAll)}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-sm font-semibold text-navy transition-all duration-300 hover:shadow-md"
           >
             {showAll ? (
-              <>{tVi("pricing.btn_collapse")} <ChevronUp className="w-4 h-4" /></>
+              <>Show Less <ChevronUp className="w-4 h-4" /></>
             ) : (
-              <>{tVi("pricing.btn_expand").replace("{count}", String(data.length - INITIAL_ROWS))} <ChevronDown className="w-4 h-4" /></>
+              <>See More ({data.length - INITIAL_ROWS} rows) <ChevronDown className="w-4 h-4" /></>
             )}
           </button>
         </div>

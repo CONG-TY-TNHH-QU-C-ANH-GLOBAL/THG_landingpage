@@ -24,39 +24,92 @@ export const domesticPricingRows: DomesticPricingRow[] = (rawData as any[]).map(
     },
 }));
 
-export const fulfillmentServices = {
-    receiving: {
+export interface FulfillmentRow {
+    stt: number;
+    label: string;
+    subRows?: { desc: string; price: string; note?: string }[];
+    price?: string;
+    note?: string;
+}
+
+export const fulfillmentRows: FulfillmentRow[] = [
+    {
+        stt: 1,
         label: "Nhập kho",
-        price: "Miễn phí"
+        price: "Miễn phí",
     },
+    {
+        stt: 2,
+        label: "Phí kiểm đếm",
+        subRows: [
+            { desc: "- Hàng hóa đóng gói nhỏ lẻ, số lượng ít hơn 20 món/carton", price: "Miễn phí" },
+            { desc: "- Hàng hóa đóng kiện, chỉ có 1 loại sản phẩm, kiểm tra nhanh", price: "2.5$ /carton" },
+            { desc: "- Hàng hóa đóng kiện với nhiều món hàng lẫn lộn", price: "6.25$ /carton" },
+            { desc: "- Hàng hóa lớn, đóng gói theo CBM", price: "38$ /CBM" },
+            { desc: "- Phí kiểm kê hàng hóa định kỳ (theo yêu cầu)", price: "30$ /hour hoặc\n30$ cho 1500pcs", note: "Sẽ có xê dịch tùy thuộc vào mặt hàng" },
+            { desc: "- Các trường hợp khác", price: "", note: "Tính theo case cụ thể" },
+        ],
+    },
+    {
+        stt: 3,
+        label: "Phí lưu kho",
+        price: "0.1$ /pc/tháng hoặc\n20 $/ 1 CBM/ 1 tháng",
+    },
+    {
+        stt: 4,
+        label: "Phí đóng gói, dán label và mang hàng ra hãng vận chuyển",
+        subRows: [
+            { desc: "- Items ≤ 2 lbs", price: "1.2$ /pc" },
+            { desc: "- Item > 2 lbs; ≤ 4 lbs", price: "1.7$ /pc" },
+            { desc: "- Item > 4 lbs; ≤ 6 lbs", price: "2.2$ /pc" },
+            { desc: "- Item > 6 lbs; ≤ 8 lbs", price: "2.7$ /pc" },
+            { desc: "- Item > 8 lbs; ≤ 10 lbs", price: "3.2$ /pc" },
+            { desc: "- Item > 10 lbs", price: "", note: "Tính theo case cụ thể" },
+        ],
+        note: "Nếu đơn hàng có nhiều hơn 1 pc thì sẽ cộng thêm $0.5/pc cho mỗi pc tiếp theo",
+    },
+    {
+        stt: 5,
+        label: "Phí hộp/bao bì (tùy kích thước & yêu cầu đóng gói)",
+        price: "$0.5 - $1 /đơn",
+        note: "Áp dụng với đơn cần đóng gói hộp",
+    },
+    {
+        stt: 6,
+        label: "Xử lý hàng trả (Return)",
+        price: "Miễn phí",
+        note: "Hàng hóa",
+    },
+    {
+        stt: 7,
+        label: "Giao hàng",
+        price: "Dựa vào phí của đơn vị USPS hoặc dịch vụ khác cạnh tranh",
+    },
+    {
+        stt: 8,
+        label: "Phí xuất hàng trả",
+        price: "2.5$ /carton",
+        note: "Theo case thực tế, báo giá trước khi thực hiện",
+    },
+];
+
+// Keep legacy export for backward compat
+export const fulfillmentServices = {
+    receiving: { label: "Nhập kho", price: "Miễn phí" },
     inspection: {
         label: "Phí kiểm đếm",
-        options: [
-            { desc: "Hàng hóa đóng gói nhỏ lẻ, số lượng ít hơn 20 món/carton", price: "Miễn phí" },
-            { desc: "Hàng hóa đóng kiện, chỉ có 1 loại sản phẩm, kiểm tra nhanh", price: "2.5$ /carton" },
-            { desc: "Hàng hóa đóng kiện với nhiều món hàng lẫn lộn", price: "6.25$ /carton" },
-            { desc: "Oversized/Bulky goods, priced per CBM", price: "38$ /CBM" },
-            { desc: "Phí kiểm kê hàng hóa định kỳ (theo yêu cầu)", price: "30$ /hour hoặc 30$ cho 1500pcs", note: "Sẽ có xê dịch tùy thuộc vào mặt hàng" },
-            { desc: "Các trường hợp khác", price: "Tính theo case cụ thể" },
-        ]
+        options: fulfillmentRows[1].subRows!.map(r => ({ desc: r.desc, price: r.price, note: r.note })),
     },
     storage: {
         label: "Phí lưu kho",
         options: [
             { desc: "Theo sản phẩm", price: "0.1$ /pc/tháng" },
             { desc: "Theo thể tích", price: "20$ / 1 CBM/ 1 tháng" },
-        ]
+        ],
     },
     packLabel: {
         label: "Phí đóng gói, dán label và mang hàng ra hãng vận chuyển",
-        tiers: [
-            { range: "Items ≤ 2 lbs", price: "1.2$ /pc" },
-            { range: "Item > 2 lbs; ≤ 4 lbs", price: "1.7$ /pc" },
-            { range: "Item > 4 lbs; ≤ 6 lbs", price: "2.2$ /pc" },
-            { range: "Item > 6 lbs; ≤ 8 lbs", price: "2.7$ /pc" },
-            { range: "Item > 8 lbs; ≤ 10 lbs", price: "3.2$ /pc" },
-            { range: "Item > 10 lbs", price: "Tính theo case cụ thể" },
-        ],
-        note: "Nếu đơn hàng có nhiều hơn 1 pc thì sẽ cộng thêm $0.5/pc cho mỗi pc tiếp theo"
+        tiers: fulfillmentRows[3].subRows!.map(r => ({ range: r.desc, price: r.price })),
+        note: fulfillmentRows[3].note!,
     },
 };

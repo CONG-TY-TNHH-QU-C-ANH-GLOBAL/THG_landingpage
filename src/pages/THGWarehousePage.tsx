@@ -13,108 +13,70 @@ import vid1Src from "@/assets/videos/DongHang.mp4";
 import vid2Src from "@/assets/videos/HoangHang.mp4";
 import vid3Src from "@/assets/videos/HoangHanghoantien.mp4";
 
-const warehouseFAQs = [
-  {
-    question: "THG có bao nhiêu kho ở thời điểm hiện tại?",
-    answer: "THG hiện có 2 kho tại Mỹ: Pennsylvania (PA) và Winston-Salem, North Carolina (NC). Hệ thống kho kép giúp phủ sóng toàn nước Mỹ, tối ưu thời gian giao hàng 2–5 ngày.",
-  },
-  {
-    question: "Hàng hóa gửi qua THG Warehouse có cần lưu ý gì không?",
-    answer: "Hàng cần có barcode rõ ràng trên từng sản phẩm. Trước khi gửi hàng, bạn cần tạo yêu cầu nhập kho (IR) trên hệ thống OMS. THG hỗ trợ cung cấp file PDF barcode nếu sản phẩm chưa có.",
-  },
-  {
-    question: "THG có hỗ trợ Seller về lưu kho không?",
-    answer: "Có. THG miễn phí lưu kho cho 90 ngày đầu tiên. Từ ngày thứ 91 trở đi sẽ có phí lưu kho theo thông báo từ team THG.",
-  },
-  {
-    question: "THG có hỗ trợ quay, chụp sản phẩm khi cần thiết không?",
-    answer: "Có. THG hỗ trợ quay video toàn bộ quá trình đóng gói (100% đơn hàng). Ngoài ra, THG có thể hỗ trợ chụp ảnh sản phẩm theo yêu cầu. Vui lòng liên hệ team để biết thêm chi tiết.",
-  },
-  {
-    question: "THG có thể nhận hàng Return và hàng gửi từ kho Amazon vào kho THG không?",
-    answer: "Có. THG nhận và xử lý hàng return miễn phí cho tất cả đơn hàng do THG thực hiện. THG cũng hỗ trợ nhận hàng chuyển từ kho Amazon FBA về kho THG Warehouse.",
-  },
-  {
-    question: "THG có bao nhiêu loại bao bì đóng gói?",
-    answer: "THG cung cấp nhiều loại bao bì: túi poly, hộp carton các kích cỡ, bubble wrap và vật liệu chống sốc tiêu chuẩn quốc tế. Seller có thể yêu cầu sử dụng bao bì riêng của thương hiệu.",
-  },
-  {
-    question: "Thời gian pick & pack và mang hàng ra bưu cục USPS?",
-    answer: "Thông thường đơn hàng được xử lý và pick & pack trong vòng 24–48 giờ làm việc. Hàng được mang ra bưu cục USPS/FedEx/UPS trong ngày hoặc ngày hôm sau tùy khối lượng đơn.",
-  },
-  {
-    question: "Cách xác định vùng giao hàng (USPS Shipping Zone)?",
-    answer: "USPS Shipping Zone được tính dựa trên khoảng cách từ kho THG (PA & NC) đến địa chỉ người nhận. Zone càng thấp, phí ship càng rẻ và giao hàng càng nhanh. Team THG sẽ tư vấn zone phù hợp khi bắt đầu sử dụng dịch vụ.",
-  },
-  {
-    question: "Quy trình xử lý Barcode?",
-    answer: "1. Tạo hoặc gán barcode cho từng sản phẩm.\n2. THG cung cấp file PDF barcode nếu cần.\n3. In và dán barcode lên sản phẩm trước khi gửi vào kho, hoặc THG có thể hỗ trợ dán tại kho.",
-  },
-  {
-    question: "Quy trình gửi hàng Warehouse US?",
-    answer: "1. Tạo IR (Inbound Request) trên OMS.\n2. Đóng gói và gửi hàng đến địa chỉ kho THG (PA hoặc NC).\n3. THG nhận hàng, kiểm tra và nhập kho.\n4. Tồn kho được cập nhật real-time trên OMS.",
-  },
-  {
-    question: "Quy trình lên đơn hàng?",
-    answer: "Đơn có thể được sync tự động từ Shopify/Etsy/Amazon qua OMS, hoặc lên đơn thủ công trực tiếp trên hệ thống OMS. THG xử lý đơn, pick & pack, quay video đóng gói và giao cho carrier.",
-  },
-  {
-    question: "Quy trình xử lý hàng Return?",
-    answer: "1. THG tiếp nhận và kiểm tra tình trạng hàng return.\n2. Cập nhật trạng thái trên OMS.\n3. Seller quyết định tái xuất hoặc hủy hàng.\nMiễn phí 100% phí xử lý return cho mọi đơn THG thực hiện.",
-  },
-  {
-    question: "Quy trình xử lý công nợ?",
-    answer: "THG thông báo công nợ định kỳ qua hệ thống OMS và email. Seller thanh toán theo hình thức chuyển khoản hoặc các phương thức được thỏa thuận. Vui lòng liên hệ team CSKH để biết chi tiết về chính sách thanh toán.",
-  },
-];
-
-const features = [
-  { icon: "🏷️", titleKey: "warehouse_page.feat1_title", descKey: "warehouse_page.feat1_desc" },
-  { icon: "📦", titleKey: "warehouse_page.feat2_title", descKey: "warehouse_page.feat2_desc" },
-  { icon: "🚚", titleKey: "warehouse_page.feat3_title", descKey: "warehouse_page.feat3_desc" },
-];
-
-const strengths = [
-  { icon: DollarSign, titleKey: "warehouse_page.str1_title", descKey: "warehouse_page.str1_desc" },
-  { icon: MapPin, titleKey: "warehouse_page.str2_title", descKey: "warehouse_page.str2_desc" },
-  { icon: Clock, titleKey: "warehouse_page.str3_title", descKey: "warehouse_page.str3_desc" },
-  { icon: Monitor, titleKey: "warehouse_page.str4_title", descKey: "warehouse_page.str4_desc" },
-  { icon: Video, titleKey: "warehouse_page.str5_title", descKey: "warehouse_page.str5_desc" },
-];
-
-const processSteps = [
-  { num: "01", titleKey: "warehouse_page.step1_title", descKey: "warehouse_page.step1_desc", icon: Package },
-  { num: "02", titleKey: "warehouse_page.step2_title", descKey: "warehouse_page.step2_desc", icon: Truck },
-  { num: "03", titleKey: "warehouse_page.step3_title", descKey: "warehouse_page.step3_desc", icon: Warehouse },
-  { num: "04", titleKey: "warehouse_page.step4_title", descKey: "warehouse_page.step4_desc", icon: Monitor },
-  { num: "05", titleKey: "warehouse_page.step5_title", descKey: "warehouse_page.step5_desc", icon: ArrowRight },
-];
-
-const operationCards = [
-  {
-    title: "warehouse_page.op1_title",
-    desc: "warehouse_page.op1_desc",
-    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
-  },
-  {
-    title: "warehouse_page.op2_title",
-    desc: "warehouse_page.op2_desc",
-    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
-  },
-  {
-    title: "warehouse_page.op3_title",
-    desc: "warehouse_page.op3_desc",
-    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
-  },
-  {
-    title: "warehouse_page.op4_title",
-    desc: "warehouse_page.op4_desc",
-    image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg",
-  },
-];
-
 const THGWarehousePage = () => {
   const { t } = useI18n();
+
+  const warehouseFAQs = [
+    { question: t("wh_faq.q1"), answer: t("wh_faq.a1") },
+    { question: t("wh_faq.q2"), answer: t("wh_faq.a2") },
+    { question: t("wh_faq.q3"), answer: t("wh_faq.a3") },
+    { question: t("wh_faq.q4"), answer: t("wh_faq.a4") },
+    { question: t("wh_faq.q5"), answer: t("wh_faq.a5") },
+    { question: t("wh_faq.q6"), answer: t("wh_faq.a6") },
+    { question: t("wh_faq.q7"), answer: t("wh_faq.a7") },
+    { question: t("wh_faq.q8"), answer: t("wh_faq.a8") },
+    { question: t("wh_faq.q9"), answer: t("wh_faq.a9") },
+    { question: t("wh_faq.q10"), answer: t("wh_faq.a10") },
+    { question: t("wh_faq.q11"), answer: t("wh_faq.a11") },
+    { question: t("wh_faq.q12"), answer: t("wh_faq.a12") },
+    { question: t("wh_faq.q13"), answer: t("wh_faq.a13") },
+  ];
+
+  const features = [
+    { icon: "🏷️", titleKey: "warehouse_page.feat1_title", descKey: "warehouse_page.feat1_desc" },
+    { icon: "📦", titleKey: "warehouse_page.feat2_title", descKey: "warehouse_page.feat2_desc" },
+    { icon: "🚚", titleKey: "warehouse_page.feat3_title", descKey: "warehouse_page.feat3_desc" },
+  ];
+
+  const strengths = [
+    { icon: DollarSign, titleKey: "warehouse_page.str1_title", descKey: "warehouse_page.str1_desc" },
+    { icon: MapPin, titleKey: "warehouse_page.str2_title", descKey: "warehouse_page.str2_desc" },
+    { icon: Clock, titleKey: "warehouse_page.str3_title", descKey: "warehouse_page.str3_desc" },
+    { icon: Monitor, titleKey: "warehouse_page.str4_title", descKey: "warehouse_page.str4_desc" },
+    { icon: Video, titleKey: "warehouse_page.str5_title", descKey: "warehouse_page.str5_desc" },
+  ];
+
+  const processSteps = [
+    { num: "01", titleKey: "warehouse_page.step1_title", descKey: "warehouse_page.step1_desc", icon: Package },
+    { num: "02", titleKey: "warehouse_page.step2_title", descKey: "warehouse_page.step2_desc", icon: Truck },
+    { num: "03", titleKey: "warehouse_page.step3_title", descKey: "warehouse_page.step3_desc", icon: Warehouse },
+    { num: "04", titleKey: "warehouse_page.step4_title", descKey: "warehouse_page.step4_desc", icon: Monitor },
+    { num: "05", titleKey: "warehouse_page.step5_title", descKey: "warehouse_page.step5_desc", icon: ArrowRight },
+  ];
+
+  const operationCards = [
+    {
+      title: "warehouse_page.op1_title",
+      desc: "warehouse_page.op1_desc",
+      image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
+    },
+    {
+      title: "warehouse_page.op2_title",
+      desc: "warehouse_page.op2_desc",
+      image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
+    },
+    {
+      title: "warehouse_page.op3_title",
+      desc: "warehouse_page.op3_desc",
+      image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
+    },
+    {
+      title: "warehouse_page.op4_title",
+      desc: "warehouse_page.op4_desc",
+      image: "https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg",
+    },
+  ];
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -368,7 +330,7 @@ const THGWarehousePage = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
-                      <span className="text-xs font-bold text-primary/40">Step {s.num}</span>
+                      <span className="text-xs font-bold text-primary/40">{t("wh_faq.step_prefix")} {s.num}</span>
                       <h3 className="text-base font-bold text-navy tracking-tight">{t(s.titleKey)}</h3>
                     </div>
                     <p className="text-sm text-navy/70 leading-relaxed">{t(s.descKey)}</p>
@@ -389,8 +351,8 @@ const THGWarehousePage = () => {
           <ScrollReveal>
             <div className="text-center mb-12">
               <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Q&A</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">Câu hỏi thường gặp</h2>
-              <p className="text-navy/70 mt-3 max-w-xl mx-auto">Giải đáp nhanh các thắc mắc về dịch vụ THG Warehouse US</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("wh_faq.title")}</h2>
+              <p className="text-navy/70 mt-3 max-w-xl mx-auto">{t("wh_faq.subtitle")}</p>
             </div>
           </ScrollReveal>
           <div className="max-w-3xl mx-auto">

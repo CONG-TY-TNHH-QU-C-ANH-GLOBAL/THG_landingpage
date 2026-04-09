@@ -28,7 +28,7 @@ const SearchWidget = ({
     showResult, handleSearch,
     searchCountries, estimatedPrice, searchTrigger,
 }: SearchWidgetProps) => {
-    const { tVi, effectiveLanguage: lang } = useI18n();
+    const { t, tVi, effectiveLanguage: lang } = useI18n();
     const getCargoLabel = (c: CargoType) => CARGO_LABELS[c]?.[lang] || CARGO_LABELS[c]?.vi || c;
 
     const selectClass = "w-full h-[40px] sm:h-[46px] bg-white border border-[var(--pricing-border)] rounded-lg px-3 sm:px-4 text-[13px] sm:text-sm font-medium outline-none focus:border-gold transition-colors appearance-none cursor-pointer";
@@ -81,7 +81,7 @@ const SearchWidget = ({
                         <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-2 tracking-widest">{tVi("pricing.search_weight")}</label>
                         <input
                             type="number" value={searchWeight} onChange={(e) => setSearchWeight(e.target.value ? Number(e.target.value) : 1)} min="0.1" step="0.5"
-                            placeholder="Vd: 1"
+                            placeholder={t("pricing_sw.placeholder")}
                             className="w-full h-[40px] sm:h-[46px] bg-white border border-[var(--pricing-border)] rounded-lg px-3 sm:px-4 text-[13px] sm:text-sm font-medium outline-none focus:border-gold transition-colors"
                         />
                     </div>

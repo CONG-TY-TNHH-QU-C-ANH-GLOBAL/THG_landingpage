@@ -32,7 +32,7 @@ const EpacketPanel = ({
     larkOverlay, vatData, remoteSurcharge, redeliveryData,
     larkLoading, larkError,
 }: EpacketPanelProps) => {
-    const { effectiveLanguage: lang } = useI18n();
+    const { t, effectiveLanguage: lang } = useI18n();
 
     const getRouteName = (r: typeof ROUTES[EpacketRoute]) => {
         if (lang === 'zh') return r.nameZh;
@@ -53,7 +53,7 @@ const EpacketPanel = ({
     return (
         <div>
             {/* ──── ROUTE TABS (Level 2) ──── */}
-            <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-3">{lang === 'zh' ? '选择运输路线' : lang === 'en' ? 'SELECT SHIPPING ROUTE' : 'CHỌN TUYẾN VẬN CHUYỂN'}</p>
+            <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-3">{t("ep.select_route")}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-5">
                 {(Object.entries(ROUTES) as [EpacketRoute, typeof ROUTES[EpacketRoute]][]).map(([rid, r]) => (
                     <button
@@ -74,7 +74,7 @@ const EpacketPanel = ({
                                     <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700 notranslate" translate="no">✅ Import tax included</span>
                                 </>
                             )}
-                            {rid === "pri-vncn-us" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 notranslate" translate="no">{lang === 'zh' ? '✅ 含进口税 · Active USPS' : lang === 'en' ? '✅ Import tax included · Active USPS' : '✅ Bao thuế NK · Active USPS'}</span>}
+                            {rid === "pri-vncn-us" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 notranslate" translate="no">{t("ep.import_tax_badge")}</span>}
                             {r.cargo.length > 0 && (
                                 <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
                                     <span className="notranslate" translate="no">{r.cargo.map(c => CARGO_ICONS[c]).join(" ")} {r.cargo.map(c => getCargoLabel(c)).join(" · ")}</span>
@@ -91,19 +91,19 @@ const EpacketPanel = ({
                     <div className="bg-white border border-[var(--pricing-border)] rounded-xl p-6 shadow-sm">
                         <h3 className="font-extrabold text-base text-navy mb-2 notranslate">🏷️ <span translate='no'>CN</span> – <span translate='no'>US</span> Ship by Label</h3>
                         <p className="text-muted-foreground text-[13px] mb-3">
-                            Dịch vụ dành cho đơn hàng <strong>đã có sẵn shipping label</strong> từ TikTok Shop và Marketplace.
+                            {t("sbl.desc")}
                         </p>
                         <div className="bg-[#FEF9EC] border border-[#F59E0B] rounded-[10px] p-4 text-[12px] text-[#92400E] mb-4 flex gap-2">
                             <span>⚠️</span>
                             <div>
-                                <strong>Lưu ý:</strong> Hàng vận chuyển từ Trung Quốc đến <strong>bưu cục USPS</strong> tại Mỹ — USPS thực hiện last-mile delivery. <strong>Không giao tận tay người nhận.</strong>
+                                <strong>{t("sbl.note_title")}</strong> {t("sbl.note_desc")}
                             </div>
                         </div>
                         <div className="flex gap-3 flex-wrap">
                             {[
-                                { label: "Điều kiện", value: "Phải có label hợp lệ" },
-                                { label: "Chặng cuối", value: "USPS Last-mile" },
-                                { label: "Phù hợp", value: "TikTok Shop, Marketplace" },
+                                { label: t("sbl.condition"), value: t("sbl.condition_val") },
+                                { label: t("sbl.lastmile"), value: t("sbl.lastmile_val") },
+                                { label: t("sbl.suitable"), value: t("sbl.suitable_val") },
                             ].map(item => (
                                 <div key={item.label} className="bg-[#F7F5F0] rounded-lg p-3 flex-1 min-w-[140px]">
                                     <div className="text-[11px] font-bold tracking-wider uppercase text-muted-foreground mb-1">{item.label}</div>
@@ -120,7 +120,7 @@ const EpacketPanel = ({
                     <div className="flex items-center gap-2 sm:gap-3 mb-4 justify-between">
                         {routeConfig.cargo.length > 0 && (
                             <div className="flex items-center gap-1 sm:gap-3 w-full overflow-x-auto">
-                                <span className="text-[11px] sm:text-[13px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">Loại hàng:</span>
+                                <span className="text-[11px] sm:text-[13px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">{t("ep.cargo_label")}</span>
                                 <div className="flex gap-1 sm:gap-2">
                                     {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
                                         const enabled = routeConfig.cargo.includes(c);
@@ -151,12 +151,8 @@ const EpacketPanel = ({
                         <div className="bg-[#FFF7ED] border border-orange-200 rounded-[10px] p-3 text-[12px] text-orange-800 mb-4 flex gap-2">
                             <span>🔋</span>
                             <div>
-                                <strong>{lang === 'zh' ? '电池产品提示：' : lang === 'en' ? 'Battery products:' : 'Hàng pin điện:'}</strong>{" "}
-                                {lang === 'zh'
-                                    ? '电池产品可通过 "Standard VN-WW" 渠道发货，但请参阅附带的运输政策了解具体要求。'
-                                    : lang === 'en'
-                                        ? 'Battery products can be shipped via the "Standard VN-WW" channel; however, please refer to the attached Shipping Policy for specific requirements.'
-                                        : 'Hàng Pin Điện có thể vận chuyển qua kênh "Standard VN-WW"; tuy nhiên, vui lòng tham khảo Chính sách Vận chuyển đính kèm để biết yêu cầu cụ thể.'}
+                                <strong>{t("ep.battery_label")}</strong>{" "}
+                                {t("ep.battery_note")}
                             </div>
                         </div>
                     )}
@@ -165,9 +161,9 @@ const EpacketPanel = ({
                     <div key={`anno-${route}`} className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
                         <span>ℹ️</span>
                         <div>
-                            <strong>{lang === 'zh' ? '当前显示：' : lang === 'en' ? 'Showing:' : 'Đang hiển thị:'}</strong> {route === "pri-vncn-us"
-                                ? <>Priority · {getRouteName(routeConfig)} — {lang === 'zh' ? '含进口税, Active USPS 追踪。不含偏远附加费。' : lang === 'en' ? 'Import tax included, Active USPS tracking. Excludes remote surcharges.' : 'Bao thuế NK, Active USPS tracking. Giá chưa bao gồm phụ phí vùng sâu.'}</>
-                                : <><span className="notranslate" translate="no">Epacket · {getRouteName(routeConfig)} {routeConfig.cargo.length > 0 ? `· ${getCargoLabel(cargo)}` : ""}</span> — {lang === 'zh' ? '送达目的国。不含偏远附加费和增值税。' : lang === 'en' ? 'Delivered to destination. Excludes remote surcharges & VAT.' : 'Giao tận tay khách hàng tại quốc gia đích. Giá chưa bao gồm phụ phí vùng sâu & VAT.'}</>
+                            <strong>{t("ep.showing")}</strong> {route === "pri-vncn-us"
+                                ? <>Priority · {getRouteName(routeConfig)} — {t("ep.pri_desc")}</>
+                                : <><span className="notranslate" translate="no">Epacket · {getRouteName(routeConfig)} {routeConfig.cargo.length > 0 ? `· ${getCargoLabel(cargo)}` : ""}</span> — {t("ep.epacket_desc")}</>
                             }
                         </div>
                     </div>
@@ -178,7 +174,7 @@ const EpacketPanel = ({
                             <span className="text-lg">💳</span>
                             <div>
                                 <span className="font-bold text-navy notranslate" translate="no">
-                                    {lang === 'zh' ? '订单处理费' : lang === 'en' ? 'Order Handling Fee' : 'Phí xử lý đơn hàng'}:
+                                    {t("ep.order_fee")}:
                                 </span>{" "}
                                 <span className="text-primary font-extrabold notranslate" translate="no">0.7$</span>
 
@@ -189,11 +185,11 @@ const EpacketPanel = ({
                                 <span className="text-lg">📡</span>
                                 <div>
                                     <span className="font-bold text-navy notranslate" translate="no">
-                                        {lang === 'zh' ? 'Active tracking费' : lang === 'en' ? 'Active tracking fee' : 'Phí active tracking'}:
+                                        {t("ep.tracking_fee")}:
                                     </span>{" "}
                                     <span className="text-primary font-extrabold notranslate" translate="no">0.5$</span>
                                     <p className="text-muted-foreground text-[11px] mt-0.5">
-                                        {lang === 'zh' ? '(如使用USPS的active tracking服务)' : lang === 'en' ? '(If using Active USPS tracking)' : '(Nếu sử dụng dịch vụ active tracking trước với USPS)'}
+                                        {t("ep.tracking_note")}
                                     </p>
                                 </div>
                             </div>
@@ -205,14 +201,14 @@ const EpacketPanel = ({
                         {route === "pri-vncn-us" ? (
                             <div className="flex flex-col gap-6">
                                 <PriceTable
-                                    title="Bảng Giá Chi Tiết VN → US (Priority)"
+                                    title={t("ep.detail_table_vn_us")}
                                     badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
                                     data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsCn"] || []}
                                     columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
                                     currencySymbol="₫"
                                 />
                                 <PriceTable
-                                    title="Bảng Giá Chi Tiết CN → US (Priority)"
+                                    title={t("ep.detail_table_cn_us")}
                                     badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
                                     data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCnUs"] || []}
                                     columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
@@ -220,7 +216,7 @@ const EpacketPanel = ({
                             </div>
                         ) : (
                             <PriceTable
-                                title="Bảng Giá Chi Tiết"
+                                title={t("ep.detail_table")}
                                 badge={<div className="flex items-center gap-1">{getRouteName(routeConfig)} <span className="opacity-50">·</span> <span>{getCargoLabel(cargo)}</span></div>}
                                 data={currentData}
                                 columns={tableColumns.map(c => ({ ...c, label: c.label }))}
@@ -235,21 +231,21 @@ const EpacketPanel = ({
                         {(!currentData || currentData.length === 0) && route !== "pri-vncn-us" && (
                             <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-navy px-4 py-2.5">
-                                    <span className="text-white font-bold text-[13px]">📋 {lang === 'zh' ? '价格表' : lang === 'en' ? 'Price Table' : 'Bảng Giá Chi Tiết'}</span>
+                                    <span className="text-white font-bold text-[13px]">📋 {t("ep.price_table")}</span>
                                 </div>
                                 <div className="p-8 text-center">
                                     {larkLoading ? (
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
                                             <p className="text-[13px] text-muted-foreground">
-                                                {lang === 'zh' ? '正在从 Lark 加载价格数据...' : lang === 'en' ? 'Loading price data from Lark...' : 'Đang tải dữ liệu bảng giá từ Lark...'}
+                                                {t("ep.loading_lark")}
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center gap-3">
                                             <span className="text-3xl">📊</span>
                                             <p className="text-[13px] text-muted-foreground">
-                                                {lang === 'zh' ? '价格数据暂时无法加载。请稍后重试或联系 THG 客服。' : lang === 'en' ? 'Price data is temporarily unavailable. Please try again later or contact THG support.' : 'Dữ liệu bảng giá tạm thời không khả dụng. Vui lòng thử lại sau hoặc liên hệ THG hỗ trợ.'}
+                                                {t("ep.data_unavailable")}
                                             </p>
                                             {larkError && (
                                                 <p className="text-[11px] text-orange-500 mt-1">⚠️ {larkError}</p>
@@ -263,21 +259,21 @@ const EpacketPanel = ({
                         {route === "pri-vncn-us" && !larkOverlay["uspsCn"]?.length && !larkOverlay["uspsCnUs"]?.length && !(pricingData as any)["uspsCn"]?.length && !(pricingData as any)["uspsCnUs"]?.length && (
                             <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-navy px-4 py-2.5">
-                                    <span className="text-white font-bold text-[13px]">📋 {lang === 'zh' ? '价格表 (Priority)' : lang === 'en' ? 'Price Table (Priority)' : 'Bảng Giá Chi Tiết (Priority)'}</span>
+                                    <span className="text-white font-bold text-[13px]">📋 {t("ep.price_table_pri")}</span>
                                 </div>
                                 <div className="p-8 text-center">
                                     {larkLoading ? (
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
                                             <p className="text-[13px] text-muted-foreground">
-                                                {lang === 'zh' ? '正在从 Lark 加载价格数据...' : lang === 'en' ? 'Loading price data from Lark...' : 'Đang tải dữ liệu bảng giá từ Lark...'}
+                                                {t("ep.loading_lark")}
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center gap-3">
                                             <span className="text-3xl">📊</span>
                                             <p className="text-[13px] text-muted-foreground">
-                                                {lang === 'zh' ? '价格数据暂时无法加载。请稍后重试或联系 THG 客服。' : lang === 'en' ? 'Price data is temporarily unavailable. Please try again later or contact THG support.' : 'Dữ liệu bảng giá tạm thời không khả dụng. Vui lòng thử lại sau hoặc liên hệ THG hỗ trợ.'}
+                                                {t("ep.data_unavailable")}
                                             </p>
                                             {larkError && (
                                                 <p className="text-[11px] text-orange-500 mt-1">⚠️ {larkError}</p>
@@ -292,12 +288,12 @@ const EpacketPanel = ({
                     {/* ──── POST-TABLE ACCORDIONS ──── */}
                     <div className="flex flex-col gap-3 mt-6">
                         {/* 1. Surcharges */}
-                        <Accordion icon="💰" title="Phụ Phí & Dịch Vụ Khác" defaultOpen>
+                        <Accordion icon="💰" title={t("ep.surcharges")} defaultOpen>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <div>
-                                    <h4 className="font-bold text-[13px] text-navy mb-2">📍 Phụ Phí Vùng Sâu (Remote Area Zipcode)</h4>
+                                    <h4 className="font-bold text-[13px] text-navy mb-2">{t("ep.remote_title")}</h4>
                                     <p className="text-[12px] text-muted-foreground mb-3">
-                                        Tải file danh sách zipcode remote area để kiểm tra. Dữ liệu được tự động đồng bộ từ nguồn gốc khi có cập nhật.
+                                        {t("ep.remote_desc")}
                                     </p>
                                     <div className="flex flex-col gap-2">
                                         {[
@@ -317,17 +313,17 @@ const EpacketPanel = ({
                                                 <span className="text-xl shrink-0">{file.icon}</span>
                                                 <span className="flex-1 font-medium text-navy group-hover:text-primary transition-colors">{file.label}</span>
                                                 <span className="text-[11px] text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1">
-                                                    📥 Tải file
+                                                    {t("ep.download_file")}
                                                 </span>
                                             </a>
                                         ))}
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-[13px] text-navy mb-2">🌍 Thuế VAT & Phí Xử Lý</h4>
+                                    <h4 className="font-bold text-[13px] text-navy mb-2">{t("ep.vat_title")}</h4>
                                     {vatData.length > 0 ? (
                                         <CompactAccordionTable
-                                            headers={["Quốc Gia", "VAT %", "Service Charge"]}
+                                            headers={[t("ep.vat_country"), "VAT %", "Service Charge"]}
                                             data={vatData}
                                             renderRow={(v, i) => (
                                                 <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
@@ -338,17 +334,17 @@ const EpacketPanel = ({
                                             )}
                                         />
                                     ) : (
-                                        <p className="text-muted-foreground text-[13px] italic">Dữ liệu đang cập nhật</p>
+                                        <p className="text-muted-foreground text-[13px] italic">{t("ep.data_updating")}</p>
                                     )}
                                 </div>
                             </div>
                         </Accordion>
 
                         {/* 2. Re-delivery */}
-                        <Accordion icon="🔁" title="Phí Reship (Gửi Lại)">
+                        <Accordion icon="🔁" title={t("ep.reship_title")}>
                             {redeliveryData.length > 0 ? (
                                 <div>
-                                    <p className="text-[13px] text-muted-foreground italic mb-3">* Phí reship áp dụng khi kiện hàng bị trả về do địa chỉ sai, không có người nhận, hoặc bị từ chối nhận. Nếu không có phản hồi trong thời gian quy định, kiện hàng sẽ bị tiêu hủy theo mặc định.</p>
+                                    <p className="text-[13px] text-muted-foreground italic mb-3">{t("ep.reship_note")}</p>
                                     <CompactAccordionTable
                                         headers={["Country", "Re-delivery charge", "Request re-delivery period"]}
                                         data={redeliveryData}
@@ -362,7 +358,7 @@ const EpacketPanel = ({
                                     />
                                 </div>
                             ) : (
-                                <p className="text-muted-foreground text-[13px] italic text-center py-4">📝 Dữ liệu phí reship đang được cập nhật.</p>
+                                <p className="text-muted-foreground text-[13px] italic text-center py-4">{t("ep.reship_data_updating")}</p>
                             )}
                         </Accordion>
 
@@ -373,7 +369,7 @@ const EpacketPanel = ({
                         >
                             <span className="text-xl">🛡️</span>
                             <span className="flex-1 font-bold text-[14px] text-navy group-hover:text-primary transition-colors">
-                                {lang === 'zh' ? '查看完整运输政策' : lang === 'en' ? 'View full shipping policy' : 'Xem đầy đủ chính sách vận chuyển'}
+                                {t("ep.view_policy")}
                             </span>
                             <span className="text-[12px] text-muted-foreground bg-secondary px-3 py-1 rounded-full">→</span>
                         </Link>

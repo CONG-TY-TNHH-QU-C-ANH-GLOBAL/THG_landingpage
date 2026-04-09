@@ -7,6 +7,7 @@
 export interface PolicySection {
     id: string;
     title: string;
+    titleKey: string;
     icon: string;
     images: string[];
 }
@@ -17,6 +18,7 @@ export const policySections: PolicySection[] = [
     {
         id: "warehouse",
         title: "Chính sách Warehouse",
+        titleKey: "policy.warehouse",
         icon: "🏭",
         images: [
             `${BASE}/1-20251008092840-fut0q.png`,
@@ -39,6 +41,7 @@ export const policySections: PolicySection[] = [
     {
         id: "pod-dropship",
         title: "Chính sách POD / Dropship",
+        titleKey: "policy.pod",
         icon: "📦",
         images: [
             `${BASE}/1-20250917083038--r_av.png`,
@@ -65,6 +68,7 @@ export const policySections: PolicySection[] = [
     {
         id: "shipping",
         title: "Chính sách Vận chuyển",
+        titleKey: "policy.shipping",
         icon: "🚚",
         images: [
             `${BASE}/thg-chinh-sach-van-chuyen-20250905023019-mwbba.png`,
@@ -94,6 +98,7 @@ export const policySections: PolicySection[] = [
     {
         id: "bulk-compensation",
         title: "Chính sách đền bù hàng lô",
+        titleKey: "policy.compensation",
         icon: "🛡️",
         images: [
             `${BASE}/1-20251106024732-9vfbw.png`,
@@ -108,6 +113,7 @@ export const policySections: PolicySection[] = [
     {
         id: "pod-tiktok",
         title: "Chính sách POD – TikTok Shipping",
+        titleKey: "policy.tiktok",
         icon: "tiktok",
         images: [
             `${BASE}/1-20260122014211-gq2sj.png`,

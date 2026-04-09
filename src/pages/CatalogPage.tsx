@@ -3,14 +3,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
-import { fetchCatalog, fetchProduct, formatPrice, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
+import { fetchCatalog, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Search, Tag, Filter, ChevronLeft, ChevronRight, X, Download,
   Shirt, Phone, Coffee, Home, Gem, Car, Frame, Package, Crown,
-  Loader2, Clock, Truck, MessageCircle, Share2, Check,
+  Loader2, Clock, Truck, MessageCircle,
 } from "lucide-react";
 
 // Category-based product details (since DB has no description fields)
@@ -121,62 +121,8 @@ const CatalogPage = () => {
 
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
-  const [shareCopied, setShareCopied] = useState(false);
 
   const searchTimer = useRef<NodeJS.Timeout>();
-
-  // Open product modal + push product id to URL for shareable link
-  const openProduct = useCallback((product: CatalogProduct) => {
-    setSelectedProduct(product);
-    setActiveImage(0);
-    setShareCopied(false);
-    // Fetch full detail (with variants) for modal display
-    fetchProduct(product.id)
-      .then((full) => setSelectedProduct(full))
-      .catch(() => { /* keep list-level data */ });
-    const url = new URL(window.location.href);
-    url.searchParams.set("productId", product.id);
-    window.history.replaceState(null, "", url.toString());
-  }, []);
-
-  const closeProduct = useCallback(() => {
-    setSelectedProduct(null);
-    const url = new URL(window.location.href);
-    url.searchParams.delete("productId");
-    window.history.replaceState(null, "", url.pathname + (url.search || "") + url.hash);
-  }, []);
-
-  const handleShare = useCallback(async () => {
-    if (!selectedProduct) return;
-    const url = new URL(window.location.href);
-    url.searchParams.set("productId", selectedProduct.id);
-    const shareUrl = url.toString();
-    try {
-      // Prefer Web Share API on mobile
-      if (navigator.share) {
-        await navigator.share({ title: selectedProduct.name, url: shareUrl });
-        return;
-      }
-    } catch { /* user cancelled — fall through to clipboard */ }
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setShareCopied(true);
-      setTimeout(() => setShareCopied(false), 2000);
-    } catch { /* ignore */ }
-  }, [selectedProduct]);
-
-  // Deep-link: read ?productId= on mount and open modal
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const pid = params.get("productId");
-    if (!pid) return;
-    fetchProduct(pid)
-      .then((p) => {
-        setSelectedProduct(p);
-        setActiveImage(0);
-      })
-      .catch(() => { /* invalid id — ignore */ });
-  }, []);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -236,7 +182,7 @@ const CatalogPage = () => {
           <ScrollReveal>
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
               <Tag className="w-4 h-4 text-primary" />
-              <span className="text-sm text-white/80">POD Products</span>
+              <span className="text-sm text-white/80">{t("catalog.pod_badge")}</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
               {t("catalog_page.title")}
@@ -257,9 +203,8 @@ const CatalogPage = () => {
             {/* All */}
             <button
               onClick={() => { setActiveCategory(""); setPage(1); }}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                !activeCategory ? "bg-navy text-white shadow-lg" : "text-foreground/70 hover:bg-secondary"
-              }`}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${!activeCategory ? "bg-navy text-white shadow-lg" : "text-foreground/70 hover:bg-secondary"
+                }`}
             >
               <Filter className="w-4 h-4" />
               <span>{t("catalog_page.filter_all")}</span>
@@ -274,9 +219,8 @@ const CatalogPage = () => {
                 <button
                   key={cat}
                   onClick={() => handleCategory(cat)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    activeCategory === cat ? "bg-navy text-white shadow-lg" : "text-foreground/70 hover:bg-secondary"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${activeCategory === cat ? "bg-navy text-white shadow-lg" : "text-foreground/70 hover:bg-secondary"
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span className="truncate">{cat}</span>
@@ -287,7 +231,7 @@ const CatalogPage = () => {
 
             {/* Origin filter */}
             <div className="pt-4 border-t border-border/30">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">Origin</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.origin_label")}</p>
               {(["VN", "US", "CN"] as const).map((o) => {
                 const count = originCounts[o] || 0;
                 if (count === 0) return null;
@@ -295,12 +239,11 @@ const CatalogPage = () => {
                   <button
                     key={o}
                     onClick={() => handleOrigin(o)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-all ${
-                      activeOrigin === o ? "bg-primary/10 text-primary font-semibold" : "text-foreground/70 hover:bg-secondary"
-                    }`}
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-all ${activeOrigin === o ? "bg-primary/10 text-primary font-semibold" : "text-foreground/70 hover:bg-secondary"
+                      }`}
                   >
                     <span className="text-base">{originFlags[o]}</span>
-                    <span>{o === "VN" ? "Vietnam" : o === "US" ? "USA" : "China"}</span>
+                    <span>{o === "VN" ? t("catalog.origin_vn") : o === "US" ? t("catalog.origin_us") : t("catalog.origin_cn")}</span>
                     <span className="ml-auto text-xs opacity-70">{count}</span>
                   </button>
                 );
@@ -318,11 +261,10 @@ const CatalogPage = () => {
             <div className="flex items-center gap-1.5 flex-wrap lg:hidden">
               <button
                 onClick={() => { setActiveCategory(""); setPage(1); }}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  !activeCategory ? "bg-navy text-white" : "bg-white text-foreground/70 border border-border/40"
-                }`}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${!activeCategory ? "bg-navy text-white" : "bg-white text-foreground/70 border border-border/40"
+                  }`}
               >
-                All
+                {t("catalog.all")}
               </button>
               {CATEGORIES.map((cat) => {
                 if (!(categoryCounts[cat] > 0)) return null;
@@ -330,9 +272,8 @@ const CatalogPage = () => {
                   <button
                     key={cat}
                     onClick={() => handleCategory(cat)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                      activeCategory === cat ? "bg-navy text-white" : "bg-white text-foreground/70 border border-border/40"
-                    }`}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${activeCategory === cat ? "bg-navy text-white" : "bg-white text-foreground/70 border border-border/40"
+                      }`}
                   >
                     {cat}
                   </button>
@@ -343,7 +284,7 @@ const CatalogPage = () => {
             {/* Active filters display */}
             <div className="hidden lg:flex items-center gap-2">
               <p className="text-sm text-muted-foreground">
-                {pagination.total} {pagination.total === 1 ? "product" : "products"}
+                {pagination.total} {pagination.total === 1 ? t("catalog.product_count") : t("catalog.products_count")}
               </p>
               {activeCategory && (
                 <span className="inline-flex items-center gap-1 bg-navy/10 text-navy px-2.5 py-1 rounded-full text-xs font-medium">
@@ -364,7 +305,7 @@ const CatalogPage = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="Search by name or SKU..."
+                placeholder={t("catalog.search_placeholder")}
                 value={searchInput}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-border/40 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
@@ -374,7 +315,7 @@ const CatalogPage = () => {
 
           {/* Mobile product count */}
           <p className="text-sm text-muted-foreground mb-3 lg:hidden">
-            {pagination.total} products
+            {pagination.total} {t("catalog.products_count")}
           </p>
 
           {/* Loading */}
@@ -400,7 +341,7 @@ const CatalogPage = () => {
                 <ScrollReveal key={item.id} delay={Math.min(idx * 30, 300)}>
                   <div
                     className="group bg-white rounded-2xl border border-border/30 overflow-hidden hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-500 cursor-pointer"
-                    onClick={() => openProduct(item)}
+                    onClick={() => { setSelectedProduct(item); setActiveImage(0); }}
                   >
                     {/* Image */}
                     <div className="relative aspect-square bg-gray-50 overflow-hidden">
@@ -429,14 +370,14 @@ const CatalogPage = () => {
                         {item.name}
                       </h3>
                       <p className="text-sm font-bold text-green-600">
-                        {formatPrice(item)}
+                        {t("catalog.contact_price")}
                       </p>
                       <p className="text-[10px] md:text-xs text-muted-foreground truncate">
-                        SKU: <span className="font-mono text-red-500">{item.thgSku || item.sku}</span>
+                        SKU: <span className="font-mono text-red-500">{item.sku}</span>
                       </p>
                       {item.sizes.length > 0 && (
                         <p className="text-[10px] md:text-xs text-muted-foreground">
-                          Size: {item.sizes.length} Sizes
+                          {t("catalog.size_label")} {item.sizes.length} Sizes
                         </p>
                       )}
                     </div>
@@ -474,11 +415,10 @@ const CatalogPage = () => {
                     )}
                     <button
                       onClick={() => setPage(p)}
-                      className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${
-                        page === p
-                          ? "bg-navy text-white shadow-lg"
-                          : "border border-border/40 hover:bg-secondary"
-                      }`}
+                      className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${page === p
+                        ? "bg-navy text-white shadow-lg"
+                        : "border border-border/40 hover:bg-secondary"
+                        }`}
                     >
                       {p}
                     </button>
@@ -497,7 +437,7 @@ const CatalogPage = () => {
       </div>
 
       {/* Product Detail Modal */}
-      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && closeProduct()}>
+      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
           {selectedProduct && (() => {
             const fallback = categoryMeta[selectedProduct.category] || categoryMeta["Accessories"];
@@ -543,9 +483,8 @@ const CatalogPage = () => {
                           <button
                             key={i}
                             onClick={() => setActiveImage(i)}
-                            className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
-                              activeImage === i ? "border-primary shadow-md" : "border-border/30 opacity-60 hover:opacity-100"
-                            }`}
+                            className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-primary shadow-md" : "border-border/30 opacity-60 hover:opacity-100"
+                              }`}
                           >
                             <img src={img} alt="" className="w-full h-full object-contain p-0.5" />
                           </button>
@@ -564,84 +503,32 @@ const CatalogPage = () => {
 
                     {/* Price */}
                     <div>
-                      <p className="text-3xl font-bold text-foreground">{formatPrice(selectedProduct)}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {selectedProduct.priceFrom != null ? "Selling price (excl. shipping)" : "Contact us for pricing"}
-                      </p>
+                      <p className="text-3xl font-bold text-foreground">{t("catalog.contact_price")}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{t("catalog.contact_price_sub")}</p>
                     </div>
 
                     {/* SKU */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <span className="text-sm font-semibold">SKU:</span>{" "}
-                        <span className="text-sm font-mono">{selectedProduct.thgSku || selectedProduct.sku}</span>
-                      </div>
-                      <button
-                        onClick={handleShare}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/40 text-xs font-medium hover:bg-secondary transition-all"
-                        title="Copy product link"
-                      >
-                        {shareCopied ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-green-600" />
-                            <span className="text-green-600">Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Share2 className="w-3.5 h-3.5" />
-                            <span>Share</span>
-                          </>
-                        )}
-                      </button>
+                    <div>
+                      <span className="text-sm font-semibold">SKU:</span>{" "}
+                      <span className="text-sm font-mono">{selectedProduct.sku}</span>
                     </div>
 
-                    {/* Variants table — per-size pricing (preferred when available) */}
-                    {selectedProduct.variants && selectedProduct.variants.length > 0 ? (
+                    {/* Sizes */}
+                    {selectedProduct.sizes.length > 0 && (
                       <div>
-                        <p className="text-sm font-semibold mb-2">Sizes & pricing:</p>
-                        <div className="rounded-lg border border-border/30 overflow-hidden">
-                          <table className="w-full text-sm">
-                            <thead className="bg-secondary/40">
-                              <tr className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                                <th className="px-3 py-2 text-left">Size</th>
-                                <th className="px-3 py-2 text-left">Color</th>
-                                <th className="px-3 py-2 text-right">Price</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {selectedProduct.variants.map((v) => {
-                                const price = v.priceSbsl ?? v.priceSbtt;
-                                return (
-                                  <tr key={v.id} className="border-t border-border/20">
-                                    <td className="px-3 py-2 font-semibold">{v.variant || "—"}</td>
-                                    <td className="px-3 py-2 text-muted-foreground">{v.color || "—"}</td>
-                                    <td className="px-3 py-2 text-right font-mono font-bold text-green-600">
-                                      {price != null ? `$${price.toFixed(2)}` : "—"}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
+                        <p className="text-sm font-semibold mb-2">{t("catalog.size_label")}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {selectedProduct.sizes.map((s) => (
+                            <span key={s} className="px-3 py-1.5 rounded-lg border border-foreground/20 text-sm font-medium hover:bg-secondary transition-colors">{s}</span>
+                          ))}
                         </div>
                       </div>
-                    ) : (
-                      selectedProduct.sizes.length > 0 && (
-                        <div>
-                          <p className="text-sm font-semibold mb-2">Size:</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {selectedProduct.sizes.map((s) => (
-                              <span key={s} className="px-3 py-1.5 rounded-lg border border-foreground/20 text-sm font-medium hover:bg-secondary transition-colors">{s}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )
                     )}
 
                     {/* Colors */}
                     {selectedProduct.colors.length > 0 && (
                       <div>
-                        <p className="text-sm font-semibold mb-2">Color:</p>
+                        <p className="text-sm font-semibold mb-2">{t("catalog.color_label")}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {selectedProduct.colors.map((c) => (
                             <span key={c} className="px-3 py-1.5 rounded-lg border border-foreground/20 text-sm font-medium">{c}</span>
@@ -654,13 +541,13 @@ const CatalogPage = () => {
                     <div className="space-y-2 pt-2">
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm">Production time:</span>
-                        <span className="text-sm font-semibold text-primary">{meta.prodTime} business days</span>
+                        <span className="text-sm">{t("catalog.prod_time")}</span>
+                        <span className="text-sm font-semibold text-primary">{meta.prodTime} {t("catalog.biz_days")}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Truck className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm">Shipping time:</span>
-                        <span className="px-2 py-0.5 rounded border border-foreground/20 text-sm">{meta.shipTime} business days</span>
+                        <span className="text-sm">{t("catalog.ship_time")}</span>
+                        <span className="px-2 py-0.5 rounded border border-foreground/20 text-sm">{meta.shipTime} {t("catalog.biz_days")}</span>
                       </div>
                     </div>
 
@@ -673,7 +560,7 @@ const CatalogPage = () => {
                         className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-navy text-navy font-medium hover:bg-navy hover:text-white transition-all"
                       >
                         <MessageCircle className="w-4 h-4" />
-                        Order Support
+                        {t("catalog.order_support")}
                       </a>
                       {(templateUrl || selectedProduct.images.length > 0) && (
                         <a
@@ -683,7 +570,7 @@ const CatalogPage = () => {
                           className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-navy text-white font-medium hover:bg-navy/90 transition-all"
                         >
                           <Download className="w-4 h-4" />
-                          {templateUrl ? "Download Template" : "Download"}
+                          {templateUrl ? t("catalog.download_template") : t("catalog.download")}
                         </a>
                       )}
                     </div>
@@ -695,7 +582,7 @@ const CatalogPage = () => {
                   <div className="grid md:grid-cols-3 gap-6">
                     {/* Material */}
                     <div>
-                      <h4 className="font-bold text-base mb-3">Material</h4>
+                      <h4 className="font-bold text-base mb-3">{t("catalog.material")}</h4>
                       <ul className="space-y-1.5">
                         {meta.material.map((m, i) => (
                           <li key={i} className="text-sm text-muted-foreground pl-3 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary/40">{m}</li>
@@ -705,7 +592,7 @@ const CatalogPage = () => {
 
                     {/* Features */}
                     <div>
-                      <h4 className="font-bold text-base mb-3">Features</h4>
+                      <h4 className="font-bold text-base mb-3">{t("catalog.features")}</h4>
                       <ul className="space-y-1.5">
                         {meta.features.map((f, i) => (
                           <li key={i} className="text-sm text-muted-foreground pl-3 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary/40">{f}</li>
@@ -715,7 +602,7 @@ const CatalogPage = () => {
 
                     {/* Care Instructions */}
                     <div>
-                      <h4 className="font-bold text-base mb-3">Care Instructions</h4>
+                      <h4 className="font-bold text-base mb-3">{t("catalog.care")}</h4>
                       <ul className="space-y-1.5">
                         {meta.care.map((c, i) => (
                           <li key={i} className="text-sm text-muted-foreground pl-3 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary/40">{c}</li>
@@ -726,8 +613,8 @@ const CatalogPage = () => {
 
                   {/* Fulfillment note */}
                   <div className="bg-secondary/50 rounded-xl p-4">
-                    <h4 className="font-bold text-sm mb-1">Fulfillment</h4>
-                    <p className="text-sm text-muted-foreground">Available for fulfillment via TikTok Shop US. Contact us for the full list of POD products supporting TikTok fulfillment.</p>
+                    <h4 className="font-bold text-sm mb-1">{t("catalog.fulfillment")}</h4>
+                    <p className="text-sm text-muted-foreground">{t("catalog.fulfillment_desc")}</p>
                   </div>
                 </div>
               </>
@@ -737,7 +624,7 @@ const CatalogPage = () => {
       </Dialog>
 
       <Footer />
-    </div>
+    </div >
   );
 };
 

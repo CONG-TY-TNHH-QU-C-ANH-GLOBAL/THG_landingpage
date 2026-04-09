@@ -9,9 +9,8 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
     rate?: number; currencySymbol?: string;
     sla?: Record<string, string>;
 }) => {
-    const { tVi } = useI18n();
+    const { t, tVi } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
     const tableId = useMemo(() => "table-price-" + Math.random().toString(36).substring(2, 9), []);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -40,7 +39,7 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
 
     const exportConfig = useMemo(() => {
         if (!data || data.length === 0) return { filename: title, headers: [], rows: [] };
-        const headers = ["Cân Nặng (KG)", ...columns.map(c => c.label)];
+        const headers = [t("pt.weight_header"), ...columns.map(c => c.label)];
         const rows = data.map((row: any) => {
             return [
                 row.kg ?? row.weight ?? "—",
@@ -65,15 +64,15 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
     const displayData = isExpanded ? data : data.slice(0, 6);
 
     return (
-        <div ref={containerRef} className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
             <div className="bg-navy px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-white font-bold text-[13px] notranslate" translate="no">📋 {title}</span>
-                    {badge && <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full notranslate" translate="no">{badge}</span>}
+                    <span className="text-white font-bold text-[13px]">📋 {title}</span>
+                    {badge && <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">{badge}</span>}
                 </div>
                 <div className="flex items-center gap-2 ml-auto">
                     {note && <span className="text-[#9CA3AF] text-[12px] mr-2">{note}</span>}
-                    <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title="Xuất Excel">
+                    <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title={t("pt.export_excel")}>
                         <FileSpreadsheet size={14} />
                     </button>
                 </div>
@@ -82,7 +81,7 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
             {/* Scroll hint for mobile */}
             {(canScrollLeft || canScrollRight) && (
                 <div className="flex items-center justify-between px-3 py-1.5 bg-[#FFF8E7] border-b border-[var(--pricing-border)] md:hidden">
-                    <span className="text-[10px] text-amber-700 font-medium">👉 Vuốt ngang để xem thêm</span>
+                    <span className="text-[10px] text-amber-700 font-medium">{t("pt.swipe_hint")}</span>
                     <div className="flex items-center gap-1">
                         <button
                             onClick={() => scrollBy(-1)}
@@ -104,7 +103,7 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
 
             {/* Horizontally-scrollable table with sticky weight column */}
             <div className="relative">
-                <div ref={scrollRef} className="overflow-x-auto scroll-smooth" translate="no">
+                <div ref={scrollRef} className="overflow-x-auto scroll-smooth">
                     <table id={tableId} className="w-full border-collapse text-[12px] md:text-[13px]">
                         <thead>
                             <tr className="bg-[#FAFAF8]">
@@ -171,16 +170,7 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
             )}
             {isExpanded && data.length > 6 && (
                 <div className="border-t border-[var(--pricing-border)]">
-                    <button onClick={() => {
-                        if (containerRef.current) {
-                            const rect = containerRef.current.getBoundingClientRect();
-                            const targetY = Math.max(0, window.scrollY + rect.top - 80);
-                            setIsExpanded(false);
-                            requestAnimationFrame(() => window.scrollTo({ top: targetY, behavior: "smooth" }));
-                        } else {
-                            setIsExpanded(false);
-                        }
-                    }} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
+                    <button onClick={() => setIsExpanded(false)} className="w-full py-3 md:py-2.5 text-[13px] font-bold text-primary hover:bg-[#FFFBF0] transition-colors flex items-center justify-center gap-1">
                         {tVi("pricing.btn_collapse")} <ChevronUp size={14} />
                     </button>
                 </div>

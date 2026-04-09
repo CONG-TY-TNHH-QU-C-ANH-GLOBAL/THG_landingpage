@@ -23,7 +23,7 @@ const ROUTE_COMPONENTS = [
 ];
 
 const ShippingPolicyPage = () => {
-  const { tVi: t } = useI18n();
+  const { t } = useI18n();
   const [activeRoute, setActiveRoute] = useState(0);
   const ActiveComponent = ROUTE_COMPONENTS[activeRoute];
 

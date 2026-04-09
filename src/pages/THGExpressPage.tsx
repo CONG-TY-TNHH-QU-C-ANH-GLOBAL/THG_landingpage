@@ -265,7 +265,7 @@ const THGExpressPage = () => {
                   />
                   {/* Overlay badge */}
                   <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/80 backdrop-blur-md border-border/30">
-                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center">4 Kho — 3 Quốc gia</p>
+                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center">{t("express_page.overlay_badge")}</p>
                   </div>
                 </div>
               </div>
@@ -278,10 +278,10 @@ const THGExpressPage = () => {
           <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mb-10" />
           <ScrollReveal delay={100}>
             <div className="flex flex-wrap justify-center gap-12 sm:gap-20">
-              <StatCounter value={5} suffix=" ngày" label="Hàng không Express" />
-              <StatCounter value={20} suffix="+" label="Tuyến vận chuyển" />
-              <StatCounter value={99} suffix="%" label="Giao đúng hạn" />
-              <StatCounter value={4} suffix="" label="Kho hàng toàn cầu" />
+              <StatCounter value={5} suffix={` ${t("express_page.stat1_value")}`} label={t("express_page.stat1_label")} />
+              <StatCounter value={20} suffix="+" label={t("express_page.stat2_label")} />
+              <StatCounter value={99} suffix="%" label={t("express_page.stat3_label")} />
+              <StatCounter value={4} suffix="" label={t("express_page.stat4_label")} />
             </div>
           </ScrollReveal>
           <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mt-10" />
@@ -290,7 +290,7 @@ const THGExpressPage = () => {
         {/* ── Panel 3: Video Shorts ── */}
         <div className="container mx-auto px-4 relative z-10 py-10">
           <ScrollReveal>
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]/60 text-center mb-8">3 video giới thiệu dịch vụ vận chuyển THG Express</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]/60 text-center mb-8">{t("express_page.video_intro")}</p>
           </ScrollReveal>
           <div className="flex gap-4 md:gap-6 overflow-x-auto pb-2 justify-start md:justify-center snap-x snap-mandatory md:snap-none scrollbar-hide px-2">
             {[
