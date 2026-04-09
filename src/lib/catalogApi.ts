@@ -23,6 +23,19 @@ export interface CatalogProduct {
   templateUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  variants?: {
+    id?: string;
+    variant: string;
+    color?: string;
+    weight?: number;
+    length?: number;
+    width?: number;
+    height?: number;
+    priceSbtt?: number;
+    priceSbsl?: number;
+    thgSku?: string;
+    supplierSku?: string;
+  }[];
 }
 
 export interface CatalogResponse {

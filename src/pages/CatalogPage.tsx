@@ -3,14 +3,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
-import { fetchCatalog, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
+import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  Search, Tag, Filter, ChevronLeft, ChevronRight, X, Download,
+  Search, Tag, Filter, ChevronLeft, ChevronRight, X,
   Shirt, Phone, Coffee, Home, Gem, Car, Frame, Package, Crown,
-  Loader2, Clock, Truck, MessageCircle,
+  MessageCircle, Share2, Check,
 } from "lucide-react";
 
 // Category-based product details (since DB has no description fields)
@@ -121,8 +121,89 @@ const CatalogPage = () => {
 
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
+  const [shareCopied, setShareCopied] = useState(false);
+  // v4 modal state — shipping channel toggle + selected variant index
+  const [shipping, setShipping] = useState<"lbl" | "mer">("lbl");
+  const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
 
   const searchTimer = useRef<NodeJS.Timeout>();
+  // Track latest fetched product id so out-of-order fetches don't override a newer click
+  const latestProductIdRef = useRef<string | null>(null);
+
+  // Open product modal + push product id to URL for shareable link
+  const openProduct = useCallback((product: CatalogProduct) => {
+    latestProductIdRef.current = product.id;
+    setSelectedProduct(product);
+    setActiveImage(0);
+    setShareCopied(false);
+    setShipping("lbl");
+    setSelectedVariantIdx(0);
+    // Fetch full detail (with variants) for modal display.
+    // Only apply if user is still viewing this product when fetch resolves.
+    fetchProduct(product.id)
+      .then((full) => {
+        if (latestProductIdRef.current === product.id) {
+          setSelectedProduct(full);
+        }
+      })
+      .catch(() => { /* keep list-level data */ });
+    const url = new URL(window.location.href);
+    url.searchParams.set("productId", product.id);
+    window.history.replaceState(null, "", url.toString());
+  }, []);
+
+  const closeProduct = useCallback(() => {
+    latestProductIdRef.current = null;
+    setSelectedProduct(null);
+    setShipping("lbl");
+    setSelectedVariantIdx(0);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("productId");
+    window.history.replaceState(null, "", url.pathname + (url.search || "") + url.hash);
+  }, []);
+
+  const handleShare = useCallback(async () => {
+    if (!selectedProduct) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("productId", selectedProduct.id);
+    const shareUrl = url.toString();
+    try {
+      // Prefer Web Share API on mobile
+      if (navigator.share) {
+        await navigator.share({ title: selectedProduct.name, url: shareUrl });
+        return;
+      }
+    } catch { /* user cancelled — fall through to clipboard */ }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch { /* ignore */ }
+  }, [selectedProduct]);
+
+  // Deep-link: read ?productId= on mount and open modal
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pid = params.get("productId");
+    if (!pid) return;
+    latestProductIdRef.current = pid;
+    fetchProduct(pid)
+      .then((p) => {
+        if (latestProductIdRef.current === pid) {
+          setSelectedProduct(p);
+          setActiveImage(0);
+          setShipping("lbl");
+          setSelectedVariantIdx(0);
+        }
+      })
+      .catch(() => {
+        // Invalid productId — clean URL
+        latestProductIdRef.current = null;
+        const url = new URL(window.location.href);
+        url.searchParams.delete("productId");
+        window.history.replaceState(null, "", url.pathname + (url.search || "") + url.hash);
+      });
+  }, []);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -341,7 +422,7 @@ const CatalogPage = () => {
                 <ScrollReveal key={item.id} delay={Math.min(idx * 30, 300)}>
                   <div
                     className="group bg-white rounded-2xl border border-border/30 overflow-hidden hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-500 cursor-pointer"
-                    onClick={() => { setSelectedProduct(item); setActiveImage(0); }}
+                    onClick={() => openProduct(item)}
                   >
                     {/* Image */}
                     <div className="relative aspect-square bg-gray-50 overflow-hidden">
@@ -436,9 +517,9 @@ const CatalogPage = () => {
         </div>
       </div>
 
-      {/* Product Detail Modal */}
-      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+      {/* Product Detail Modal — v4 layout */}
+      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && closeProduct()}>
+        <DialogContent className="max-w-[900px] w-[96vw] max-h-[92vh] p-0 gap-0 overflow-hidden flex flex-col">
           {selectedProduct && (() => {
             const fallback = categoryMeta[selectedProduct.category] || categoryMeta["Accessories"];
             const desc = selectedProduct.description;
@@ -452,38 +533,79 @@ const CatalogPage = () => {
             };
             const templateUrl = selectedProduct.templateUrl;
             const subcategory = desc?.subcategory;
+
+            // ── v4 helpers — pricing model ──
+            const variants = selectedProduct.variants ?? [];
+            const safeIdx = Math.min(selectedVariantIdx, Math.max(0, variants.length - 1));
+            const selectedVariant = variants[safeIdx];
+
+            // priceSbsl = Ship by Merchant (seller ships, higher price)
+            // priceSbtt = Ship by Label (TikTok provides label, lower price)
+            // Pre-compute BOTH channels explicitly so the per-tab range
+            // doesn't share a closure that could be mis-captured by minifier.
+            const lblPrices = variants
+              .map((v) => v.priceSbtt)
+              .filter((p): p is number => typeof p === "number" && p > 0);
+            const merPrices = variants
+              .map((v) => v.priceSbsl)
+              .filter((p): p is number => typeof p === "number" && p > 0);
+
+            const minLbl = lblPrices.length ? Math.min(...lblPrices) : null;
+            const maxLbl = lblPrices.length ? Math.max(...lblPrices) : null;
+            const minMer = merPrices.length ? Math.min(...merPrices) : null;
+            const maxMer = merPrices.length ? Math.max(...merPrices) : null;
+
+            const minP = shipping === "lbl" ? minLbl : minMer;
+            const maxP = shipping === "lbl" ? maxLbl : maxMer;
+
+            const hasLblPrices = lblPrices.length > 0;
+            const hasMerPrices = merPrices.length > 0;
+            const hasAnyPrices = hasLblPrices || hasMerPrices;
+
+            const currentPrice = selectedVariant
+              ? shipping === "lbl"
+                ? selectedVariant.priceSbtt
+                : selectedVariant.priceSbsl
+              : null;
+            const fmt = (n: number | null) => (n != null ? `$${n.toFixed(2)}` : "—");
+
+            const copySku = (sku: string) => {
+              if (!navigator.clipboard?.writeText) return;
+              navigator.clipboard.writeText(sku).catch(() => { /* ignore */ });
+              setShareCopied(true);
+              setTimeout(() => setShareCopied(false), 1400);
+            };
+
             return (
               <>
-                {/* Top section: image + info */}
-                <div className="grid md:grid-cols-2 gap-0">
-                  {/* Left: Image gallery */}
-                  <div className="p-6 bg-gray-50/50">
-                    {/* Origin flag */}
-                    {selectedProduct.origin && (
-                      <div className="flex justify-end mb-2">
-                        <span className="text-3xl">{originFlags[selectedProduct.origin]}</span>
-                      </div>
-                    )}
-                    <div className="aspect-square bg-white rounded-xl overflow-hidden border border-border/20 mb-3">
+                <DialogHeader className="sr-only">
+                  <DialogTitle>{selectedProduct.name}</DialogTitle>
+                  <DialogDescription>{selectedProduct.name} details</DialogDescription>
+                </DialogHeader>
+
+                {/* Body — 2 col grid on md+, stacked on mobile */}
+                <div className="flex-1 min-h-0 grid md:grid-cols-[320px_1fr] overflow-hidden">
+
+                  {/* ════ LEFT: image (fixed on desktop, top on mobile) ════ */}
+                  <div className="bg-gray-50/70 border-r border-border/30 flex flex-col overflow-hidden">
+                    <div className="relative flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/50 to-gray-50/50 min-h-[240px]">
                       {selectedProduct.images?.[activeImage] ? (
                         <img
                           src={selectedProduct.images[activeImage]}
                           alt={selectedProduct.name}
-                          className="w-full h-full object-contain p-4"
+                          className="max-w-full max-h-[240px] object-contain"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
-                          <Package className="w-16 h-16" />
-                        </div>
+                        <Package className="w-20 h-20 text-muted-foreground/30" />
                       )}
                     </div>
                     {selectedProduct.images.length > 1 && (
-                      <div className="flex gap-2 overflow-x-auto pb-1">
+                      <div className="flex gap-2 overflow-x-auto p-3 border-t border-border/30 bg-white">
                         {selectedProduct.images.map((img, i) => (
                           <button
                             key={i}
                             onClick={() => setActiveImage(i)}
-                            className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-primary shadow-md" : "border-border/30 opacity-60 hover:opacity-100"
+                            className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-blue-600" : "border-border/30 opacity-60 hover:opacity-100"
                               }`}
                           >
                             <img src={img} alt="" className="w-full h-full object-contain p-0.5" />
@@ -493,129 +615,221 @@ const CatalogPage = () => {
                     )}
                   </div>
 
-                  {/* Right: Product info */}
-                  <div className="p-6 space-y-4">
-                    <DialogHeader className="space-y-1">
-                      <p className="text-sm text-primary font-medium">{subcategory || selectedProduct.category}</p>
-                      <DialogTitle className="text-xl font-bold pr-8">{selectedProduct.name}</DialogTitle>
-                      <DialogDescription className="sr-only">{selectedProduct.name} details</DialogDescription>
-                    </DialogHeader>
+                  {/* ════ RIGHT: detail (scroll) ════ */}
+                  <div className="overflow-y-auto">
+                    <div className="px-6 py-5 flex flex-col gap-5">
 
-                    {/* Price */}
-                    <div>
-                      <p className="text-3xl font-bold text-foreground">{t("catalog.contact_price")}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{t("catalog.contact_price_sub")}</p>
-                    </div>
+                      {/* 1. Category + Name */}
+                      <div className="flex flex-col gap-2">
+                        <span className="inline-block w-fit text-[11px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                          {subcategory || selectedProduct.category}
+                        </span>
+                        <h2 className="text-xl font-bold leading-tight pr-8">{selectedProduct.name}</h2>
+                      </div>
 
-                    {/* SKU */}
-                    <div>
-                      <span className="text-sm font-semibold">SKU:</span>{" "}
-                      <span className="text-sm font-mono">{selectedProduct.sku}</span>
-                    </div>
-
-                    {/* Sizes */}
-                    {selectedProduct.sizes.length > 0 && (
-                      <div>
-                        <p className="text-sm font-semibold mb-2">{t("catalog.size_label")}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {selectedProduct.sizes.map((s) => (
-                            <span key={s} className="px-3 py-1.5 rounded-lg border border-foreground/20 text-sm font-medium hover:bg-secondary transition-colors">{s}</span>
-                          ))}
+                      {/* 2. Shipping tabs (only when at least one channel has any prices) */}
+                      {hasAnyPrices && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setShipping("lbl")}
+                            disabled={!hasLblPrices}
+                            className={`px-4 py-1.5 rounded-md text-sm font-semibold border-[1.5px] transition-all ${shipping === "lbl"
+                              ? "bg-blue-50 text-blue-600 border-blue-300"
+                              : "bg-white text-muted-foreground border-border/40 hover:border-border/60"
+                              } ${!hasLblPrices ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                          >
+                            Ship by Label
+                          </button>
+                          <button
+                            onClick={() => setShipping("mer")}
+                            disabled={!hasMerPrices}
+                            className={`px-4 py-1.5 rounded-md text-sm font-semibold border-[1.5px] transition-all ${shipping === "mer"
+                              ? "bg-orange-50 text-orange-600 border-orange-300"
+                              : "bg-white text-muted-foreground border-border/40 hover:border-border/60"
+                              } ${!hasMerPrices ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                          >
+                            Ship by Merchant
+                          </button>
                         </div>
-                      </div>
-                    )}
-
-                    {/* Colors */}
-                    {selectedProduct.colors.length > 0 && (
-                      <div>
-                        <p className="text-sm font-semibold mb-2">{t("catalog.color_label")}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {selectedProduct.colors.map((c) => (
-                            <span key={c} className="px-3 py-1.5 rounded-lg border border-foreground/20 text-sm font-medium">{c}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Production & Shipping time */}
-                    <div className="space-y-2 pt-2">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm">{t("catalog.prod_time")}</span>
-                        <span className="text-sm font-semibold text-primary">{meta.prodTime} {t("catalog.biz_days")}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Truck className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm">{t("catalog.ship_time")}</span>
-                        <span className="px-2 py-0.5 rounded border border-foreground/20 text-sm">{meta.shipTime} {t("catalog.biz_days")}</span>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex gap-3 pt-2">
-                      <a
-                        href="https://zalo.me/0886800126"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-navy text-navy font-medium hover:bg-navy hover:text-white transition-all"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        {t("catalog.order_support")}
-                      </a>
-                      {(templateUrl || selectedProduct.images.length > 0) && (
-                        <a
-                          href={templateUrl || selectedProduct.images[activeImage]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-navy text-white font-medium hover:bg-navy/90 transition-all"
-                        >
-                          <Download className="w-4 h-4" />
-                          {templateUrl ? t("catalog.download_template") : t("catalog.download")}
-                        </a>
                       )}
+
+                      {/* 3. Price block — key includes shipping + size to force remount on EITHER change */}
+                      <div key={`price-${shipping}-${safeIdx}`} className="flex flex-col gap-1">
+                        {hasAnyPrices && currentPrice != null ? (
+                          <>
+                            <div className="flex items-baseline gap-3 flex-wrap">
+                              <span className={`text-[38px] leading-none font-extrabold transition-colors ${shipping === "mer" ? "text-orange-600" : "text-blue-600"}`}>
+                                {fmt(currentPrice)}
+                              </span>
+                              {minP != null && maxP != null && minP !== maxP && (
+                                <span className="text-sm text-muted-foreground">{fmt(minP)} – {fmt(maxP)}</span>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Selling price (incl. shipping) · Size: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong>
+                            </p>
+                          </>
+                        ) : hasAnyPrices ? (
+                          <>
+                            <div className="flex items-baseline gap-3 flex-wrap">
+                              <span className="text-[38px] leading-none font-extrabold text-muted-foreground">—</span>
+                              {minP != null && maxP != null && (
+                                <span className="text-sm text-muted-foreground">{fmt(minP)} – {fmt(maxP)}</span>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              No price for this size on selected channel
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-[26px] leading-none font-bold text-foreground">Liên hệ báo giá</span>
+                            <p className="text-xs text-muted-foreground">Contact us for pricing</p>
+                          </>
+                        )}
+                      </div>
+
+                      {/* 4. Variant Details card — key forces remount on size change to avoid any stale-render edge case */}
+                      {selectedVariant && (
+                        <div key={`variant-${selectedVariant.id ?? safeIdx}`} className="border border-border/40 rounded-lg overflow-hidden">
+                          <div className="flex items-center px-4 py-2.5 border-b border-border/40 text-sm gap-2">
+                            <span className="text-muted-foreground font-medium w-[120px] flex-shrink-0">THG SKU</span>
+                            <button
+                              onClick={() => copySku(selectedVariant.thgSku || selectedVariant.supplierSku)}
+                              className="font-mono text-[11.5px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded hover:bg-blue-100 transition-colors cursor-pointer truncate text-left"
+                              title="Click to copy"
+                            >
+                              {selectedVariant.thgSku || selectedVariant.supplierSku}
+                            </button>
+                            {shareCopied && <Check className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />}
+                          </div>
+                          <div className="flex items-center px-4 py-2.5 border-b border-border/40 text-sm">
+                            <span className="text-muted-foreground font-medium w-[120px] flex-shrink-0">Package</span>
+                            <span className="text-foreground font-semibold">
+                              {selectedVariant.weight ? `${selectedVariant.weight}g` : "—"}
+                              {selectedVariant.length && selectedVariant.width && selectedVariant.height
+                                ? ` (${selectedVariant.length} × ${selectedVariant.width} × ${selectedVariant.height} cm)`
+                                : ""}
+                            </span>
+                          </div>
+                          <div className="flex items-center px-4 py-2.5 text-sm">
+                            <span className="text-muted-foreground font-medium w-[120px] flex-shrink-0">Color</span>
+                            <span className="text-foreground font-semibold">{selectedVariant.color || "—"}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 5. Sizes grid */}
+                      {variants.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                            Sizes — <span className="font-normal normal-case tracking-normal text-muted-foreground">Selected: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong></span>
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {variants.map((v, i) => (
+                              <button
+                                key={v.id}
+                                onClick={() => setSelectedVariantIdx(i)}
+                                className={`min-w-[50px] px-3 py-2 rounded-lg text-sm font-semibold border-[1.5px] transition-all ${i === safeIdx
+                                  ? "bg-blue-600 text-white border-blue-600"
+                                  : "bg-white text-foreground border-border/40 hover:border-blue-600 hover:text-blue-600"
+                                  }`}
+                              >
+                                {v.variant || "—"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 6. Fulfillment Info */}
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Fulfillment Info</p>
+                        <div className="border border-border/40 rounded-lg overflow-hidden">
+                          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
+                            <span className="text-muted-foreground font-medium flex items-center gap-1.5">⏱ Production time</span>
+                            <span className="text-green-600 font-semibold">{meta.prodTime} business days</span>
+                          </div>
+                          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
+                            <span className="text-muted-foreground font-medium flex items-center gap-1.5">🚚 Shipping time</span>
+                            <span className="text-green-600 font-semibold">{meta.shipTime} business days</span>
+                          </div>
+                          <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
+                            <span className="text-muted-foreground font-medium flex items-center gap-1.5">🌍 Fulfillment location</span>
+                            <span className="text-foreground font-semibold">
+                              {selectedProduct.origin ? `${originFlags[selectedProduct.origin] || "🏳️"} ${selectedProduct.origin}` : "—"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between px-4 py-2.5 text-sm">
+                            <span className="text-muted-foreground font-medium flex items-center gap-1.5">📦 MOQ</span>
+                            <span className="text-foreground font-semibold">1 unit</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 7. Resources */}
+                      {(templateUrl || selectedProduct.images.length > 0) && (
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Resources</p>
+                          <div className="flex gap-2 flex-wrap">
+                            {templateUrl && (
+                              <a
+                                href={templateUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border/40 bg-gray-50 text-muted-foreground text-xs font-semibold hover:bg-gray-100 hover:text-foreground transition-all no-underline"
+                              >
+                                📐 Download Template
+                              </a>
+                            )}
+                            <button
+                              onClick={handleShare}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border/40 bg-gray-50 text-muted-foreground text-xs font-semibold hover:bg-gray-100 hover:text-foreground transition-all"
+                            >
+                              {shareCopied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Share2 className="w-3.5 h-3.5" />}
+                              {shareCopied ? "Link copied" : "Share Product"}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 8. Product Features */}
+                      {meta.features.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Product Features</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {meta.features.map((f, i) => (
+                              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-snug">
+                                <span className="text-green-600 flex-shrink-0 mt-0.5">✓</span>
+                                <span>{f}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                     </div>
                   </div>
                 </div>
 
-                {/* Bottom section: Material, Features, Care */}
-                <div className="border-t border-border/30 p-6 space-y-6">
-                  <div className="grid md:grid-cols-3 gap-6">
-                    {/* Material */}
-                    <div>
-                      <h4 className="font-bold text-base mb-3">{t("catalog.material")}</h4>
-                      <ul className="space-y-1.5">
-                        {meta.material.map((m, i) => (
-                          <li key={i} className="text-sm text-muted-foreground pl-3 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary/40">{m}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Features */}
-                    <div>
-                      <h4 className="font-bold text-base mb-3">{t("catalog.features")}</h4>
-                      <ul className="space-y-1.5">
-                        {meta.features.map((f, i) => (
-                          <li key={i} className="text-sm text-muted-foreground pl-3 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary/40">{f}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Care Instructions */}
-                    <div>
-                      <h4 className="font-bold text-base mb-3">{t("catalog.care")}</h4>
-                      <ul className="space-y-1.5">
-                        {meta.care.map((c, i) => (
-                          <li key={i} className="text-sm text-muted-foreground pl-3 relative before:content-[''] before:absolute before:left-0 before:top-2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary/40">{c}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Fulfillment note */}
-                  <div className="bg-secondary/50 rounded-xl p-4">
-                    <h4 className="font-bold text-sm mb-1">{t("catalog.fulfillment")}</h4>
-                    <p className="text-sm text-muted-foreground">{t("catalog.fulfillment_desc")}</p>
-                  </div>
+                {/* Footer */}
+                <div className="flex gap-2 px-6 py-3 border-t border-border/30 bg-white flex-shrink-0">
+                  <a
+                    href="https://zalo.me/0886800126"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg border border-border/40 bg-gray-50 text-muted-foreground text-sm font-semibold hover:bg-gray-100 transition-all no-underline"
+                  >
+                    <MessageCircle className="w-4 h-4" /> Order Support
+                  </a>
+                  <a
+                    href="https://zalo.me/0886800126"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-all no-underline"
+                  >
+                    🛒 New Order
+                  </a>
                 </div>
               </>
             );
