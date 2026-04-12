@@ -6,6 +6,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { ShoppingCart, ArrowRight, CheckCircle2, Star, Shield, Clock, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const painPoints = [
   { emoji: "🔍", titleKey: "order_page.pain1_title", descKey: "order_page.pain1_desc" },
@@ -83,9 +84,9 @@ const THGOrderPage = () => {
                 {t("order_page.hero_cta2")} <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
               <Button asChild variant="outline" className="rounded-full px-8 py-6 text-base border-[hsl(var(--gold))]/40 text-navy hover:bg-[hsl(var(--gold))]/10 transition-all duration-300 font-semibold">
-                <a href="https://thg.vn/collections/all" target="_blank" rel="noopener noreferrer">
+                <Link to="/catalog">
                   📋 {t("order_page.btn_catalog")}
-                </a>
+                </Link>
               </Button>
             </div>
           </ScrollReveal>
