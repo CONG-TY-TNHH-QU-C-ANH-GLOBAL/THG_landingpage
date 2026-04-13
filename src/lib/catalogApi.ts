@@ -21,6 +21,10 @@ export interface CatalogProduct {
     shipPrices?: { toCustomer?: string; toUSPS?: string };
   } | null;
   templateUrl: string | null;
+  priceFrom: number | null;
+  priceTo: number | null;
+  currency: string;
+  thgSku: string | null;
   createdAt: string;
   updatedAt: string;
   variants?: {

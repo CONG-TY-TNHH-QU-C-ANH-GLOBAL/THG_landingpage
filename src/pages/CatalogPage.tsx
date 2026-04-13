@@ -451,7 +451,11 @@ const CatalogPage = () => {
                         {item.name}
                       </h3>
                       <p className="text-sm font-bold text-green-600">
-                        {t("catalog.contact_price")}
+                        {item.priceFrom != null && item.priceTo != null
+                          ? item.priceFrom === item.priceTo
+                            ? `$${item.priceFrom.toFixed(2)}`
+                            : `$${item.priceFrom.toFixed(2)} – $${item.priceTo.toFixed(2)}`
+                          : t("catalog.contact_price")}
                       </p>
                       <p className="text-[10px] md:text-xs text-muted-foreground truncate">
                         SKU: <span className="font-mono text-red-500">{item.sku}</span>
