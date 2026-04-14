@@ -527,13 +527,15 @@ const CatalogPage = () => {
           {selectedProduct && (() => {
             const fallback = categoryMeta[selectedProduct.category] || categoryMeta["Accessories"];
             const desc = selectedProduct.description;
-            const hasDesc = desc && (desc.material?.length || desc.features?.length || desc.care?.length);
+            // Per-field fallback: use admin value if present (array length > 0 or non-empty string),
+            // fallback to category default only when admin field is empty/missing
             const meta = {
-              material: (hasDesc && desc.material?.length) ? desc.material : fallback.material,
-              features: (hasDesc && desc.features?.length) ? desc.features : fallback.features,
-              care: (hasDesc && desc.care?.length) ? desc.care : fallback.care,
-              prodTime: desc?.prodTime || fallback.prodTime,
-              shipTime: desc?.shipTime || fallback.shipTime,
+              material: desc?.material?.length ? desc.material : fallback.material,
+              features: desc?.features?.length ? desc.features : fallback.features,
+              care: desc?.care?.length ? desc.care : fallback.care,
+              prodTime: desc?.prodTime?.trim() ? desc.prodTime : fallback.prodTime,
+              shipTime: desc?.shipTime?.trim() ? desc.shipTime : fallback.shipTime,
+              moq: typeof desc?.moq === "number" && desc.moq > 0 ? desc.moq : 1,
             };
             const templateUrl = selectedProduct.templateUrl;
             const subcategory = desc?.subcategory;
@@ -766,7 +768,7 @@ const CatalogPage = () => {
                           </div>
                           <div className="flex items-center justify-between px-4 py-2.5 text-sm">
                             <span className="text-muted-foreground font-medium flex items-center gap-1.5">📦 MOQ</span>
-                            <span className="text-foreground font-semibold">1 unit</span>
+                            <span className="text-foreground font-semibold">{meta.moq} unit{meta.moq > 1 ? "s" : ""}</span>
                           </div>
                         </div>
                       </div>
@@ -806,6 +808,36 @@ const CatalogPage = () => {
                               <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-snug">
                                 <span className="text-green-600 flex-shrink-0 mt-0.5">✓</span>
                                 <span>{f}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 9. Material */}
+                      {meta.material.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Material</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {meta.material.map((m, i) => (
+                              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-snug">
+                                <span className="text-blue-600 flex-shrink-0 mt-0.5">•</span>
+                                <span>{m}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 10. Care Instructions */}
+                      {meta.care.length > 0 && (
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Care Instructions</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {meta.care.map((c, i) => (
+                              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground leading-snug">
+                                <span className="text-amber-600 flex-shrink-0 mt-0.5">◆</span>
+                                <span>{c}</span>
                               </div>
                             ))}
                           </div>

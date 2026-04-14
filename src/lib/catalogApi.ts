@@ -14,11 +14,10 @@ export interface CatalogProduct {
     material?: string[];
     features?: string[];
     care?: string[];
-    fulfillment?: string;
     prodTime?: string;
     shipTime?: string;
     subcategory?: string;
-    shipPrices?: { toCustomer?: string; toUSPS?: string };
+    moq?: number;
   } | null;
   templateUrl: string | null;
   priceFrom: number | null;
