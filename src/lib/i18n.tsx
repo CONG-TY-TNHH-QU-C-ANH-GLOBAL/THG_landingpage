@@ -188,6 +188,7 @@ const translations: Translations = {
   "spolicy.r3": { en: "CN → WW · Batteries", vi: "CN → WW · Pin Điện", zh: "中国→全球·电池" },
   "spolicy.r4": { en: "VN → US · Priority", vi: "VN → US · Priority", zh: "越南→美国·Priority" },
   "spolicy.r5": { en: "CN → US/EU · Priority", vi: "CN → US/EU · Priority", zh: "中国→美欧·Priority" },
+  "spolicy.r6": { en: "CN → WW · Regular", vi: "CN → WW · Hàng Thường", zh: "中国→全球·普通" },
   "spolicy.sec_vat": { en: "VAT / IOSS", vi: "VAT / IOSS", zh: "增值税 / IOSS" },
   "spolicy.sec_weight": { en: "Chargeable Weight", vi: "Trọng Lượng Tính Cước", zh: "计费重量" },
   "spolicy.sec_countries": { en: "Countries & Restrictions", vi: "Quốc Gia & Hạn Chế", zh: "国家与限制" },

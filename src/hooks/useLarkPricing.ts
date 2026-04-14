@@ -3,26 +3,10 @@ import { useState, useEffect, useCallback, useRef } from "react";
 /* ═══════════════════════════════════════════════════════════
    useLarkPricing — fetches pricing from Google Sheets API
    Live sync: every page load fetches fresh data from GSheet
+   Dynamic tab discovery: auto-detects all sheet tabs
    ═══════════════════════════════════════════════════════════ */
 
 const SPREADSHEET_ID = "1woNrfCqybDs0zYKbGnilchhXE6JaWLAsOJxN-pQO0e4";
-
-/** All pricing-relevant sheet tabs with their GIDs and titles */
-const SHEET_TABS: { gid: string; title: string }[] = [
-    { gid: "1726547706", title: "Epacket - Standard VN - WW (VNTHZXR)" },
-    { gid: "460331483", title: "Epacket - Standard VN-WW Cosmestic (VNMUZXR)" },
-    { gid: "1354933282", title: "Epacket - Priority USPS VN-US (YTYCPREC)" },
-    { gid: "1303526787", title: "Epacket - Priority USPS CN-US (YTYCPREC)" },
-    { gid: "1724664735", title: "Epacket - Standard CN - WW Regular (THPHR)" },
-    { gid: "816556145", title: "Epacket - Standard CN - WW Cosmestic (MUZXR)" },
-    { gid: "517556374", title: "Epacket - Standard CN - WW Battery (THZXR)" },
-    { gid: "2081899437", title: "Ship by label CN-US" },
-    { gid: "2067910410", title: "Express VN-US" },
-    { gid: "283139992", title: "Express CN-US" },
-    { gid: "881296518", title: "EU Rate" },
-    { gid: "520292955", title: "US remote zipcode" },
-    { gid: "141599363", title: "Re-delivery charge summary (Epacket)" },
-];
 
 interface UseLarkPricingResult<T> {
     data: T | null;
@@ -34,8 +18,8 @@ interface UseLarkPricingResult<T> {
 }
 
 /**
- * Parse a simple CSV string into a 2D array.
- * Handles quoted fields with commas and newlines inside quotes.
+ * Parse a CSV string into a 2D array.
+ * Handles: quoted fields, newlines in quotes, $-prefixed prices, European numbers.
  */
 function parseCSV(csv: string): any[][] {
     const rows: any[][] = [];
@@ -69,31 +53,7 @@ function parseCSV(csv: string): any[][] {
                 }
             }
 
-            const trimmed = value.trim();
-            if (trimmed === "" || trimmed === "-") {
-                row.push(trimmed === "" ? null : trimmed);
-            } else {
-                // European integer: "147.758" → 147758
-                const euroNumMatch = trimmed.match(/^(\d{1,3}(?:\.\d{3})+)$/);
-                if (euroNumMatch) {
-                    const num = parseInt(trimmed.replace(/\./g, ""), 10);
-                    row.push(isNaN(num) ? trimmed : num);
-                } else {
-                    // European decimal: "0,05" → 0.05
-                    const commaDecimalMatch = trimmed.match(/^(\d+),(\d+)$/);
-                    if (commaDecimalMatch) {
-                        const num = parseFloat(trimmed.replace(",", "."));
-                        row.push(isNaN(num) ? trimmed : num);
-                    } else {
-                        const num = parseFloat(trimmed.replace(/,/g, ""));
-                        if (!isNaN(num) && /^-?[\d.,]+$/.test(trimmed)) {
-                            row.push(num);
-                        } else {
-                            row.push(trimmed);
-                        }
-                    }
-                }
-            }
+            row.push(parseCSVValue(value.trim()));
 
             if (i < len && csv[i] === ',') {
                 i++;
@@ -111,6 +71,60 @@ function parseCSV(csv: string): any[][] {
 }
 
 /**
+ * Parse a single CSV cell value intelligently.
+ * Handles: "$9,92" → 9.92, "147.758" → 147758, "0,05" → 0.05, etc.
+ */
+function parseCSVValue(trimmed: string): any {
+    if (trimmed === "") return null;
+    if (trimmed === "-") return trimmed;
+
+    // Strip currency symbols first: $, ₫, €
+    const stripped = trimmed.replace(/^[$₫€]\s*/, "").replace(/\s*[$₫€]$/, "");
+
+    // If it had a currency symbol, treat as a number
+    if (stripped !== trimmed) {
+        // Currency value like "$9,92" → strip $ → "9,92" → parse
+        // Handle comma as decimal separator: "9,92" → 9.92
+        const commaDecimal = stripped.match(/^(-?\d+),(\d{1,2})$/);
+        if (commaDecimal) {
+            const num = parseFloat(stripped.replace(",", "."));
+            return isNaN(num) ? trimmed : num;
+        }
+        // Handle dot as thousands: "$1.234,56" → 1234.56
+        const euroFull = stripped.match(/^(-?\d{1,3}(?:\.\d{3})*),(\d{1,2})$/);
+        if (euroFull) {
+            const num = parseFloat(stripped.replace(/\./g, "").replace(",", "."));
+            return isNaN(num) ? trimmed : num;
+        }
+        // Standard number: "$12.50"
+        const num = parseFloat(stripped.replace(/,/g, ""));
+        return isNaN(num) ? trimmed : num;
+    }
+
+    // European integer: "147.758" → 147758 (dot as thousands separator)
+    const euroIntMatch = trimmed.match(/^(-?\d{1,3}(?:\.\d{3})+)$/);
+    if (euroIntMatch) {
+        const num = parseInt(trimmed.replace(/\./g, ""), 10);
+        return isNaN(num) ? trimmed : num;
+    }
+
+    // European decimal: "0,05" → 0.05
+    const commaDecimalMatch = trimmed.match(/^(-?\d+),(\d+)$/);
+    if (commaDecimalMatch) {
+        const num = parseFloat(trimmed.replace(",", "."));
+        return isNaN(num) ? trimmed : num;
+    }
+
+    // Standard number: "123.45" or "1,234"
+    const num = parseFloat(trimmed.replace(/,/g, ""));
+    if (!isNaN(num) && /^-?[\d.,]+$/.test(trimmed)) {
+        return num;
+    }
+
+    return trimmed;
+}
+
+/**
  * Fetch a single sheet tab's data as CSV from Google Sheets.
  */
 async function fetchSheetCSV(gid: string): Promise<any[][]> {
@@ -122,9 +136,68 @@ async function fetchSheetCSV(gid: string): Promise<any[][]> {
 }
 
 /**
- * Fetches ALL pricing-relevant sheets from Google Sheets.
+ * Discover all sheet tab names and GIDs from the Google Sheet HTML page.
+ * Falls back to a hardcoded list if discovery fails.
+ */
+async function discoverSheetTabs(): Promise<{ gid: string; title: string }[]> {
+    try {
+        // Fetch the published HTML version to discover tabs
+        const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/htmlembed`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const html = await res.text();
+
+        // Parse tab names and GIDs from the HTML
+        // The HTML contains <li> elements with id="sheet-button-XXX" where XXX is the gid
+        const tabRegex = /id="sheet-button-(\d+)"[^>]*>(?:<[^>]+>)*([^<]+)/g;
+        const tabs: { gid: string; title: string }[] = [];
+        let match;
+        while ((match = tabRegex.exec(html)) !== null) {
+            tabs.push({ gid: match[1], title: match[2].trim() });
+        }
+
+        if (tabs.length > 0) {
+            console.log(`[GSheet] 🔍 Auto-discovered ${tabs.length} sheet tabs`);
+            return tabs;
+        }
+    } catch (e: any) {
+        console.warn("[GSheet] Tab discovery failed, using fallback list:", e.message);
+    }
+
+    // Fallback: hardcoded tab list (will still fetch live data from each tab)
+    return [
+        { gid: "1726547706", title: "Epacket - Standard VN - WW (VNTHZXR)" },
+        { gid: "460331483", title: "Epacket - Standard VN-WW Cosmestic (VNMUZXR)" },
+        { gid: "1354933282", title: "Epacket - Priority USPS VN-US (YTYCPREC)" },
+        { gid: "1303526787", title: "Epacket - Priority USPS CN-US (YTYCPREC)" },
+        { gid: "1724664735", title: "Epacket - Standard CN - WW Regular (THPHR)" },
+        { gid: "816556145", title: "Epacket - Standard CN - WW Cosmestic (MUZXR)" },
+        { gid: "517556374", title: "Epacket - Standard CN - WW Battery (THZXR)" },
+        { gid: "2081899437", title: "Ship by label CN-US" },
+        { gid: "2067910410", title: "Express VN-US" },
+        { gid: "283139992", title: "Express CN-US" },
+        { gid: "1437367264", title: "Policy VN-YTYCPREC VN priority US" },
+        { gid: "1366777313", title: "Policy VNTHZXR VN standard WW" },
+        { gid: "1663964711", title: "Policy YTYCPREC priority CN US" },
+        { gid: "1764855107", title: "Policy VNMUZXR standard VN WW(comestic)" },
+        { gid: "535541764", title: "Policy THPHR (Standard CN hàng thường)" },
+        { gid: "1814177658", title: "Policy MUZXR(Stand CN WW comestic)" },
+        { gid: "1808506806", title: "Policy THZXR(Stand CN WW pin điện)" },
+        { gid: "881296518", title: "EU Rate" },
+        { gid: "520292955", title: "US remote zipcode" },
+        { gid: "1481029298", title: "JP remote zipcode" },
+        { gid: "949197496", title: "HR remote zipcode" },
+        { gid: "690019559", title: "GB remote zipcode" },
+        { gid: "540077708", title: "SE remote zipcode" },
+        { gid: "141599363", title: "Re-delivery charge summary (Epacket)" },
+    ];
+}
+
+/**
+ * Fetches ALL sheets from Google Sheets.
+ * Step 1: Auto-discover all tab names + GIDs
+ * Step 2: Fetch each tab's CSV data in parallel
  * No caching — every page load gets the latest data.
- * Ops team changes prices on GSheet → user reloads → sees new prices instantly.
  */
 export function useLarkAllSheets<T = Record<string, { title: string; data: any[][] }>>(
     fallback: T
@@ -142,8 +215,12 @@ export function useLarkAllSheets<T = Record<string, { title: string; data: any[]
         setLoading(true);
         setError(null);
         try {
+            // Step 1: Discover all tabs dynamically
+            const tabs = await discoverSheetTabs();
+
+            // Step 2: Fetch all sheet tabs in parallel
             const results = await Promise.allSettled(
-                SHEET_TABS.map(async (tab) => {
+                tabs.map(async (tab) => {
                     const csvData = await fetchSheetCSV(tab.gid);
                     return { gid: tab.gid, title: tab.title, data: csvData };
                 })
@@ -158,7 +235,7 @@ export function useLarkAllSheets<T = Record<string, { title: string; data: any[]
                     sheets[gid] = { title, data: sheetData };
                     successCount++;
                 } else {
-                    console.warn(`[GSheet] Failed to fetch tab "${SHEET_TABS[idx].title}":`, result.reason);
+                    console.warn(`[GSheet] Failed to fetch tab "${tabs[idx].title}":`, result.reason);
                 }
             });
 
@@ -170,7 +247,7 @@ export function useLarkAllSheets<T = Record<string, { title: string; data: any[]
             setLastUpdated(new Date().toISOString());
             setIsLive(true);
 
-            console.log(`[GSheet] ✅ Synced ${successCount}/${SHEET_TABS.length} sheets from Google Sheets`);
+            console.log(`[GSheet] ✅ Synced ${successCount}/${tabs.length} sheets from Google Sheets`);
         } catch (e: any) {
             console.warn("[GSheet] API failed, using fallback:", e.message);
             setError(e.message);
@@ -228,6 +305,5 @@ export function useLarkSheetRange<T = any[][]>(
 }
 
 export default function useLarkPricing() {
-    // Legacy export — not used directly
     return null;
 }

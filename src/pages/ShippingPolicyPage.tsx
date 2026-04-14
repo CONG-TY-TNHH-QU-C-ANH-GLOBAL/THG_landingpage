@@ -11,15 +11,18 @@ import RouteCnCosmetics from "@/components/shipping-policy/RouteCnCosmetics";
 import RouteCnBatteries from "@/components/shipping-policy/RouteCnBatteries";
 import RouteVnPriority from "@/components/shipping-policy/RouteVnPriority";
 import RouteCnPriority from "@/components/shipping-policy/RouteCnPriority";
+import RouteCnRegular from "@/components/shipping-policy/RouteCnRegular";
 
 const ROUTE_KEYS = [
-  "spolicy.r0", "spolicy.r1", "spolicy.r2",
-  "spolicy.r3", "spolicy.r4", "spolicy.r5",
+  "spolicy.r0", "spolicy.r1", "spolicy.r6",
+  "spolicy.r2", "spolicy.r3", "spolicy.r4",
+  "spolicy.r5",
 ] as const;
 
 const ROUTE_COMPONENTS = [
-  RouteVnRegular, RouteVnCosmetics, RouteCnCosmetics,
-  RouteCnBatteries, RouteVnPriority, RouteCnPriority,
+  RouteVnRegular, RouteVnCosmetics, RouteCnRegular,
+  RouteCnCosmetics, RouteCnBatteries, RouteVnPriority,
+  RouteCnPriority,
 ];
 
 const ShippingPolicyPage = () => {

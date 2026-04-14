@@ -54,7 +54,7 @@ export function transformSheetToEpacketData(rows: any[][], liveRates?: Record<st
             headers.forEach((h: string, i: number) => {
                 const val = slaRow[i];
                 if (val && typeof val === 'string' && (val.includes('bsd') || val.includes('days'))) {
-                    const key = h.replace(/\(.*?\)/g, "").replace(/[\n\r]/g, " ").replace(/\bvnd\b/gi, "").replace(/\busd\b/gi, "").trim().replace(/\s+/g, "_").replace(/_+$/, "").replace(/^_+/, "");
+                    const key = h.replace(/\d+-\d+\s*(?:working\s*days|bsd)/gi, "").replace(/\(.*?\)/g, "").replace(/[\n\r]/g, " ").replace(/\bvnd\b/gi, "").replace(/\busd\b/gi, "").trim().replace(/\s+/g, "_").replace(/_+$/, "").replace(/^_+/, "");
                     if (key && key !== '-' && key !== '') meta[key] = val.trim();
                 }
             });
@@ -67,7 +67,7 @@ export function transformSheetToEpacketData(rows: any[][], liveRates?: Record<st
         const subRow = rows[sr];
         if (!subRow) break;
         const isSubHeader = subRow.some((val: any) =>
-            typeof val === 'string' && (val.includes('days') || val.toUpperCase().includes('VND'))
+            typeof val === 'string' && (val.includes('days') || val.includes('bsd') || val.toUpperCase().includes('VND'))
         );
         if (!isSubHeader) break;
 
@@ -75,8 +75,8 @@ export function transformSheetToEpacketData(rows: any[][], liveRates?: Record<st
         headers.forEach((h: string, i: number) => {
             const val = subRow[i];
             if (val && typeof val === 'string') {
-                if (val.includes('days')) {
-                    const key = h.replace(/\(.*?\)/g, "").replace(/[\n\r]/g, " ").replace(/\bvnd\b/gi, "").replace(/\busd\b/gi, "").trim().replace(/\s+/g, "_").replace(/_+$/, "").replace(/^_+/, "");
+                if (val.includes('days') || val.includes('bsd')) {
+                    const key = h.replace(/\d+-\d+\s*(?:working\s*days|bsd)/gi, "").replace(/\(.*?\)/g, "").replace(/[\n\r]/g, " ").replace(/\bvnd\b/gi, "").replace(/\busd\b/gi, "").trim().replace(/\s+/g, "_").replace(/_+$/, "").replace(/^_+/, "");
                     if (key && key !== '-' && key !== '') meta[key] = val.trim();
                 }
                 if (val.toUpperCase().includes('VND')) {
@@ -90,6 +90,30 @@ export function transformSheetToEpacketData(rows: any[][], liveRates?: Record<st
     headers.forEach((h: string, i: number) => {
         if (h.includes('vnd') || h.includes('vnđ')) {
             isVndColumn[i] = true;
+        }
+    });
+
+    // ── Extract SLA from merged CSV headers ──
+    // Google Sheets CSV export merges multi-row headers into one string
+    // Matches both "5-12 working days" (VN tabs) and "6-10 bsd" (CN tabs)
+    const SLA_PATTERN = /(\d+-\d+\s*(?:working\s*days|bsd))/i;
+    const SLA_STRIP = /\d+-\d+\s*(?:working\s*days|bsd)/gi;
+    headers.forEach((h: string) => {
+        const slaMatch = h.match(SLA_PATTERN);
+        if (slaMatch) {
+            const key = h
+                .replace(SLA_STRIP, "")
+                .replace(/\(.*?\)/g, "")
+                .replace(/[\n\r]/g, " ")
+                .replace(/\bvnd\b/gi, "")
+                .replace(/\busd\b/gi, "")
+                .trim()
+                .replace(/\s+/g, "_")
+                .replace(/_+$/, "")
+                .replace(/^_+/, "");
+            if (key && key !== '-' && key !== '') {
+                meta[key] = slaMatch[1].trim();
+            }
         }
     });
 
@@ -158,7 +182,7 @@ export function transformSheetToEpacketData(rows: any[][], liveRates?: Record<st
             const isContact = String(rawVal).toLowerCase().includes("liên hệ") || String(rawVal).toLowerCase() === "contact";
             if (isContact) {
                 if (!mapByKg[currentWeight]) mapByKg[currentWeight] = { kg: currentWeight };
-                const cKey = h.replace(/\(.*?\)/g, "").trim().replace(/\s+/g, "_");
+                const cKey = h.replace(/\d+-\d+\s*(?:working\s*days|bsd)/gi, "").replace(/\(.*?\)/g, "").trim().replace(/\s+/g, "_").replace(/_+$/, "").replace(/^_+/, "");
                 mapByKg[currentWeight][cKey] = "Liên hệ";
                 return;
             }
@@ -171,6 +195,7 @@ export function transformSheetToEpacketData(rows: any[][], liveRates?: Record<st
 
                 // Clean header key: strip (vnd), newlines, trailing _vnd/_usd, etc.
                 const cKey = h
+                    .replace(/\d+-\d+\s*(?:working\s*days|bsd)/gi, "")  // strip "5-12 working days" or "6-10 bsd"
                     .replace(/\(.*?\)/g, "")    // strip (vnd), (usd), etc.
                     .replace(/[\n\r]/g, " ")    // newlines → space
                     .replace(/\bvnd\b/gi, "")   // strip standalone "vnd"
