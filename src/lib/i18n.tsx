@@ -290,6 +290,14 @@ const translations: Translations = {
   "express_page.cta_desc": { en: "Get competitive shipping rates and reliable delivery with THG Express.", vi: "Nhận giá ship cạnh tranh và giao hàng uy tín với THG Express.", zh: "通过THG Express获取有竞争力的运费和可靠交付。" },
 
   // THG Warehouse Page
+  "warehouse_page.pkg_title": { en: "PACKAGING FEES", vi: "BẢNG PHÍ BAO BÌ/HỘP", zh: "包装/纸箱费用" },
+  "warehouse_page.pkg_poly_name": { en: "Poly Bag", vi: "Túi Poly", zh: "包装袋 (Poly Bag)" },
+  "warehouse_page.pkg_poly_price": { en: "FREE", vi: "MIỄN PHÍ", zh: "免费" },
+  "warehouse_page.pkg_bm_name": { en: "Bubble mailers", vi: "Bubble mailers", zh: "气泡信封 (Bubble mailers)" },
+  "warehouse_page.pkg_bm_price": { en: "$0.5/BAG", vi: "0.5$/TÚI", zh: "0.5美元/个" },
+  "warehouse_page.pkg_bw_name": { en: "Bubble wrap", vi: "Bubble wrap", zh: "气泡膜 (Bubble wrap)" },
+  "warehouse_page.pkg_bw_price": { en: "$0.5/METER", vi: "0.5$/MÉT", zh: "0.5美元/米" },
+  "warehouse_page.pkg_carton_name": { en: "Box carton", vi: "Box carton", zh: "纸箱 (Box carton)" },
   "warehouse_page.badge": { en: "US Fulfillment", vi: "Fulfillment tại Mỹ", zh: "美国履约" },
   "warehouse_page.hero_tagline": { en: "PREMIUM WAREHOUSE – FAST DELIVERY", vi: "KHO XỊN - GIAO NHANH", zh: "优质仓库 – 快速配送" },
   "warehouse_page.hero_tagline2": { en: "OPTIMIZED OPERATIONS", vi: "TỐI ƯU VẬN HÀNH", zh: "优化运营" },
