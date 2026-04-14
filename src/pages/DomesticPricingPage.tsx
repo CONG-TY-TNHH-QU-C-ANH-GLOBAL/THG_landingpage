@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import {
     MapPin, Package, Truck, Globe, Shield,
     ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Warehouse, CheckCircle2,
-    FileSpreadsheet, FileText, ChevronLeft, ChevronRight
+    FileSpreadsheet, FileText, ChevronLeft, ChevronRight, Mail, Layers, Box
 } from "lucide-react";
 import { exportToExcel } from "@/lib/exportUtils";
 import { useLarkPricingContext, SyncBadge, transformSheetToDomesticData } from "@/components/pricing/LarkPricingProvider";
@@ -18,14 +18,14 @@ const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
 
 const OZ_VALUES = [
-    "4 oz","8 oz","12 oz","16 oz","32 oz","48 oz","64 oz","80 oz","96 oz",
-    "112 oz","128 oz","144 oz","160 oz","176 oz","192 oz","208 oz","224 oz","240 oz","256 oz",
-    "272 oz","288 oz","304 oz","320 oz","336 oz","352 oz","368 oz","384 oz","400 oz","416 oz",
-    "432 oz","448 oz","464 oz","480 oz","496 oz","512 oz","528 oz","544 oz","560 oz","576 oz",
-    "592 oz","608 oz","624 oz","640 oz","656 oz","672 oz","688 oz","704 oz","720 oz","736 oz",
-    "752 oz","768 oz","784 oz","800 oz","816 oz","832 oz","848 oz","864 oz","880 oz","896 oz",
-    "912 oz","928 oz","944 oz","960 oz","976 oz","992 oz","1008 oz","1024 oz","1040 oz","1056 oz",
-    "1072 oz","1088 oz","1104 oz","1120 oz",
+    "4 oz", "8 oz", "12 oz", "16 oz", "32 oz", "48 oz", "64 oz", "80 oz", "96 oz",
+    "112 oz", "128 oz", "144 oz", "160 oz", "176 oz", "192 oz", "208 oz", "224 oz", "240 oz", "256 oz",
+    "272 oz", "288 oz", "304 oz", "320 oz", "336 oz", "352 oz", "368 oz", "384 oz", "400 oz", "416 oz",
+    "432 oz", "448 oz", "464 oz", "480 oz", "496 oz", "512 oz", "528 oz", "544 oz", "560 oz", "576 oz",
+    "592 oz", "608 oz", "624 oz", "640 oz", "656 oz", "672 oz", "688 oz", "704 oz", "720 oz", "736 oz",
+    "752 oz", "768 oz", "784 oz", "800 oz", "816 oz", "832 oz", "848 oz", "864 oz", "880 oz", "896 oz",
+    "912 oz", "928 oz", "944 oz", "960 oz", "976 oz", "992 oz", "1008 oz", "1024 oz", "1040 oz", "1056 oz",
+    "1072 oz", "1088 oz", "1104 oz", "1120 oz",
 ];
 
 const DomesticPricingContent = () => {
@@ -203,9 +203,9 @@ const DomesticPricingContent = () => {
                             <div ref={scrollRef} className="overflow-x-auto scroll-smooth">
                                 <table id="table-domestic" className="w-full text-[11px] md:text-[13px] border-collapse">
                                     <thead>
-                                         <tr className="bg-navy text-white">
+                                        <tr className="bg-navy text-white">
                                             <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider sticky left-0 bg-navy z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)] min-w-[50px] border-r border-white/20">{t("domestic.th_stt")}</th>
-                                            <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[80px] border-r border-white/20">Weight Not Over<br/>(in ounces)</th>
+                                            <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[80px] border-r border-white/20">Weight Not Over<br />(in ounces)</th>
                                             <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[70px] border-r border-white/20">Gram</th>
                                             {ZONES.map((z) => (
                                                 <th key={z} className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[70px] border-r border-white/20 last:border-r-0">Zone {z}</th>
@@ -340,6 +340,90 @@ const DomesticPricingContent = () => {
                                     })}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </ScrollReveal>
+
+                {/* Packaging Fees section */}
+                <ScrollReveal>
+                    <div className="bg-transparent mb-10">
+                        <div className="bg-[#31509D] py-5 px-6 rounded-t-xl mb-8 flex justify-center items-center shadow-lg mx-auto w-full md:w-3/4 lg:w-2/3">
+                            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-wide uppercase text-center">
+                                {t("warehouse_page.pkg_title")}
+                            </h2>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {/* Card 1: Poly Bag */}
+                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+                                    <Package className="w-12 h-12 text-white" strokeWidth={1.5} />
+                                </div>
+                                <div className="flex-1 text-center sm:text-left">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
+                                        {t("warehouse_page.pkg_poly_name")}
+                                    </h3>
+                                    <p className="text-2xl sm:text-3xl font-black text-[#FFD700] uppercase tracking-wide">
+                                        {t("warehouse_page.pkg_poly_price")}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Card 2: Bubble mailers */}
+                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+                                    <Mail className="w-12 h-12 text-white" strokeWidth={1.5} />
+                                </div>
+                                <div className="flex-1 text-center sm:text-left">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
+                                        {t("warehouse_page.pkg_bm_name")}
+                                    </h3>
+                                    <p className="text-2xl sm:text-3xl font-black text-[#FFD700] uppercase tracking-wide">
+                                        {t("warehouse_page.pkg_bm_price")}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Card 3: Bubble wrap */}
+                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+                                    <Layers className="w-12 h-12 text-white" strokeWidth={1.5} />
+                                </div>
+                                <div className="flex-1 text-center sm:text-left">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
+                                        {t("warehouse_page.pkg_bw_name")}
+                                    </h3>
+                                    <p className="text-2xl sm:text-3xl font-black text-[#FFD700] uppercase tracking-wide">
+                                        {t("warehouse_page.pkg_bw_price")}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Card 4: Box carton */}
+                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+                                    <Box className="w-12 h-12 text-white" strokeWidth={1.5} />
+                                </div>
+                                <div className="flex-1 text-center sm:text-left pt-2 pb-2">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 leading-tight">
+                                        {t("warehouse_page.pkg_carton_name")}
+                                    </h3>
+                                    <div className="space-y-1.5 flex flex-col items-center sm:items-start">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-white font-medium w-[95px] text-left text-sm sm:text-base whitespace-nowrap leading-none">• 6 x 4 x 4 in</span>
+                                            <span className="text-[#FFD700] font-bold text-base sm:text-lg leading-none">1$</span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-white font-medium w-[95px] text-left text-sm sm:text-base whitespace-nowrap leading-none">• 10 x 6 x 4 in</span>
+                                            <span className="text-[#FFD700] font-bold text-base sm:text-lg leading-none">1.5$</span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-white font-medium w-[95px] text-left text-sm sm:text-base whitespace-nowrap leading-none">• 9 x 7 x 3 in</span>
+                                            <span className="text-[#FFD700] font-bold text-base sm:text-lg leading-none">1.7$</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </ScrollReveal>

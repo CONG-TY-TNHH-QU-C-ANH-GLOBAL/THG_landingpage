@@ -322,23 +322,13 @@ export function useLarkPricingContext() {
  * Can be placed anywhere on the pricing pages.
  */
 export function SyncBadge() {
-    const { isLive, loading, lastUpdated, error, refetch } = useLarkPricingContext();
+    const { isLive, loading, lastUpdated } = useLarkPricingContext();
 
     if (loading) {
         return (
             <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground bg-gray-50 px-3 py-1 rounded-full border border-gray-200">
                 <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
                 Đang đồng bộ bảng giá...
-            </span>
-        );
-    }
-
-    if (error && !isLive) {
-        return (
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-orange-600 bg-orange-50 px-3 py-1 rounded-full border border-orange-200">
-                <span className="w-2 h-2 rounded-full bg-orange-400" />
-                Đang dùng bảng giá offline
-                <button onClick={refetch} className="ml-1 underline hover:text-orange-800">Thử lại</button>
             </span>
         );
     }
@@ -350,8 +340,7 @@ export function SyncBadge() {
         return (
             <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                Đồng bộ từ Lark · {time}
-                <button onClick={refetch} className="ml-1 underline hover:text-emerald-900">↻</button>
+                Đồng bộ từ Google Sheets · {time}
             </span>
         );
     }
