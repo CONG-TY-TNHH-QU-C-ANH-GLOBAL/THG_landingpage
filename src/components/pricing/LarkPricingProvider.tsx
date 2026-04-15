@@ -274,43 +274,75 @@ export function transformSheetToVnUsExpress(rows: any[][], liveRates?: Record<st
     const hcm: { saver: any[], expedited: any[] } = { saver: [], expedited: [] };
     const hn: { saver: any[], expedited: any[] } = { saver: [], expedited: [] };
 
+    // Bulk weight brackets for rows where weight cell is empty (merged cells in GSheet)
+    const SAVER_BULK_BRACKETS = ["21-44", "45-70", "71-99", "100-299", "300-499", "500-999", ">1000"];
+    const EXPEDITED_BULK_BRACKETS = ["21-44", "45-70", "71-99", "100-299", "300-499", "500-999", ">1000"];
+    let saverBulkIdx = 0;
+    let expeditedBulkIdx = 0;
+
     // Function to parse price strings to numbers (VND usually)
     const parsePrice = (val: any) => {
         if (!val) return null;
         if (typeof val === "number") return val;
-        // e.g. "1.387.634" -> 1387634, or "260.000 vnd/kg" -> 260000
         const str = String(val).toLowerCase();
         if (str.includes("liên hệ") || str.includes("contact")) return "Liên hệ";
         const num = parseFloat(str.replace(/\./g, "").replace(/,/g, "").replace(/\$|vnd|\/kg/g, "").trim());
         return isNaN(num) ? str : num;
     };
 
-    // Keep raw price from Lark — no VND→USD conversion
-    const toUsd = (val: any) => val;
+    // Parse weight: handle European comma decimal ("0,5" → 0.5)
+    const parseWeight = (val: any): number => {
+        if (typeof val === "number") return val;
+        const str = String(val).replace(/,/g, ".").trim();
+        return parseFloat(str);
+    };
+
+    // Check if a price string indicates per-kg bulk pricing
+    const isBulkPrice = (val: any): boolean => {
+        if (!val) return false;
+        return String(val).toLowerCase().includes("vnd/kg") || String(val).toLowerCase().includes("/kg");
+    };
 
     rows.slice(1).forEach(row => {
-        // Col 0: Saver weight
+        // Col 0: Saver weight, Col 1: HCM price, Col 2: HN price
         const w1 = row[0];
-        if (w1 !== null && w1 !== undefined && String(w1).trim() !== "") {
-            const kg = typeof w1 === "number" ? w1 : parseFloat(String(w1));
-            const hcmPrice = toUsd(parsePrice(row[1]));
-            const hnPrice = toUsd(parsePrice(row[2]));
+        const w1Str = String(w1 ?? "").trim();
+        const hcmSaverPrice = row[1];
+        const hnSaverPrice = row[2];
 
+        if (w1Str !== "") {
+            // Normal weight row
+            const kg = parseWeight(w1);
             if (!isNaN(kg)) {
-                hcm.saver.push({ kg, price: hcmPrice });
-                hn.saver.push({ kg, price: hnPrice });
+                hcm.saver.push({ kg, price: parsePrice(hcmSaverPrice) });
+                hn.saver.push({ kg, price: parsePrice(hnSaverPrice) });
+            }
+        } else if (isBulkPrice(hcmSaverPrice) || isBulkPrice(hnSaverPrice)) {
+            // Bulk row: weight cell is empty (merged cells in GSheet), but price shows "xxx vnd/kg"
+            if (saverBulkIdx < SAVER_BULK_BRACKETS.length) {
+                const bracket = SAVER_BULK_BRACKETS[saverBulkIdx++];
+                hcm.saver.push({ kg: bracket, price: parsePrice(hcmSaverPrice) });
+                hn.saver.push({ kg: bracket, price: parsePrice(hnSaverPrice) });
             }
         }
 
-        // Col 3: Expedited weight bracket
+        // Col 3: Expedited weight bracket, Col 4: HCM price, Col 5: HN price
         const w2 = row[3];
-        if (w2 !== null && w2 !== undefined && String(w2).trim() !== "") {
-            const bracket = String(w2).trim();
-            const hcmPrice = toUsd(parsePrice(row[4]));
-            const hnPrice = toUsd(parsePrice(row[5]));
+        const w2Str = String(w2 ?? "").trim();
+        const hcmExpPrice = row[4];
+        const hnExpPrice = row[5];
 
-            hcm.expedited.push({ bracket, price: hcmPrice });
-            hn.expedited.push({ bracket, price: hnPrice });
+        if (w2Str !== "") {
+            const bracket = w2Str;
+            hcm.expedited.push({ bracket, price: parsePrice(hcmExpPrice) });
+            hn.expedited.push({ bracket, price: parsePrice(hnExpPrice) });
+        } else if (isBulkPrice(hcmExpPrice) || isBulkPrice(hnExpPrice)) {
+            // Bulk row for expedited
+            if (expeditedBulkIdx < EXPEDITED_BULK_BRACKETS.length) {
+                const bracket = EXPEDITED_BULK_BRACKETS[expeditedBulkIdx++];
+                hcm.expedited.push({ bracket, price: parsePrice(hcmExpPrice) });
+                hn.expedited.push({ bracket, price: parsePrice(hnExpPrice) });
+            }
         }
     });
 

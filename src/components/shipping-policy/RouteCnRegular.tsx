@@ -1,4 +1,5 @@
 import { Sec, Warn, RouteBadge } from "./PolicyUI";
+import GSheetPolicyRoute from "./GSheetPolicyRoute";
 import { useI18n } from "@/lib/i18n";
 import larkPoliciesI18n from "@/data/larkPoliciesI18n.json";
 
@@ -181,11 +182,14 @@ const RouteCnRegular = () => {
                 {en ? "China → Worldwide · Regular" : zh ? "中国 → 全球 · 普通货物" : "Trung Quốc → Toàn Cầu · Hàng Thường"}
             </RouteBadge>
 
-            {sections.map((sec, i) => (
-                <Sec key={i} icon={getIcon(sec.title)} title={sec.title} defaultOpen={i === 0}>
-                    <SectionContent lines={sec.lines} />
-                </Sec>
-            ))}
+            <GSheetPolicyRoute gid="535541764">
+
+                {sections.map((sec, i) => (
+                    <Sec key={i} icon={getIcon(sec.title)} title={sec.title} defaultOpen={i === 0}>
+                        <SectionContent lines={sec.lines} />
+                    </Sec>
+                ))}
+            </GSheetPolicyRoute>
         </div>
     );
 };

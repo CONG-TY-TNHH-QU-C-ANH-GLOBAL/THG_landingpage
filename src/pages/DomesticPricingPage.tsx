@@ -13,6 +13,7 @@ import {
 import { exportToExcel } from "@/lib/exportUtils";
 import { useLarkPricingContext, SyncBadge, transformSheetToDomesticData } from "@/components/pricing/LarkPricingProvider";
 import { useI18n } from "@/lib/i18n";
+import packagingImg from "@/assets/Warehouse_bao bì.png";
 
 const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
@@ -346,85 +347,13 @@ const DomesticPricingContent = () => {
 
                 {/* Packaging Fees section */}
                 <ScrollReveal>
-                    <div className="bg-transparent mb-10">
-                        <div className="bg-[#31509D] py-5 px-6 rounded-t-xl mb-8 flex justify-center items-center shadow-lg mx-auto w-full md:w-3/4 lg:w-2/3">
-                            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-wide uppercase text-center">
-                                {t("warehouse_page.pkg_title")}
-                            </h2>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {/* Card 1: Poly Bag */}
-                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
-                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
-                                    <Package className="w-12 h-12 text-white" strokeWidth={1.5} />
-                                </div>
-                                <div className="flex-1 text-center sm:text-left">
-                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
-                                        {t("warehouse_page.pkg_poly_name")}
-                                    </h3>
-                                    <p className="text-2xl sm:text-3xl font-black text-[#FFD700] uppercase tracking-wide">
-                                        {t("warehouse_page.pkg_poly_price")}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Card 2: Bubble mailers */}
-                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
-                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
-                                    <Mail className="w-12 h-12 text-white" strokeWidth={1.5} />
-                                </div>
-                                <div className="flex-1 text-center sm:text-left">
-                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
-                                        {t("warehouse_page.pkg_bm_name")}
-                                    </h3>
-                                    <p className="text-2xl sm:text-3xl font-black text-[#FFD700] uppercase tracking-wide">
-                                        {t("warehouse_page.pkg_bm_price")}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Card 3: Bubble wrap */}
-                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
-                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
-                                    <Layers className="w-12 h-12 text-white" strokeWidth={1.5} />
-                                </div>
-                                <div className="flex-1 text-center sm:text-left">
-                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-tight">
-                                        {t("warehouse_page.pkg_bw_name")}
-                                    </h3>
-                                    <p className="text-2xl sm:text-3xl font-black text-[#FFD700] uppercase tracking-wide">
-                                        {t("warehouse_page.pkg_bw_price")}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Card 4: Box carton */}
-                            <div className="bg-[#31509D] rounded-[2.5rem] p-6 flex items-center gap-6 shadow-xl hover:-translate-y-1 transition-transform relative overflow-hidden group border border-[#31509D]/50">
-                                <div className="w-24 h-24 sm:w-28 sm:h-28 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
-                                    <Box className="w-12 h-12 text-white" strokeWidth={1.5} />
-                                </div>
-                                <div className="flex-1 text-center sm:text-left pt-2 pb-2">
-                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 leading-tight">
-                                        {t("warehouse_page.pkg_carton_name")}
-                                    </h3>
-                                    <div className="space-y-1.5 flex flex-col items-center sm:items-start">
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-white font-medium w-[95px] text-left text-sm sm:text-base whitespace-nowrap leading-none">• 6 x 4 x 4 in</span>
-                                            <span className="text-[#FFD700] font-bold text-base sm:text-lg leading-none">1$</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-white font-medium w-[95px] text-left text-sm sm:text-base whitespace-nowrap leading-none">• 10 x 6 x 4 in</span>
-                                            <span className="text-[#FFD700] font-bold text-base sm:text-lg leading-none">1.5$</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="text-white font-medium w-[95px] text-left text-sm sm:text-base whitespace-nowrap leading-none">• 9 x 7 x 3 in</span>
-                                            <span className="text-[#FFD700] font-bold text-base sm:text-lg leading-none">1.7$</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="mb-10">
+                        <img
+                            src={packagingImg}
+                            alt={t("warehouse_page.pkg_title")}
+                            className="w-full max-w-3xl mx-auto rounded-xl shadow-sm"
+                            loading="lazy"
+                        />
                     </div>
                 </ScrollReveal>
 

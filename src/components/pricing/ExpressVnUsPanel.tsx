@@ -59,13 +59,13 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                                 <div key={i} className="bg-card border border-[hsl(var(--pricing-border))] rounded-lg p-3 flex justify-between items-center">
                                     <div>
                                         <span className="text-[11px] font-bold text-muted-foreground uppercase">{t("evn.weight_label")}</span>
-                                        <div className="text-[14px] font-bold text-primary notranslate" translate="no">{r.kg} kg</div>
+                                        <div className="text-[14px] font-bold text-primary notranslate" translate="no">{typeof r.kg === 'string' && isNaN(Number(r.kg)) ? r.kg : r.kg + ' kg'}</div>
                                     </div>
                                     <div className="text-right">
                                         <span className="text-[11px] font-bold text-muted-foreground uppercase">Shipping fee</span>
                                         <div className="text-[14px] font-bold text-navy notranslate" translate="no">
                                             {r.price && r.price !== "Liên hệ"
-                                                ? `${Number(r.price).toLocaleString("vi-VN")} ₫${Number(r.kg) >= 21 ? " / kg" : ""}`
+                                                ? `${Number(r.price).toLocaleString("vi-VN")} ₫${typeof r.kg === 'string' && isNaN(Number(r.kg)) ? ' / kg' : ''}`
                                                 : r.price}
                                         </div>
                                     </div>
@@ -85,10 +85,10 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                                 <tbody>
                                     {(expressData?.[city]?.saver || []).map((r: any, i: number) => (
                                         <tr key={i} className="border-b border-[hsl(var(--pricing-border))] last:border-0 hover:bg-accent/5 transition-colors">
-                                            <td className="px-5 py-2 notranslate" translate="no">{r.kg}</td>
+                                            <td className="px-5 py-2 notranslate" translate="no">{typeof r.kg === 'string' && isNaN(Number(r.kg)) ? r.kg : r.kg}</td>
                                             <td className="px-5 py-2 font-bold text-navy notranslate" translate="no">
                                                 {r.price && r.price !== "Liên hệ"
-                                                    ? `${Number(r.price).toLocaleString("vi-VN")} ₫${Number(r.kg) >= 21 ? " / kg" : ""}`
+                                                    ? `${Number(r.price).toLocaleString("vi-VN")} ₫${typeof r.kg === 'string' && isNaN(Number(r.kg)) ? ' / kg' : ''}`
                                                     : r.price}
                                             </td>
                                         </tr>
