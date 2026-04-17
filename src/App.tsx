@@ -45,12 +45,12 @@ const AppRoutes = () => {
         <ErrorBoundary key={location.pathname}>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/chinh-sach" element={<PolicyPage />} />
-            <Route path="/chinh-sach-van-chuyen" element={<ShippingPolicyPage />} />
-            <Route path="/tin-tuc" element={<BlogPage />} />
-            <Route path="/tin-tuc/:slug" element={<BlogDetailPage />} />
-            <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
-            <Route path="/bang-gia-noi-dia" element={<DomesticPricingPage />} />
+            <Route path="/policy" element={<PolicyPage />} />
+            <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogDetailPage />} />
+            <Route path="/international-pricing" element={<InternationalPricingPage />} />
+            <Route path="/domestic-pricing" element={<DomesticPricingPage />} />
             <Route path="/thg-fulfill" element={<THGFulfillPage />} />
             <Route path="/thg-express" element={<THGExpressPage />} />
             <Route path="/thg-warehouse" element={<THGWarehousePage />} />

@@ -586,7 +586,7 @@ const THGFulfillPage = () => {
               </div>
               <div className="relative z-10 shrink-0">
                 <Link
-                  to="/chinh-sach"
+                  to="/policy"
                   className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-8 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(201,162,86,0.3)] transition-all hover:shadow-[0_0_30px_rgba(201,162,86,0.5)] hover:-translate-y-1 notranslate"
                   translate="no"
                 >

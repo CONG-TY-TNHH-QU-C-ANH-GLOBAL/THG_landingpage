@@ -44,7 +44,7 @@ const BlogPage = () => {
 
           {featured && (
             <ScrollReveal delay={150}>
-              <Link to={`/tin-tuc/${featured.slug}`} className="glass-card rounded-3xl overflow-hidden mb-10 group cursor-pointer hover-lift block">
+              <Link to={`/blog/${featured.slug}`} className="glass-card rounded-3xl overflow-hidden mb-10 group cursor-pointer hover-lift block">
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="bg-secondary/10 min-h-[280px] flex items-center justify-center overflow-hidden">
                     <img src={featured.thumbnail} alt={featured.title[language]} className="w-full h-full object-cover max-h-[400px] group-hover:scale-105 transition-transform duration-500" loading="lazy" />
@@ -67,7 +67,7 @@ const BlogPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rest.map((post, i) => (
               <ScrollReveal key={post.id} delay={i * 80}>
-                <Link to={`/tin-tuc/${post.slug}`} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
+                <Link to={`/blog/${post.slug}`} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
                   <div className="bg-secondary/10 h-56 flex items-center justify-center overflow-hidden">
                     <img src={post.thumbnail} alt={post.title[language]} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                   </div>

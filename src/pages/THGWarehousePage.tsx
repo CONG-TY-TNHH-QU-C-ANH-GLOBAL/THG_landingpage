@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import warehouseUS from "@/assets/warehouse_US.jpg";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
@@ -119,19 +120,16 @@ const THGWarehousePage = () => {
           </ScrollReveal>
           {/* Hero image */}
           <ScrollReveal delay={300}>
-            <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform mb-8">
-              <img
-                src="https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg"
-                alt="THG Warehouse Operations"
-                className="w-full h-auto"
-                loading="lazy"
-              />
+            <div className="max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform mb-8 aspect-video">
+              <YouTubeEmbed videoId="KPhQYnkYA68" className="w-full h-full" autoplay />
             </div>
           </ScrollReveal>
           <ScrollReveal delay={400}>
-            <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base font-bold gap-2 shadow-lg">
-              {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-            </Button>
+            <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base font-bold gap-2 shadow-lg">
+                {t("nav.consult")} <ArrowRight className="w-4 h-4" />
+              </Button>
+            </a>
           </ScrollReveal>
         </div>
       </section>

@@ -14,8 +14,8 @@ const serviceItems = [
 ];
 
 const pricingItems = [
-  { icon: Globe, titleKey: "nav.intl_pricing", descKey: "nav.intl_pricing_desc", href: "/bang-gia-quoc-te" },
-  { icon: MapPin, titleKey: "nav.domestic_pricing", descKey: "nav.domestic_pricing_desc", href: "/bang-gia-noi-dia" },
+  { icon: Globe, titleKey: "nav.intl_pricing", descKey: "nav.intl_pricing_desc", href: "/international-pricing" },
+  { icon: MapPin, titleKey: "nav.domestic_pricing", descKey: "nav.domestic_pricing_desc", href: "/domestic-pricing" },
   { icon: Tag, titleKey: "nav.catalog", descKey: "nav.catalog_desc", href: "/catalog" },
 ];
 
@@ -60,8 +60,8 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { label: t("nav.policy"), href: "/chinh-sach" },
-    { label: t("nav.news"), href: "/tin-tuc" },
+    { label: t("nav.policy"), href: "/policy" },
+    { label: t("nav.news"), href: "/blog" },
     { label: t("nav.faq"), href: "/#faq" },
   ];
 
@@ -209,11 +209,13 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           <LanguageSwitcher />
-          <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-6 text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
-            style={{ boxShadow: "0 4px 15px hsl(36 45% 42% / 0.3)" }}
-          >
-            {t("nav.consult")}
-          </Button>
+          <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer">
+            <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-6 text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+              style={{ boxShadow: "0 4px 15px hsl(36 45% 42% / 0.3)" }}
+            >
+              {t("nav.consult")}
+            </Button>
+          </a>
         </div>
 
         {/* Mobile toggle */}
@@ -301,9 +303,11 @@ const Navbar = () => {
             )
           )}
           <div className="pt-3">
-            <Button className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full shadow-lg">
-              {t("nav.consult")}
-            </Button>
+            <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer" className="w-full">
+              <Button className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full shadow-lg" onClick={() => setIsOpen(false)}>
+                {t("nav.consult")}
+              </Button>
+            </a>
           </div>
         </div>
       )}

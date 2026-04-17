@@ -37,7 +37,7 @@ const ContactSection = () => {
                   { icon: MapPin, label: t("contact.cn_warehouse"), value: "广东省东莞市常平镇霞坑新宅二区三街101", fontCN: true },
                   { icon: Phone, label: t("contact.hotline"), value: "0335.124.089" },
                   { icon: Mail, label: t("contact.email"), value: "info@thgfulfill.com" },
-                  { icon: Globe, label: t("contact.website"), value: "thgofficial.thgfulfill.com", href: "https://thgofficial.thgfulfill.com" },
+                  { icon: Globe, label: t("contact.website"), value: "thgfulfill.com", href: "https://thgfulfill.com" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 group">
                     <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
@@ -74,12 +74,14 @@ const ContactSection = () => {
               <p className="text-muted-foreground mb-8 leading-relaxed">
                 {t("contact.cta_desc")}
               </p>
-              <Button
-                className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
-                style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
-              >
-                {t("contact.submit")} <ArrowRight className="w-4 h-4" />
-              </Button>
+              <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer">
+                <Button
+                  className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
+                  style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
+                >
+                  {t("contact.submit")} <ArrowRight className="w-4 h-4" />
+                </Button>
+              </a>
               <div className="flex items-center justify-center gap-6 mt-6 text-sm text-muted-foreground">
                 <span>Shopify</span>
                 <span>Etsy</span>

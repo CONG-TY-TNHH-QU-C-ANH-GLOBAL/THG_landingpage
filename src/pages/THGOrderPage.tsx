@@ -155,9 +155,11 @@ const THGOrderPage = () => {
 
           <ScrollReveal delay={300}>
             <div className="flex justify-center gap-4 flex-wrap">
-              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-8 py-6 text-base gap-2 shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:-translate-y-1" onClick={() => document.getElementById('order-cta')?.scrollIntoView({ behavior: 'smooth' })}>
-                🚀 {t("op.hero_cta")}
-              </Button>
+              <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-8 py-6 text-base gap-2 shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:-translate-y-1">
+                  🚀 {t("op.hero_cta")}
+                </Button>
+              </a>
               <Button variant="outline" className="rounded-full px-8 py-6 text-base border-[hsl(var(--gold))]/40 text-navy hover:bg-[hsl(var(--gold))]/10 transition-all duration-300 font-semibold" onClick={() => document.getElementById('how-section')?.scrollIntoView({ behavior: 'smooth' })}>
                 {t("op.hero_cta2")} <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
@@ -569,9 +571,11 @@ const THGOrderPage = () => {
                 <span key={ck} className="bg-white/15 text-white px-4 py-1.5 rounded-full text-xs font-semibold border border-white/20">{t(ck)}</span>
               ))}
             </div>
-            <Button className="bg-white text-primary hover:bg-white/90 rounded-full px-10 py-6 text-base font-bold shadow-lg hover:-translate-y-1 transition-all" onClick={() => document.getElementById('order-cta')?.scrollIntoView({ behavior: 'smooth' })}>
-              🚀 {t("op.trust_cta")}
-            </Button>
+            <Link to="/catalog">
+              <Button className="bg-white text-primary hover:bg-white/90 rounded-full px-10 py-6 text-base font-bold shadow-lg hover:-translate-y-1 transition-all">
+                🚀 {t("op.trust_cta")}
+              </Button>
+            </Link>
           </ScrollReveal>
         </div>
       </section>

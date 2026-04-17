@@ -42,7 +42,7 @@ const BlogDetailPage = () => {
                 <Navbar />
                 <div className="pt-28 pb-20 text-center">
                     <p className="text-xl text-muted-foreground">{t("blog.not_found")}</p>
-                    <Link to="/tin-tuc" className="text-primary font-semibold mt-4 inline-block hover:underline">
+                    <Link to="/blog" className="text-primary font-semibold mt-4 inline-block hover:underline">
                         ← {t("blog.back")}
                     </Link>
                 </div>
@@ -58,7 +58,7 @@ const BlogDetailPage = () => {
             <Navbar />
             <div className="pt-24 pb-20">
                 <div className="max-w-[900px] mx-auto px-4 sm:px-6 mb-6">
-                    <Link to="/tin-tuc" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-4">
+                    <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-4">
                         <ArrowLeft className="w-4 h-4" />
                         {t("blog.back")}
                     </Link>

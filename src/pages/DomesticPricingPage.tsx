@@ -143,13 +143,13 @@ const DomesticPricingContent = () => {
                     </Link>
                     <div className="flex gap-2">
                         <Link
-                            to="/bang-gia-noi-dia"
+                            to="/domestic-pricing"
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground font-semibold text-[12px] shadow-sm"
                         >
                             <MapPin className="w-3.5 h-3.5" /> {t("domestic.tab_domestic")}
                         </Link>
                         <Link
-                            to="/bang-gia-quoc-te"
+                            to="/international-pricing"
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-secondary text-foreground font-semibold text-[12px] hover:bg-secondary/80 transition-colors"
                         >
                             <Globe className="w-3.5 h-3.5" /> {t("domestic.tab_intl")}

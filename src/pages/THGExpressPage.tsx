@@ -29,10 +29,10 @@ const features = [
 ];
 
 const shippingLines = [
-  { num: "01", routeKey: "express_page.route1", typesKey: "express_page.route1_types", flags: "🇻🇳 → 🇺🇸", link: "/bang-gia-quoc-te?from=vn&to=US" },
-  { num: "02", routeKey: "express_page.route2", typesKey: "express_page.route2_types", flags: "🇨🇳 → 🇺🇸", link: "/bang-gia-quoc-te?from=cn&to=US" },
-  { num: "03", routeKey: "express_page.route3", typesKey: "express_page.route3_types", flags: "🌏 → 🌎", link: "/bang-gia-quoc-te" },
-  { num: "04", routeKey: "express_page.route4", typesKey: "express_page.route4_types", flags: "🎵 → 🛍️", link: "/bang-gia-quoc-te?from=cn&to=US&goods=tiktok", special: true },
+  { num: "01", routeKey: "express_page.route1", typesKey: "express_page.route1_types", flags: "🇻🇳 → 🇺🇸", link: "/international-pricing?from=vn&to=US" },
+  { num: "02", routeKey: "express_page.route2", typesKey: "express_page.route2_types", flags: "🇨🇳 → 🇺🇸", link: "/international-pricing?from=cn&to=US" },
+  { num: "03", routeKey: "express_page.route3", typesKey: "express_page.route3_types", flags: "🌏 → 🌎", link: "/international-pricing" },
+  { num: "04", routeKey: "express_page.route4", typesKey: "express_page.route4_types", flags: "🎵 → 🛍️", link: "/international-pricing?from=cn&to=US&goods=tiktok", special: true },
 ];
 
 const processSteps = [
@@ -173,7 +173,7 @@ const THGExpressPage = () => {
               <p className="text-lg md:text-xl text-white mb-8 max-w-lg font-medium leading-relaxed drop-shadow-md">
                 {t("express_page.partnership_desc")}
               </p>
-              <Link to="/bang-gia-quoc-te">
+              <Link to="/international-pricing">
                 <Button className="bg-[#FF7322] hover:bg-[#E65C10] text-white px-8 py-6 rounded-md text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
                   {t("express_page.shipping_comprehensive_cta")}
                 </Button>
@@ -338,7 +338,7 @@ const THGExpressPage = () => {
                     <span className="text-muted-foreground">{t("express_page.shipping_comprehensive_feat4")}</span>
                   </p>
                 </div>
-                <Link to="/bang-gia-quoc-te">
+                <Link to="/international-pricing">
                   <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-8 py-6 rounded-full text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
                     {t("express_page.shipping_comprehensive_cta")}
                   </Button>
@@ -454,7 +454,7 @@ const THGExpressPage = () => {
               <div className="w-full md:w-1/2 p-10 md:p-16 text-center text-white flex flex-col justify-center items-center">
                 <h3 className="text-xl md:text-2xl font-bold uppercase mb-2">{t("express_page.policy_section_subtitle")}</h3>
                 <h2 className="text-4xl md:text-5xl font-black mb-8 uppercase drop-shadow-md">{t("express_page.policy_section_title")}</h2>
-                <Link to="/chinh-sach-giao-hang#express">
+                <Link to="/shipping-policy#express">
                   <Button className="bg-white text-[#F27125] hover:bg-white/90 font-bold px-10 py-6 rounded-md text-lg shadow-lg">
                     {t("express_page.policy_cta")}
                   </Button>

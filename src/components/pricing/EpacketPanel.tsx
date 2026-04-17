@@ -482,8 +482,8 @@ const EpacketPanel = ({
                                                                 <span className="text-[12px] text-[#5a7a9a]">—</span>
                                                             ) : (
                                                                 <span className={`inline-block px-2.5 py-0.5 rounded-full text-[12px] font-semibold ${d.period === 14 ? "bg-[#e6f9ed] text-[#1e7e34] border border-[#a8ddb8]" :
-                                                                        d.period === 15 ? "bg-[#fff8e0] text-[#b07d00] border border-[#f0d070]" :
-                                                                            "bg-[#fff0e8] text-[#c04a00] border border-[#f0b090]"
+                                                                    d.period === 15 ? "bg-[#fff8e0] text-[#b07d00] border border-[#f0d070]" :
+                                                                        "bg-[#fff0e8] text-[#c04a00] border border-[#f0b090]"
                                                                     }`}>
                                                                     {d.period} days
                                                                 </span>
@@ -502,7 +502,7 @@ const EpacketPanel = ({
 
                         {/* 3. Shipping Policy — link to dedicated page */}
                         <Link
-                            to="/chinh-sach-van-chuyen"
+                            to="/shipping-policy"
                             className="flex items-center gap-3 px-5 py-4 bg-white rounded-xl border-[1.5px] border-[var(--pricing-border)] hover:border-primary hover:bg-[#FFFBF0] transition-all group"
                         >
                             <span className="text-xl">🛡️</span>
