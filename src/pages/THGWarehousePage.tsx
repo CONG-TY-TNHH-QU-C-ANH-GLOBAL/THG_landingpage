@@ -1,7 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
 import warehouseUS from "@/assets/warehouse_US.jpg";
-import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
@@ -125,9 +124,9 @@ const THGWarehousePage = () => {
             </div>
           </ScrollReveal>
           <ScrollReveal delay={400}>
-            <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer">
-              <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base font-bold gap-2 shadow-lg">
-                {t("nav.consult")} <ArrowRight className="w-4 h-4" />
+            <a href="https://www.facebook.com/thgwarehouse" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white border-0 shadow-[0_0_20px_rgba(201,162,86,0.3)] hover:shadow-[0_0_30px_rgba(201,162,86,0.5)] px-8 py-6 rounded-full text-lg font-bold transition-all hover:-translate-y-1 mt-6">
+                {t("warehouse_page.cta")}
               </Button>
             </a>
           </ScrollReveal>
@@ -339,9 +338,6 @@ const THGWarehousePage = () => {
         <ImageMarquee images={sliderImages} />
       </section>
 
-      {/* Contact Section */}
-      <ContactSection />
-
       {/* FAQ – Q&A Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
@@ -358,7 +354,9 @@ const THGWarehousePage = () => {
         </div>
       </section>
 
-      <Footer />
+      {/* Contact Section */}
+      <ContactSection />
+
     </div>
   );
 };

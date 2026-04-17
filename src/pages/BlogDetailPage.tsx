@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import { useI18n, Language } from "@/lib/i18n";
 import { blogArticles, BlogArticle } from "@/data/blogData";
 import { ArrowLeft, ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react";
@@ -46,7 +46,7 @@ const BlogDetailPage = () => {
                         ← {t("blog.back")}
                     </Link>
                 </div>
-                <Footer />
+
             </div>
         );
     }
@@ -113,7 +113,6 @@ const BlogDetailPage = () => {
                 </div>
             )}
 
-            <Footer />
         </div>
     );
 };

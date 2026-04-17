@@ -77,20 +77,20 @@ const AboutVideoSection = () => {
           </h3>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mt-4">
           {[
             { emoji: "📦", title: tVi("about.img1_title"), desc: tVi("about.img1_desc") },
             { emoji: "🖨️", title: tVi("about.img2_title"), desc: tVi("about.img2_desc") },
             { emoji: "🏭", title: tVi("about.img3_title"), desc: tVi("about.img3_desc") },
             { emoji: "🚚", title: tVi("about.img4_title"), desc: tVi("about.img4_desc") },
           ].map((item, i) => (
-            <ScrollReveal key={i} delay={100 + i * 80}>
-              <div className="glass-card rounded-2xl p-5 md:p-6 text-center tilt-card group">
-                <div className="text-4xl md:text-5xl mb-3 group-hover:scale-110 transition-transform duration-300">
+            <ScrollReveal key={i} delay={100 + i * 80} className="h-full">
+              <div className="bg-white rounded-[24px] p-6 lg:p-8 text-center group h-full flex flex-col items-center justify-start shadow-[0_4px_24px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300">
+                <div className="text-5xl md:text-6xl mb-5 group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">
                   {item.emoji}
                 </div>
-                <h4 className="font-semibold text-navy text-sm md:text-base mb-1">{item.title}</h4>
-                <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                <h4 className="font-bold text-navy text-base md:text-lg mb-3">{item.title}</h4>
+                <p className="text-sm text-gray-500 leading-relaxed font-medium">{item.desc}</p>
               </div>
             </ScrollReveal>
           ))}

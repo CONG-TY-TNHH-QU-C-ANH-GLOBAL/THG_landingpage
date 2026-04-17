@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
@@ -54,17 +54,9 @@ const galleryImages = [
 /* ─── Page ─── */
 const THGExpressPage = () => {
   const { t } = useI18n();
-  const [trackingCode, setTrackingCode] = useState("");
   const plugin = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: true })
   );
-  const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
-
-  const handleTrack = () => {
-    if (trackingCode.trim()) {
-      setIsTrackModalOpen(true);
-    }
-  };
 
   const faqItems = [
     { question: t("express_page.faq1_q"), answer: t("express_page.faq1_a") },
@@ -83,114 +75,63 @@ const THGExpressPage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Tracking Modal */}
-      <Dialog open={isTrackModalOpen} onOpenChange={setIsTrackModalOpen}>
-        <DialogContent className="sm:max-w-3xl h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
-          <DialogHeader className="p-4 border-b">
-            <DialogTitle>THG Tracking: {trackingCode}</DialogTitle>
-          </DialogHeader>
-          <div className="flex-1 bg-muted/20 w-full">
-            {isTrackModalOpen && (
-              <iframe
-                src={`https://t.17track.net/en#nums=${trackingCode}`}
-                className="w-full h-full border-0"
-                title="17Track"
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+
 
       {/* 1. HERO & TRACKING */}
-      <section className="relative pt-32 pb-24 min-h-[600px] flex items-center justify-center">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://w.ladicdn.com/s1440x957/67e69e24e8a7ba001127c80a/x1ws5joh20250728082550.jpg"
-            alt="Airplane Background"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/20" />
-        </div>
+      <section className="pt-32 pb-24 bg-gradient-hero relative overflow-hidden flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(220 25% 12%) 1px, transparent 0)`,
+          backgroundSize: "40px 40px",
+        }} />
         <div className="container relative z-10 mx-auto px-4 text-center">
           <ScrollReveal direction="up">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
-              <span className="text-[hsl(var(--gold))]">THG EXPRESS</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy mb-6 tracking-tight">
+              THG <span className="text-gradient-gold">EXPRESS</span>
             </h1>
-            <h2 className="text-xl md:text-3xl text-white font-medium mb-6">
+            <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-4">
               {t("express_page.hero_subtitle")}
             </h2>
-            <p className="text-lg text-[hsl(var(--gold))] font-bold tracking-widest uppercase mb-12">
+            <p className="text-base text-primary font-semibold tracking-wide uppercase mb-12 drop-shadow-sm">
               {t("express_page.hero_tagline")}
             </p>
           </ScrollReveal>
 
-          <ScrollReveal delay={200} direction="up">
-            <div className="max-w-2xl mx-auto glass-card rounded-2xl p-6 bg-white/10 backdrop-blur-md border border-white/20">
-              <h3 className="text-white font-semibold mb-4 text-left flex items-center gap-2">
-                <Search className="w-5 h-5 text-[hsl(var(--gold))]" />
-                {t("express_page.track_title")}
-              </h3>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={trackingCode}
-                  onChange={(e) => setTrackingCode(e.target.value)}
-                  placeholder={t("express_page.track_placeholder")}
-                  className="flex-1 px-4 py-3 rounded-xl bg-white text-navy font-medium placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-[hsl(var(--gold))]"
-                  onKeyDown={(e) => e.key === "Enter" && handleTrack()}
-                />
-                <Button
-                  onClick={handleTrack}
-                  className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-xl px-8 font-bold text-lg"
-                >
-                  {t("express_page.track_btn")}
-                </Button>
-              </div>
-            </div>
-          </ScrollReveal>
+
         </div>
       </section>
 
       {/* 2. ĐA DẠNG CHUYẾN TÀU (SHIPPING GRID OVERLAY) */}
-      <section className="relative pt-32 pb-12 min-h-[700px] flex flex-col justify-between">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://w.ladicdn.com/s1950x1250/67e69e24e8a7ba001127c80a/e58cc09ac47ce9cd2155652478f7988d-20251023080234-jqndv.jpg"
-            alt="Sea Logistics"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/10" />
-        </div>
-
+      <section className="py-24 bg-card relative overflow-hidden">
         {/* Top Text & CTA */}
-        <div className="container relative z-10 mx-auto px-4 mb-20">
+        <div className="container mx-auto px-4 mb-16 text-center">
           <ScrollReveal direction="up">
-            <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight leading-tight uppercase">
-                <span className="text-[hsl(var(--gold))] inline-block mb-1 bg-white px-2 rounded-sm drop-shadow-md">THG EXPRESS</span> <br />
-                <span className="drop-shadow-lg">{t("express_page.partnership_title_sub")}</span>
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-bold text-navy mb-6 tracking-tight leading-tight uppercase">
+                <span>{t("express_page.partnership_title_sub")}</span>
               </h2>
-              <p className="text-lg md:text-xl text-white mb-8 max-w-lg font-medium leading-relaxed drop-shadow-md">
+              <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
                 {t("express_page.partnership_desc")}
               </p>
-              <Link to="/international-pricing">
-                <Button className="bg-[#FF7322] hover:bg-[#E65C10] text-white px-8 py-6 rounded-md text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
+              <a href="https://www.facebook.com/thgexpress1" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-primary hover:bg-gold-dark text-white px-10 py-7 rounded-full text-lg font-bold shadow-lg transition-transform hover:-translate-y-1">
                   {t("express_page.shipping_comprehensive_cta")}
                 </Button>
-              </Link>
+              </a>
             </div>
           </ScrollReveal>
         </div>
 
         {/* 4 Cards Grid at the bottom */}
-        <div className="container relative z-10 mx-auto px-4 mt-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, idx) => (
-              <ScrollReveal key={idx} delay={idx * 100} direction="up">
-                <div className="bg-gradient-to-b from-[#FF7322]/90 to-white/90 backdrop-blur-sm p-6 md:p-8 rounded-xl h-full shadow-2xl flex flex-col items-center text-center group hover:-translate-y-2 transition-transform duration-300 border border-white/30 text-white group-hover:from-[#E65C10]/95 group-hover:to-white/95">
-                  <feature.icon className="w-12 h-12 mb-4 drop-shadow-md" />
-                  <h3 className="text-lg font-bold mb-3 uppercase drop-shadow-md">{t(feature.titleKey)}</h3>
-                  <p className="text-navy/90 text-sm font-semibold leading-relaxed drop-shadow-sm">{t(feature.descKey)}</p>
+              <ScrollReveal key={idx} delay={idx * 100} direction="up" className="h-full">
+                <div className="bg-white p-8 rounded-[20px] h-full shadow-[0_4px_24px_rgba(0,0,0,0.03)] flex flex-col items-center text-center group hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all duration-300 border border-gray-100">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <feature.icon className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold mb-3 uppercase text-navy">{t(feature.titleKey)}</h3>
+                  <p className="text-gray-500 text-sm font-medium leading-relaxed">{t(feature.descKey)}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -201,14 +142,6 @@ const THGExpressPage = () => {
       {/* 3. VIDEO LOGISTICS PARTNERSHIP */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <ScrollReveal>
-            <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4 tracking-tight uppercase">
-              {t("express_page.partnership_title")}
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-16">
-              {t("express_page.partnership_desc")}
-            </p>
-          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             <ScrollReveal delay={100} direction="up">
@@ -338,11 +271,11 @@ const THGExpressPage = () => {
                     <span className="text-muted-foreground">{t("express_page.shipping_comprehensive_feat4")}</span>
                   </p>
                 </div>
-                <Link to="/international-pricing">
+                <a href="https://www.facebook.com/thgexpress1" target="_blank" rel="noopener noreferrer">
                   <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-8 py-6 rounded-full text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
                     {t("express_page.shipping_comprehensive_cta")}
                   </Button>
-                </Link>
+                </a>
               </div>
             </ScrollReveal>
           </div>
@@ -479,9 +412,11 @@ const THGExpressPage = () => {
                 {t("express_page.line_routes_desc")}
               </p>
               <div className="flex justify-center">
-                <Button className="bg-[#F27125] text-white hover:bg-[#d95c1a] font-black px-10 py-[1.4rem] rounded-full text-sm lg:text-[15px] shadow-2xl shadow-orange-500/30 uppercase tracking-widest transition-transform hover:-translate-y-1">
-                  {t("express_page.get_quote_cta")}
-                </Button>
+                <a href="https://www.facebook.com/thgexpress1" target="_blank" rel="noopener noreferrer">
+                  <Button className="bg-[#F27125] text-white hover:bg-[#d95c1a] font-black px-10 py-[1.4rem] rounded-full text-sm lg:text-[15px] shadow-2xl shadow-orange-500/30 uppercase tracking-widest transition-transform hover:-translate-y-1">
+                    {t("express_page.get_quote_cta")}
+                  </Button>
+                </a>
               </div>
             </ScrollReveal>
           </div>
@@ -505,7 +440,7 @@ const THGExpressPage = () => {
                     <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route1_bulk")}</p>
                     <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route1_epacket")}</p>
                   </div>
-                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">01</div>
+                  <div className="absolute bottom-1 right-2 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">01</div>
                 </div>
               </ScrollReveal>
 
@@ -520,7 +455,7 @@ const THGExpressPage = () => {
                     <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route1_epacket")}</p>
                     <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route2_tiktok")}</p>
                   </div>
-                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">02</div>
+                  <div className="absolute bottom-1 right-2 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">02</div>
                 </div>
               </ScrollReveal>
 
@@ -534,7 +469,7 @@ const THGExpressPage = () => {
                     <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route1_bulk")}</p>
                     <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route1_epacket")}</p>
                   </div>
-                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">03</div>
+                  <div className="absolute bottom-1 right-2 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">03</div>
                 </div>
               </ScrollReveal>
 
@@ -549,7 +484,7 @@ const THGExpressPage = () => {
                     <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route4_uk")}</p>
                     <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route4_de")}</p>
                   </div>
-                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">04</div>
+                  <div className="absolute bottom-1 right-2 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">04</div>
                 </div>
               </ScrollReveal>
             </div>
@@ -629,7 +564,7 @@ const THGExpressPage = () => {
       </section>
 
       <ContactSection />
-      <Footer />
+
     </div>
   );
 };

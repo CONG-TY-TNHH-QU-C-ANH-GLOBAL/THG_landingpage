@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import ImageMarquee from "@/components/ImageMarquee";
@@ -241,7 +241,7 @@ const THGFulfillPage = () => {
             <ScrollReveal delay={100}>
               <div className="grid lg:grid-cols-2 gap-8 items-center">
                 <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1 bg-black aspect-video flex">
-                  <YouTubeEmbed videoId="KPhQYnkYA68" title="THG Fulfill Introduction" aspectRatio="16/9" />
+                  <YouTubeEmbed videoId="2VEEFotO42I" title="THG Fulfill Introduction" aspectRatio="16/9" />
                 </div>
                 <div className="order-1 lg:order-2">
                   <h3 className="text-2xl font-bold text-navy mb-4 tracking-tight">{t("fulfill_page.adv3_title")}</h3>
@@ -629,7 +629,7 @@ const THGFulfillPage = () => {
       {/* Contact Section */}
       <ContactSection />
 
-      <Footer />
+
     </div>
   );
 };

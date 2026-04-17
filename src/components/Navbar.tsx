@@ -209,10 +209,8 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           <LanguageSwitcher />
-          <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-6 text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
-              style={{ boxShadow: "0 4px 15px hsl(36 45% 42% / 0.3)" }}
-            >
+          <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer">
+            <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-6 py-5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0">
               {t("nav.consult")}
             </Button>
           </a>
@@ -303,8 +301,8 @@ const Navbar = () => {
             )
           )}
           <div className="pt-3">
-            <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer" className="w-full">
-              <Button className="w-full bg-primary hover:bg-gold-dark text-primary-foreground rounded-full shadow-lg" onClick={() => setIsOpen(false)}>
+            <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer" className="w-full">
+              <Button className="w-full bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-5 py-6 text-base font-bold shadow-md rounded-xl mt-4">
                 {t("nav.consult")}
               </Button>
             </a>

@@ -12,7 +12,7 @@ import ContactSection from "@/components/ContactSection";
 import ImageMarquee from "@/components/ImageMarquee";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
-import Footer from "@/components/Footer";
+
 
 const sliderImages = [
   "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
@@ -54,7 +54,7 @@ const Index = () => {
       </section>
 
       <ContactSection />
-      <Footer />
+
     </div>
   );
 };

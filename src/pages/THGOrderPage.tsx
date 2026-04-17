@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { ArrowRight, ChevronDown, ExternalLink, Play } from "lucide-react";
@@ -155,7 +155,7 @@ const THGOrderPage = () => {
 
           <ScrollReveal delay={300}>
             <div className="flex justify-center gap-4 flex-wrap">
-              <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer">
                 <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-8 py-6 text-base gap-2 shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:-translate-y-1">
                   🚀 {t("op.hero_cta")}
                 </Button>
@@ -341,22 +341,29 @@ const THGOrderPage = () => {
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {shippingLanes.map((lane, i) => (
-              <ScrollReveal key={i} delay={i * 100}>
-                <div className="glass-card rounded-2xl p-7 hover-lift h-full border-2 border-primary/20">
+              <ScrollReveal key={i} delay={i * 100} className="h-full">
+                <div className="glass-card rounded-2xl p-7 hover-lift h-full border-2 border-primary/20 flex flex-col bg-white">
                   <div className="flex items-center gap-3 mb-5">
-                    <span className="text-3xl">{lane.emoji}</span>
+                    <span className="text-3xl flex-shrink-0">{lane.emoji}</span>
                     <div>
                       <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">{t(lane.tagKey)}</span>
                       <div className="text-2xl font-extrabold text-primary mt-1">{t(lane.timeKey)}</div>
                     </div>
                   </div>
-                  <h3 className="text-base font-bold text-navy mb-4">{t(lane.titleKey)}</h3>
-                  <div className="flex flex-col gap-2 text-sm text-muted-foreground">
+                  <h3 className="text-[17px] font-bold text-navy mb-5 h-[48px] line-clamp-2">{t(lane.titleKey)}</h3>
+
+                  <div className="flex-1 flex flex-col gap-3 text-[14px] text-muted-foreground font-medium mb-6">
                     {lane.features.map((fk, fi) => (
-                      <div key={fi}>{fi < lane.features.length - 1 ? "✅" : lane.emoji === "🚢" ? "⚠️" : "✅"} {t(fk)}</div>
+                      <div key={fi} className="flex items-start gap-2.5">
+                        <span className="flex-shrink-0 mt-[2px]">{fi < lane.features.length - 1 ? "✅" : lane.emoji === "🚢" ? "⚠️" : "✅"}</span>
+                        <span className="leading-relaxed">{t(fk)}</span>
+                      </div>
                     ))}
                   </div>
-                  <div className="mt-4 p-3 bg-primary/5 rounded-xl text-xs text-muted-foreground">💡 <strong>{t(lane.noteKey)}</strong></div>
+
+                  <div className="mt-auto p-4 bg-primary/5 rounded-xl text-[13px] text-muted-foreground">
+                    <span className="mr-1.5">💡</span><strong>{t(lane.noteKey)}</strong>
+                  </div>
                 </div>
               </ScrollReveal>
             ))}
@@ -491,7 +498,7 @@ const THGOrderPage = () => {
           )}
 
           <div className="text-center mt-8">
-            <a href="https://zalo.me/g/jhbhjc184" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-xl text-base font-bold transition-all hover:bg-primary/90 hover:-translate-y-1 shadow-lg">
+            <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-xl text-base font-bold transition-all hover:bg-primary/90 hover:-translate-y-1 shadow-lg">
               💬 {t("op.price_cta")}
             </a>
           </div>
@@ -584,7 +591,7 @@ const THGOrderPage = () => {
       <div id="order-cta">
         <ContactSection />
       </div>
-      <Footer />
+
     </div>
   );
 };

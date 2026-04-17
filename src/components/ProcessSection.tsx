@@ -12,37 +12,37 @@ const ProcessSection = () => {
   ];
 
   return (
-    <section className="py-28 bg-gradient-dark text-primary-foreground relative overflow-hidden">
+    <section className="py-28 bg-background relative overflow-hidden">
       {/* Decorative elements */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-light/30 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-light/30 to-transparent" />
-      <div className="absolute top-20 right-20 w-64 h-64 rounded-full bg-gold/5 blur-3xl" />
-      <div className="absolute bottom-20 left-20 w-48 h-48 rounded-full bg-accent/5 blur-3xl" />
-
-      {/* Shimmer overlay */}
-      <div className="absolute inset-0 shimmer-effect opacity-10 pointer-events-none" />
+      <div className="section-divider absolute top-0 left-0 right-0" />
+      <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
           <div className="text-center mb-20">
-            <p className="text-sm font-semibold text-gold-light uppercase tracking-[0.2em] mb-4">{tVi("process.subtitle")}</p>
-            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight">
+            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("process.subtitle")}</p>
+            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-navy">
               {tVi("process.title")}{" "}
-              <span className="text-gold-light">{tVi("process.title_highlight")}</span>
+              <span className="text-gradient-gold">{tVi("process.title_highlight")}</span>
             </h2>
           </div>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
           {steps.map((s, i) => (
-            <ScrollReveal key={s.step} delay={i * 150}>
-              <div className="relative group">
-                <span className="text-7xl font-bold text-accent/70 tracking-tighter group-hover:text-accent transition-colors duration-500">{s.step}</span>
-                <h3 className="text-xl font-bold mt-1 mb-3 tracking-tight" >{tVi(s.titleKey)}</h3>
-                <p className="text-sm text-primary-foreground/60 leading-relaxed" >{tVi(s.descKey)}</p>
-                {i < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-10 -right-5 w-10 h-px bg-gold-light/20" />
+            <ScrollReveal key={s.step} delay={i * 150} className="relative">
+              <div className="relative group text-left">
+                {/* Connection line for desktop */}
+                {i > 0 && (
+                  <div className="hidden lg:block absolute top-10 -left-[3.5rem] w-8 h-[1px] bg-border/80" />
                 )}
+
+                <div className="text-6xl md:text-7xl font-bold text-[hsl(var(--gold))] mb-5 tracking-tight group-hover:scale-105 transition-all duration-300 drop-shadow-sm">
+                  {s.step}
+                </div>
+                <h3 className="text-lg md:text-xl font-bold text-navy mb-3 tracking-tight">{tVi(s.titleKey)}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed font-medium pr-2">{tVi(s.descKey)}</p>
               </div>
             </ScrollReveal>
           ))}

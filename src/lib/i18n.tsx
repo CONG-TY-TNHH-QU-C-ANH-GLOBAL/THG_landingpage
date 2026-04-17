@@ -210,6 +210,9 @@ const translations: Translations = {
   "blog.subtitle": { en: "Stay updated with the latest from THG", vi: "Cập nhật tin tức mới nhất từ THG", zh: "关注THG的最新动态" },
   "news.read_more": { en: "Read more", vi: "Đọc thêm", zh: "阅读更多" },
 
+  // THGWarehousePage
+  "warehouse_page.cta": { en: "Get Quote / Consign", vi: "Nhận báo giá / Ký gửi", zh: "获取报价 / 寄售" },
+
   // THG Fulfill Page
   "fulfill_page.hero_subtitle": { en: "POD & Dropship solutions for global sellers. Competitive basecost, fast delivery, 24/7 support.", vi: "Giải pháp POD & Dropship cho seller toàn cầu. Basecost tối ưu, giao nhanh, support 24/7.", zh: "为全球卖家提供POD和代发解决方案。有竞争力的basecost，快速交付，24/7支持。" },
   "fulfill_page.hero_tagline": { en: "Optimized Basecost • Multi-route Shipping", vi: "Basecost tối ưu • Vận chuyển đa tuyến", zh: "优化Basecost • 多路线运输" },
@@ -757,7 +760,7 @@ const translations: Translations = {
   "op.how_title": { en: "Simple. Just 5 steps.", vi: "Đơn giản chỉ 5 bước", zh: "简单，只需5步" },
   "op.how_sub": { en: "THG handles everything from ordering in China to delivering to your door in the USA.", vi: "THG xử lý toàn bộ từ đặt hàng bên Trung Quốc đến giao tận cửa nhà bạn ở Mỹ.", zh: "THG处理从中国订购到送货到您美国家门口的一切。" },
   "op.step1_t": { en: "Send product link", vi: "Gửi link sản phẩm", zh: "发送商品链接" },
-  "op.step1_d": { en: "Copy link from Taobao or 1688, send via Zalo / Messenger", vi: "Copy link từ Taobao hoặc 1688 gửi cho THG qua Zalo / Messenger", zh: "复制淘宝或1688链接，通过Zalo/Messenger发送" },
+  "op.step1_d": { en: "Copy link from Taobao or 1688, send via Facebook / Messenger", vi: "Copy link từ Taobao hoặc 1688 gửi cho THG qua Facebook / Messenger", zh: "复制淘宝或1688链接，通过Facebook/Messenger发送" },
   "op.step2_t": { en: "Consult & Quote", vi: "Tư vấn & Báo giá", zh: "咨询报价" },
   "op.step2_d": { en: "THG verifies supplier, quotes all-in price: goods + shipping + service fee", vi: "THG kiểm tra nhà cung cấp, báo giá trọn gói: hàng + ship + phí dịch vụ", zh: "THG验证供应商，报全包价：商品+运费+服务费" },
   "op.step3_t": { en: "Order & Payment", vi: "Đặt hàng & Thanh toán", zh: "下单付款" },
@@ -788,7 +791,7 @@ const translations: Translations = {
   "op.sol5_d": { en: "THG has warehouses in Guangdong (China), Milford PA & Winston-Salem NC. Goods inspected at China warehouse, then shipped directly to your US address.", vi: "THG có kho tại Đông Hoản (Trung Quốc), Milford PA & Winston-Salem NC. Hàng kiểm tra tại China rồi ship thẳng đến địa chỉ Mỹ.", zh: "THG在广东（中国）、宾州和北卡设有仓库。货物在中国仓库检查后直接发往您的美国地址。" },
   "op.sol6_tag": { en: "Real-time Tracking", vi: "Tracking Real-time", zh: "实时追踪" },
   "op.sol6_t": { en: "Always know where your package is", vi: "Biết hàng đang ở đâu – cập nhật chủ động mọi lúc", zh: "随时知道包裹在哪里" },
-  "op.sol6_d": { en: "Updates via Zalo, Messenger, or email. You don't have to ask – we proactively notify you at every step until your package arrives.", vi: "Cập nhật qua Zalo, Messenger hoặc email. Không cần bạn hỏi – THG chủ động thông báo từng bước đến khi hàng gõ cửa nhà bạn.", zh: "通过Zalo、Messenger或邮件更新。无需您询问——我们在每个步骤主动通知您。" },
+  "op.sol6_d": { en: "Updates via Facebook, Messenger, or email. You don't have to ask – we proactively notify you at every step until your package arrives.", vi: "Cập nhật qua Facebook, Messenger hoặc email. Không cần bạn hỏi – THG chủ động thông báo từng bước đến khi hàng gõ cửa nhà bạn.", zh: "通过Facebook、Messenger或邮件更新。无需您询问——我们在每个步骤主动通知您。" },
 
   // Videos
   "op.vid_eye": { en: "See Us In Action", vi: "Thực tế tại THG", zh: "观看我们的实际操作" },
@@ -809,7 +812,7 @@ const translations: Translations = {
   "op.testi2_tag": { en: "Electronics", vi: "Thiết bị điện tử", zh: "电子产品" },
   "op.testi2_text": { en: "Amazing! I ordered electronics from 1688 to Texas. THG kept me updated throughout, sent an unboxing video from the warehouse, and the goods arrived perfectly. 3× cheaper than Amazon!", vi: "Tuyệt vời! Mình order hàng điện tử từ 1688 về Texas. THG liên hệ suốt, quay video và hàng đến tay hoàn hảo. Giá rẻ hơn Amazon 3 lần!", zh: "太棒了！从1688订购电子产品到德州。THG全程更新，发来开箱视频，商品完好到达。比亚马逊便宜3倍！" },
   "op.testi3_tag": { en: "Clothes & Accessories", vi: "Quần áo & phụ kiện", zh: "服装配饰" },
-  "op.testi3_text": { en: "I was skeptical at first, but THG's professionalism won me over – regular Zalo updates, thorough inspection. I've already referred the whole Vietnamese community here!", vi: "Lần đầu dùng THG mình còn nghi ngờ. Nhưng cách họ làm việc rất chuyên nghiệp. Giờ mình giới thiệu cho cả hội người Việt ở đây rồi!", zh: "起初我持怀疑态度，但THG的专业精神征服了我。我已经推荐给整个越南社区了！" },
+  "op.testi3_text": { en: "I was skeptical at first, but THG's professionalism won me over – regular updates, thorough inspection. I've already referred the whole Vietnamese community here!", vi: "Lần đầu dùng THG mình còn nghi ngờ. Nhưng cách họ làm việc rất chuyên nghiệp. Giờ mình giới thiệu cho cả hội người Việt ở đây rồi!", zh: "起初我持怀疑态度，但THG的专业精神征服了我。我已经推荐给整个越南社区了！" },
   "op.testi4_tag": { en: "Home Goods", vi: "Đồ gia dụng", zh: "家居用品" },
   "op.testi4_text": { en: "I used to ask relatives in Vietnam to buy and re-ship – it took a whole month. Now THG ships directly from China to my New York address in 2–3 weeks. Totally trustworthy!", vi: "Trước đây nhờ người quen bên Việt Nam mua rồi gửi sang, tốn cả tháng. Giờ THG lo hết, hàng từ Taobao về đến New York chỉ 2-3 tuần!", zh: "以前请越南亲戚买再转寄要一个月。现在THG从中国直接寄到纽约只需2-3周！" },
   "op.testi5_tag": { en: "Bulk Import", vi: "Nhập hàng bán lẻ", zh: "批量进口" },
@@ -875,7 +878,7 @@ const translations: Translations = {
   "op.bulk_z3": { en: "ZIP starts 0–3 (NY, FL, MA, PA…)", vi: "ZIP bắt đầu 0–3 (NY, FL, MA, PA…)", zh: "邮编0-3开头(NY,FL,MA,PA…)" },
   "op.bulk_foot1": { en: "⚠️ Not included: Commercial address surcharge (+$0.20/kg) · Remote area (+$0.70/kg, min $26) · Residential surcharge (+$4.50/pkg) · THG packing fee (+$0.70/pkg)", vi: "⚠️ Chưa bao gồm: Phí địa chỉ thương mại (+$0.20/kg) · Phí vùng sâu xa (+$0.70/kg, tối thiểu $26) · Phí khu dân cư (+$4.50/kiện) · Phí đóng gói THG (+$0.70/kiện)", zh: "⚠️ 不含：商业地址附加费(+$0.20/kg) · 偏远地区(+$0.70/kg,最低$26) · 住宅附加费(+$4.50/件) · THG包装费(+$0.70/件)" },
   "op.bulk_foot2": { en: "* Minimum 12 kg/package. Under 12 kg billed as 12 kg. Prices updated weekly – contact THG to confirm.", vi: "* Tối thiểu 12 kg/kiện. Dưới 12 kg tính theo 12 kg. Giá cập nhật hàng tuần – liên hệ THG để xác nhận.", zh: "* 最低12kg/件。不足12kg按12kg计费。价格每周更新——联系THG确认。" },
-  "op.price_cta": { en: "Chat Zalo for exact quote →", vi: "Nhắn Zalo để được báo giá chính xác →", zh: "通过Zalo聊天获取准确报价 →" },
+  "op.price_cta": { en: "Chat for exact quote →", vi: "Nhắn tin để được báo giá chính xác →", zh: "通过聊天获取准确报价 →" },
 
   // Policy
   "op.pol_eye": { en: "Shipping Policy", vi: "Chính sách vận chuyển", zh: "运输政策" },
@@ -907,14 +910,14 @@ const translations: Translations = {
   "op.pol4_i1": { en: "⏱️ Lost goods: claim within 2 months of ship date", vi: "⏱️ Mất hàng: Khiếu nại trong vòng 2 tháng kể từ ngày ship", zh: "⏱️ 丢失货物：发货日起2个月内索赔" },
   "op.pol4_i2": { en: "⏱️ Damaged / price disputes: claim within 3 days of delivery", vi: "⏱️ Hư hỏng / giá cước: Trong vòng 3 ngày nhận hàng", zh: "⏱️ 损坏/价格争议：收货3天内索赔" },
   "op.pol4_i3": { en: "⚡ THG resolves claims within 7–20 business days", vi: "⚡ THG xử lý khiếu nại trong vòng 7–20 ngày làm việc", zh: "⚡ THG在7-20个工作日内解决索赔" },
-  "op.pol4_i4": { en: "💬 Contact directly via Zalo or Hotline for fastest support", vi: "💬 Liên hệ trực tiếp qua Zalo hoặc Hotline để được hỗ trợ nhanh nhất", zh: "💬 通过Zalo或热线直接联系获取最快支持" },
+  "op.pol4_i4": { en: "💬 Contact directly via Facebook or Hotline for fastest support", vi: "💬 Liên hệ trực tiếp qua Facebook hoặc Hotline để được hỗ trợ nhanh nhất", zh: "💬 通过Facebook或热线直接联系获取最快支持" },
 
   // FAQ
   "op.faq_eye": { en: "FAQ", vi: "Câu hỏi thường gặp", zh: "常见问题" },
   "op.faq_title": { en: "Your questions, answered", vi: "Bạn thắc mắc – THG trả lời", zh: "您的问题，我们来答" },
   "op.faq_sub": { en: "The most common questions from Vietnamese Americans using THG for the first time.", vi: "Những câu hỏi phổ biến nhất từ người Việt sống tại Mỹ khi lần đầu sử dụng dịch vụ.", zh: "在美越南人首次使用THG时最常见的问题。" },
   "op.faq1_q": { en: "How do I start ordering through THG?", vi: "Tôi cần làm gì để bắt đầu đặt hàng qua THG?", zh: "如何开始通过THG订购？" },
-  "op.faq1_a": { en: "Simple! Just copy the product link from Taobao, 1688, or Pinduoduo and send it to us via Zalo (0987.683.175) or Facebook. THG will verify the supplier, quote an all-in price, and guide you through each step.", vi: "Rất đơn giản! Copy link sản phẩm từ Taobao, 1688 hoặc Pinduoduo gửi cho chúng tôi qua Zalo (0987.683.175) hoặc Facebook. THG sẽ kiểm tra nhà cung cấp, báo giá trọn gói và hướng dẫn từng bước.", zh: "很简单！复制淘宝、1688或拼多多的商品链接，通过Zalo(0987.683.175)或Facebook发给我们。THG将验证供应商、报全包价并逐步指导您。" },
+  "op.faq1_a": { en: "Simple! Just copy the product link from Taobao, 1688, or Pinduoduo and send it to us via Facebook. THG will verify the supplier, quote an all-in price, and guide you through each step.", vi: "Rất đơn giản! Copy link sản phẩm từ Taobao, 1688 hoặc Pinduoduo gửi cho chúng tôi qua Facebook. THG sẽ kiểm tra nhà cung cấp, báo giá trọn gói và hướng dẫn từng bước.", zh: "很简单！复制淘宝、1688或拼多多的商品链接，通过Facebook发给我们。THG将验证供应商、报全包价并逐步指导您。" },
   "op.faq2_q": { en: "How long does shipping from China to USA take?", vi: "Thời gian từ lúc đặt hàng đến khi nhận hàng tại Mỹ mất bao lâu?", zh: "从中国到美国的运输需要多长时间？" },
   "op.faq2_a": { en: "• Standard Air (Epacket): 6–12 Business Days\n• Express Air (DHL/FedEx): 3–5 Business Days\n• Sea Freight (Bulk): 20–25 Business Days\n\nVs. routing through Vietnam, you save 3–4 extra weeks and $150–300.", vi: "• Hàng không thường (Epacket): 6–12 Ngày LV\n• Hàng không nhanh (DHL/FedEx): 3–5 Ngày LV\n• Hàng lô đường biển: 20–25 Ngày LV\n\nSo với đi vòng qua Việt Nam, bạn tiết kiệm 3–4 tuần và $150–300.", zh: "• 标准空运(Epacket): 6-12个工作日\n• 快速空运(DHL/FedEx): 3-5个工作日\n• 海运(散货): 20-25个工作日\n\n比经越南中转节省3-4周和$150-300。" },
   "op.faq3_q": { en: "How do I pay THG from the USA?", vi: "Tôi ở Mỹ thanh toán cho THG bằng cách nào?", zh: "在美国如何付款给THG？" },

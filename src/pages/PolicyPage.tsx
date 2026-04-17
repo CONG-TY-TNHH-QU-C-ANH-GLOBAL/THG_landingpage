@@ -1,5 +1,5 @@
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import ContactSection from "@/components/ContactSection";
 import { useI18n } from "@/lib/i18n";
 import { useState } from "react";
@@ -74,7 +74,7 @@ const PolicyPage = () => {
         )}
       </div>
       <ContactSection />
-      <Footer />
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { domesticPricingRows as fallbackRows } from "@/data/domesticPricingData";
 import { DomesticPricingRow } from "@/data/domesticPricingData";
@@ -379,7 +379,7 @@ const DomesticPricingPage = () => (
     <div className="min-h-screen bg-background">
         <Navbar />
         <DomesticPricingContent />
-        <Footer />
+
     </div>
 );
 

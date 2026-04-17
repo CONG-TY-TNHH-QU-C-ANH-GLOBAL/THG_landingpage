@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
@@ -851,7 +851,7 @@ const CatalogPage = () => {
                 {/* Footer */}
                 <div className="flex gap-2 px-6 py-3 border-t border-border/30 bg-white flex-shrink-0">
                   <a
-                    href="https://zalo.me/0886800126"
+                    href="https://www.facebook.com/THGFulfill"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg border border-border/40 bg-gray-50 text-muted-foreground text-sm font-semibold hover:bg-gray-100 transition-all no-underline"
@@ -859,7 +859,7 @@ const CatalogPage = () => {
                     <MessageCircle className="w-4 h-4" /> Order Support
                   </a>
                   <a
-                    href="https://zalo.me/0886800126"
+                    href="https://www.facebook.com/THGFulfill"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-all no-underline"
@@ -873,7 +873,7 @@ const CatalogPage = () => {
         </DialogContent>
       </Dialog>
 
-      <Footer />
+
     </div >
   );
 };

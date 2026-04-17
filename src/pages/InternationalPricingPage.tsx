@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import ContactSection from "@/components/ContactSection";
 import { useI18n } from "@/lib/i18n";
 import { pricingData } from "@/data/pricingData";
@@ -629,7 +629,7 @@ const InternationalPricingPage = () => {
       </div>
 
       <ContactSection />
-      <Footer />
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { Calendar, ArrowRight, Tag } from "lucide-react";
@@ -87,7 +87,7 @@ const BlogPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };
