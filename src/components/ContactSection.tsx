@@ -37,7 +37,7 @@ const ContactSection = () => {
                   { icon: MapPin, label: t("contact.cn_warehouse"), value: "广东省东莞市常平镇霞坑新宅二区三街101", fontCN: true },
                   { icon: Phone, label: t("contact.hotline"), value: "0335.124.089" },
                   { icon: Mail, label: t("contact.email"), value: "info@thgfulfill.com" },
-                  { icon: Globe, label: t("contact.website"), value: "thgfulfill.com", href: "https://thgfulfill.com" },
+                  { icon: Globe, label: t("contact.website"), value: "www.thgfulfill.com", href: "https://thgfulfill.com" },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 group">
                     <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
