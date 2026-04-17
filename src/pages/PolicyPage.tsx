@@ -38,17 +38,7 @@ const PolicyPage = () => {
           {t("policy.subtitle")}
         </p>
 
-        {/* ── Mode indicator for EN/ZH ── */}
-        {!isVietnamese && (
-          <div className="bg-[#f0f4ff] border border-[#c4d4f0] rounded-lg px-4 py-3 mb-5 text-[12px] text-[#1a3a6a] flex items-center gap-2">
-            <span>📄</span>
-            <span>
-              {effectiveLanguage === "en"
-                ? "Viewing translated text version. Switch to Tiếng Việt for original image documents."
-                : "正在查看翻译文本版本。切换到越南语可查看原始图片文档。"}
-            </span>
-          </div>
-        )}
+
 
         {/* ── Section Tabs ── */}
         <div className="flex gap-2 flex-wrap mb-6">
@@ -68,21 +58,19 @@ const PolicyPage = () => {
         </div>
 
         {/* ── Content: Dual-mode rendering ── */}
-        {isVietnamese ? (
-          /* Vietnamese → Gallery ảnh gốc */
-          <>
-            <PolicyImageViewer
-              key={current.id}
-              images={current.images}
-              title={current.title}
-            />
-            <p className="text-center text-[12px] text-muted-foreground mt-4 notranslate" translate="no">
-              {t(current.titleKey)} — {current.images.length} {effectiveLanguage === 'vi' ? 'trang' : effectiveLanguage === 'zh' ? '页' : 'pages'}
-            </p>
-          </>
-        ) : (
-          /* EN/ZH → Text-based content (GTranslate dịch tự động) */
-          <PolicyTextRenderer key={current.id} sectionId={current.id} />
+        <PolicyImageViewer
+          key={`${current.id}-img`}
+          images={current.images}
+          title={current.title}
+        />
+        <p className="text-center text-[12px] text-muted-foreground mt-4 mb-6 notranslate" translate="no">
+          {t(current.titleKey)} — {current.images.length} {effectiveLanguage === 'vi' ? 'trang' : effectiveLanguage === 'zh' ? '页' : 'pages'}
+        </p>
+
+        {!isVietnamese && (
+          <div className="mt-8">
+            <PolicyTextRenderer key={`${current.id}-txt`} sectionId={current.id} />
+          </div>
         )}
       </div>
       <ContactSection />

@@ -24,12 +24,12 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {tVi("footer.tagline")}
+              {t("footer.tagline")}
             </p>
           </div>
 
           <div>
-            <h4 className="font-bold mb-5 tracking-tight text-navy">{tVi("footer.services")}</h4>
+            <h4 className="font-bold mb-5 tracking-tight text-navy">{t("footer.services")}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link to="/thg-fulfill" className="hover:text-primary transition-colors duration-300" >THG Fulfill</Link></li>
               <li><Link to="/thg-express" className="hover:text-primary transition-colors duration-300" >THG Express</Link></li>
@@ -39,20 +39,20 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-bold mb-5 tracking-tight text-navy">{tVi("footer.support")}</h4>
+            <h4 className="font-bold mb-5 tracking-tight text-navy">{t("footer.support")}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><Link to="/#faq" className="hover:text-primary transition-colors duration-300">{tVi("footer.faq_link")}</Link></li>
-              <li><Link to="/chinh-sach" className="hover:text-primary transition-colors duration-300">{tVi("footer.privacy")}</Link></li>
-              <li><Link to="/chinh-sach" className="hover:text-primary transition-colors duration-300">{tVi("footer.terms")}</Link></li>
+              <li><Link to="/#faq" className="hover:text-primary transition-colors duration-300">{t("footer.faq_link")}</Link></li>
+              <li><Link to="/chinh-sach" className="hover:text-primary transition-colors duration-300">{t("footer.privacy")}</Link></li>
+              <li><Link to="/chinh-sach" className="hover:text-primary transition-colors duration-300">{t("footer.terms")}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold mb-5 tracking-tight text-navy">{tVi("footer.contact")}</h4>
+            <h4 className="font-bold mb-5 tracking-tight text-navy">{t("footer.contact")}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>📧 info@thgfulfill.com</li>
               <li  >📞 0335.124.089</li>
-              <li>📍 VP: 121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú, TP.HCM</li>
+              <li>🇻🇳 121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú, TP.HCM</li>
               <li  >🇺🇸 108 Almond CT, Milford, PA 18337</li>
               <li style={{ fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" }}>🇨🇳 广东省东莞市常平镇霞坑新宅二区三街101</li>
               <li  >🌐 www.thgfulfill.com</li>
@@ -60,7 +60,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-bold mb-5 tracking-tight text-navy">{tVi("footer.social")}</h4>
+            <h4 className="font-bold mb-5 tracking-tight text-navy">{t("footer.social")}</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors duration-300 flex items-center gap-2">
@@ -79,7 +79,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border/40 pt-8 text-center text-sm text-muted-foreground/60">
-          <span>© 2026 THG Fulfill. Bản quyền thuộc về THG Fulfill.</span>
+          <span>{t("footer.copyright")}</span>
         </div>
       </div>
     </footer>

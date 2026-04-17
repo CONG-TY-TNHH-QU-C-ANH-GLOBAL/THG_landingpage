@@ -4,38 +4,46 @@ import React from "react";
    TYPES & CONFIG
    ═══════════════════════════════════════════════ */
 export type ServiceTab = "epacket" | "express" | "terms";
-export type EpacketRoute = "std-vn-ww" | "std-cn-ww" | "pri-vncn-us" | "cn-us-label";
+export type EpacketRoute = "std-vn-ww" | "std-cn-ww" | "pri-vn-us" | "pri-cn-us" | "cn-us-label";
 export type ExpressRoute = "vn-us" | "cn-us";
 export type CargoType = "standard" | "cosmetics" | "battery";
+export type OriginCountry = "vn" | "cn";
 
-export const ROUTES: Record<EpacketRoute, { nameVi: React.ReactNode; nameEn: React.ReactNode; nameZh: React.ReactNode; time: { vi: string; en: string; zh: string }; cargo: CargoType[]; type: string }> = {
+export const ROUTES: Record<EpacketRoute, { nameVi: React.ReactNode; nameEn: React.ReactNode; nameZh: React.ReactNode; time: { vi: string; en: string; zh: string }; cargo: CargoType[]; type: string; origin: OriginCountry[] }> = {
     "std-vn-ww": {
-        nameVi: <span className="notranslate" translate="no" >🇻🇳 Standard VN → Worldwide</ span >,
-        nameEn: <span className="notranslate" translate="no" > VN Standard VN → Worldwide</ span >,
+        nameVi: <span className="notranslate" translate="no">🇻🇳 Standard VN → Worldwide</span>,
+        nameEn: <span className="notranslate" translate="no">🇻🇳 Standard VN → Worldwide</span>,
         nameZh: <span className="notranslate" translate="no">🇻🇳 标准 VN → 全球</span>,
         time: { vi: "⏱ 5–12 BSD", en: "⏱ 5–12 BSD", zh: "⏱ 5–12 工作日" },
-        cargo: ["standard", "cosmetics"], type: "merchant"
+        cargo: ["standard", "cosmetics"], type: "merchant", origin: ["vn"]
     },
     "std-cn-ww": {
-        nameVi: <span className="notranslate" translate="no" >🇨🇳 Standard CN → Worldwide </span>,
-        nameEn: <span className="notranslate" translate="no" > CN Standard CN → Worldwide </span>,
-        nameZh: <span className="notranslate" translate="no" >🇨🇳 标准 CN → 全球 </span>,
+        nameVi: <span className="notranslate" translate="no">🇨🇳 Standard CN → Worldwide</span>,
+        nameEn: <span className="notranslate" translate="no">🇨🇳 Standard CN → Worldwide</span>,
+        nameZh: <span className="notranslate" translate="no">🇨🇳 标准 CN → 全球</span>,
         time: { vi: "⏱ 6–12 BSD", en: "⏱ 6–12 BSD", zh: "⏱ 6–12 工作日" },
-        cargo: ["standard", "cosmetics", "battery"], type: "merchant"
+        cargo: ["standard", "cosmetics", "battery"], type: "merchant", origin: ["cn"]
     },
-    "pri-vncn-us": {
-        nameVi: <span className="notranslate" translate="no" >🇻🇳/🇨🇳 Priority VN/CN → US </span>,
-        nameEn: <span className="notranslate" translate="no" > VN / CN Priority VN / CN → US </span>,
-        nameZh: <span className="notranslate" translate="no" >🇻🇳/🇨🇳 优先 VN/CN → US </span>,
+    "pri-vn-us": {
+        nameVi: <span className="notranslate" translate="no">🇻🇳 Priority VN → US</span>,
+        nameEn: <span className="notranslate" translate="no">🇻🇳 Priority VN → US</span>,
+        nameZh: <span className="notranslate" translate="no">🇻🇳 优先 VN → US</span>,
+        time: { vi: "⏱ 7–9 BSD", en: "⏱ 7–9 BSD", zh: "⏱ 7–9 工作日" },
+        cargo: [], type: "merchant", origin: ["vn"]
+    },
+    "pri-cn-us": {
+        nameVi: <span className="notranslate" translate="no">🇨🇳 Priority CN → US</span>,
+        nameEn: <span className="notranslate" translate="no">🇨🇳 Priority CN → US</span>,
+        nameZh: <span className="notranslate" translate="no">🇨🇳 优先 CN → US</span>,
         time: { vi: "⏱ 5–10 BSD", en: "⏱ 5–10 BSD", zh: "⏱ 5–10 工作日" },
-        cargo: [], type: "merchant"
+        cargo: [], type: "merchant", origin: ["cn"]
     },
     "cn-us-label": {
-        nameVi: <span className="notranslate" translate="no" >🇨🇳 CN → US Ship by Label </span>,
-        nameEn: <span className="notranslate" translate="no" > CN CN → US Ship by Label </span>,
-        nameZh: <span className="notranslate" translate="no" >🇨🇳 CN → US 贴标发货 </span>,
+        nameVi: <span className="notranslate" translate="no">🇨🇳 CN → US Ship by Label</span>,
+        nameEn: <span className="notranslate" translate="no">🇨🇳 CN → US Ship by Label</span>,
+        nameZh: <span className="notranslate" translate="no">🇨🇳 CN → US 贴标发货</span>,
         time: { vi: "⏱ Theo lịch USPS", en: "⏱ Per USPS schedule", zh: "⏱ 按USPS时间表" },
-        cargo: [], type: "label"
+        cargo: [], type: "label", origin: ["cn"]
     },
 };
 
@@ -52,7 +60,8 @@ export const DATA_KEY_MAP: Record<string, string> = {
     "std-cn-ww_standard": "cnThuong",
     "std-cn-ww_cosmetics": "cnMypham",
     "std-cn-ww_battery": "cnPin",
-    "pri-vncn-us_standard": "uspsCn",
+    "pri-vn-us_standard": "uspsCn",
+    "pri-cn-us_standard": "uspsCnUs",
 };
 
 export const countryNames: Record<string, string> = {
@@ -101,5 +110,6 @@ export const ROUTE_POLICY_MAP: Record<string, string[]> = {
     "std-cn-ww_standard": ["7RqdMQ"],           // THPHR
     "std-cn-ww_cosmetics": ["dECGAK"],          // MUZXR
     "std-cn-ww_battery": ["s46HNu"],            // THZXR
-    "pri-vncn-us_standard": ["LSTxjV", "yjyfP8"], // VN-YTYCPREC + YTYCPREC
+    "pri-vn-us_standard": ["LSTxjV"],   // VN-YTYCPREC
+    "pri-cn-us_standard": ["yjyfP8"],   // YTYCPREC
 };

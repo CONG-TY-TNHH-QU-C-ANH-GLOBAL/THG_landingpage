@@ -28,9 +28,27 @@ const InternationalPricingPage = () => {
 
   // State
   const [service, setService] = useState<ServiceTab>("epacket");
+  const [origin, setOriginState] = useState<"vn" | "cn">("vn");
   const [route, setRoute] = useState<EpacketRoute>("std-vn-ww");
   const [cargo, setCargo] = useState<CargoType>("standard");
   const [expressRoute, setExpressRoute] = useState<ExpressRoute>("vn-us");
+
+  // When changing origin, snap route + expressRoute to first available for that origin
+  const setOrigin = (o: "vn" | "cn") => {
+    setOriginState(o);
+    // ePacket route reset
+    const firstRoute = (Object.entries(ROUTES) as [EpacketRoute, typeof ROUTES[EpacketRoute]][])
+      .find(([, r]) => r.origin.includes(o));
+    if (firstRoute && !ROUTES[route].origin.includes(o)) {
+      const [rid] = firstRoute;
+      setRoute(rid);
+      if (!ROUTES[rid].cargo.includes(cargo)) {
+        setCargo(ROUTES[rid].cargo[0] || "standard");
+      }
+    }
+    // Express route reset to match origin
+    setExpressRoute(o === "vn" ? "vn-us" : "cn-us");
+  };
 
   /* ─── Currency: raw from Lark Sheet, no conversion ─── */
   const rates: Record<string, number> | null = null;
@@ -181,7 +199,7 @@ const InternationalPricingPage = () => {
     if (!currentData || currentData.length === 0) return [];
     // For USPS data that uses 'rate' key
     if (currentData[0]?.rate !== undefined) {
-      return [{ key: "rate", label: route === "pri-vncn-us" ? t("intl_pricing.rate_label") : t("intl_pricing.rate_label_generic") }];
+      return [{ key: "rate", label: (route === "pri-vn-us" || route === "pri-cn-us") ? t("intl_pricing.rate_label") : t("intl_pricing.rate_label_generic") }];
     }
     // For standard multi-country data
     const keys = new Set<string>();
@@ -280,23 +298,29 @@ const InternationalPricingPage = () => {
   const remoteSurcharge = larkOverlay.remoteSurcharge?.length ? larkOverlay.remoteSurcharge : (pricingData as any).remoteSurcharge?.length ? (pricingData as any).remoteSurcharge : FALLBACK_REMOTE_SURCHARGE;
   /* Re-delivery fees from Lark Sheet — by country/region */
   const FALLBACK_REDELIVERY = [
-    { dest: "Canada", charge: "355,697 VND (for first 1KG) + 56,342 VND/KG (for each additional kg)", period: "20 days" },
-    { dest: "Mexico", charge: "108,252 VND/parcel", period: "15 days" },
-    { dest: "Switzerland", charge: "216,820 VND/parcel", period: "14 days" },
-    { dest: "France", charge: "216,820 VND/parcel", period: "14 days" },
-    { dest: "Norway", charge: "216,820 VND/parcel", period: "14 days" },
-    { dest: "Australia", charge: "216,820 VND/parcel", period: "14 days" },
-    { dest: "Saudi Arabia", charge: "268,729 VND/parcel (≤5KG) + 32,286 VND/KG (over 5KG)", period: "15 days" },
-    { dest: "United Arab Emirates", charge: "126,610 VND/parcel (≤5KG) + 32,286 VND/KG (over 5KG)", period: "15 days" },
-    { dest: "Japan", charge: "173,455 VND/parcel", period: "14 days" },
-    { dest: "Hong Kong", charge: "A new YT tracking number will be generated for re-delivery, and the re-delivery fee will be charged at the VN-HK freight rate.", period: "14 days" },
-    { dest: "United Kingdom", charge: "173,455 VND/parcel", period: "14 days" },
-    { dest: "Singapore", charge: "260,183 VND/parcel", period: "14 days" },
-    { dest: "Brazil", charge: "260,183 VND/parcel", period: "14 days" },
-    { dest: "Malta, Cyprus, Slovenia, Croatia, Romania, Bulgaria, Chile", charge: "Re-delivery service is NOT provided", period: "—" },
-    { dest: "Other countries except above mentioned country", charge: "237,394 VND/parcel", period: "14 days" },
+    { country: "Canada", charge: "355,697 VND (first 1 KG)", extra: "+ 56,342 VND/KG (next 1 KG)", period: 20 },
+    { country: "Mexico", charge: "108,252 VND/parcel", extra: "—", period: 15 },
+    { country: "Switzerland", charge: "216,820 VND/parcel", extra: "—", period: 14 },
+    { country: "France", charge: "216,820 VND/parcel", extra: "—", period: 14 },
+    { country: "Norway", charge: "216,820 VND/parcel", extra: "—", period: 14 },
+    { country: "Australia", charge: "216,820 VND/parcel", extra: "—", period: 14 },
+    { country: "Saudi Arabia", charge: "268,729 VND/parcel (≤5 KG)", extra: "+ 32,286 VND/KG (>5 KG)", period: 15 },
+    { country: "United Arab Emirates", charge: "126,610 VND/parcel (≤5 KG)", extra: "+ 32,286 VND/KG (>5 KG)", period: 15 },
+    { country: "Japan", charge: "173,455 VND/parcel", extra: "—", period: 14 },
+    { country: "Hong Kong", charge: "special", extra: "", period: 14 },
+    { country: "United Kingdom", charge: "173,455 VND/parcel", extra: "—", period: 14 },
+    { country: "Singapore", charge: "260,183 VND/parcel", extra: "—", period: 14 },
+    { country: "Brazil", charge: "260,183 VND/parcel", extra: "—", period: 14 },
+    { country: "Malta", charge: "no-service", extra: "", period: null },
+    { country: "Cyprus", charge: "no-service", extra: "", period: null },
+    { country: "Slovenia", charge: "no-service", extra: "", period: null },
+    { country: "Romania", charge: "no-service", extra: "", period: null },
+    { country: "Croatia", charge: "no-service", extra: "", period: null },
+    { country: "Bulgaria", charge: "no-service", extra: "", period: null },
+    { country: "Chile", charge: "no-service", extra: "", period: null },
+    { country: "Other countries", charge: "237,394 VND/parcel", extra: "—", period: 14 },
   ];
-  const redeliveryData = larkOverlay.redeliveryData?.length ? larkOverlay.redeliveryData : (pricingData as any).redelivery?.length ? (pricingData as any).redelivery : FALLBACK_REDELIVERY;
+  const redeliveryData = FALLBACK_REDELIVERY;
 
   /* ─── Search Widget State ─── */
   const [searchFrom, setSearchFrom] = useState("VN");
@@ -489,13 +513,44 @@ const InternationalPricingPage = () => {
           searchTrigger={searchTrigger}
         />
 
-        {/* ──── SERVICE TABS (Level 1) ──── */}
+        {/* ──── STEP 1: ORIGIN COUNTRY ──── */}
         <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3 mt-2 sm:mt-4">
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
-          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">{tVi("pricing.tab_header")}</p>
+          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">
+            {lang === 'zh' ? "第 1 步 — 选择发货国" : lang === 'en' ? "Step 1 — Choose Origin Country" : "Bước 1 — Chọn Quốc Gia Gửi Hàng"}
+          </p>
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
         </div>
-        {/* Mobile: horizontal scrollable pills | Desktop: full cards */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-5 sm:mb-6">
+          {([
+            { id: "vn" as const, flag: "🇻🇳", title: lang === 'zh' ? "从越南发货" : lang === 'en' ? "Ship from Vietnam" : "Gửi từ Việt Nam", subtitle: "ePacket · Priority · Bulk-Express", border: "border-blue-500", bg: "bg-gradient-to-br from-blue-50 to-white", text: "text-blue-700", icon: "bg-blue-100" },
+            { id: "cn" as const, flag: "🇨🇳", title: lang === 'zh' ? "从中国发货" : lang === 'en' ? "Ship from China" : "Gửi từ China", subtitle: "ePacket · Priority · Ship by Label · Bulk-Express", border: "border-rose-500", bg: "bg-gradient-to-br from-rose-50 to-white", text: "text-rose-700", icon: "bg-rose-100" },
+          ]).map(card => {
+            const active = origin === card.id;
+            return (
+              <button key={card.id} onClick={() => setOrigin(card.id)}
+                className={`relative overflow-hidden border-2 rounded-xl sm:rounded-2xl p-3 sm:p-5 text-left transition-all ${active ? `${card.border} ${card.bg} shadow-md` : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-2xl sm:text-3xl ${active ? card.icon : "bg-secondary"}`}>{card.flag}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className={`font-extrabold text-[14px] sm:text-[16px] leading-tight ${active ? card.text : "text-navy"}`}>{card.title}</div>
+                    <div className="text-[11px] sm:text-[12px] text-muted-foreground mt-0.5 truncate">{card.subtitle}</div>
+                  </div>
+                  {active && <div className={`hidden sm:flex w-6 h-6 rounded-full items-center justify-center ${card.icon}`}><span className={`${card.text} text-sm font-bold`}>✓</span></div>}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ──── STEP 2: SERVICE TYPE ──── */}
+        <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+          <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
+          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">
+            {lang === 'zh' ? "第 2 步 — 选择服务类型" : lang === 'en' ? "Step 2 — Choose Service Type" : "Bước 2 — Chọn Loại Dịch Vụ"}
+          </p>
+          <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
+        </div>
         <div className="flex sm:flex-row gap-2 sm:gap-3 mb-5 sm:mb-8 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 -mx-2 px-2 sm:mx-0 sm:px-0">
           {([
             { id: "epacket" as ServiceTab, icon: "📦", name: tVi("pricing.svc_epa"), desc: tVi("pricing.tab_epa_desc") },
@@ -539,39 +594,36 @@ const InternationalPricingPage = () => {
             redeliveryData={redeliveryData}
             larkLoading={lark.loading}
             larkError={lark.error}
+            origin={origin}
+            setOrigin={setOrigin}
           />
         )}
 
         {/* ═══════════ PANEL: EXPRESS / HÀNG LÔ ═══════════ */}
         {service === "express" && (
           <div>
-            <p className="text-[10px] sm:text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-2 sm:mb-3">{t("intl_pricing.select_route")}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 sm:mb-5">
-              <button
-                onClick={() => setExpressRoute("vn-us")}
-                className={`flex flex-col gap-0.5 sm:gap-1 border-[1.5px] rounded-lg sm:rounded-[10px] p-2.5 sm:p-3 text-left transition-all ${expressRoute === "vn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
-              >
-                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "vn-us" ? "text-primary" : "text-navy"}`}>{t("intl_pricing.vn_us_ups")}</span>
-                <span className="text-[11px] sm:text-[12px] text-muted-foreground">{t("intl_pricing.vn_us_time")}</span>
-                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 w-fit">{t("intl_pricing.no_us_tax")}</span>
-              </button>
-              <button
-                onClick={() => setExpressRoute("cn-us")}
-                className={`flex flex-col gap-0.5 sm:gap-1 border-[1.5px] rounded-lg sm:rounded-[10px] p-2.5 sm:p-3 text-left transition-all ${expressRoute === "cn-us" ? "border-primary bg-[#FFFBF0]" : "border-[var(--pricing-border)] bg-white hover:border-primary/40"}`}
-              >
-                <span className={`font-bold text-[12px] sm:text-[13px] ${expressRoute === "cn-us" ? "text-primary" : "text-navy"}`}>{t("intl_pricing.cn_us_air_sea")}</span>
-                <span className="text-[11px] sm:text-[12px] text-muted-foreground">{t("intl_pricing.cn_us_time")}</span>
-                <span className="text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 w-fit">{t("intl_pricing.air_sea")}</span>
-              </button>
+            {/* Origin info banner */}
+            <div className={`mb-4 sm:mb-5 rounded-xl border-[1.5px] p-3 sm:p-4 flex items-center gap-3 ${origin === "vn" ? "border-blue-200 bg-blue-50/40" : "border-rose-200 bg-rose-50/40"}`}>
+              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xl sm:text-2xl ${origin === "vn" ? "bg-blue-100" : "bg-rose-100"}`}>
+                {origin === "vn" ? "🇻🇳" : "🇨🇳"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className={`font-bold text-[13px] sm:text-[14px] ${origin === "vn" ? "text-blue-700" : "text-rose-700"}`}>
+                  {origin === "vn"
+                    ? (lang === 'zh' ? "VN → US (UPS Air)" : t("intl_pricing.vn_us_ups"))
+                    : (lang === 'zh' ? "CN → US (空运 / 海运)" : t("intl_pricing.cn_us_air_sea"))}
+                </div>
+                <div className="text-[11px] sm:text-[12px] text-muted-foreground">
+                  {origin === "vn" ? t("intl_pricing.vn_us_time") : t("intl_pricing.cn_us_time")}
+                </div>
+              </div>
+              <span className={`hidden sm:inline-block text-[11px] sm:text-[12px] font-bold px-2 py-0.5 rounded-full ${origin === "vn" ? "bg-amber-50 text-amber-800" : "bg-blue-50 text-blue-700"}`}>
+                {origin === "vn" ? t("intl_pricing.no_us_tax") : t("intl_pricing.air_sea")}
+              </span>
             </div>
 
-            {expressRoute === "vn-us" && (
-              <ExpressVnUsPanel larkOverlay={larkOverlay} />
-            )}
-
-            {expressRoute === "cn-us" && (
-              <ExpressCnUsPanel route={route} />
-            )}
+            {origin === "vn" && <ExpressVnUsPanel larkOverlay={larkOverlay} />}
+            {origin === "cn" && <ExpressCnUsPanel route={route} />}
           </div>
         )}
       </div>

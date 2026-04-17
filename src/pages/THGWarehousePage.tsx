@@ -4,14 +4,23 @@ import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
+import ImageMarquee from "@/components/ImageMarquee";
 import { useI18n } from "@/lib/i18n";
 import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Monitor, Package, Truck, Video, Mail, Layers, Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const sliderImages = [
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-1-20250729095528-wnjai.jpg",
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-4-1-20250729095528-l-gl2.jpg",
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-6-1-20250729095528-0lr5c.jpg",
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/photo_2025-04-10_22-12-24-20250724025351-uqljo.jpg",
+  "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-13-20250724024632-bt6u-.jpg"
+];
+
 // Videos
-import vid1Src from "@/assets/videos/DongHang.mp4";
-import vid2Src from "@/assets/videos/HoangHang.mp4";
-import vid3Src from "@/assets/videos/HoangHanghoantien.mp4";
 
 const THGWarehousePage = () => {
   const { t } = useI18n();
@@ -204,49 +213,35 @@ const THGWarehousePage = () => {
               <div className="grid lg:grid-cols-2 gap-10 items-center">
                 <div className="order-2 lg:order-1">
                   <h3 className="text-2xl font-bold text-navy mb-4">{t("warehouse_page.str1_title")}</h3>
-                  <p className="text-navy/70 leading-relaxed">{t("warehouse_page.str1_desc")}</p>
+                  <p className="text-navy/70 leading-relaxed mb-6">{t("warehouse_page.str1_desc")}</p>
                 </div>
-                <div className="order-1 lg:order-2 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1">
-                  <img
-                    src="https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg"
-                    alt="Optimized Fulfill Cost"
-                    className="w-full h-72 object-cover"
-                    loading="lazy"
-                  />
+                <div className="order-1 lg:order-2 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1 bg-black aspect-video">
+                  <YouTubeEmbed videoId="eJF-6mn2APQ" className="w-full h-full" />
                 </div>
               </div>
             </ScrollReveal>
           </div>
         </div>
       </section>
-      {/* Operation Videos */}
-      <section className="py-20 bg-background">
+      {/* Packing Video Feature */}
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("warehouse_page.ops_badge")}</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.ops_title")}</h2>
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.str5_title")}</h2>
+              <p className="text-navy/70 mt-4 leading-relaxed text-lg">{t("warehouse_page.str5_desc")}</p>
             </div>
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {[
-              { title: "warehouse_page.vid1_title", desc: "warehouse_page.vid1_desc", src: vid1Src },
-              { title: "warehouse_page.vid2_title", desc: "warehouse_page.vid2_desc", src: vid2Src },
-              { title: "warehouse_page.vid3_title", desc: "warehouse_page.vid3_desc", src: vid3Src },
-            ].map((vid, i) => (
+            {["wcJ_iwwDcBM", "Gi_zlY_Hmw4", "qeADCwk23JU"].map((videoId, i) => (
               <ScrollReveal key={i} delay={i * 100}>
-                <div className="glass-card rounded-2xl overflow-hidden hover-lift h-full">
-                  <div className="aspect-video bg-black rounded-t-2xl overflow-hidden">
-                    <video
-                      src={vid.src}
-                      controls
-                      preload="metadata"
-                      className="w-full h-full object-cover"
+                <div className="glass-card rounded-2xl overflow-hidden hover-lift h-full shadow-lg border border-border/40">
+                  <div className="bg-black relative">
+                    <YouTubeEmbed
+                      videoId={videoId}
+                      aspectRatio="9/16"
+                      className="rounded-2xl"
                     />
-                  </div>
-                  <div className="p-5">
-                    <h4 className="text-base font-bold text-navy mb-2">{t(vid.title)}</h4>
-                    <p className="text-sm text-navy/70 leading-relaxed">{t(vid.desc)}</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -339,6 +334,11 @@ const THGWarehousePage = () => {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Logistics Gallery */}
+      <section className="py-20 bg-background overflow-hidden relative">
+        <ImageMarquee images={sliderImages} />
       </section>
 
       {/* Contact Section */}

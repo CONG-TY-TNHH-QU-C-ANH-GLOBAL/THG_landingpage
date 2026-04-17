@@ -8,6 +8,7 @@ import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
 import { Package, CheckCircle2, ArrowRight, Zap, DollarSign, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const products = [
   {
@@ -228,8 +229,8 @@ const THGFulfillPage = () => {
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1">
                   <img
-                    src="https://w.ladicdn.com/s700x700/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg"
-                    alt="Warehouse Ecosystem"
+                    src="https://w.ladicdn.com/s750x750/67e69e24e8a7ba001127c80a/img_9873-20250801074610-q-tfu.jpg"
+                    alt="All-in-one POD & Dropship ecosystem"
                     className="w-full h-64 object-cover"
                     loading="lazy"
                   />
@@ -239,13 +240,8 @@ const THGFulfillPage = () => {
 
             <ScrollReveal delay={100}>
               <div className="grid lg:grid-cols-2 gap-8 items-center">
-                <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1">
-                  <img
-                    src="https://w.ladicdn.com/s1200x750/67e69e24e8a7ba001127c80a/screenshot-2022-02-25-231050-20250808034749-tnxkm.png"
-                    alt="Tracking Dashboard"
-                    className="w-full h-64 object-cover"
-                    loading="lazy"
-                  />
+                <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1 bg-black aspect-video flex">
+                  <YouTubeEmbed videoId="KPhQYnkYA68" title="THG Fulfill Introduction" aspectRatio="16/9" />
                 </div>
                 <div className="order-1 lg:order-2">
                   <h3 className="text-2xl font-bold text-navy mb-4 tracking-tight">{t("fulfill_page.adv3_title")}</h3>
@@ -535,6 +531,83 @@ const THGFulfillPage = () => {
             </div>
           </ScrollReveal>
         </div>
+      </section>
+
+      {/* HUB Fulfill Section */}
+      <section className="py-24 bg-card border-y border-border/50">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Dashboard</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.hub_title")}</h2>
+              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+                {t("fulfill_page.hub_desc")}
+              </p>
+            </div>
+          </ScrollReveal>
+          <div className="max-w-5xl mx-auto">
+            <ScrollReveal delay={100}>
+              <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+                <img
+                  src="https://w.ladicdn.com/s1100x650/67e69e24e8a7ba001127c80a/319aab8c-ea63-45af-9ec6-c0e2ccb1a7cd-20251230034755-miwjh.png"
+                  alt="HUB Fulfill Dashboard"
+                  className="w-full h-auto object-cover bg-white"
+                  loading="lazy"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <div className="mt-12 flex justify-center">
+                <Link
+                  to="/catalog"
+                  className="inline-flex items-center gap-3 bg-navy text-white hover:bg-navy/90 px-8 py-4 rounded-full font-bold text-lg transition-transform hover:-translate-y-1 shadow-xl notranslate"
+                  translate="no"
+                >
+                  🚀 {t("fulfill_page.hub_cta")}
+                </Link>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Policy CTA */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <ScrollReveal>
+            <div className="bg-gradient-to-r from-navy to-[#1a233b] rounded-3xl p-10 md:p-14 flex flex-col md:flex-row items-center justify-between shadow-2xl border border-white/10 relative overflow-hidden">
+              {/* Decorative glow */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[hsl(var(--gold))]/15 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+
+              <div className="relative z-10 text-center md:text-left mb-8 md:mb-0 max-w-2xl">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">{t("fulfill_page.policy_title")}</h2>
+                <p className="text-white/80 text-lg leading-relaxed">{t("fulfill_page.policy_desc")}</p>
+              </div>
+              <div className="relative z-10 shrink-0">
+                <Link
+                  to="/chinh-sach"
+                  className="inline-flex items-center gap-2 bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-8 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(201,162,86,0.3)] transition-all hover:shadow-[0_0_30px_rgba(201,162,86,0.5)] hover:-translate-y-1 notranslate"
+                  translate="no"
+                >
+                  {t("fulfill_page.policy_cta")} <ArrowRight className="w-5 h-5" />
+                </Link>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Logistics Gallery */}
+      <section className="py-20 bg-card overflow-hidden">
+        <div className="container mx-auto px-4 mb-12">
+          <ScrollReveal>
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-navy tracking-tight">{t("fulfill_page.gallery_title")}</h2>
+            </div>
+          </ScrollReveal>
+        </div>
+        <ImageMarquee images={sliderImages} />
       </section>
 
       {/* FAQ */}

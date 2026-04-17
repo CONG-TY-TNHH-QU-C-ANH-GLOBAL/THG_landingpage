@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Re-delivery Charge Summary</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4f8;
+    color: #1a2a3a;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: #ffffff;
+    border: 1px solid #d0dce8;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1565c0;
+    margin-bottom: 6px;
+  }
+  .product-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tag {
+    background: #e3f0ff;
+    border: 1px solid #b3d0f5;
+    color: #1565c0;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .search-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .search-bar input {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #c8d8e8;
+    color: #1a2a3a;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: #1565c0; }
+  .search-bar input::placeholder { color: #90a8be; }
+  .count-badge {
+    background: #e3f0ff;
+    color: #1565c0;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid #b3d0f5;
+  }
+
+  .table-wrap {
+    background: #ffffff;
+    border: 1px solid #d0dce8;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: #e8f0fa; }
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #1565c0;
+    border-bottom: 2px solid #c0d4ec;
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid #e8eef5; transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f4f8ff; }
+  tbody tr.hidden { display: none; }
+
+  td { padding: 11px 16px; font-size: 13px; vertical-align: middle; line-height: 1.5; }
+  td.country { font-weight: 600; color: #1a2a3a; white-space: nowrap; }
+  td.flag { font-size: 20px; text-align: center; width: 44px; }
+  td.charge { color: #1565c0; font-weight: 500; }
+  td.extra { color: #5a7a9a; font-size: 12px; }
+  td.period { white-space: nowrap; text-align: center; }
+
+  .period-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .period-14 { background: #e6f9ed; color: #1e7e34; border: 1px solid #a8ddb8; }
+  .period-15 { background: #fff8e0; color: #b07d00; border: 1px solid #f0d070; }
+  .period-20 { background: #fff0e8; color: #c04a00; border: 1px solid #f0b090; }
+
+  .no-service { color: #c0392b; font-size: 12px; font-style: italic; }
+  .special-note { color: #5a7a9a; font-size: 12px; font-style: italic; }
+  .no-results { text-align: center; padding: 40px; color: #90a8be; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📦 Re-delivery Charge Summary</h1>
+  <p style="font-size:12px;color:#5a7a9a;margin-top:4px;">Applicable products:</p>
+  <div class="product-tags">
+    <span class="tag">Epacket – Standard VN-WW</span>
+    <span class="tag">Epacket – Standard VN-WW Cosmetic</span>
+    <span class="tag">Epacket – Priority USPS VN-US</span>
+  </div>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="🔍  Search country..." oninput="filterTable()">
+  <span class="count-badge" id="countBadge">21 countries</span>
+</div>
+
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th style="width:44px;text-align:center"></th>
+        <th>Country</th>
+        <th>Re-delivery Charge</th>
+        <th>Additional Rate</th>
+        <th style="text-align:center">Request Period</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="no-results" id="noResults" style="display:none">No countries found.</div>
+</div>
+
+<script>
+const FLAGS = {
+  "Canada":"🇨🇦","Mexico":"🇲🇽","Switzerland":"🇨🇭","France":"🇫🇷","Norway":"🇳🇴",
+  "Australia":"🇦🇺","Saudi Arabia":"🇸🇦","United Arab Emirates":"🇦🇪","Japan":"🇯🇵",
+  "Hong Kong":"🇭🇰","United Kingdom":"🇬🇧","Singapore":"🇸🇬","Brazil":"🇧🇷",
+  "Malta":"🇲🇹","Cyprus":"🇨🇾","Slovenia":"🇸🇮","Romania":"🇷🇴","Croatia":"🇭🇷",
+  "Bulgaria":"🇧🇬","Chile":"🇨🇱","Other countries":"🌐"
+};
+
+const DATA = [
+  { country:"Canada",               charge:"355,697 VND (first 1 KG)",      extra:"+ 56,342 VND/KG (next 1 KG)", period:20 },
+  { country:"Mexico",               charge:"108,252 VND/parcel",            extra:"—",                           period:15 },
+  { country:"Switzerland",          charge:"216,820 VND/parcel",            extra:"—",                           period:14 },
+  { country:"France",               charge:"216,820 VND/parcel",            extra:"—",                           period:14 },
+  { country:"Norway",               charge:"216,820 VND/parcel",            extra:"—",                           period:14 },
+  { country:"Australia",            charge:"216,820 VND/parcel",            extra:"—",                           period:14 },
+  { country:"Saudi Arabia",         charge:"268,729 VND/parcel (≤5 KG)",   extra:"+ 32,286 VND/KG (>5 KG)",    period:15 },
+  { country:"United Arab Emirates", charge:"126,610 VND/parcel (≤5 KG)",   extra:"+ 32,286 VND/KG (>5 KG)",    period:15 },
+  { country:"Japan",                charge:"173,455 VND/parcel",            extra:"—",                           period:14 },
+  { country:"Hong Kong",            charge:"special",                       extra:"",                            period:14 },
+  { country:"United Kingdom",       charge:"173,455 VND/parcel",            extra:"—",                           period:14 },
+  { country:"Singapore",            charge:"260,183 VND/parcel",            extra:"—",                           period:14 },
+  { country:"Brazil",               charge:"260,183 VND/parcel",            extra:"—",                           period:14 },
+  { country:"Malta",                charge:"no-service",                    extra:"",                            period:null },
+  { country:"Cyprus",               charge:"no-service",                    extra:"",                            period:null },
+  { country:"Slovenia",             charge:"no-service",                    extra:"",                            period:null },
+  { country:"Romania",              charge:"no-service",                    extra:"",                            period:null },
+  { country:"Croatia",              charge:"no-service",                    extra:"",                            period:null },
+  { country:"Bulgaria",             charge:"no-service",                    extra:"",                            period:null },
+  { country:"Chile",                charge:"no-service",                    extra:"",                            period:null },
+  { country:"Other countries",      charge:"237,394 VND/parcel",            extra:"—",                           period:14 },
+];
+
+function renderCharge(d) {
+  if (d.charge === "no-service") return `<span class="no-service">❌ Re-delivery service not provided</span>`;
+  if (d.charge === "special")    return `<span class="special-note">New YT tracking number issued; fee charged at VN-HK freight rate</span>`;
+  return `<span class="charge">${d.charge}</span>`;
+}
+function renderExtra(d) {
+  if (d.charge === "no-service" || d.charge === "special") return "";
+  return `<span class="extra">${d.extra}</span>`;
+}
+function renderPeriod(d) {
+  if (!d.period) return `<span class="extra">—</span>`;
+  let cls = d.period === 14 ? "period-14" : d.period === 15 ? "period-15" : "period-20";
+  return `<span class="period-badge ${cls}">${d.period} days</span>`;
+}
+
+function buildTable(data) {
+  document.getElementById("tableBody").innerHTML = data.map(d => `
+    <tr>
+      <td class="flag">${FLAGS[d.country]||"🌐"}</td>
+      <td class="country">${d.country}</td>
+      <td>${renderCharge(d)}</td>
+      <td>${renderExtra(d)}</td>
+      <td class="period">${renderPeriod(d)}</td>
+    </tr>
+  `).join("");
+}
+
+function filterTable() {
+  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  const rows = document.querySelectorAll("#tableBody tr");
+  let visible = 0;
+  rows.forEach(r => {
+    const country = r.querySelector("td.country")?.textContent.toLowerCase() || "";
+    const show = country.includes(q);
+    r.classList.toggle("hidden", !show);
+    if (show) visible++;
+  });
+  document.getElementById("countBadge").textContent = `${visible} countries`;
+  document.getElementById("noResults").style.display = visible === 0 ? "block" : "none";
+}
+
+buildTable(DATA);
+</script>
+</body>
+</html>

@@ -20,6 +20,7 @@ const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
 const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const AgentPage = lazy(() => import("./pages/AgentPage"));
 const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
+const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
@@ -47,6 +48,7 @@ const AppRoutes = () => {
             <Route path="/chinh-sach" element={<PolicyPage />} />
             <Route path="/chinh-sach-van-chuyen" element={<ShippingPolicyPage />} />
             <Route path="/tin-tuc" element={<BlogPage />} />
+            <Route path="/tin-tuc/:slug" element={<BlogDetailPage />} />
             <Route path="/bang-gia-quoc-te" element={<InternationalPricingPage />} />
             <Route path="/bang-gia-noi-dia" element={<DomesticPricingPage />} />
             <Route path="/thg-fulfill" element={<THGFulfillPage />} />

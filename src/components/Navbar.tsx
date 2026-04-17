@@ -218,16 +218,18 @@ const Navbar = () => {
 
         {/* Mobile toggle */}
         <div className="flex lg:hidden items-center gap-2">
-          <LanguageSwitcher />
-          <button className="p-2" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          <button className="p-3 bg-secondary/30 hover:bg-secondary/60 rounded-xl transition-colors" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X size={22} className="text-navy" /> : <Menu size={22} className="text-navy" />}
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="lg:hidden bg-card/95 backdrop-blur-2xl border-t border-border/40 px-4 py-6 space-y-1 animate-fade-in shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.1)]">
+        <div className="lg:hidden bg-card/95 backdrop-blur-2xl border-t border-border/40 px-4 py-6 space-y-1 animate-fade-in shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.1)] h-[calc(100vh-64px)] overflow-y-auto">
+          <div className="flex justify-center mb-6 pb-4 border-b border-border/50">
+            <LanguageSwitcher />
+          </div>
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{t("nav.services")}</span></p>
           {serviceItems.map((item) => (
             <Link

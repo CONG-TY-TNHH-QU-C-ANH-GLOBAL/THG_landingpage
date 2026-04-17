@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Link } from "react-router-dom";
-import { EpacketRoute, CargoType, ROUTES, CARGO_LABELS, CARGO_ICONS } from "@/components/pricing/types";
+import { EpacketRoute, CargoType, ROUTES, CARGO_LABELS, CARGO_ICONS, OriginCountry } from "@/components/pricing/types";
 import Accordion from "@/components/pricing/Accordion";
 import PriceTable from "@/components/pricing/PriceTable";
 import CompactAccordionTable from "@/components/pricing/CompactAccordionTable";
@@ -23,6 +23,8 @@ interface EpacketPanelProps {
     redeliveryData: any[];
     larkLoading?: boolean;
     larkError?: string | null;
+    origin: OriginCountry;
+    setOrigin: (o: OriginCountry) => void;
 }
 
 const EpacketPanel = ({
@@ -31,8 +33,22 @@ const EpacketPanel = ({
     routeConfig, currentData, tableColumns,
     larkOverlay, vatData, remoteSurcharge, redeliveryData,
     larkLoading, larkError,
+    origin, setOrigin,
 }: EpacketPanelProps) => {
     const { t, effectiveLanguage: lang } = useI18n();
+    const [reshipSearch, setReshipSearch] = useState("");
+
+    const RESHIP_FLAGS: Record<string, string> = {
+        "Canada": "🇨🇦", "Mexico": "🇲🇽", "Switzerland": "🇨🇭", "France": "🇫🇷", "Norway": "🇳🇴",
+        "Australia": "🇦🇺", "Saudi Arabia": "🇸🇦", "United Arab Emirates": "🇦🇪", "Japan": "🇯🇵",
+        "Hong Kong": "🇭🇰", "United Kingdom": "🇬🇧", "Singapore": "🇸🇬", "Brazil": "🇧🇷",
+        "Malta": "🇲🇹", "Cyprus": "🇨🇾", "Slovenia": "🇸🇮", "Romania": "🇷🇴", "Croatia": "🇭🇷",
+        "Bulgaria": "🇧🇬", "Chile": "🇨🇱", "Other countries": "🌐"
+    };
+    const filteredReship = useMemo(() =>
+        redeliveryData.filter((d: any) => (d.country || "").toLowerCase().includes(reshipSearch.toLowerCase())),
+        [redeliveryData, reshipSearch]
+    );
 
     const getRouteName = (r: typeof ROUTES[EpacketRoute]) => {
         if (lang === 'zh') return r.nameZh;
@@ -50,12 +66,46 @@ const EpacketPanel = ({
         return CARGO_LABELS[c].vi;
     };
 
+    // Filter routes by selected origin
+    const visibleRoutes = useMemo(() =>
+        (Object.entries(ROUTES) as [EpacketRoute, typeof ROUTES[EpacketRoute]][])
+            .filter(([_, r]) => r.origin.includes(origin)),
+        [origin]
+    );
+
+    const originCards: { id: OriginCountry; flag: string; title: string; subtitle: string; activeRing: string; activeBg: string; activeText: string; iconBg: string }[] = [
+        {
+            id: "vn", flag: "🇻🇳",
+            title: lang === 'zh' ? "从越南发货" : lang === 'en' ? "Ship from Vietnam" : "Gửi từ Việt Nam",
+            subtitle: lang === 'zh' ? "ePacket 标准 · 优先" : lang === 'en' ? "ePacket Standard · Priority" : "ePacket Standard · Priority",
+            activeRing: "border-blue-500",
+            activeBg: "bg-gradient-to-br from-blue-50 to-white",
+            activeText: "text-blue-700",
+            iconBg: "bg-blue-100",
+        },
+        {
+            id: "cn", flag: "🇨🇳",
+            title: lang === 'zh' ? "从中国发货" : lang === 'en' ? "Ship from China" : "Gửi từ China",
+            subtitle: lang === 'zh' ? "ePacket · 优先 · 贴标" : lang === 'en' ? "ePacket · Priority · Ship by Label" : "ePacket · Priority · Ship by Label",
+            activeRing: "border-rose-500",
+            activeBg: "bg-gradient-to-br from-rose-50 to-white",
+            activeText: "text-rose-700",
+            iconBg: "bg-rose-100",
+        },
+    ];
+
     return (
         <div>
-            {/* ──── ROUTE TABS (Level 2) ──── */}
-            <p className="text-[11px] font-bold tracking-widest uppercase text-muted-foreground mb-3">{t("ep.select_route")}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-5">
-                {(Object.entries(ROUTES) as [EpacketRoute, typeof ROUTES[EpacketRoute]][]).map(([rid, r]) => (
+            {/* ──── STEP 3: ROUTE ──── */}
+            <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
+                <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">
+                    {lang === 'zh' ? `第 3 步 — 选择路线 (${origin === 'vn' ? '🇻🇳 VN' : '🇨🇳 CN'})` : lang === 'en' ? `Step 3 — Choose Route (${origin === 'vn' ? '🇻🇳 VN' : '🇨🇳 CN'})` : `Bước 3 — Chọn Tuyến (${origin === 'vn' ? '🇻🇳 VN' : '🇨🇳 CN'})`}
+                </p>
+                <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
+            </div>
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${visibleRoutes.length >= 3 ? "lg:grid-cols-3" : ""} gap-2 mb-5`}>
+                {visibleRoutes.map(([rid, r]) => (
                     <button
                         key={rid}
                         onClick={() => handleRouteSwitch(rid)}
@@ -74,7 +124,7 @@ const EpacketPanel = ({
                                     <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700 notranslate" translate="no">✅ Import tax included</span>
                                 </>
                             )}
-                            {rid === "pri-vncn-us" && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 notranslate" translate="no">{t("ep.import_tax_badge")}</span>}
+                            {(rid === "pri-vn-us" || rid === "pri-cn-us") && <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 notranslate" translate="no">{t("ep.import_tax_badge")}</span>}
                             {r.cargo.length > 0 && (
                                 <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
                                     <span className="notranslate" translate="no">{r.cargo.map(c => CARGO_ICONS[c]).join(" ")} {r.cargo.map(c => getCargoLabel(c)).join(" · ")}</span>
@@ -116,35 +166,44 @@ const EpacketPanel = ({
                 </div>
             ) : (
                 <>
-                    {/* ──── CARGO FILTER ──── */}
-                    <div className="flex items-center gap-2 sm:gap-3 mb-4 justify-between">
-                        {routeConfig.cargo.length > 0 && (
-                            <div className="flex items-center gap-1 sm:gap-3 w-full overflow-x-auto">
-                                <span className="text-[11px] sm:text-[13px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">{t("ep.cargo_label")}</span>
-                                <div className="flex gap-1 sm:gap-2">
-                                    {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
-                                        const enabled = routeConfig.cargo.includes(c);
-                                        if (c === "battery" && !enabled) return null;
-                                        return (
-                                            <button
-                                                key={c}
-                                                onClick={() => handleCargoSwitch(c)}
-                                                disabled={!enabled}
-                                                className={`px-2 sm:px-4 py-0.5 sm:py-1.5 rounded-full text-[10px] sm:text-[13px] font-semibold border-[1.5px] transition-all whitespace-nowrap ${!enabled
-                                                    ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
-                                                    : cargo === c
-                                                        ? "bg-primary border-primary text-white"
-                                                        : "border-[var(--pricing-border)] bg-white hover:border-primary hover:text-primary"
-                                                    }`}
-                                            >
-                                                <span className="notranslate" translate="no">{CARGO_ICONS[c]} {getCargoLabel(c)}</span>
-                                            </button>
-                                        );
-                                    })}
+                    {/* ──── STEP 4: CARGO ──── */}
+                    {routeConfig.cargo.length > 0 && (
+                        <>
+                            <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                                <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
+                                <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">
+                                    {lang === 'zh' ? "第 4 步 — 选择货物类型" : lang === 'en' ? "Step 4 — Choose Cargo Type" : "Bước 4 — Chọn Loại Hàng"}
+                                </p>
+                                <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
+                            </div>
+                            <div className="flex items-center gap-2 sm:gap-3 mb-4 justify-between">
+                                <div className="flex items-center gap-1 sm:gap-3 w-full overflow-x-auto">
+                                    <span className="text-[11px] sm:text-[13px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">{t("ep.cargo_label")}</span>
+                                    <div className="flex gap-1 sm:gap-2">
+                                        {(["standard", "cosmetics", "battery"] as CargoType[]).map(c => {
+                                            const enabled = routeConfig.cargo.includes(c);
+                                            if (c === "battery" && !enabled) return null;
+                                            return (
+                                                <button
+                                                    key={c}
+                                                    onClick={() => handleCargoSwitch(c)}
+                                                    disabled={!enabled}
+                                                    className={`px-2 sm:px-4 py-0.5 sm:py-1.5 rounded-full text-[10px] sm:text-[13px] font-semibold border-[1.5px] transition-all whitespace-nowrap ${!enabled
+                                                        ? "opacity-30 cursor-not-allowed border-[var(--pricing-border)] bg-white"
+                                                        : cargo === c
+                                                            ? "bg-primary border-primary text-white"
+                                                            : "border-[var(--pricing-border)] bg-white hover:border-primary hover:text-primary"
+                                                        }`}
+                                                >
+                                                    <span className="notranslate" translate="no">{CARGO_ICONS[c]} {getCargoLabel(c)}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </>
+                    )}
 
                     {/* Battery notice for VN routes */}
                     {route.startsWith("std-vn") && (
@@ -161,7 +220,7 @@ const EpacketPanel = ({
                     <div key={`anno-${route}`} className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
                         <span>ℹ️</span>
                         <div>
-                            <strong>{t("ep.showing")}</strong> {route === "pri-vncn-us"
+                            <strong>{t("ep.showing")}</strong> {(route === "pri-vn-us" || route === "pri-cn-us")
                                 ? <>Priority · {getRouteName(routeConfig)} — {t("ep.pri_desc")}</>
                                 : <><span className="notranslate" translate="no">Epacket · {getRouteName(routeConfig)} {routeConfig.cargo.length > 0 ? `· ${getCargoLabel(cargo)}` : ""}</span> — {t("ep.epacket_desc")}</>
                             }
@@ -180,7 +239,7 @@ const EpacketPanel = ({
 
                             </div>
                         </div>
-                        {route === "pri-vncn-us" && (
+                        {(route === "pri-vn-us" || route === "pri-cn-us") && (
                             <div className="bg-white border border-[var(--pricing-border)] rounded-xl px-4 py-3 flex items-center gap-3 text-[13px]">
                                 <span className="text-lg">📡</span>
                                 <div>
@@ -198,22 +257,21 @@ const EpacketPanel = ({
 
                     {/* ──── PRICE TABLE ──── */}
                     <div key={`table-${route}`}>
-                        {route === "pri-vncn-us" ? (
-                            <div className="flex flex-col gap-6">
-                                <PriceTable
-                                    title={t("ep.detail_table_vn_us")}
-                                    badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
-                                    data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsCn"] || []}
-                                    columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
-                                    currencySymbol="₫"
-                                />
-                                <PriceTable
-                                    title={t("ep.detail_table_cn_us")}
-                                    badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
-                                    data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCnUs"] || []}
-                                    columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
-                                />
-                            </div>
+                        {route === "pri-vn-us" ? (
+                            <PriceTable
+                                title={t("ep.detail_table_vn_us")}
+                                badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
+                                data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsCn"] || []}
+                                columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
+                                currencySymbol="₫"
+                            />
+                        ) : route === "pri-cn-us" ? (
+                            <PriceTable
+                                title={t("ep.detail_table_cn_us")}
+                                badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
+                                data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCnUs"] || []}
+                                columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
+                            />
                         ) : (
                             <PriceTable
                                 title={t("ep.detail_table")}
@@ -228,7 +286,7 @@ const EpacketPanel = ({
                             />
                         )}
                         {/* Fallback when no price data is available */}
-                        {(!currentData || currentData.length === 0) && route !== "pri-vncn-us" && (
+                        {(!currentData || currentData.length === 0) && route !== "pri-vn-us" && route !== "pri-cn-us" && (
                             <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-navy px-4 py-2.5">
                                     <span className="text-white font-bold text-[13px]">📋 {t("ep.price_table")}</span>
@@ -256,7 +314,7 @@ const EpacketPanel = ({
                             </div>
                         )}
                         {/* Fallback for Priority route when both tables are empty */}
-                        {route === "pri-vncn-us" && !larkOverlay["uspsCn"]?.length && !larkOverlay["uspsCnUs"]?.length && !(pricingData as any)["uspsCn"]?.length && !(pricingData as any)["uspsCnUs"]?.length && (
+                        {route === "pri-vn-us" && !larkOverlay["uspsCn"]?.length && !(pricingData as any)["uspsCn"]?.length && (
                             <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-navy px-4 py-2.5">
                                     <span className="text-white font-bold text-[13px]">📋 {t("ep.price_table_pri")}</span>
@@ -265,19 +323,34 @@ const EpacketPanel = ({
                                     {larkLoading ? (
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
-                                            <p className="text-[13px] text-muted-foreground">
-                                                {t("ep.loading_lark")}
-                                            </p>
+                                            <p className="text-[13px] text-muted-foreground">{t("ep.loading_lark")}</p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center gap-3">
                                             <span className="text-3xl">📊</span>
-                                            <p className="text-[13px] text-muted-foreground">
-                                                {t("ep.data_unavailable")}
-                                            </p>
-                                            {larkError && (
-                                                <p className="text-[11px] text-orange-500 mt-1">⚠️ {larkError}</p>
-                                            )}
+                                            <p className="text-[13px] text-muted-foreground">{t("ep.data_unavailable")}</p>
+                                            {larkError && <p className="text-[11px] text-orange-500 mt-1">⚠️ {larkError}</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        {route === "pri-cn-us" && !larkOverlay["uspsCnUs"]?.length && !(pricingData as any)["uspsCnUs"]?.length && (
+                            <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
+                                <div className="bg-navy px-4 py-2.5">
+                                    <span className="text-white font-bold text-[13px]">📋 {t("ep.price_table_pri")}</span>
+                                </div>
+                                <div className="p-8 text-center">
+                                    {larkLoading ? (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
+                                            <p className="text-[13px] text-muted-foreground">{t("ep.loading_lark")}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-3">
+                                            <span className="text-3xl">📊</span>
+                                            <p className="text-[13px] text-muted-foreground">{t("ep.data_unavailable")}</p>
+                                            {larkError && <p className="text-[11px] text-orange-500 mt-1">⚠️ {larkError}</p>}
                                         </div>
                                     )}
                                 </div>
@@ -344,18 +417,83 @@ const EpacketPanel = ({
                         <Accordion icon="🔁" title={t("ep.reship_title")}>
                             {redeliveryData.length > 0 ? (
                                 <div>
+                                    {/* Header: product tags */}
+                                    <div className="bg-white border border-[#d0dce8] rounded-xl p-5 mb-4 shadow-sm">
+                                        <p className="text-[12px] text-[#5a7a9a] mb-2">Applicable products:</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            <span className="bg-[#e3f0ff] border border-[#b3d0f5] text-[#1565c0] text-[11px] px-2.5 py-0.5 rounded-full font-medium">Epacket – Standard VN-WW</span>
+                                            <span className="bg-[#e3f0ff] border border-[#b3d0f5] text-[#1565c0] text-[11px] px-2.5 py-0.5 rounded-full font-medium">Epacket – Standard VN-WW Cosmetic</span>
+                                            <span className="bg-[#e3f0ff] border border-[#b3d0f5] text-[#1565c0] text-[11px] px-2.5 py-0.5 rounded-full font-medium">Epacket – Priority USPS VN-US</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Search bar */}
+                                    <div className="flex items-center gap-2.5 mb-3.5">
+                                        <input
+                                            type="text"
+                                            placeholder="🔍  Search country..."
+                                            value={reshipSearch}
+                                            onChange={e => setReshipSearch(e.target.value)}
+                                            className="flex-1 bg-white border border-[#c8d8e8] text-[#1a2a3a] px-3.5 py-2 rounded-lg text-[13px] outline-none shadow-sm transition-colors focus:border-[#1565c0] placeholder:text-[#90a8be]"
+                                        />
+                                        <span className="bg-[#e3f0ff] text-[#1565c0] text-[12px] px-3 py-1 rounded-full font-semibold whitespace-nowrap border border-[#b3d0f5]">
+                                            {filteredReship.length} countries
+                                        </span>
+                                    </div>
+
+                                    {/* Note */}
                                     <p className="text-[13px] text-muted-foreground italic mb-3">{t("ep.reship_note")}</p>
-                                    <CompactAccordionTable
-                                        headers={["Country", "Re-delivery charge", "Request re-delivery period"]}
-                                        data={redeliveryData}
-                                        renderRow={(r, i) => (
-                                            <tr key={i} className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors">
-                                                <td className="px-4 py-3"><span className="notranslate font-medium">{r.dest || r.country}</span></td>
-                                                <td className="px-4 py-3 text-[12px]"><span className="notranslate">{r.charge || r.usd}</span></td>
-                                                <td className="px-4 py-3 text-[12px] font-bold"><span className="notranslate">{r.period || "—"}</span></td>
-                                            </tr>
-                                        )}
-                                    />
+
+                                    {/* Table */}
+                                    <div className="bg-white border border-[#d0dce8] rounded-xl overflow-hidden shadow-sm">
+                                        <table className="w-full border-collapse">
+                                            <thead>
+                                                <tr className="bg-[#e8f0fa]">
+                                                    <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-[#1565c0] border-b-2 border-[#c0d4ec] w-[44px]"></th>
+                                                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[#1565c0] border-b-2 border-[#c0d4ec] whitespace-nowrap">Country</th>
+                                                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[#1565c0] border-b-2 border-[#c0d4ec] whitespace-nowrap">Re-delivery Charge</th>
+                                                    <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[#1565c0] border-b-2 border-[#c0d4ec] whitespace-nowrap">Additional Rate</th>
+                                                    <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-wider text-[#1565c0] border-b-2 border-[#c0d4ec] whitespace-nowrap">Request Period</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredReship.length === 0 ? (
+                                                    <tr>
+                                                        <td colSpan={5} className="text-center py-10 text-[#90a8be] text-[14px]">No countries found.</td>
+                                                    </tr>
+                                                ) : filteredReship.map((d: any, i: number) => (
+                                                    <tr key={i} className="border-b border-[#e8eef5] last:border-0 hover:bg-[#f4f8ff] transition-colors">
+                                                        <td className="px-4 py-[11px] text-[20px] text-center w-[44px]">{RESHIP_FLAGS[d.country] || "🌐"}</td>
+                                                        <td className="px-4 py-[11px] text-[13px] font-semibold text-[#1a2a3a] whitespace-nowrap">{d.country}</td>
+                                                        <td className="px-4 py-[11px] text-[13px] leading-relaxed">
+                                                            {d.charge === "no-service" ? (
+                                                                <span className="text-[#c0392b] text-[12px] italic">❌ Re-delivery service not provided</span>
+                                                            ) : d.charge === "special" ? (
+                                                                <span className="text-[#5a7a9a] text-[12px] italic">New YT tracking number issued; fee charged at VN-HK freight rate</span>
+                                                            ) : (
+                                                                <span className="text-[#1565c0] font-medium">{d.charge}</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-4 py-[11px] text-[12px] text-[#5a7a9a]">
+                                                            {d.charge !== "no-service" && d.charge !== "special" ? d.extra : ""}
+                                                        </td>
+                                                        <td className="px-4 py-[11px] text-center whitespace-nowrap">
+                                                            {d.period == null ? (
+                                                                <span className="text-[12px] text-[#5a7a9a]">—</span>
+                                                            ) : (
+                                                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[12px] font-semibold ${d.period === 14 ? "bg-[#e6f9ed] text-[#1e7e34] border border-[#a8ddb8]" :
+                                                                        d.period === 15 ? "bg-[#fff8e0] text-[#b07d00] border border-[#f0d070]" :
+                                                                            "bg-[#fff0e8] text-[#c04a00] border border-[#f0b090]"
+                                                                    }`}>
+                                                                    {d.period} days
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             ) : (
                                 <p className="text-muted-foreground text-[13px] italic text-center py-4">{t("ep.reship_data_updating")}</p>

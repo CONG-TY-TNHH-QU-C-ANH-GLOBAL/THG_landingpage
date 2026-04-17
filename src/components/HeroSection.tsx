@@ -1,11 +1,13 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { useNavigate } from "react-router-dom";
 import ScrollReveal from "@/components/ScrollReveal";
 import globeImage from "@/assets/globe-3d.png";
 
 const HeroSection = () => {
   const { t, tVi } = useI18n();
+  const navigate = useNavigate();
 
   const features = [tVi("hero.feature1"), tVi("hero.feature2"), tVi("hero.feature3"), tVi("hero.feature4")];
 
@@ -63,6 +65,7 @@ const HeroSection = () => {
           <ScrollReveal delay={500}>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:justify-center lg:justify-start">
               <Button
+                onClick={() => navigate('/catalog')}
                 className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
                 style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
               >

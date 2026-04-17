@@ -3,21 +3,29 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
-import ImageMarquee from "@/components/ImageMarquee";
 import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
-import { Truck, ArrowRight, Plane, Ship, Shield, Clock, Search, MapPin, Globe, Sparkles, CheckCircle2 } from "lucide-react";
+import { Truck, ArrowRight, Plane, Ship, Shield, Clock, Search, MapPin, Globe, Sparkles, CheckCircle2, Factory, Database, Lock, Users, Headphones, PackageCheck, ChevronRight, CircleDollarSign, Rocket, Warehouse, UsersRound, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useState, useEffect, useRef } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Autoplay from "embla-carousel-autoplay";
+import express2Img from "@/assets/Express-2.png";
 
 /* ─── Data ─── */
 const features = [
+  { icon: CircleDollarSign, titleKey: "express_page.feat2_title", descKey: "express_page.feat2_desc" },
   { icon: Plane, titleKey: "express_page.feat1_title", descKey: "express_page.feat1_desc" },
-  { icon: Shield, titleKey: "express_page.feat2_title", descKey: "express_page.feat2_desc" },
-  { icon: Clock, titleKey: "express_page.feat3_title", descKey: "express_page.feat3_desc" },
-  { icon: Ship, titleKey: "express_page.feat4_title", descKey: "express_page.feat4_desc" },
+  { icon: Users, titleKey: "express_page.feat4_title", descKey: "express_page.feat4_desc" },
+  { icon: Rocket, titleKey: "express_page.feat3_title", descKey: "express_page.feat3_desc" },
 ];
 
 const shippingLines = [
@@ -34,80 +42,22 @@ const processSteps = [
   { num: "04", titleKey: "express_page.step4_title", descKey: "express_page.step4_desc", icon: MapPin },
 ];
 
-const sliderImages = [
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/1-20250724024641-4oczs.png",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-13-20250724024632-bt6u-.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9873-20250801074610-q-tfu.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/retouch_2025072518361201-20250801074608-tsi9a.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_7181-20250801190217-bvrod.jpg",
+const galleryImages = [
+  express2Img,
+  "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/standee-thg-7-20250721100534-85tng.png",
+  "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/img_9979-20250724025706-v7ewy.jpg",
+  "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/img_7303-20250724025705-mco7x.jpg",
+  "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/img_9554-20250726042334--dcox.jpg",
+  "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/img_4390-20250726042334-q7ti-.jpg"
 ];
-
-const warehousePhotos = [
-  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg", alt: "THG US Warehouse" },
-  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg", alt: "THG Packing Station" },
-  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg", alt: "THG Logistics" },
-  { src: "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg", alt: "THG Sorting Area" },
-];
-
-/* ─── Animated counter ─── */
-const useCounter = (end: number, duration = 2000) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const animatedRef = useRef(false);
-  useEffect(() => {
-    animatedRef.current = false;
-    setCount(0);
-    const el = ref.current;
-    if (!el) return;
-    const animate = () => {
-      if (animatedRef.current) return;
-      animatedRef.current = true;
-      const start = performance.now();
-      const tick = (now: number) => {
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setCount(Math.round(eased * end));
-        if (progress < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-    // Fire immediately if already in viewport
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      animate();
-      return;
-    }
-    const obs = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      obs.unobserve(el);
-      animate();
-    }, { threshold: 0.1 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [end, duration]);
-  return { count, ref };
-};
-
-const StatCounter = ({ value, suffix, label }: { value: number; suffix: string; label: string }) => {
-  const { count, ref } = useCounter(value);
-  return (
-    <div ref={ref} className="text-center">
-      <p className="text-4xl sm:text-5xl font-bold text-gradient-gold tabular-nums">
-        {count}<span className="text-2xl sm:text-3xl">{suffix}</span>
-      </p>
-      <p className="text-[10px] uppercase tracking-[0.25em] text-foreground/40 mt-2 font-medium">{label}</p>
-    </div>
-  );
-};
 
 /* ─── Page ─── */
 const THGExpressPage = () => {
   const { t } = useI18n();
   const [trackingCode, setTrackingCode] = useState("");
+  const plugin = useRef(
+    Autoplay({ delay: 3000, stopOnInteraction: true })
+  );
   const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
 
   const handleTrack = () => {
@@ -127,7 +77,6 @@ const THGExpressPage = () => {
     { question: t("express_page.faq8_q"), answer: t("express_page.faq8_a") },
     { question: t("express_page.faq9_q"), answer: t("express_page.faq9_a") },
     { question: t("express_page.faq10_q"), answer: t("express_page.faq10_a") },
-    { question: t("express_page.faq11_q"), answer: t("express_page.faq11_a") },
   ];
 
   return (
@@ -152,329 +101,534 @@ const THGExpressPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ══════════════════════════════════════════════════════════
-          MEGA HERO — Immersive multi-panel: text + images + video
-          ══════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(36_30%_96%)] via-[hsl(36_25%_93%)] to-[hsl(36_20%_90%)]">
-        {/* ── BG texture layers ── */}
-        <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(36 45% 65%) 1px, transparent 0)`, backgroundSize: "32px 32px" }} />
-        <div className="absolute inset-0 shimmer-effect opacity-10 pointer-events-none" />
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))] to-transparent opacity-40" />
-        <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-[hsl(var(--gold))]/8 rounded-full blur-[150px]" />
-        <div className="absolute bottom-[10%] left-0 w-[400px] h-[400px] bg-[hsl(var(--gold))]/5 rounded-full blur-[120px]" />
+      {/* 1. HERO & TRACKING */}
+      <section className="relative pt-32 pb-24 min-h-[600px] flex items-center justify-center">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://w.ladicdn.com/s1440x957/67e69e24e8a7ba001127c80a/x1ws5joh20250728082550.jpg"
+            alt="Airplane Background"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20" />
+        </div>
+        <div className="container relative z-10 mx-auto px-4 text-center">
+          <ScrollReveal direction="up">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
+              <span className="text-[hsl(var(--gold))]">THG EXPRESS</span>
+            </h1>
+            <h2 className="text-xl md:text-3xl text-white font-medium mb-6">
+              {t("express_page.hero_subtitle")}
+            </h2>
+            <p className="text-lg text-[hsl(var(--gold))] font-bold tracking-widest uppercase mb-12">
+              {t("express_page.hero_tagline")}
+            </p>
+          </ScrollReveal>
 
-        {/* Floating particles */}
-        <div className="absolute top-24 left-[12%] w-2 h-2 bg-[hsl(var(--gold))]/25 rounded-full animate-pulse" />
-        <div className="absolute top-48 right-[18%] w-3 h-3 bg-[hsl(var(--gold))]/15 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-40 left-[30%] w-1.5 h-1.5 bg-[hsl(var(--gold))]/30 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
-
-        {/* ── Panel 1: Title + Image Bento ── */}
-        <div className="container mx-auto px-4 relative z-10 pt-32 pb-12">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-
-            {/* Left — Text */}
-            <div>
-              <ScrollReveal direction="scale">
-                <div className="inline-flex items-center gap-2.5 glass-card glow-pulse rounded-full px-5 py-2.5 mb-8 bg-[hsl(var(--gold))]/10 border-[hsl(var(--gold))]/25">
-                  <Sparkles className="w-4 h-4 text-[hsl(var(--gold))]" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]" >THG Express</span>
-                </div>
-              </ScrollReveal>
-
-              <ScrollReveal delay={100}>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold tracking-tight text-navy leading-[1.08] mb-6">
-                  {t("express_page.hero_title1")}
-                  <br />
-                  <span className="text-gradient-gold">{t("express_page.hero_title_highlight")}</span>
-                </h1>
-              </ScrollReveal>
-
-              <ScrollReveal delay={200}>
-                <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed mb-8 font-light">
-                  {t("express_page.hero_subtitle")}
-                </p>
-              </ScrollReveal>
-
-              {/* Feature checklist */}
-              <ScrollReveal delay={300}>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-10 max-w-md">
-                  {features.map((f, i) => (
-                    <div key={i} className="flex items-center gap-2.5 group">
-                      <CheckCircle2 className="w-4 h-4 text-[hsl(var(--gold))] flex-shrink-0 group-hover:scale-110 transition-transform" />
-                      <span className="text-sm text-foreground/60 group-hover:text-foreground/90 transition-colors">{t(f.titleKey)}</span>
-                    </div>
-                  ))}
-                </div>
-              </ScrollReveal>
-
-              {/* Tracking Widget */}
-              <ScrollReveal delay={400} direction="left">
-                <div className="max-w-md glass-card rounded-2xl p-5 bg-white/70 border-[hsl(var(--gold))]/15 shadow-[0_24px_48px_rgba(0,0,0,0.08)]">
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-[hsl(var(--gold))] mb-3 flex items-center gap-2">
-                    <Search className="w-3.5 h-3.5" />
-                    {t("express_page.track_title")}
-                  </h3>
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={trackingCode}
-                      onChange={(e) => setTrackingCode(e.target.value)}
-                      placeholder={t("express_page.track_placeholder")}
-                      className="flex-1 px-4 py-3 rounded-xl bg-background/80 border border-border text-foreground placeholder:text-muted-foreground/50 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--gold))]/30 focus:border-[hsl(var(--gold))]/40 transition-all backdrop-blur-sm"
-                      onKeyDown={(e) => e.key === "Enter" && handleTrack()}
-                    />
-                    <Button
-                      onClick={handleTrack}
-                      className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-xl px-6 font-semibold shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500"
-                    >
-                      {t("express_page.track_btn")}
-                    </Button>
-                  </div>
-                </div>
-              </ScrollReveal>
+          <ScrollReveal delay={200} direction="up">
+            <div className="max-w-2xl mx-auto glass-card rounded-2xl p-6 bg-white/10 backdrop-blur-md border border-white/20">
+              <h3 className="text-white font-semibold mb-4 text-left flex items-center gap-2">
+                <Search className="w-5 h-5 text-[hsl(var(--gold))]" />
+                {t("express_page.track_title")}
+              </h3>
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={trackingCode}
+                  onChange={(e) => setTrackingCode(e.target.value)}
+                  placeholder={t("express_page.track_placeholder")}
+                  className="flex-1 px-4 py-3 rounded-xl bg-white text-navy font-medium placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-[hsl(var(--gold))]"
+                  onKeyDown={(e) => e.key === "Enter" && handleTrack()}
+                />
+                <Button
+                  onClick={handleTrack}
+                  className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-xl px-8 font-bold text-lg"
+                >
+                  {t("express_page.track_btn")}
+                </Button>
+              </div>
             </div>
+          </ScrollReveal>
+        </div>
+      </section>
 
-            {/* Right — Image Bento Grid */}
-            <ScrollReveal delay={200} direction="right">
-              <div className="grid grid-cols-12 grid-rows-2 gap-3 max-w-lg mx-auto lg:mx-0 h-[400px]">
-                {/* Large main image */}
-                <div className="col-span-7 row-span-2 rounded-2xl overflow-hidden border border-border/40 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
-                  <img
-                    src={warehousePhotos[0].src}
-                    alt={warehousePhotos[0].alt}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="eager"
-                  />
+      {/* 2. ĐA DẠNG CHUYẾN TÀU (SHIPPING GRID OVERLAY) */}
+      <section className="relative pt-32 pb-12 min-h-[700px] flex flex-col justify-between">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://w.ladicdn.com/s1950x1250/67e69e24e8a7ba001127c80a/e58cc09ac47ce9cd2155652478f7988d-20251023080234-jqndv.jpg"
+            alt="Sea Logistics"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/10" />
+        </div>
+
+        {/* Top Text & CTA */}
+        <div className="container relative z-10 mx-auto px-4 mb-20">
+          <ScrollReveal direction="up">
+            <div className="max-w-2xl">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight leading-tight uppercase">
+                <span className="text-[hsl(var(--gold))] inline-block mb-1 bg-white px-2 rounded-sm drop-shadow-md">THG EXPRESS</span> <br />
+                <span className="drop-shadow-lg">{t("express_page.partnership_title_sub")}</span>
+              </h2>
+              <p className="text-lg md:text-xl text-white mb-8 max-w-lg font-medium leading-relaxed drop-shadow-md">
+                {t("express_page.partnership_desc")}
+              </p>
+              <Link to="/bang-gia-quoc-te">
+                <Button className="bg-[#FF7322] hover:bg-[#E65C10] text-white px-8 py-6 rounded-md text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
+                  {t("express_page.shipping_comprehensive_cta")}
+                </Button>
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* 4 Cards Grid at the bottom */}
+        <div className="container relative z-10 mx-auto px-4 mt-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {features.map((feature, idx) => (
+              <ScrollReveal key={idx} delay={idx * 100} direction="up">
+                <div className="bg-gradient-to-b from-[#FF7322]/90 to-white/90 backdrop-blur-sm p-6 md:p-8 rounded-xl h-full shadow-2xl flex flex-col items-center text-center group hover:-translate-y-2 transition-transform duration-300 border border-white/30 text-white group-hover:from-[#E65C10]/95 group-hover:to-white/95">
+                  <feature.icon className="w-12 h-12 mb-4 drop-shadow-md" />
+                  <h3 className="text-lg font-bold mb-3 uppercase drop-shadow-md">{t(feature.titleKey)}</h3>
+                  <p className="text-navy/90 text-sm font-semibold leading-relaxed drop-shadow-sm">{t(feature.descKey)}</p>
                 </div>
-                {/* Top-right */}
-                <div className="col-span-5 rounded-2xl overflow-hidden border border-border/40 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group">
-                  <img
-                    src={warehousePhotos[1].src}
-                    alt={warehousePhotos[1].alt}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="eager"
-                  />
-                </div>
-                {/* Bottom-right */}
-                <div className="col-span-5 rounded-2xl overflow-hidden border border-border/40 shadow-[var(--shadow-3d)] hover:shadow-[var(--shadow-3d-hover)] transition-all duration-700 hover:-translate-y-1 group relative">
-                  <img
-                    src={warehousePhotos[2].src}
-                    alt={warehousePhotos[2].alt}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    loading="eager"
-                  />
-                  {/* Overlay badge */}
-                  <div className="absolute bottom-3 left-3 right-3 glass-card rounded-lg px-3 py-2 bg-white/80 backdrop-blur-md border-border/30">
-                    <p className="text-[10px] font-bold text-navy uppercase tracking-wider text-center">{t("express_page.overlay_badge")}</p>
-                  </div>
-                </div>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. VIDEO LOGISTICS PARTNERSHIP */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4 text-center">
+          <ScrollReveal>
+            <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4 tracking-tight uppercase">
+              {t("express_page.partnership_title")}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-16">
+              {t("express_page.partnership_desc")}
+            </p>
+          </ScrollReveal>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <ScrollReveal delay={100} direction="up">
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
+                <YouTubeEmbed videoId="UwaZw5Eh-Yg" title="THG Express Overview 1" aspectRatio="auto" />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200} direction="up">
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
+                <YouTubeEmbed videoId="ZA37yjN-_x8" title="THG Express Overview 2" aspectRatio="auto" />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={300} direction="up">
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
+                <YouTubeEmbed videoId="6GkUcZhun90" title="THG Express Overview 3" aspectRatio="auto" />
               </div>
             </ScrollReveal>
           </div>
         </div>
+      </section>
 
-        {/* ── Panel 2: Animated Stats ── */}
-        <div className="container mx-auto px-4 relative z-10 py-10">
-          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mb-10" />
-          <ScrollReveal delay={100}>
-            <div className="flex flex-wrap justify-center gap-12 sm:gap-20">
-              <StatCounter value={5} suffix={` ${t("express_page.stat1_value")}`} label={t("express_page.stat1_label")} />
-              <StatCounter value={20} suffix="+" label={t("express_page.stat2_label")} />
-              <StatCounter value={99} suffix="%" label={t("express_page.stat3_label")} />
-              <StatCounter value={4} suffix="" label={t("express_page.stat4_label")} />
+      {/* 4. HỆ THỐNG KHO TẠI CHINA */}
+      <section className="relative py-24 min-h-[600px] flex items-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://w.ladicdn.com/s1700x1700/67e69e24e8a7ba001127c80a/ec23ddd3a6407152891b589f3e4cb74f-20251024025219-ty5zp.jpg"
+            alt="China Warehouse"
+            className="w-full h-full object-cover scale-105"
+          />
+          {/* Dark overlay to replicate the legacy design's contrast */}
+          <div className="absolute inset-0 bg-black/65" />
+        </div>
+        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight uppercase drop-shadow-md">
+                {t("express_page.warehouse_title")}
+              </h2>
+              <p className="text-lg md:text-[20px] text-white/95 font-medium max-w-3xl mx-auto leading-relaxed drop-shadow-sm">
+                {t("express_page.warehouse_desc")}
+              </p>
             </div>
           </ScrollReveal>
-          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold))]/20 to-transparent mt-10" />
-        </div>
 
-        {/* ── Panel 3: Video Shorts ── */}
-        <div className="container mx-auto px-4 relative z-10 py-10">
-          <ScrollReveal>
-            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[hsl(var(--gold))]/60 text-center mb-8">{t("express_page.video_intro")}</p>
-          </ScrollReveal>
-          <div className="flex gap-4 md:gap-6 overflow-x-auto pb-2 justify-start md:justify-center snap-x snap-mandatory md:snap-none scrollbar-hide px-2">
-            {[
-              { id: "n5t6sHIKv4A", title: "THG Warehouse Ops" },
-              { id: "ZgoqBsujyC0", title: "THG Shipping Facility" },
-              { id: "KDq7-tEikgg", title: "Scale of THG Express" },
-            ].map((vid, i) => (
-              <ScrollReveal key={vid.id} delay={i * 150} direction={i === 0 ? "left" : i === 2 ? "right" : "up"}>
-                <div className="w-[200px] md:w-[240px] flex-shrink-0 snap-center rounded-2xl overflow-hidden tilt-card border border-border/40 shadow-[var(--shadow-3d)]">
-                  <YouTubeEmbed videoId={vid.id} title={vid.title} aspectRatio="315/560" />
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-10 max-w-6xl mx-auto">
+            {/* Feature 1 */}
+            <ScrollReveal delay={100} direction="up" className="h-full">
+              <div className="h-full bg-black/20 backdrop-blur-sm p-8 lg:p-10 rounded-[20px] flex flex-col border-2 border-[#F27125]/90 hover:bg-black/40 transition-colors duration-300">
+                <div className="text-[#F27125] mb-6 inline-flex">
+                  <Warehouse className="w-10 h-10" strokeWidth={2.5} />
                 </div>
-              </ScrollReveal>
-            ))}
+                <h3 className="text-xl font-bold text-white mb-4 uppercase tracking-wide">
+                  {t("express_page.warehouse_feature1_title")}
+                </h3>
+                <p className="text-[#f5f5f5] text-[15px] font-medium leading-relaxed">
+                  {t("express_page.warehouse_feature1_desc")}
+                </p>
+              </div>
+            </ScrollReveal>
+
+            {/* Feature 2 */}
+            <ScrollReveal delay={200} direction="up" className="h-full">
+              <div className="h-full bg-black/20 backdrop-blur-sm p-8 lg:p-10 rounded-[20px] flex flex-col border-2 border-[#F27125]/90 hover:bg-black/40 transition-colors duration-300">
+                <div className="text-[#F27125] mb-6 inline-flex">
+                  <UsersRound className="w-10 h-10" strokeWidth={2.5} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-4 uppercase tracking-wide">
+                  {t("express_page.warehouse_feature2_title")}
+                </h3>
+                <p className="text-[#f5f5f5] text-[15px] font-medium leading-relaxed">
+                  {t("express_page.warehouse_feature2_desc")}
+                </p>
+              </div>
+            </ScrollReveal>
+
+            {/* Feature 3 */}
+            <ScrollReveal delay={300} direction="up" className="h-full">
+              <div className="h-full bg-black/20 backdrop-blur-sm p-8 lg:p-10 rounded-[20px] flex flex-col border-2 border-[#F27125]/90 hover:bg-black/40 transition-colors duration-300">
+                <div className="text-[#F27125] mb-6 inline-flex">
+                  <Network className="w-10 h-10" strokeWidth={2.5} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-4 uppercase tracking-wide">
+                  {t("express_page.warehouse_feature3_title")}
+                </h3>
+                <p className="text-[#f5f5f5] text-[15px] font-medium leading-relaxed">
+                  {t("express_page.warehouse_feature3_desc")}
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
+      </section>
 
-        {/* ── Panel 4: Main Showcase Video ── */}
-        <div className="container mx-auto px-4 relative z-10 pb-24 pt-12">
-          <ScrollReveal direction="scale">
-            <div className="max-w-4xl mx-auto relative">
-              <div className="absolute -inset-4 bg-gradient-to-br from-[hsl(var(--gold))]/12 to-transparent rounded-[2rem] blur-xl" />
-              <div className="relative rounded-3xl overflow-hidden shadow-[var(--shadow-3d-hover)] border border-border/40">
-                <YouTubeEmbed videoId="AaZJmRFfiqM" title="Quy trình vận hành kho bãi THG" autoplay muted loop controls={false} />
+      {/* 5. VẬN CHUYỂN TOÀN DIỆN */}
+      <section className="py-24 bg-card">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <ScrollReveal direction="right">
+              <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                <img
+                  src="https://w.ladicdn.com/s850x850/67e69e24e8a7ba001127c80a/img_9979-20250724025706-v7ewy.jpg"
+                  alt="THG Express Boxes"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="left">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold text-navy mb-6 tracking-tight uppercase leading-tight">
+                  {t("express_page.shipping_comprehensive_title")}
+                </h2>
+                <div className="space-y-4 mb-8">
+                  <p className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">{t("express_page.shipping_comprehensive_feat1")}</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">{t("express_page.shipping_comprehensive_feat2")}</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">{t("express_page.shipping_comprehensive_feat3")}</span>
+                  </p>
+                  <p className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-[hsl(var(--gold))] flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">{t("express_page.shipping_comprehensive_feat4")}</span>
+                  </p>
+                </div>
+                <Link to="/bang-gia-quoc-te">
+                  <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-8 py-6 rounded-full text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
+                    {t("express_page.shipping_comprehensive_cta")}
+                  </Button>
+                </Link>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. TẠI SAO CHỌN THG EXPRESS */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight uppercase">
+                {t("express_page.trust_title")}
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <ScrollReveal direction="left">
+              <div className="rounded-2xl overflow-hidden shadow-2xl">
+                <img
+                  src="https://w.ladicdn.com/s800x750/67e69e24e8a7ba001127c80a/img_9554-20250726042334--dcox.jpg"
+                  alt="Customer Trust"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal direction="right">
+              <div className="grid sm:grid-cols-2 gap-8">
+                {[
+                  { icon: Globe, title: "trust_feat1", desc: "trust_feat1_desc" },
+                  { icon: Lock, title: "trust_feat2", desc: "trust_feat2_desc" },
+                  { icon: Shield, title: "trust_feat3", desc: "trust_feat3_desc" },
+                  { icon: Headphones, title: "trust_feat4", desc: "trust_feat4_desc" }
+                ].map((f, i) => (
+                  <div key={i} className="flex flex-col items-start bg-card p-6 rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="w-12 h-12 bg-navy/5 text-[hsl(var(--gold))] rounded-full flex items-center justify-center mb-4">
+                      <f.icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-navy mb-2">{t(`express_page.${f.title}`)}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{t(`express_page.${f.desc}`)}</p>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. QUY TRÌNH VẬN HÀNH */}
+      <section className="py-24 bg-card">
+        <div className="container mx-auto px-4">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight uppercase">
+                {t("express_page.process_title")}
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <ScrollReveal direction="left">
+              <div className="space-y-6">
+                {processSteps.map((step, idx) => (
+                  <div key={idx} className="flex gap-6 items-start bg-white p-6 rounded-2xl shadow-sm border border-border/50 hover:shadow-md transition-shadow">
+                    <div className="w-14 h-14 bg-navy text-white font-bold text-xl rounded-full flex items-center justify-center flex-shrink-0 font-serif shadow-inner">
+                      {step.num}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-navy mb-2">{t(step.titleKey)}</h3>
+                      <p className="text-muted-foreground">{t(step.descKey)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal direction="right">
+              <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                <img
+                  src="https://w.ladicdn.com/s750x750/67e69e24e8a7ba001127c80a/img_9554-20250726042205-ztjpi.jpg"
+                  alt="Process"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. CHÍNH SÁCH VÀ ĐIỀU KHOẢN (Screenshot 3) */}
+      <section className="py-20 bg-[hsl(36_30%_98%)]">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <ScrollReveal direction="up">
+            <div className="flex flex-col md:flex-row bg-[#F27125] rounded-3xl overflow-hidden shadow-2xl items-center border-[6px] border-white">
+              {/* Image Side (Left) */}
+              <div className="w-full md:w-1/2 aspect-video md:aspect-square overflow-hidden bg-white">
+                <img
+                  src="https://w.ladicdn.com/s700x550/67e69e24e8a7ba001127c80a/z6885389848678_da4c0cadd5309d50a02fbbda381b4b93-20250808082501-kbm5f.jpg"
+                  alt="USPS Tracking Boxes"
+                  className="w-full h-full object-cover scale-105"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "https://w.ladicdn.com/s600x700/67e69e24e8a7ba001127c80a/img_9554-20250726042205-ztjpi.jpg";
+                  }}
+                />
+              </div>
+              {/* Text Side (Right) */}
+              <div className="w-full md:w-1/2 p-10 md:p-16 text-center text-white flex flex-col justify-center items-center">
+                <h3 className="text-xl md:text-2xl font-bold uppercase mb-2">{t("express_page.policy_section_subtitle")}</h3>
+                <h2 className="text-4xl md:text-5xl font-black mb-8 uppercase drop-shadow-md">{t("express_page.policy_section_title")}</h2>
+                <Link to="/chinh-sach-giao-hang#express">
+                  <Button className="bg-white text-[#F27125] hover:bg-white/90 font-bold px-10 py-6 rounded-md text-lg shadow-lg">
+                    {t("express_page.policy_cta")}
+                  </Button>
+                </Link>
               </div>
             </div>
           </ScrollReveal>
         </div>
-
-        {/* Bottom gradient fade to next section */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-card to-transparent" />
       </section>
 
-      {/* ════════════════════ FEATURES ════════════════════ */}
-      <section className="py-28 bg-card relative overflow-hidden">
-        <div className="section-divider absolute top-0 left-0 right-0" />
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/50 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-60 h-60 rounded-full bg-[hsl(var(--gold))]/5 blur-3xl" />
+      {/* 9. {t("express_page.line_routes_title")} (Simplified Centered Layout) */}
+      <section className="bg-[hsl(36_30%_98%)] relative py-20 pb-32 overflow-hidden">
+        <div className="container mx-auto px-4 max-w-5xl relative z-10">
 
-        <div className="container mx-auto px-4 relative z-10">
-          <ScrollReveal>
-            <div className="text-center mb-20">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("express_page.features_eyebrow")}</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">{t("express_page.features_title")}</h2>
-              <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mt-6" />
+          {/* Text Container: Centered */}
+          <div className="w-full text-center lg:text-left mb-16 pt-8 max-w-4xl mx-auto">
+            <ScrollReveal direction="up" className="bg-white/90 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none p-6 lg:p-0 rounded-2xl">
+              <h2 className="text-4xl md:text-5xl lg:text-[46px] font-bold text-[#F27125] uppercase leading-tight mb-5 tracking-tight drop-shadow-sm text-center">
+                {t("express_page.line_routes_title")}
+              </h2>
+              <p className="text-navy/85 text-[15px] lg:text-[16px] font-semibold mb-8 leading-relaxed text-justify drop-shadow-sm">
+                {t("express_page.line_routes_desc")}
+              </p>
+              <div className="flex justify-center">
+                <Button className="bg-[#F27125] text-white hover:bg-[#d95c1a] font-black px-10 py-[1.4rem] rounded-full text-sm lg:text-[15px] shadow-2xl shadow-orange-500/30 uppercase tracking-widest transition-transform hover:-translate-y-1">
+                  {t("express_page.get_quote_cta")}
+                </Button>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Cards Container: Centered Grid (Ultra Compact) */}
+          <div className="w-full relative mx-auto max-w-3xl">
+            <div className="grid md:grid-cols-2 gap-4 md:gap-6 relative z-20">
+
+              {/* Center Decal */}
+              <div className="hidden lg:flex absolute inset-0 items-center justify-center pointer-events-none z-0">
+                <div className="text-[#3b73cd]/10 text-[8rem] font-black italic tracking-tighter leading-none select-none">&gt;</div>
+              </div>
+
+              {/* Card 01 */}
+              <ScrollReveal delay={100} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_4390-20250726042334-q7ti-.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
+                <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
+                  <div>
+                    <h3 className="text-lg lg:text-[19px] font-bold mb-2 drop-shadow-md tracking-wide">{t("express_page.route1_title")}</h3>
+                    <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route1_bulk")}</p>
+                    <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route1_epacket")}</p>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">01</div>
+                </div>
+              </ScrollReveal>
+
+              {/* Card 02 */}
+              <ScrollReveal delay={200} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_9554-20250726042334--dcox.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
+                <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
+                  <div>
+                    <h3 className="text-lg lg:text-[19px] font-bold mb-2 drop-shadow-md tracking-wide">{t("express_page.route2_title")}</h3>
+                    <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route1_bulk")}</p>
+                    <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route1_epacket")}</p>
+                    <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route2_tiktok")}</p>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">02</div>
+                </div>
+              </ScrollReveal>
+
+              {/* Card 03 */}
+              <ScrollReveal delay={300} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_7919-20250811065942-lqajy.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
+                <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
+                  <div>
+                    <h3 className="text-lg lg:text-[19px] font-bold mb-2 drop-shadow-md tracking-wide">{t("express_page.route3_title")}</h3>
+                    <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route1_bulk")}</p>
+                    <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route1_epacket")}</p>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">03</div>
+                </div>
+              </ScrollReveal>
+
+              {/* Card 04 */}
+              <ScrollReveal delay={400} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/cong-ty-van-chuyen-quoc-te-20250808094223-li7pn.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
+                <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
+                  <div>
+                    <h3 className="text-lg lg:text-[19px] font-bold mb-2 drop-shadow-md tracking-wide">{t("express_page.route4_title")}</h3>
+                    <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route4_us")}</p>
+                    <p className="text-[12px] font-bold opacity-95 mb-1 drop-shadow-sm">{t("express_page.route4_uk")}</p>
+                    <p className="text-[12px] font-bold opacity-95 drop-shadow-sm">{t("express_page.route4_de")}</p>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 text-[70px] lg:text-[85px] leading-none font-black italic opacity-95 drop-shadow-2xl tracking-tighter mix-blend-overlay select-none">04</div>
+                </div>
+              </ScrollReveal>
             </div>
-          </ScrollReveal>
+          </div>
+        </div>
+      </section>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {features.map((f, i) => (
-              <ScrollReveal key={i} delay={i * 120} direction={i % 2 === 0 ? "rotate3d" : "up"}>
-                <div className="group tilt-card glass-card rounded-2xl p-8 text-center h-full relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/3 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <div className="relative z-10">
-                    <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-5 group-hover:shadow-[var(--shadow-glow)] transition-all duration-500 group-hover:scale-110">
-                      <f.icon className="w-6 h-6 text-accent" />
+      {/* Awesome Slidekick Carousel (Cleaned of faulty texts and AI images) */}
+      <section className="py-16 bg-muted/30">
+        <ScrollReveal direction="up">
+          <div className="max-w-6xl mx-auto px-8">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              plugins={[
+                Autoplay({
+                  delay: 2500,
+                  stopOnInteraction: false,
+                  stopOnMouseEnter: true,
+                }),
+              ]}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
+                {galleryImages.map((src, index) => (
+                  <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1">
+                      <div className="rounded-2xl overflow-hidden aspect-[16/10] border-4 border-white shadow-xl group relative bg-white flex items-center justify-center">
+                        <img
+                          src={src}
+                          alt={`Gallery slide ${index}`}
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-navy/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                      </div>
                     </div>
-                    <h3 className="text-sm font-bold text-navy mb-3 uppercase tracking-wider">{t(f.titleKey)}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{t(f.descKey)}</p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════ PROCESS — Timeline ════════════════════ */}
-      <section className="py-28 bg-background relative overflow-hidden">
-        <div className="section-divider absolute top-0 left-0 right-0" />
-        <div className="absolute top-1/2 left-0 right-0 h-[1px] hidden lg:block bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2" />
-        <div className="absolute -bottom-32 right-0 w-72 h-72 rounded-full bg-[hsl(var(--gold))]/5 blur-3xl" />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <ScrollReveal>
-            <div className="text-center mb-20">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("express_page.process_eyebrow")}</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">{t("express_page.process_title")}</h2>
-              <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mt-6" />
-            </div>
-          </ScrollReveal>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {processSteps.map((s, i) => (
-              <ScrollReveal key={s.num} delay={i * 150} direction={i % 2 === 0 ? "left" : "right"}>
-                <div className="group glass-card rounded-2xl p-7 hover-lift h-full relative overflow-hidden">
-                  <span className="absolute -top-2 -right-1 text-6xl font-black text-accent/[0.06] select-none leading-none">{s.num}</span>
-                  <div className="absolute -top-3 -right-2 w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center glow-pulse">
-                    <span className="text-xs font-bold text-accent">{s.num}</span>
-                  </div>
-                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5 group-hover:shadow-[var(--shadow-glow)] transition-all duration-500 group-hover:scale-110">
-                    <s.icon className="w-5 h-5 text-accent" />
-                  </div>
-                  <h3 className="text-base font-bold text-navy mb-2 tracking-tight pr-8">{t(s.titleKey)}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{t(s.descKey)}</p>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════ SHIPPING ROUTES ════════════════════ */}
-      <section className="py-28 bg-gradient-dark relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))]/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))]/20 to-transparent" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, hsl(40 35% 70%) 1px, transparent 0)`, backgroundSize: "40px 40px" }} />
-        <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-[hsl(var(--gold))]/5 rounded-full blur-[100px]" />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <ScrollReveal>
-            <div className="text-center mb-20">
-              <p className="text-sm font-semibold text-[hsl(var(--gold-light))] uppercase tracking-[0.2em] mb-4">{t("express_page.routes_eyebrow")}</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">{t("express_page.lines_title")}</h2>
-              <p className="text-white/35 mt-4 max-w-2xl mx-auto font-light">{t("express_page.lines_desc")}</p>
-              <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-[hsl(var(--gold-light))]/30 to-transparent mx-auto mt-6" />
-            </div>
-          </ScrollReveal>
-
-          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
-            {shippingLines.map((l, i) => (
-              <ScrollReveal key={l.num} delay={i * 120} direction={i % 2 === 0 ? "left" : "right"}>
-                <Link
-                  to={l.link}
-                  className={`group flex items-center gap-5 p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 hover:-translate-y-2 ${l.special
-                    ? "border-pink-500/25 bg-pink-500/[0.04] hover:border-pink-400/50 hover:bg-pink-500/[0.08] hover:shadow-[0_20px_50px_rgba(236,72,153,0.15)]"
-                    : "border-white/8 bg-white/[0.02] hover:border-[hsl(var(--gold-light))]/25 hover:bg-white/[0.05] hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
-                    }`}
-                >
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold flex-shrink-0 transition-all duration-500 group-hover:scale-110 ${l.special ? "bg-pink-500/10 border border-pink-500/20 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]" : "bg-white/5 border border-white/10 group-hover:shadow-[var(--shadow-glow)]"
-                    }`}>
-                    {l.special ? (
-                      <svg className="w-8 h-8 text-pink-400" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                      </svg>
-                    ) : (
-                      l.flags.split(" → ")[0]
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className={`text-lg font-bold mb-1 ${l.special ? "text-pink-400" : "text-white"}`}>{t(l.routeKey)}</h4>
-                    <p className="text-sm text-white/35">{t(l.typesKey)}</p>
-                  </div>
-                  <ArrowRight className={`w-5 h-5 transition-all duration-300 group-hover:translate-x-1.5 ${l.special ? "text-pink-400/50 group-hover:text-pink-400" : "text-white/15 group-hover:text-[hsl(var(--gold-light))]"}`} />
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════ IMAGE MARQUEE ════════════════════ */}
-      <section className="py-14 bg-background relative overflow-hidden">
-        <div className="section-divider absolute top-0 left-0 right-0" />
-        <ScrollReveal>
-          <div className="container mx-auto px-4 text-center mb-8">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em]">{t("express_page.marquee_label")}</p>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden md:flex -left-12 w-12 h-12 bg-white text-navy hover:bg-navy hover:text-white border-2 transition-all shadow-md" />
+              <CarouselNext className="hidden md:flex -right-12 w-12 h-12 bg-white text-navy hover:bg-navy hover:text-white border-2 transition-all shadow-md" />
+            </Carousel>
           </div>
         </ScrollReveal>
-        <ImageMarquee images={sliderImages} speed={40} height="200px" />
       </section>
 
-      {/* ════════════════════ FAQ ════════════════════ */}
-      <section className="py-28 bg-card relative overflow-hidden">
-        <div className="section-divider absolute top-0 left-0 right-0" />
-        <div className="absolute -top-32 -left-32 w-64 h-64 rounded-full bg-secondary/40 blur-3xl" />
-        <div className="container mx-auto px-4 relative z-10">
-          <ScrollReveal>
-            <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("express_page.faq_eyebrow")}</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">{t("express_page.faq_title")}</h2>
-              <div className="w-20 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mt-6" />
+      {/* EVRI, USPS LOGO STRIP (From Bottom of Screenshot 3) */}
+      <section className="py-10 bg-white">
+        <div className="container mx-auto px-4">
+          <ScrollReveal delay={200} direction="up">
+            <div className="flex flex-wrap justify-center items-center gap-12 opacity-80 mix-blend-multiply">
+              <img src="https://w.ladicdn.com/s500x500/67e69e24e8a7ba001127c80a/2-20250817133921-avbgq.png" alt="EVRi" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+              <img src="https://w.ladicdn.com/s550x550/67e69e24e8a7ba001127c80a/1-20250817133921-ocutm.png" alt="USPS" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+              <img src="https://w.ladicdn.com/s500x500/67e69e24e8a7ba001127c80a/3-20250817133921-gvcob.png" alt="YunExpress" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
             </div>
           </ScrollReveal>
-          <ScrollReveal delay={100}>
-            <div className="max-w-3xl mx-auto">
+        </div>
+      </section>
+
+      {/* 10. FAQ SECTION */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4 tracking-tight">{t("express_page.faq_title")}</h2>
+              <p className="text-muted-foreground">{t("express_page.faq_eyebrow")}</p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={100} direction="up">
+            <div className="glass-card bg-white/50 border border-border/50 rounded-2xl p-6 md:p-10">
               <FAQAccordion items={faqItems} />
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Contact Section */}
       <ContactSection />
-
       <Footer />
     </div>
   );
