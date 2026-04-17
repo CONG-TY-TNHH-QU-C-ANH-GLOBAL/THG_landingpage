@@ -21,6 +21,7 @@ const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const AgentPage = lazy(() => import("./pages/AgentPage"));
 const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
 const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
+const CareersPage = lazy(() => import("./pages/CareersPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
@@ -56,6 +57,7 @@ const AppRoutes = () => {
             <Route path="/thg-warehouse" element={<THGWarehousePage />} />
             <Route path="/thg-order" element={<THGOrderPage />} />
             <Route path="/catalog" element={<CatalogPage />} />
+            <Route path="/careers" element={<CareersPage />} />
             {/* Internal agent tool — not linked in public nav */}
             <Route path="/agent" element={<AgentPage />} />
             <Route path="*" element={<NotFound />} />

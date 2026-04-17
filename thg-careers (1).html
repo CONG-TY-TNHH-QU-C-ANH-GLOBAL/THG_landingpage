@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Careers — THG Fulfill | Cơ hội nghề nghiệp 04/2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Match THG Fulfill website */
+    --bg: #F7F5F0;
+    --bg-soft: #EFEBE2;
+    --bg-card: #FFFFFF;
+    --ink: #0E0E10;
+    --ink-2: #1F1F24;
+    --ink-soft: #52525B;
+    --ink-mute: #8A8A93;
+    --border: #E6E1D5;
+    --border-soft: #EFEBE2;
+
+    /* Brand brown/gold — từ screenshot */
+    --brand: #A67845;
+    --brand-dark: #8B5E33;
+    --brand-hover: #C28A50;
+    --gold: #C9A36A;
+    --gold-soft: rgba(201, 163, 106, 0.12);
+    --gold-bg: rgba(201, 163, 106, 0.08);
+
+    /* Category accents — warm palette hòa hợp với brand */
+    --c-finance: #6B8E5A;
+    --c-pod:     #C17B5E;
+    --c-ship:    #5A7A8E;
+    --c-wh:      #8B6B9A;
+    --c-ops:     #D4A548;
+    --c-source:  #B85C6E;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Be Vietnam Pro', 'Manrope', sans-serif;
+    -webkit-font-smoothing: antialiased; line-height: 1.55;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(247, 245, 240, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto;
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--ink);
+    display: grid; place-items: center;
+    font-weight: 800; color: #fff; font-size: 13px;
+    letter-spacing: 1.5px;
+  }
+  .logo-text .t1 { font-weight: 700; font-size: 17px; color: var(--ink); letter-spacing: 0.2px; }
+  .logo-text .t2 { font-size: 9.5px; color: var(--ink-mute); letter-spacing: 2px; margin-top: 2px; font-weight: 500; }
+  .nav-links { display: flex; gap: 34px; font-size: 14px; font-weight: 500; color: var(--ink-2); }
+  .nav-links a:hover { color: var(--brand); }
+  .nav-links a.active { color: var(--brand); }
+  .nav-right { display: flex; align-items: center; gap: 14px; }
+  .lang-pill {
+    display: flex; gap: 4px; padding: 5px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 999px; font-size: 11px;
+  }
+  .lang-pill span {
+    padding: 4px 10px; border-radius: 999px; color: var(--ink-mute); font-weight: 600; letter-spacing: 0.5px;
+  }
+  .lang-pill .active { background: var(--brand); color: #fff; }
+  .btn-cta {
+    background: var(--brand); color: #fff;
+    padding: 12px 24px; border-radius: 999px;
+    font-weight: 600; font-size: 14px; border: none; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cta:hover { background: var(--brand-hover); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    max-width: 1280px; margin: 0 auto;
+    padding: 72px 32px 40px;
+    position: relative;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--bg-card); color: var(--ink-2);
+    padding: 8px 16px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 1.4px;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  }
+  .hero-tag::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand);
+  }
+  .hero h1 {
+    font-weight: 800; font-size: clamp(40px, 5.8vw, 72px);
+    line-height: 1.05; letter-spacing: -0.02em;
+    margin-top: 22px; max-width: 960px;
+    color: var(--ink);
+  }
+  .hero h1 .gold { color: var(--brand); }
+  .hero-sub {
+    color: var(--ink-soft); font-size: 17px; max-width: 640px;
+    margin-top: 22px; line-height: 1.65;
+  }
+  .hero-stats {
+    display: flex; gap: 56px; margin-top: 48px;
+    padding-top: 36px; border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat-num {
+    font-size: 40px; font-weight: 800; color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .stat-num .suffix { color: var(--brand); }
+  .stat-label {
+    font-size: 12px; color: var(--ink-mute);
+    letter-spacing: 1.3px; text-transform: uppercase;
+    margin-top: 6px; font-weight: 600;
+  }
+
+  /* WHY THG */
+  .why {
+    max-width: 1280px; margin: 20px auto 0;
+    padding: 40px 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .why-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .why-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--gold-bg);
+    display: grid; place-items: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+  .why-title { font-weight: 700; font-size: 15.5px; color: var(--ink); }
+  .why-desc { font-size: 13.5px; color: var(--ink-soft); margin-top: 5px; line-height: 1.55; }
+
+  /* SECTION TITLE */
+  .sec-label {
+    font-size: 11.5px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--brand); font-weight: 700;
+    text-align: center; margin-top: 40px;
+  }
+  .sec-title {
+    font-weight: 800; font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.1; letter-spacing: -0.02em;
+    text-align: center; margin-top: 14px;
+    color: var(--ink);
+  }
+  .sec-title .gold { color: var(--brand); }
+  .sec-sub {
+    text-align: center; color: var(--ink-soft);
+    font-size: 15.5px; max-width: 600px; margin: 14px auto 0;
+  }
+
+  /* FILTER */
+  .filter-bar {
+    max-width: 1280px; margin: 0 auto;
+    padding: 36px 32px 32px;
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .chip {
+    padding: 11px 20px; border-radius: 999px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--ink-soft); font-size: 13.5px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .chip:hover { color: var(--ink); border-color: var(--brand); }
+  .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .chip .count { opacity: 0.55; margin-left: 6px; font-weight: 500; }
+
+  /* JOBS GRID */
+  .jobs {
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 32px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+  }
+  .job-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column; min-height: 320px;
+  }
+  .job-card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent); opacity: 0.7;
+  }
+  .job-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 16px 40px rgba(20, 15, 5, 0.08);
+  }
+  .job-card:hover::before { opacity: 1; height: 4px; }
+
+  .job-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 6px 11px; border-radius: 5px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+    align-self: flex-start;
+  }
+  .job-tagline {
+    font-size: 13px; color: var(--accent); font-weight: 700;
+    letter-spacing: 0.3px; margin-top: 14px;
+    font-style: italic;
+  }
+  .job-title {
+    font-size: 23px; font-weight: 800; line-height: 1.2;
+    margin-top: 6px; color: var(--ink); letter-spacing: -0.01em;
+  }
+  .job-desc {
+    color: var(--ink-soft); font-size: 14px; line-height: 1.6;
+    margin-top: 12px; flex-grow: 1;
+  }
+  .job-meta {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-top: 18px; padding-top: 18px;
+    border-top: 1px dashed var(--border);
+    font-size: 12.5px; color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .job-meta span { display: inline-flex; align-items: center; gap: 5px; }
+  .job-cta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 18px;
+  }
+  .salary {
+    color: var(--ink); font-weight: 800; font-size: 18px;
+    letter-spacing: -0.01em;
+    display: flex; flex-direction: column; line-height: 1.2;
+  }
+  .salary .unit {
+    color: var(--brand); font-weight: 700; font-size: 12.5px;
+    margin-top: 2px; letter-spacing: 0.2px;
+  }
+  .arrow {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--border);
+    display: grid; place-items: center; transition: all 0.25s;
+    color: var(--ink);
+  }
+  .job-card:hover .arrow {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+    transform: rotate(-45deg);
+  }
+
+  .job-card[data-cat="finance"]  { --accent: var(--c-finance); }
+  .job-card[data-cat="sales-pod"]{ --accent: var(--c-pod); }
+  .job-card[data-cat="sales-ship"]{ --accent: var(--c-ship); }
+  .job-card[data-cat="sales-wh"] { --accent: var(--c-wh); }
+  .job-card[data-cat="ops"]      { --accent: var(--c-ops); }
+  .job-card[data-cat="sourcing"] { --accent: var(--c-source); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(20, 15, 5, 0.5);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: none;
+    align-items: flex-start; justify-content: center;
+    overflow-y: auto; padding: 40px 20px;
+  }
+  .modal-overlay.active { display: flex; animation: fadeIn 0.25s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--bg-card);
+    border-radius: 22px;
+    max-width: 900px; width: 100%;
+    position: relative;
+    animation: slideUp 0.35s cubic-bezier(0.2, 0.8, 0.25, 1);
+    box-shadow: 0 30px 80px rgba(20, 15, 5, 0.18);
+    overflow: hidden;
+  }
+  @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-close {
+    position: absolute; top: 22px; right: 22px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--ink); cursor: pointer; font-size: 22px;
+    display: grid; place-items: center;
+    transition: all 0.2s; z-index: 5;
+  }
+  .modal-close:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .modal-hero {
+    padding: 48px 56px 36px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--bg-card)), var(--bg-card));
+  }
+  .modal-hero::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: var(--accent);
+  }
+  .modal-hero .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 1.8px;
+    text-transform: uppercase; color: var(--accent);
+    padding: 6px 12px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-radius: 5px;
+  }
+  .modal-hero .tagline {
+    font-size: 14px; color: var(--accent); font-weight: 700;
+    margin-top: 16px; font-style: italic;
+  }
+  .modal-hero h2 {
+    font-size: 36px; font-weight: 800; line-height: 1.15;
+    margin-top: 6px; color: var(--ink); letter-spacing: -0.02em;
+  }
+  .modal-hero .lead {
+    color: var(--ink-soft); font-size: 15.5px; max-width: 680px;
+    margin-top: 14px; line-height: 1.7;
+  }
+  .quick-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px; margin-top: 28px;
+    padding-top: 24px; border-top: 1px dashed var(--border);
+  }
+  .qi-item .qi-label {
+    font-size: 10.5px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--ink-mute); font-weight: 700;
+  }
+  .qi-item .qi-val {
+    color: var(--ink); font-weight: 700; margin-top: 6px; font-size: 14px;
+  }
+
+  .modal-body { padding: 40px 56px 48px; }
+  .section { margin-bottom: 36px; }
+  .section:last-child { margin-bottom: 0; }
+  .section h3 {
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 16px; color: var(--ink);
+    display: flex; align-items: center; gap: 12px;
+    letter-spacing: -0.01em;
+  }
+  .section h3::before {
+    content: ""; width: 5px; height: 22px; background: var(--accent); border-radius: 3px;
+  }
+  .section ul {
+    list-style: none; display: flex; flex-direction: column; gap: 10px;
+  }
+  .section li {
+    color: var(--ink-soft); font-size: 14.5px; line-height: 1.65;
+    padding-left: 26px; position: relative;
+  }
+  .section li::before {
+    content: ""; position: absolute; left: 4px; top: 10px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); opacity: 0.25;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+  }
+  .sub-h {
+    font-size: 12.5px; font-weight: 700; color: var(--ink);
+    letter-spacing: 1.2px; text-transform: uppercase;
+    margin-top: 22px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sub-h::after {
+    content: ""; flex-grow: 1; height: 1px; background: var(--border);
+  }
+  .sub-h:first-of-type { margin-top: 0; }
+
+  /* Highlighted benefits */
+  .benefits-hero {
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 8%, var(--bg-soft)),
+      var(--bg-soft));
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .benefits-hero-head {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .big-salary {
+    font-size: 30px; font-weight: 800; color: var(--ink);
+    letter-spacing: -0.02em; line-height: 1.15;
+    display: flex; flex-direction: column;
+  }
+  .big-salary .unit {
+    color: var(--brand); font-size: 15px; font-weight: 700;
+    margin-top: 2px; letter-spacing: 0.2px;
+  }
+  .salary-note {
+    background: var(--bg-card); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink-2);
+  }
+  .perks {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .perk {
+    background: var(--bg-card); padding: 18px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .perk:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .perk-ico { font-size: 22px; margin-bottom: 10px; }
+  .perk-t { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .perk-d { font-size: 12.5px; color: var(--ink-mute); margin-top: 4px; line-height: 1.55; }
+
+  /* Apply box */
+  .apply-box {
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 24px;
+    margin-top: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .apply-box::before {
+    content: ""; position: absolute;
+    right: -100px; bottom: -100px;
+    width: 280px; height: 280px; border-radius: 50%;
+    background: radial-gradient(circle, var(--gold-soft), transparent 70%);
+  }
+  .apply-box h4 {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.01em;
+    position: relative;
+  }
+  .apply-box p { color: rgba(255,255,255,0.7); font-size: 13.5px; margin-top: 6px; position: relative; }
+  .apply-box p strong { color: var(--gold); font-weight: 700; }
+  .apply-actions { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
+  .btn-primary {
+    background: var(--brand); color: #fff;
+    padding: 14px 26px; border-radius: 999px;
+    font-weight: 700; font-size: 14px; border: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: var(--brand-hover); transform: translateY(-2px); }
+  .btn-ghost {
+    background: transparent; color: #fff;
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 14px;
+    border: 1px solid rgba(255,255,255,0.25); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* REWARDS SECTION */
+  .rewards {
+    max-width: 1280px; margin: 40px auto 0;
+    padding: 72px 32px 40px;
+  }
+  .rewards-head {
+    text-align: center; margin-bottom: 48px;
+  }
+  .rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .reward-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px;
+    position: relative;
+    transition: all 0.25s;
+  }
+  .reward-card:hover {
+    border-color: var(--brand);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(20, 15, 5, 0.06);
+  }
+  .reward-card.featured {
+    background: linear-gradient(135deg, var(--ink), var(--ink-2));
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .reward-card.featured .reward-name { color: #fff; }
+  .reward-card.featured .reward-desc { color: rgba(255,255,255,0.7); }
+  .reward-card.featured .reward-tag {
+    background: rgba(201, 163, 106, 0.2);
+    color: var(--gold);
+    border-color: rgba(201, 163, 106, 0.4);
+  }
+  .reward-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--gold-bg);
+    display: grid; place-items: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .reward-card.featured .reward-icon {
+    background: rgba(201, 163, 106, 0.2);
+  }
+  .reward-tag {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.4px; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 4px;
+    background: var(--gold-bg); color: var(--brand);
+    border: 1px solid rgba(201, 163, 106, 0.25);
+    margin-bottom: 12px;
+  }
+  .reward-name {
+    font-size: 17px; font-weight: 800;
+    color: var(--ink); letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .reward-desc {
+    font-size: 13px; color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .rewards-note {
+    text-align: center;
+    margin-top: 32px;
+    padding: 20px 28px;
+    background: var(--bg-card);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .rewards-note strong { color: var(--ink); }
+
+  /* BOTTOM CTA */
+  .bottom-cta {
+    max-width: 1280px; margin: 40px auto 80px;
+    padding: 72px 56px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 32px; flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+  }
+  .bottom-cta::before {
+    content: ""; position: absolute;
+    right: -150px; bottom: -150px;
+    width: 440px; height: 440px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(201, 163, 106, 0.25), transparent 70%);
+  }
+  .bottom-cta h3 {
+    font-size: 36px; font-weight: 800; line-height: 1.15;
+    letter-spacing: -0.02em; position: relative; z-index: 2;
+  }
+  .bottom-cta h3 span { color: var(--gold); }
+  .bottom-cta p { color: rgba(255,255,255,0.7); margin-top: 12px; max-width: 520px; position: relative; z-index: 2; font-size: 15px; }
+  .bottom-cta .btn-primary { position: relative; z-index: 2; }
+
+  /* FOOTER */
+  .footer {
+    max-width: 1280px; margin: 0 auto;
+    padding: 40px 32px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 13px;
+  }
+  .footer a { color: var(--brand); font-weight: 600; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-inner { padding: 14px 20px; }
+    .hero { padding: 44px 20px 28px; }
+    .filter-bar, .jobs, .why { padding-left: 20px; padding-right: 20px; }
+    .hero-stats { gap: 32px; }
+    .modal-hero { padding: 36px 28px 28px; }
+    .modal-body { padding: 28px; }
+    .modal-hero h2 { font-size: 28px; }
+    .bottom-cta { padding: 48px 28px; margin: 32px 20px 60px; }
+    .bottom-cta h3 { font-size: 28px; }
+    .benefits-hero { padding: 22px; }
+    .apply-box { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-mark">THG</div>
+      <div class="logo-text">
+        <div class="t1">THG Fulfill</div>
+        <div class="t2">TRANSPORT HAPPINESS GROUP</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="/services">Services</a>
+      <a href="/pricing">Pricing list</a>
+      <a href="/policy">Policy</a>
+      <a href="/blog">Blog</a>
+      <a href="/qa">Q&A</a>
+      <a href="/careers" class="active">Careers</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-pill">
+        <span class="active">EN</span><span>VI</span><span>中</span>
+      </div>
+      <button class="btn-cta">Get Started</button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <span class="hero-tag">Tuyển dụng · Tháng 04/2026</span>
+  <h1>Gia nhập đội ngũ <span class="gold">Transport Happiness</span>.<br/>Cùng THG vươn ra <span class="gold">thế giới</span>.</h1>
+  <p class="hero-sub">
+    THG Fulfill — hệ sinh thái fulfillment E-commerce xuyên biên giới Việt Nam · Trung Quốc · Hoa Kỳ.
+    Chúng tôi đang tìm kiếm những con người nhiệt huyết, chủ động và khát khao phát triển cùng sứ mệnh đưa sản phẩm Việt ra toàn cầu.
+  </p>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">6<span class="suffix">+</span></div>
+      <div class="stat-label">Vị trí đang tuyển</div>
+    </div>
+    <div>
+      <div class="stat-num">3</div>
+      <div class="stat-label">Quốc gia vận hành</div>
+    </div>
+    <div>
+      <div class="stat-num">4</div>
+      <div class="stat-label">Mảng dịch vụ</div>
+    </div>
+    <div>
+      <div class="stat-num">15/05</div>
+      <div class="stat-label">Hạn nộp hồ sơ</div>
+    </div>
+  </div>
+</section>
+
+<section class="why">
+  <div class="why-card">
+    <div class="why-icon">🌍</div>
+    <div class="why-title">Môi trường quốc tế</div>
+    <div class="why-desc">Làm việc với khách hàng, supplier và đối tác tại VN, TQ, Mỹ và Châu Âu mỗi ngày.</div>
+  </div>
+  <div class="why-card">
+    <div class="why-icon">🚀</div>
+    <div class="why-title">Tăng trưởng cùng công ty</div>
+    <div class="why-desc">Gia nhập THG ở giai đoạn scale-up — cơ hội thăng tiến rõ ràng, lộ trình phát triển minh bạch.</div>
+  </div>
+  <div class="why-card">
+    <div class="why-icon">🎓</div>
+    <div class="why-title">Đào tạo bài bản</div>
+    <div class="why-desc">Được đào tạo chuyên sâu về E-commerce, logistics quốc tế, POD/Dropship từ đội ngũ chuyên gia.</div>
+  </div>
+  <div class="why-card">
+    <div class="why-icon">💛</div>
+    <div class="why-title">Văn hóa "Happiness"</div>
+    <div class="why-desc">Company Trip hàng năm, thưởng tháng 13, môi trường trẻ trung, cởi mở, tôn trọng cá nhân.</div>
+  </div>
+</section>
+
+<div class="sec-label">OPEN POSITIONS</div>
+<h2 class="sec-title">Vị trí <span class="gold">đang tuyển</span></h2>
+<p class="sec-sub">6 vị trí trải dài 4 bộ phận. Tìm vai trò phù hợp với bạn và gia nhập THG ngay hôm nay.</p>
+
+<div class="filter-bar">
+  <div class="chip active" data-filter="all">Tất cả <span class="count">6</span></div>
+  <div class="chip" data-filter="finance">Kế toán</div>
+  <div class="chip" data-filter="sales">Sales / CSKH</div>
+  <div class="chip" data-filter="ops">Vận hành</div>
+  <div class="chip" data-filter="sourcing">Sourcing & Báo giá</div>
+</div>
+
+<section class="jobs" id="jobs"></section>
+
+<!-- REWARDS SECTION -->
+<section class="rewards">
+  <div class="rewards-head">
+    <div class="sec-label">REWARDS & BONUSES</div>
+    <h2 class="sec-title" style="margin-top: 14px;">Hệ thống <span class="gold">thưởng minh bạch</span></h2>
+    <p class="sec-sub">Tại THG, nỗ lực của bạn luôn được ghi nhận qua hệ thống thưởng đa tầng — từ KPI hàng tháng đến hoa hồng doanh số, từ thưởng chốt đơn lớn đến ghi nhận của CEO.</p>
+  </div>
+
+  <div class="rewards-grid">
+    <div class="reward-card">
+      <div class="reward-icon">🏆</div>
+      <div class="reward-tag">KPI hàng tháng</div>
+      <div class="reward-name">Thưởng xếp hạng Grade</div>
+      <div class="reward-desc">Đánh giá hiệu suất cuối mỗi tháng theo 3 mức Grade B / A / A+. Thưởng tự động, minh bạch, áp dụng cho mọi vị trí.</div>
+    </div>
+
+    <div class="reward-card">
+      <div class="reward-icon">💼</div>
+      <div class="reward-tag">Sales · CSKH</div>
+      <div class="reward-name">Thưởng chốt đơn lớn</div>
+      <div class="reward-desc">Thưởng trên từng đơn có giá trị cao được chốt thành công — từ Express, Dropship, POD đến Warehouse US.</div>
+    </div>
+
+    <div class="reward-card">
+      <div class="reward-icon">📦</div>
+      <div class="reward-tag">Vận chuyển</div>
+      <div class="reward-name">Thưởng Express Bulk</div>
+      <div class="reward-desc">Thưởng phân tầng theo khối lượng đơn hàng vận chuyển: trên 50kg, trên 100kg, trên 500kg — càng lớn thưởng càng cao.</div>
+    </div>
+
+    <div class="reward-card">
+      <div class="reward-icon">🌟</div>
+      <div class="reward-tag">Khai thác</div>
+      <div class="reward-name">Thưởng khách hàng mới</div>
+      <div class="reward-desc">Ghi nhận ngay khi đưa được một khách hàng mới vào giao dịch lần đầu với THG — thưởng cho mỗi khách mới.</div>
+    </div>
+
+    <div class="reward-card">
+      <div class="reward-icon">⭐</div>
+      <div class="reward-tag">Upgrade</div>
+      <div class="reward-name">Thưởng khách hàng lên VIP</div>
+      <div class="reward-desc">Khi chăm sóc khách hàng đạt ngưỡng VIP trong tháng, Sales và CSKH cùng nhận thưởng chung cho thành quả team.</div>
+    </div>
+
+    <div class="reward-card">
+      <div class="reward-icon">📈</div>
+      <div class="reward-tag">Doanh thu</div>
+      <div class="reward-name">Thưởng tỷ lệ chốt cao</div>
+      <div class="reward-desc">Sales/CS cá nhân đạt tỷ lệ chốt request ≥ 80% (trên ngưỡng tối thiểu request/tháng) sẽ nhận thưởng hiệu suất.</div>
+    </div>
+
+    <div class="reward-card">
+      <div class="reward-icon">🤝</div>
+      <div class="reward-tag">Upsell</div>
+      <div class="reward-name">Thưởng Upsell thành công</div>
+      <div class="reward-desc">Thưởng khi giới thiệu thành công thêm dịch vụ THG cho khách hàng đang có — ghi nhận trên hệ thống Request.</div>
+    </div>
+
+    <div class="reward-card">
+      <div class="reward-icon">✅</div>
+      <div class="reward-tag">Hiệu suất</div>
+      <div class="reward-name">Thưởng 100% task đúng hạn</div>
+      <div class="reward-desc">Hoàn thành 100% task được giao trong tháng (tối thiểu ngưỡng task/tháng) mà không có task nào trễ hạn.</div>
+    </div>
+
+    <div class="reward-card featured">
+      <div class="reward-icon">👑</div>
+      <div class="reward-tag">CEO Award</div>
+      <div class="reward-name">Nhân viên xuất sắc tháng</div>
+      <div class="reward-desc">Giải thưởng do chính CEO chọn mỗi tháng — kèm tiền thưởng và Certificate ghi nhận. Mỗi tháng 1 người duy nhất.</div>
+    </div>
+  </div>
+
+  <div class="rewards-note">
+    💡 <strong>Lưu ý:</strong> Trên đây là các nhóm thưởng chính mà THG áp dụng. Mức thưởng cụ thể, điều kiện chi tiết và bảng hoa hồng cá nhân sẽ được trao đổi minh bạch trong buổi phỏng vấn và ký kết hợp đồng.
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="bottom-cta">
+  <div>
+    <h3>Không thấy vị trí phù hợp?<br/><span>Chúng tôi vẫn muốn biết bạn.</span></h3>
+    <p>Gửi CV cùng mong muốn của bạn về <strong style="color:var(--gold)">hr@thgfulfill.com</strong> — THG luôn mở cửa với những tài năng xuất sắc.</p>
+  </div>
+  <a href="mailto:hr@thgfulfill.com?subject=Ứng%20tuyển%20tự%20do%20—%20THG%20Fulfill">
+    <button class="btn-primary">Gửi CV ngay →</button>
+  </a>
+</section>
+
+<div class="footer">
+  © 2026 THG Fulfill — Transport Happiness Group · 121/5 Kênh 19/05, Phường Tây Thạnh, TP.HCM · <a href="mailto:hr@thgfulfill.com">hr@thgfulfill.com</a>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<script>
+  const JOBS = [
+    {
+      id: 'finance', cat: 'finance', filter: 'finance',
+      badge: 'Kế toán · Finance',
+      tagline: '"Người giữ sổ sách cho cả hệ sinh thái."',
+      title: 'Nhân viên Kế toán',
+      desc: 'Quản lý thu chi, công nợ và hỗ trợ nhân sự cho đội ngũ THG Fulfill. Vị trí then chốt trong bộ máy tài chính.',
+      salary: '10 triệu', salaryUnit: '+ thưởng hiệu suất',
+      salaryNote: 'Thu nhập thực nhận cao hơn lương cứng',
+      location: 'TP.HCM', type: 'Full-time',
+      deadline: '15/05/2026', experience: 'Từ 2 năm',
+      lead: 'THG Fulfill tìm kiếm một Kế toán kinh nghiệm, cẩn thận và trách nhiệm cao để tham gia quản lý thu chi, theo dõi công nợ và hỗ trợ nhân sự cho đội ngũ đang phát triển nhanh. Bạn sẽ là cánh tay phải của Ban Giám đốc trong mảng tài chính.',
+      responsibilities: {
+        'Quản lý thu chi nội bộ': [
+          'Ghi chép, kiểm tra và kiểm soát các khoản thu chi hằng ngày',
+          'Lập và quản lý báo cáo thu chi theo tuần / tháng / quý (tiền tồn, phải thu, phải trả)',
+          'Làm báo cáo lợi nhuận (lãi/lỗ) hàng tháng',
+          'Lên phiếu thu / phiếu chi khi phát sinh giao dịch',
+          'Duyệt và chi tiền theo phiếu chi của các bộ phận khác'
+        ],
+        'Theo dõi công nợ': [
+          'Đối chiếu, theo dõi công nợ phải thu / phải trả trên hệ thống kế toán (Ecount...)',
+          'Theo dõi công nợ tạm ứng của khách hàng, cảnh báo kịp thời khi số dư sắp hết hoặc âm',
+          'Lập kế hoạch thanh toán và báo cáo tình hình công nợ định kỳ'
+        ],
+        'Hỗ trợ nhân sự': [
+          'Theo dõi tình hình nhân sự, làm hợp đồng thử việc / chính thức (quy mô dưới 10 người)',
+          'Theo dõi nghỉ phép, đi trễ, về sớm (có phần mềm hỗ trợ)',
+          'Lập các báo cáo nội bộ và thực hiện công việc khác theo phân công'
+        ]
+      },
+      requirements: [
+        'Tốt nghiệp Đại học / Cao đẳng chuyên ngành Kế toán, Tài chính hoặc liên quan',
+        'Có từ 2 năm kinh nghiệm trở lên ở vị trí tương đương',
+        'Thành thạo phần mềm kế toán (MISA, Ecount hoặc tương đương)',
+        'Kỹ năng tổ chức và quản lý thời gian tốt',
+        'Trung thực, cẩn thận và có tinh thần trách nhiệm cao'
+      ],
+      benefits: [
+        { i: '💰', t: 'Lương cứng 10 triệu', d: 'Cộng thưởng hiệu suất & lợi nhuận — thu nhập thực cao hơn' },
+        { i: '🏖️', t: 'Company Trip 1–2 lần/năm', d: 'Du lịch cùng toàn thể THG, chi phí công ty lo' },
+        { i: '🎁', t: 'Thưởng tháng 13', d: 'Thưởng Tết & các dịp lễ lớn trong năm' },
+        { i: '🛡️', t: 'BHXH / BHYT đầy đủ', d: 'Tham gia đầy đủ theo quy định pháp luật' },
+        { i: '⏰', t: 'Giờ hành chính', d: 'T2–T6: 8h–17h · T7: 8h–12h · Nghỉ trưa 12h–13h30' },
+        { i: '🎓', t: 'Thử việc 85% lương', d: '2 tháng thử việc — lộ trình thăng tiến rõ ràng' }
+      ],
+      bonuses: [
+        'Thưởng KPI hàng tháng theo xếp hạng (Grade B / A / A+)',
+        'Thưởng 100% task đúng hạn trong tháng',
+        'Thưởng Nhân viên xuất sắc tháng do CEO chọn',
+        'Các khoản thưởng phúc lợi khác theo hiệu suất công việc'
+      ]
+    },
+    {
+      id: 'sales-pod', cat: 'sales-pod', filter: 'sales',
+      badge: 'Sales · POD / Dropship',
+      tagline: '"Cầu nối giữa Seller toàn cầu và nhà máy Việt – Trung."',
+      title: 'Nhân viên Sales POD / Dropship',
+      desc: 'Phát triển khách hàng Seller bán POD, Dropship từ Việt Nam và Trung Quốc đi Mỹ, Châu Âu.',
+      salary: '8 triệu', salaryUnit: '+ hoa hồng + thưởng',
+      salaryNote: 'Thu nhập không giới hạn theo hiệu suất',
+      location: 'TP.HCM', type: 'Full-time',
+      deadline: '15/05/2026', experience: 'Không bắt buộc',
+      lead: 'THG Fulfill đang mở rộng đội ngũ Sales POD/Dropship để đồng hành cùng hàng ngàn Seller Việt Nam và Trung Quốc đưa sản phẩm đến người tiêu dùng Mỹ, EU và toàn cầu. Vị trí này phù hợp với người yêu thích E-commerce — bạn có lương cứng ổn định và thu nhập thực tế tăng mạnh theo hiệu suất.',
+      responsibilities: {
+        'Phát triển khách hàng': [
+          'Tìm kiếm khách hàng là các Seller bán online từ VN / TQ đi Mỹ, Châu Âu trong mảng POD, Dropship',
+          'Tư vấn và chăm sóc khách hàng về dịch vụ nguồn hàng, in ấn và vận chuyển',
+          'Xây dựng mối quan hệ tốt với khách hàng hiện có, đồng thời chủ động tìm kiếm khách hàng mới'
+        ],
+        'Tư vấn & hỗ trợ': [
+          'Giới thiệu sản phẩm / dịch vụ sẵn có của THG (hơn 1000 mẫu tại kho Mỹ)',
+          'Hỗ trợ khách hàng giải quyết các vấn đề trong quy trình vận hành',
+          'Phối hợp chặt chẽ với đội Operations để đảm bảo trải nghiệm khách hàng tốt nhất'
+        ]
+      },
+      requirements: [
+        'Kinh nghiệm trong lĩnh vực POD hoặc Dropship là một lợi thế (không bắt buộc)',
+        'Kỹ năng giao tiếp và thuyết phục tốt',
+        'Khả năng giải quyết vấn đề và xử lý tình huống nhanh nhẹn',
+        'Chủ động, nhiệt tình và có trách nhiệm trong công việc',
+        'Có tiếng Anh cơ bản để làm việc với khách quốc tế là lợi thế'
+      ],
+      benefits: [
+        { i: '💰', t: 'Lương cứng 8 triệu', d: 'Cộng hoa hồng và thưởng — thu nhập thực tế cao hơn nhiều' },
+        { i: '📈', t: 'Hoa hồng không giới hạn', d: 'Đạt và vượt KPI càng nhiều, thu nhập càng cao' },
+        { i: '🚀', t: 'Đào tạo POD/Dropship', d: 'Đào tạo chuyên sâu về sản phẩm và thị trường quốc tế' },
+        { i: '🎁', t: 'Thưởng tháng 13', d: 'Thưởng Tết & các dịp lễ lớn' },
+        { i: '🏖️', t: 'Company Trip', d: 'Du lịch cùng công ty hàng năm' },
+        { i: '⏰', t: 'Làm việc linh hoạt', d: 'T2–T6: văn phòng · T7 chiều: online' }
+      ],
+      bonuses: [
+        'Hoa hồng theo bảng doanh thu cá nhân',
+        'Thưởng chốt đơn lớn (Express / Dropship / POD / Warehouse)',
+        'Thưởng khai thác khách hàng mới lần đầu giao dịch',
+        'Thưởng tỷ lệ chốt request cao (≥ 80%)',
+        'Thưởng đưa khách hàng lên hạng VIP trong tháng',
+        'Thưởng KPI hàng tháng theo xếp hạng Grade B / A / A+',
+        'Thưởng Nhân viên xuất sắc tháng do CEO chọn'
+      ]
+    },
+    {
+      id: 'sales-ship', cat: 'sales-ship', filter: 'sales',
+      badge: 'Sales · Vận chuyển E-commerce',
+      tagline: '"Chuyên gia tuyến vận chuyển xuyên biên giới."',
+      title: 'Nhân viên Sales Vận chuyển Quốc tế',
+      desc: 'Tư vấn gói cước vận chuyển Ecommerce cho Seller trên TikTok Shop US, Shopify, Amazon, Etsy...',
+      salary: '8 triệu', salaryUnit: '+ hoa hồng + thưởng',
+      salaryNote: 'Thu nhập không giới hạn theo hiệu suất',
+      location: 'TP.HCM', type: 'Full-time',
+      deadline: '15/05/2026', experience: 'Không bắt buộc',
+      lead: 'THG đang tìm kiếm Sales có niềm đam mê với logistics xuyên biên giới, chuyên tư vấn các gói cước vận chuyển cho cộng đồng Seller đang kinh doanh trên TikTok Shop US, Shopify, Amazon, Etsy và các nền tảng E-commerce toàn cầu khác.',
+      responsibilities: {
+        'Phát triển khách hàng': [
+          'Tìm kiếm Seller Việt Nam kinh doanh trên TikTok Shop US, Shopify, Amazon, Etsy, v.v.',
+          'Tiếp cận khách có nhu cầu vận chuyển hàng từ VN / TQ sang Mỹ hoặc toàn cầu',
+          'Tư vấn gói cước vận chuyển Ecommerce phù hợp theo nhu cầu'
+        ],
+        'Xử lý & chăm sóc': [
+          'Tiếp nhận yêu cầu vận chuyển từ khách và chuyển bộ phận xử lý',
+          'Theo dõi và cập nhật trạng thái đơn hàng cho khách hàng',
+          'Hỗ trợ giải đáp thắc mắc liên quan đến quy trình vận chuyển'
+        ]
+      },
+      requirements: [
+        'Kinh nghiệm trong lĩnh vực vận chuyển E-commerce là lợi thế (không bắt buộc)',
+        'Kỹ năng giao tiếp và tư vấn tốt',
+        'Khả năng giải quyết vấn đề và xử lý tình huống nhanh nhẹn',
+        'Kỹ năng tổ chức công việc và quản lý thời gian hiệu quả',
+        'Chủ động, tận tâm với khách hàng và có trách nhiệm cao'
+      ],
+      benefits: [
+        { i: '💰', t: 'Lương cứng 8 triệu', d: 'Cộng hoa hồng và thưởng — thu nhập thực tế cao hơn nhiều' },
+        { i: '📈', t: 'Hoa hồng không giới hạn', d: 'Đạt và vượt KPI càng nhiều, thu nhập càng cao' },
+        { i: '✈️', t: 'Kiến thức logistics', d: 'Đào tạo về các tuyến vận chuyển quốc tế VN/CN → US/WW' },
+        { i: '🎁', t: 'Thưởng tháng 13', d: 'Thưởng Tết & các dịp lễ lớn' },
+        { i: '🏖️', t: 'Company Trip', d: 'Du lịch cùng công ty hàng năm' },
+        { i: '⏰', t: 'Làm việc linh hoạt', d: 'T2–T6: văn phòng · T7 chiều: online' }
+      ],
+      bonuses: [
+        'Hoa hồng theo bảng doanh thu cá nhân',
+        'Thưởng chốt đơn Express Bulk theo tầng khối lượng (> 50kg / 100kg / 500kg)',
+        'Thưởng khai thác khách hàng mới lần đầu giao dịch',
+        'Thưởng tỷ lệ chốt request cao (≥ 80%)',
+        'Thưởng đưa khách hàng lên hạng VIP trong tháng',
+        'Thưởng KPI hàng tháng theo xếp hạng Grade B / A / A+',
+        'Thưởng Nhân viên xuất sắc tháng do CEO chọn'
+      ]
+    },
+    {
+      id: 'sales-wh', cat: 'sales-wh', filter: 'sales',
+      badge: 'Sales · Warehouse US',
+      tagline: '"Người đưa hàng Việt vào kho Mỹ."',
+      title: 'Nhân viên Sales Warehouse Mỹ',
+      desc: 'Phát triển khách hàng cho dịch vụ kho bãi và fulfillment tại Mỹ — mảng chiến lược của THG.',
+      salary: '8 triệu', salaryUnit: '+ hoa hồng + thưởng',
+      salaryNote: 'Thu nhập không giới hạn theo hiệu suất',
+      location: 'TP.HCM', type: 'Full-time',
+      deadline: '15/05/2026', experience: 'Không bắt buộc',
+      lead: 'Với hơn 1000 mẫu sản phẩm sẵn tại kho Mỹ, THG đang cần Sales am hiểu mô hình fulfillment xuyên biên giới để phát triển mảng Warehouse US — mảng chiến lược và tiềm năng tăng trưởng lớn nhất của công ty.',
+      responsibilities: {
+        'Phát triển khách hàng': [
+          'Tìm kiếm và phát triển khách hàng có nhu cầu gửi hàng qua kho Mỹ để fulfill & phân phối',
+          'Tư vấn dịch vụ kho bãi tại US: lưu trữ, quản lý tồn kho, giao hàng cuối cùng',
+          'Bán các sản phẩm sẵn trong kho Warehouse US qua website công ty'
+        ],
+        'Vận hành & phối hợp': [
+          'Phối hợp với đội ngũ Operations để đảm bảo hàng hóa được xử lý đúng tiến độ',
+          'Cập nhật thông tin sản phẩm và dịch vụ để tư vấn chính xác, hiệu quả'
+        ]
+      },
+      requirements: [
+        'Kinh nghiệm trong bán hàng hoặc quản lý kho hàng là lợi thế (không bắt buộc)',
+        'Kỹ năng giao tiếp và tư vấn tốt',
+        'Khả năng giải quyết vấn đề và xử lý tình huống nhanh nhẹn',
+        'Kỹ năng tổ chức công việc và quản lý thời gian hiệu quả',
+        'Chủ động, nhiệt tình, tận tâm với khách hàng'
+      ],
+      benefits: [
+        { i: '💰', t: 'Lương cứng 8 triệu', d: 'Cộng hoa hồng và thưởng — thu nhập thực tế cao hơn nhiều' },
+        { i: '🏭', t: 'Kho US chiến lược', d: '1000+ mẫu sản phẩm sẵn kho Mỹ, tiềm năng tăng trưởng lớn' },
+        { i: '📈', t: 'Hoa hồng không giới hạn', d: 'Đạt và vượt KPI càng nhiều, thu nhập càng cao' },
+        { i: '🎁', t: 'Thưởng tháng 13', d: 'Thưởng Tết & các dịp lễ lớn' },
+        { i: '🏖️', t: 'Company Trip', d: 'Du lịch cùng công ty hàng năm' },
+        { i: '⏰', t: 'Làm việc linh hoạt', d: 'T2–T6: văn phòng · T7 chiều: online' }
+      ],
+      bonuses: [
+        'Hoa hồng theo bảng doanh thu cá nhân',
+        'Thưởng chốt đơn Warehouse giá trị lớn',
+        'Thưởng khai thác khách hàng mới lần đầu giao dịch',
+        'Thưởng đưa khách hàng lên hạng VIP trong tháng',
+        'Thưởng khách hàng đạt doanh thu cao hàng tháng',
+        'Thưởng KPI hàng tháng theo xếp hạng Grade B / A / A+',
+        'Thưởng Nhân viên xuất sắc tháng do CEO chọn'
+      ]
+    },
+    {
+      id: 'ops', cat: 'ops', filter: 'ops',
+      badge: 'Operations · Vận hành',
+      tagline: '"Xương sống của bộ máy fulfillment."',
+      title: 'Nhân viên Vận hành TMĐT',
+      desc: 'Mua hàng, vận chuyển và xử lý đơn Dropship từ 1688 / Alibaba. Vai trò xương sống của bộ máy vận hành.',
+      salary: '10 triệu', salaryUnit: '+ hoa hồng + thưởng',
+      salaryNote: 'Thu nhập không giới hạn theo hiệu suất',
+      location: 'TP.HCM', type: 'Full-time',
+      deadline: '15/05/2026', experience: 'Từ 6 tháng',
+      lead: 'Vị trí Vận hành là xương sống của bộ máy THG Fulfill — trực tiếp sourcing sản phẩm trên các sàn TMĐT lớn của Trung Quốc, đàm phán với nhà cung cấp và đảm bảo đơn Dropship được xử lý trơn tru từ A đến Z.',
+      responsibilities: {
+        'Mua hàng & Sourcing': [
+          'Tìm kiếm và đánh giá các nguồn hàng mới trên 1688, Alibaba và các sàn TMĐT Trung Quốc khác',
+          'Thực hiện mua hàng: thương thảo, đàm phán, đặt hàng và theo dõi đơn',
+          'Hỗ trợ quản lý làm báo giá, tối ưu chi phí vận hành'
+        ],
+        'Vận hành đơn Dropship': [
+          'Quản lý vận hành đơn Dropship: xử lý đơn từ khách, liên lạc nhà cung cấp',
+          'Đảm bảo giao hàng đúng thời hạn và chất lượng',
+          'Quản lý các đơn vận chuyển từ VN → toàn cầu và từ TQ → toàn cầu'
+        ]
+      },
+      requirements: [
+        'Tối thiểu 6 tháng kinh nghiệm trong TMĐT, vận hành Dropship và vận chuyển hàng TQ → VN',
+        'Hiểu biết về quy trình, hệ thống quản lý hàng hóa và quy trình thương mại điện tử',
+        'Kỹ năng giao tiếp và đàm phán tốt, làm việc độc lập và trong nhóm',
+        'Cẩn thận là điều kiện tiên quyết cho vị trí này',
+        'Có tiếng Trung cơ bản là lợi thế'
+      ],
+      benefits: [
+        { i: '💰', t: 'Lương cứng 10 triệu', d: 'Cộng hoa hồng và thưởng — thu nhập thực tế cao hơn nhiều' },
+        { i: '📈', t: 'Hoa hồng theo doanh số', d: 'Đạt KPI hàng tháng nhận hoa hồng (chi tiết khi phỏng vấn)' },
+        { i: '🛒', t: 'Thông thạo 1688 / Alibaba', d: 'Đào tạo bài bản về sourcing Trung Quốc' },
+        { i: '🎁', t: 'Thưởng tháng 13', d: 'Thưởng Tết & các dịp lễ lớn' },
+        { i: '🏖️', t: 'Company Trip', d: 'Du lịch cùng công ty hàng năm' },
+        { i: '⏰', t: 'Giờ hành chính', d: 'T2–T6: 8h–17h' }
+      ],
+      bonuses: [
+        'Thưởng KPI hàng tháng theo xếp hạng (Grade B / A / A+)',
+        'Thưởng CSKH & Vận hành hỗ trợ chốt đơn giá trị lớn',
+        'Thưởng Upsell thành công dịch vụ THG cho khách hàng',
+        'Thưởng 100% task đúng hạn trong tháng',
+        'Thưởng Nhân viên xuất sắc tháng do CEO chọn'
+      ]
+    },
+    {
+      id: 'sourcing', cat: 'sourcing', filter: 'sourcing',
+      badge: 'Ngoại giao & Báo giá',
+      tagline: '"Cánh tay nối dài đến các nhà máy Trung Quốc."',
+      title: 'Nhân viên Ngoại giao & Báo giá (China Desk)',
+      desc: 'Làm việc trực tiếp với nhà máy và supplier Trung Quốc — cầu nối giữa THG và hệ sinh thái sản xuất TQ.',
+      salary: '10 triệu', salaryUnit: '+ hoa hồng + thưởng',
+      salaryNote: 'Thu nhập không giới hạn theo hiệu suất',
+      location: 'TP.HCM', type: 'Full-time',
+      deadline: '15/05/2026', experience: 'Không bắt buộc',
+      lead: 'Vị trí Ngoại giao & Báo giá là cầu nối chiến lược giữa THG và hệ sinh thái sản xuất Trung Quốc — trực tiếp đàm phán với nhà máy, tìm kiếm supplier mới và xây dựng mạng lưới vận chuyển tối ưu. Đây là cơ hội lý tưởng cho người có tiếng Trung và đam mê thương mại quốc tế.',
+      responsibilities: {
+        'Làm việc với nhà cung cấp': [
+          'Giao tiếp và làm việc trực tiếp với nhà máy, supplier Trung Quốc để lấy thông tin sản phẩm',
+          'Đàm phán và tìm kiếm nhà cung cấp mới cho các nhóm sản phẩm theo yêu cầu',
+          'Hỗ trợ phiên dịch trong các cuộc họp với nhà máy, đơn vị vận chuyển, đối tác TQ'
+        ],
+        'Báo giá & Logistics': [
+          'Tính toán và đề xuất chi phí vận chuyển, giá thành sản phẩm từ nhà máy đến kho',
+          'Tìm kiếm và xây dựng mối quan hệ với các kho lưu trữ & đơn vị vận chuyển phù hợp',
+          'Soạn thảo báo cáo chi tiết về tình hình làm việc với supplier & logistics'
+        ]
+      },
+      requirements: [
+        'Có tiếng Trung là lợi thế lớn (không bắt buộc)',
+        'Kinh nghiệm làm việc với nhà máy, supplier hoặc logistics tại Trung Quốc là lợi thế',
+        'Kỹ năng đàm phán và tìm kiếm thông tin nhà cung cấp tốt',
+        'Làm việc chi tiết, cẩn thận với số liệu chi phí sản phẩm và vận chuyển',
+        'Tinh thần trách nhiệm, chủ động và khả năng làm việc độc lập'
+      ],
+      benefits: [
+        { i: '💰', t: 'Lương cứng 10 triệu', d: 'Cộng hoa hồng và thưởng — thu nhập thực tế cao hơn nhiều' },
+        { i: '🇨🇳', t: 'Sử dụng tiếng Trung', d: 'Cơ hội phát triển kỹ năng tiếng Trung chuyên nghiệp' },
+        { i: '🎁', t: 'Thưởng tháng 13', d: 'Thưởng Tết & các dịp lễ lớn' },
+        { i: '🌍', t: 'Thị trường quốc tế', d: 'Tiếp xúc trực tiếp với đối tác Trung Quốc' },
+        { i: '🎓', t: 'Được đào tạo bài bản', d: 'Hỗ trợ đào tạo trong suốt quá trình làm việc' },
+        { i: '🏖️', t: 'Company Trip', d: 'Du lịch cùng công ty hàng năm' }
+      ],
+      bonuses: [
+        'Thưởng KPI hàng tháng theo xếp hạng (Grade B / A / A+)',
+        'Thưởng hỗ trợ báo giá & chốt đơn giá trị lớn',
+        'Thưởng đàm phán thành công với supplier chiến lược',
+        'Thưởng 100% task đúng hạn trong tháng',
+        'Thưởng Nhân viên xuất sắc tháng do CEO chọn'
+      ]
+    }
+  ];
+
+  const ACCENT_MAP = {
+    'finance': 'var(--c-finance)',
+    'sales-pod': 'var(--c-pod)',
+    'sales-ship': 'var(--c-ship)',
+    'sales-wh': 'var(--c-wh)',
+    'ops': 'var(--c-ops)',
+    'sourcing': 'var(--c-source)'
+  };
+
+  const jobsEl = document.getElementById('jobs');
+  jobsEl.innerHTML = JOBS.map(j => `
+    <div class="job-card" data-cat="${j.cat}" data-filter="${j.filter}" onclick="openJob('${j.id}')">
+      <span class="job-badge">${j.badge}</span>
+      <div class="job-tagline">${j.tagline}</div>
+      <h3 class="job-title">${j.title}</h3>
+      <p class="job-desc">${j.desc}</p>
+      <div class="job-meta">
+        <span>📍 ${j.location}</span>
+        <span>⏱ ${j.type}</span>
+        <span>📅 HSD ${j.deadline}</span>
+      </div>
+      <div class="job-cta">
+        <div class="salary">${j.salary}<span class="unit"> ${j.salaryUnit}</span></div>
+        <div class="arrow">→</div>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const f = chip.dataset.filter;
+      document.querySelectorAll('.job-card').forEach(card => {
+        card.style.display = (f === 'all' || card.dataset.filter === f) ? 'flex' : 'none';
+      });
+    });
+  });
+
+  function openJob(id) {
+    const j = JOBS.find(x => x.id === id);
+    if (!j) return;
+
+    const respHtml = Object.entries(j.responsibilities).map(([h, items]) => `
+      <div class="sub-h">${h}</div>
+      <ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>
+    `).join('');
+
+    const perksHtml = j.benefits.map(b => `
+      <div class="perk">
+        <div class="perk-ico">${b.i}</div>
+        <div class="perk-t">${b.t}</div>
+        <div class="perk-d">${b.d}</div>
+      </div>
+    `).join('');
+
+    const bonusesHtml = (j.bonuses || []).map(b => `<li>${b}</li>`).join('');
+
+    const subject = encodeURIComponent(`Ứng tuyển: ${j.title} — THG Fulfill 04/2026`);
+    const body = encodeURIComponent(`Kính gửi Phòng Nhân sự THG Fulfill,\n\nTôi xin gửi CV ứng tuyển vào vị trí "${j.title}".\n\nHọ và tên: \nSố điện thoại: \nKinh nghiệm liên quan: \n\nTrân trọng,`);
+
+    const accent = ACCENT_MAP[j.cat];
+
+    document.getElementById('modalBody').innerHTML = `
+      <button class="modal-close" onclick="closeModal()" aria-label="Đóng">×</button>
+      <div class="modal-hero" style="--accent: ${accent}">
+        <span class="badge">${j.badge}</span>
+        <div class="tagline">${j.tagline}</div>
+        <h2>${j.title}</h2>
+        <p class="lead">${j.lead}</p>
+        <div class="quick-info">
+          <div class="qi-item"><div class="qi-label">Mức lương</div><div class="qi-val">${j.salary} ${j.salaryUnit}</div></div>
+          <div class="qi-item"><div class="qi-label">Kinh nghiệm</div><div class="qi-val">${j.experience}</div></div>
+          <div class="qi-item"><div class="qi-label">Hình thức</div><div class="qi-val">${j.type}</div></div>
+          <div class="qi-item"><div class="qi-label">Địa điểm</div><div class="qi-val">${j.location}</div></div>
+          <div class="qi-item"><div class="qi-label">Hạn nộp</div><div class="qi-val">${j.deadline}</div></div>
+        </div>
+      </div>
+      <div class="modal-body" style="--accent: ${accent}">
+
+        <div class="section">
+          <h3>💎 Quyền lợi hấp dẫn</h3>
+          <div class="benefits-hero">
+            <div class="benefits-hero-head">
+              <div class="big-salary">${j.salary}<span class="unit"> ${j.salaryUnit}</span></div>
+              <div class="salary-note">${j.salaryNote}</div>
+            </div>
+            <div class="perks">${perksHtml}</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>🎯 Hệ thống thưởng & hoa hồng</h3>
+          <div style="background: linear-gradient(135deg, var(--gold-bg), transparent); border: 1px solid rgba(201,163,106,0.25); border-radius: var(--radius); padding: 24px 28px;">
+            <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.65; margin-bottom: 14px;">
+              Ngoài lương cứng và hoa hồng cơ bản, THG áp dụng <strong style="color: var(--ink);">hệ thống thưởng đa tầng</strong> để ghi nhận và khích lệ nỗ lực của nhân viên theo nhiều tiêu chí:
+            </p>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
+              ${bonusesHtml.replace(/<li>/g, '<li style="color: var(--ink-2); font-size: 13.5px; line-height: 1.6; padding-left: 26px; position: relative;"><span style="position:absolute;left:4px;top:7px;color:var(--brand);font-weight:700;">✓</span>')}
+            </ul>
+            <p style="color: var(--ink-mute); font-size: 12.5px; line-height: 1.55; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); font-style: italic;">
+              * Chi tiết mức thưởng và điều kiện cụ thể sẽ được trao đổi trong buổi phỏng vấn.
+            </p>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>📋 Mô tả công việc</h3>
+          ${respHtml}
+        </div>
+
+        <div class="section">
+          <h3>✅ Yêu cầu ứng viên</h3>
+          <ul>${j.requirements.map(r => `<li>${r}</li>`).join('')}</ul>
+        </div>
+
+        <div class="section">
+          <h3>📩 Ứng tuyển ngay</h3>
+          <div class="apply-box">
+            <div>
+              <h4>Sẵn sàng gia nhập THG?</h4>
+              <p>Gửi CV và đơn ứng tuyển về <strong>hr@thgfulfill.com</strong><br/>
+              Địa điểm phỏng vấn: 121/5 Kênh 19/05, Phường Tây Thạnh, TP.HCM</p>
+            </div>
+            <div class="apply-actions">
+              <a href="mailto:hr@thgfulfill.com?subject=${subject}&body=${body}">
+                <button class="btn-primary">📧 Gửi CV qua email</button>
+              </a>
+              <button class="btn-ghost" onclick="navigator.clipboard.writeText('hr@thgfulfill.com'); this.textContent='✓ Đã copy email'">Copy email</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    document.getElementById('modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target.id === 'modal') closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
+</body>
+</html>
