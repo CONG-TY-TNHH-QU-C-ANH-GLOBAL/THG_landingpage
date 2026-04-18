@@ -63,7 +63,7 @@ const Navbar = () => {
     { label: t("nav.policy"), href: "/policy" },
     { label: t("nav.news"), href: "/blog" },
     { label: t("nav.faq"), href: "/#faq" },
-    { label: "Tuyển dụng", href: "/careers" },
+    { label: t("nav.careers"), href: "/careers" },
   ];
 
   return (
