@@ -29,6 +29,7 @@ export interface CatalogProduct {
   variants?: {
     id?: string;
     variant: string;
+    series?: string | null;
     color?: string;
     weight?: number;
     length?: number;
