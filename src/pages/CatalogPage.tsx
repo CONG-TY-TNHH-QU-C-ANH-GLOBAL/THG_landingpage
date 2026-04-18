@@ -105,6 +105,11 @@ const CATEGORIES = [
 
 const PAGE_LIMIT = 20;
 
+// Sentinel key for variants without a `series` value. Used to bucket them into
+// an "Other" tab alongside real series groups. Chosen to never collide with a
+// user-entered free-text series label.
+const NO_SERIES_KEY = "__no_series__";
+
 const CatalogPage = () => {
   const { t } = useI18n();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
@@ -122,13 +127,34 @@ const CatalogPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [shareCopied, setShareCopied] = useState(false);
-  // v4 modal state — shipping channel toggle + selected variant index
+  // v4 modal state — shipping channel toggle + selected variant + active series
   const [shipping, setShipping] = useState<"lbl" | "mer">("lbl");
-  const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
+  // Track selection by variant id (stable across series filter changes) rather
+  // than by array index, which would shift when filtering by series.
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+  const [selectedSeries, setSelectedSeries] = useState<string | null>(null);
 
   const searchTimer = useRef<NodeJS.Timeout>();
   // Track latest fetched product id so out-of-order fetches don't override a newer click
   const latestProductIdRef = useRef<string | null>(null);
+
+  // Default the selected variant + series to the first variant once the full
+  // product (with variants) loads. Called from every code path that populates
+  // `selectedProduct` with a variants-bearing response, so the modal always
+  // opens with a sensible default regardless of whether we came from a list
+  // click, a deep link, or a re-fetch.
+  const initializeSelection = useCallback((product: CatalogProduct) => {
+    const vs = product.variants ?? [];
+    if (vs.length === 0) {
+      setSelectedSeries(null);
+      setSelectedVariantId(null);
+      return;
+    }
+    const first = vs[0];
+    const key = (first.series && first.series.trim()) ? first.series : NO_SERIES_KEY;
+    setSelectedSeries(key);
+    setSelectedVariantId(first.id ?? null);
+  }, []);
 
   // Open product modal + push product id to URL for shareable link
   const openProduct = useCallback((product: CatalogProduct) => {
@@ -137,26 +163,31 @@ const CatalogPage = () => {
     setActiveImage(0);
     setShareCopied(false);
     setShipping("lbl");
-    setSelectedVariantIdx(0);
+    // Reset selection — it'll be populated by initializeSelection once the
+    // full product (with variants) resolves from fetchProduct.
+    setSelectedVariantId(null);
+    setSelectedSeries(null);
     // Fetch full detail (with variants) for modal display.
     // Only apply if user is still viewing this product when fetch resolves.
     fetchProduct(product.id)
       .then((full) => {
         if (latestProductIdRef.current === product.id) {
           setSelectedProduct(full);
+          initializeSelection(full);
         }
       })
       .catch(() => { /* keep list-level data */ });
     const url = new URL(window.location.href);
     url.searchParams.set("productId", product.id);
     window.history.replaceState(null, "", url.toString());
-  }, []);
+  }, [initializeSelection]);
 
   const closeProduct = useCallback(() => {
     latestProductIdRef.current = null;
     setSelectedProduct(null);
     setShipping("lbl");
-    setSelectedVariantIdx(0);
+    setSelectedVariantId(null);
+    setSelectedSeries(null);
     const url = new URL(window.location.href);
     url.searchParams.delete("productId");
     window.history.replaceState(null, "", url.pathname + (url.search || "") + url.hash);
@@ -193,7 +224,7 @@ const CatalogPage = () => {
           setSelectedProduct(p);
           setActiveImage(0);
           setShipping("lbl");
-          setSelectedVariantIdx(0);
+          initializeSelection(p);
         }
       })
       .catch(() => {
@@ -203,6 +234,7 @@ const CatalogPage = () => {
         url.searchParams.delete("productId");
         window.history.replaceState(null, "", url.pathname + (url.search || "") + url.hash);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadProducts = useCallback(async () => {
@@ -542,8 +574,50 @@ const CatalogPage = () => {
 
             // ── v4 helpers — pricing model ──
             const variants = selectedProduct.variants ?? [];
-            const safeIdx = Math.min(selectedVariantIdx, Math.max(0, variants.length - 1));
-            const selectedVariant = variants[safeIdx];
+
+            // Group variants by series (preserve insertion order via Map).
+            // Variants with no series get bucketed into NO_SERIES_KEY which is
+            // surfaced as "Other" in the UI.
+            const seriesGroups = new Map<string, typeof variants>();
+            for (const v of variants) {
+              const key = (v.series && v.series.trim()) ? v.series : NO_SERIES_KEY;
+              if (!seriesGroups.has(key)) seriesGroups.set(key, []);
+              seriesGroups.get(key)!.push(v);
+            }
+            const seriesKeys = Array.from(seriesGroups.keys());
+            const hasRealSeries = seriesKeys.some((k) => k !== NO_SERIES_KEY);
+            // Show the Series row only when: there's at least one real series
+            // AND there's more than one group to choose between. Single-group
+            // products fall back to the flat list to avoid a lone "tab".
+            const showSeriesTabs = hasRealSeries && seriesGroups.size > 1;
+
+            // Resolve active series with defensive fallbacks: (1) the user's
+            // last pick if still valid, (2) the series of variants[0], (3) the
+            // sentinel for no-series.
+            const activeSeriesKey =
+              selectedSeries && seriesGroups.has(selectedSeries)
+                ? selectedSeries
+                : ((variants[0]?.series && variants[0].series!.trim())
+                    ? variants[0].series!
+                    : NO_SERIES_KEY);
+            const currentGroup = seriesGroups.get(activeSeriesKey) ?? [];
+
+            // Resolve selected variant with fallbacks. If the user's
+            // selectedVariantId no longer matches anything in the current
+            // group (e.g. after switching series), fall back to the first of
+            // the group, then the first overall, then null.
+            const selectedVariant =
+              (selectedVariantId
+                ? currentGroup.find((v) => v.id === selectedVariantId)
+                : undefined)
+              ?? currentGroup[0]
+              ?? variants[0]
+              ?? null;
+
+            // Label: when ANY variant has a series set, the per-chip values
+            // are phone models (or similar), not garment sizes. Re-label even
+            // when there's a single series and we're not showing the tab row.
+            const variantSectionLabel = hasRealSeries ? "Model" : "Sizes";
 
             // priceSbsl = Ship by Merchant (seller ships, higher price)
             // priceSbtt = Ship by Label (TikTok provides label, lower price)
@@ -659,8 +733,8 @@ const CatalogPage = () => {
                         </div>
                       )}
 
-                      {/* 3. Price block — key includes shipping + size to force remount on EITHER change */}
-                      <div key={`price-${shipping}-${safeIdx}`} className="flex flex-col gap-1">
+                      {/* 3. Price block — key includes shipping + variant id to force remount on EITHER change */}
+                      <div key={`price-${shipping}-${selectedVariant?.id ?? "none"}`} className="flex flex-col gap-1">
                         {hasAnyPrices && currentPrice != null ? (
                           <>
                             <div className="flex items-baseline gap-3 flex-wrap">
@@ -697,7 +771,7 @@ const CatalogPage = () => {
 
                       {/* 4. Variant Details card — key forces remount on size change to avoid any stale-render edge case */}
                       {selectedVariant && (
-                        <div key={`variant-${selectedVariant.id ?? safeIdx}`} className="border border-border/40 rounded-lg overflow-hidden">
+                        <div key={`variant-${selectedVariant.id ?? "none"}`} className="border border-border/40 rounded-lg overflow-hidden">
                           <div className="flex items-center px-4 py-2.5 border-b border-border/40 text-sm gap-2">
                             <span className="text-muted-foreground font-medium w-[120px] flex-shrink-0">THG SKU</span>
                             <button
@@ -725,25 +799,63 @@ const CatalogPage = () => {
                         </div>
                       )}
 
-                      {/* 5. Sizes grid */}
-                      {variants.length > 0 && (
+                      {/* 5a. Series tabs — only when ≥2 groups AND at least one real series */}
+                      {showSeriesTabs && (
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Series</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {seriesKeys.map((key) => {
+                              const isActive = key === activeSeriesKey;
+                              const label = key === NO_SERIES_KEY ? "Other" : key;
+                              return (
+                                <button
+                                  key={key}
+                                  onClick={() => {
+                                    setSelectedSeries(key);
+                                    const g = seriesGroups.get(key);
+                                    // Snap selection to first variant of the
+                                    // newly active series so the detail card +
+                                    // price update immediately (matches mockup).
+                                    if (g && g[0]?.id) setSelectedVariantId(g[0].id);
+                                    else setSelectedVariantId(null);
+                                  }}
+                                  className={`px-3 py-1 rounded-md text-xs font-medium border-[1.5px] transition-all ${isActive
+                                    ? "bg-blue-50 text-blue-700 border-blue-300"
+                                    : "bg-white text-muted-foreground border-border/40 hover:border-blue-300 hover:text-blue-600"
+                                    }`}
+                                >
+                                  {label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 5b. Model / Size grid — filtered to active series when series tabs shown */}
+                      {currentGroup.length > 0 && (
                         <div>
                           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                            Sizes — <span className="font-normal normal-case tracking-normal text-muted-foreground">Selected: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong></span>
+                            {variantSectionLabel} — <span className="font-normal normal-case tracking-normal text-muted-foreground">Selected: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong></span>
                           </p>
                           <div className="flex flex-wrap gap-2">
-                            {variants.map((v, i) => (
-                              <button
-                                key={v.id}
-                                onClick={() => setSelectedVariantIdx(i)}
-                                className={`min-w-[50px] px-3 py-2 rounded-lg text-sm font-semibold border-[1.5px] transition-all ${i === safeIdx
-                                  ? "bg-blue-600 text-white border-blue-600"
-                                  : "bg-white text-foreground border-border/40 hover:border-blue-600 hover:text-blue-600"
-                                  }`}
-                              >
-                                {v.variant || "—"}
-                              </button>
-                            ))}
+                            {currentGroup.map((v) => {
+                              const isActive = selectedVariant?.id === v.id && !!v.id;
+                              return (
+                                <button
+                                  key={v.id ?? v.supplierSku ?? v.variant}
+                                  onClick={() => {
+                                    if (v.id) setSelectedVariantId(v.id);
+                                  }}
+                                  className={`min-w-[50px] px-3 py-2 rounded-lg text-sm font-semibold border-[1.5px] transition-all ${isActive
+                                    ? "bg-blue-600 text-white border-blue-600"
+                                    : "bg-white text-foreground border-border/40 hover:border-blue-600 hover:text-blue-600"
+                                    }`}
+                                >
+                                  {v.variant || "—"}
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
