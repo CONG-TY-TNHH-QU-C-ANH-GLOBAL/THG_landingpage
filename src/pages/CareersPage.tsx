@@ -414,7 +414,9 @@ const CareersPage = () => {
                                 <p className="text-white/70 mt-3 text-[15px]" dangerouslySetInnerHTML={{ __html: t("careers.cta_desc") }}></p>
                             </div>
                             <div className="relative z-10 shrink-0">
-                                <div className="px-8 py-4 rounded-full font-bold text-[15px] border border-[hsl(var(--gold))]/30 text-[hsl(var(--gold))] bg-[hsl(var(--gold))]/10">{t("careers.cta_btn")}</div>
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=career@thgfulfill.com" target="_blank" rel="noopener noreferrer">
+                                    <div className="px-8 py-4 rounded-full font-bold text-[15px] border border-[hsl(var(--gold))]/30 text-[hsl(var(--gold))] bg-[hsl(var(--gold))]/10 transition-all hover:-translate-y-0.5 hover:bg-[hsl(var(--gold))]/20">{t("careers.cta_btn")}</div>
+                                </a>
                             </div>
                         </div>
                     </ScrollReveal>
@@ -532,10 +534,10 @@ const CareersPage = () => {
                                         <p className="text-white/70 text-[13.5px] mt-1.5" dangerouslySetInnerHTML={{ __html: t("careers.modal_apply_desc") }}></p>
                                     </div>
                                     <div className="flex gap-2.5 flex-wrap relative z-10">
-                                        <a href={`mailto:hr@thgfulfill.com?subject=${encodeURIComponent(`${t("careers.modal_apply")} : ${activeJob.title} — THG Fulfill 04/2026`)}`}>
+                                        <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=career@thgfulfill.com&su=${encodeURIComponent(`${t("careers.modal_apply")} : ${activeJob.title} — THG Fulfill 04/2026`)}`} target="_blank" rel="noopener noreferrer">
                                             <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3.5 rounded-full font-bold text-sm shadow-lg transition-all hover:-translate-y-0.5">📧 {t("careers.modal_btn_email") || "Gửi CV qua email"}</button>
                                         </a>
-                                        <button onClick={() => { navigator.clipboard.writeText("hr@thgfulfill.com") }} className="bg-transparent border border-white/25 text-white hover:border-[hsl(var(--gold))] hover:text-[hsl(var(--gold))] px-5 py-3.5 rounded-full font-semibold text-sm transition-all">{t("careers.modal_btn_copy") || "Copy email"}</button>
+                                        <button onClick={() => { navigator.clipboard.writeText("career@thgfulfill.com") }} className="bg-transparent border border-white/25 text-white hover:border-[hsl(var(--gold))] hover:text-[hsl(var(--gold))] px-5 py-3.5 rounded-full font-semibold text-sm transition-all">{t("careers.modal_btn_copy") || "Copy email"}</button>
                                     </div>
                                 </div>
                             </div>
