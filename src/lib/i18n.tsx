@@ -253,7 +253,7 @@ const translations: Translations = {
   "careers.modal_req": { en: "Requirements", vi: "Yêu cầu ứng viên", zh: "任职要求" },
   "careers.modal_apply": { en: "Apply Now", vi: "Ứng tuyển ngay", zh: "立即申请" },
   "careers.modal_apply_title": { en: "Ready to join THG?", vi: "Sẵn sàng gia nhập THG?", zh: "准备加入 THG？" },
-  "careers.modal_apply_desc": { en: "Send your CV and application to <strong class=\"text-[hsl(var(--gold))]\">career@thgfulfill.com</strong><br />Interview Location: 121/5 Kenh 19/05, Tay Thanh Ward, HCMC", vi: "Gửi CV và đơn ứng tuyển về <strong class=\"text-[hsl(var(--gold))]\">career@thgfulfill.com</strong><br />Địa điểm phỏng vấn: 121/5 Kênh 19/05, Phường Tây Thạnh, TP.HCM", zh: "将简历及求职信发送至 <strong class=\"text-[hsl(var(--gold))]\">career@thgfulfill.com</strong><br />面试地点：胡志明市新富郡西盛坊19/05渠街121/5号" },
+  "careers.modal_apply_desc": { en: "Send your CV and application to <strong class=\"text-[hsl(var(--gold))]\">careers@thgfulfill.com</strong><br />Interview Location: 121/5 Kenh 19/05, Tay Thanh Ward, HCMC", vi: "Gửi CV và đơn ứng tuyển về <strong class=\"text-[hsl(var(--gold))]\">careers@thgfulfill.com</strong><br />Địa điểm phỏng vấn: 121/5 Kênh 19/05, Phường Tây Thạnh, TP.HCM", zh: "将简历及求职信发送至 <strong class=\"text-[hsl(var(--gold))]\">careers@thgfulfill.com</strong><br />面试地点：胡志明市新富郡西盛坊19/05渠街121/5号" },
   "careers.modal_btn_email": { en: "Send CV via Email", vi: "Gửi CV qua email", zh: "通过邮件发送简历" },
   "careers.modal_btn_copy": { en: "Copy Email", vi: "Copy email", zh: "复制邮箱" },
   "careers.modal_ben_title": { en: "Attractive Benefits", vi: "Quyền lợi hấp dẫn", zh: "丰厚福利" },
@@ -264,7 +264,7 @@ const translations: Translations = {
 
   "careers.cta_title1": { en: "Don't see a fit?", vi: "Không thấy vị trí phù hợp?", zh: "没找到合适的职位？" },
   "careers.cta_title2": { en: "We still want to know you.", vi: "Chúng tôi vẫn muốn biết bạn.", zh: "我们依然期待认识你。" },
-  "careers.cta_desc": { en: "Send your CV and your aspirations to <strong class=\"text-[hsl(var(--gold))]\">career@thgfulfill.com</strong> — THG is always open for exceptional talents.", vi: "Gửi CV cùng mong muốn của bạn về <strong class=\"text-[hsl(var(--gold))]\">career@thgfulfill.com</strong> — THG luôn mở cửa với những tài năng xuất sắc.", zh: "将简历及期望发送至 <strong class=\"text-[hsl(var(--gold))]\">career@thgfulfill.com</strong> — THG 始终欢迎优秀人才加盟。" },
+  "careers.cta_desc": { en: "Send your CV and your aspirations to <strong class=\"text-[hsl(var(--gold))]\">careers@thgfulfill.com</strong> — THG is always open for exceptional talents.", vi: "Gửi CV cùng mong muốn của bạn về <strong class=\"text-[hsl(var(--gold))]\">careers@thgfulfill.com</strong> — THG luôn mở cửa với những tài năng xuất sắc.", zh: "将简历及期望发送至 <strong class=\"text-[hsl(var(--gold))]\">careers@thgfulfill.com</strong> — THG 始终欢迎优秀人才加盟。" },
   "careers.cta_btn": { en: "Send CV now →", vi: "Gửi CV ngay →", zh: "即刻发简历 →" },
 
   "careers.hero_badge2": { en: "Careers · April 2026", vi: "Tuyển dụng · Tháng 04/2026", zh: "招骋 · 2026年4月" },
