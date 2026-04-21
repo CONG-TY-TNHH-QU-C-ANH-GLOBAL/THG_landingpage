@@ -183,6 +183,30 @@ const THGFulfillPage = () => {
         </div>
       </section>
 
+      {/* Overview Videos */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4 text-center">
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <ScrollReveal delay={100} direction="up">
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
+                <YouTubeEmbed videoId="UwaZw5Eh-Yg" title="THG Fulfill Overview 1" aspectRatio="auto" />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={200} direction="up">
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
+                <YouTubeEmbed videoId="ZA37yjN-_x8" title="THG Fulfill Overview 2" aspectRatio="auto" />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={300} direction="up">
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
+                <YouTubeEmbed videoId="6GkUcZhun90" title="THG Fulfill Overview 3" aspectRatio="auto" />
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
       {/* Pain Points */}
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">

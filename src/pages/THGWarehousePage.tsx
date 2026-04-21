@@ -117,10 +117,17 @@ const THGWarehousePage = () => {
               <span className="text-primary font-bold text-base md:text-lg uppercase tracking-widest">{t("warehouse_page.hero_tagline2")}</span>
             </div>
           </ScrollReveal>
-          {/* Hero image */}
+          {/* Hero videos */}
           <ScrollReveal delay={300}>
-            <div className="max-w-2xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform mb-8 aspect-video">
-              <YouTubeEmbed videoId="KPhQYnkYA68" className="w-full h-full" autoplay />
+            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6 lg:gap-8 mb-8">
+              <div className="rounded-2xl flex overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform aspect-video bg-black relative group">
+                <YouTubeEmbed videoId="KPhQYnkYA68" className="w-full h-full" />
+                <div className="absolute inset-0 pointer-events-none border border-white/10 rounded-2xl"></div>
+              </div>
+              <div className="rounded-2xl flex overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform aspect-video bg-black relative group">
+                <YouTubeEmbed videoId="blS1dmH_xb8" className="w-full h-full" />
+                <div className="absolute inset-0 pointer-events-none border border-white/10 rounded-2xl"></div>
+              </div>
             </div>
           </ScrollReveal>
           <ScrollReveal delay={400}>

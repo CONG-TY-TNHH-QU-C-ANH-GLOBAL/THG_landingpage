@@ -142,21 +142,29 @@ const THGExpressPage = () => {
       {/* 3. VIDEO LOGISTICS PARTNERSHIP */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 max-w-5xl mx-auto">
             <ScrollReveal delay={100} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
-                <YouTubeEmbed videoId="UwaZw5Eh-Yg" title="THG Express Overview 1" aspectRatio="auto" />
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
+                <YouTubeEmbed videoId="BJmuA108gok" title="Bảng Giá THG Line Tiktok" aspectRatio="auto" />
+                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={200} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
-                <YouTubeEmbed videoId="ZA37yjN-_x8" title="THG Express Overview 2" aspectRatio="auto" />
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
+                <YouTubeEmbed videoId="Exf5DauvQEM" title="Giao Hàng Tiktokshop Global" aspectRatio="auto" />
+                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
               </div>
             </ScrollReveal>
             <ScrollReveal delay={300} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
-                <YouTubeEmbed videoId="6GkUcZhun90" title="THG Express Overview 3" aspectRatio="auto" />
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
+                <YouTubeEmbed videoId="fIg0fhQlVXg" title="Ship Hàng Đi Mỹ" aspectRatio="auto" />
+                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal delay={400} direction="up">
+              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
+                <YouTubeEmbed videoId="MXpMVfLgKTw" title="Thủ Tục Hải Quan Global" aspectRatio="auto" />
+                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
               </div>
             </ScrollReveal>
           </div>
