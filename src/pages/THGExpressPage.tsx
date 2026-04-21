@@ -72,7 +72,7 @@ const THGExpressPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
 
 
@@ -146,12 +146,6 @@ const THGExpressPage = () => {
             <ScrollReveal delay={100} direction="up">
               <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
                 <YouTubeEmbed videoId="BJmuA108gok" title="Bảng Giá THG Line Tiktok" aspectRatio="auto" />
-                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={200} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
-                <YouTubeEmbed videoId="Exf5DauvQEM" title="Giao Hàng Tiktokshop Global" aspectRatio="auto" />
                 <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
               </div>
             </ScrollReveal>
