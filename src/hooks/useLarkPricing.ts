@@ -166,6 +166,7 @@ async function discoverSheetTabs(): Promise<{ gid: string; title: string }[]> {
 
     // Fallback: hardcoded tab list (will still fetch live data from each tab)
     return [
+        { gid: "1339656958", title: "US domestic pricing" },
         { gid: "1726547706", title: "Epacket - Standard VN - WW (VNTHZXR)" },
         { gid: "460331483", title: "Epacket - Standard VN-WW Cosmestic (VNMUZXR)" },
         { gid: "1354933282", title: "Epacket - Priority USPS VN-US (YTYCPREC)" },

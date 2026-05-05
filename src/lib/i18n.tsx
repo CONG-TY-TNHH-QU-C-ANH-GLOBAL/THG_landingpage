@@ -752,6 +752,7 @@ const translations: Translations = {
   "domestic.hero_desc": { en: "Competitive USPS rates from THG Warehouse fulfillment centers", vi: "Cước phí USPS cạnh tranh từ các trung tâm fulfillment của", zh: "来自THG Warehouse履约中心的有竞争力的USPS费率" },
   "domestic.table_title": { en: "Shipping Rates by Zone", vi: "Bảng Giá Cước Theo Zone", zh: "按区域运费" },
   "domestic.table_desc": { en: "USPS reference rates • Zone 1–9", vi: "Giá tham khảo USPS • Zone 1–9", zh: "USPS参考费率 • Zone 1–9" },
+  "domestic.fuel_surcharge": { en: "Shipping cost includes USPS 8% fuel surcharge", vi: "Phí vận chuyển đã bao gồm 8% phụ phí nhiên liệu USPS", zh: "运费包含8%的USPS燃油附加费" },
   "domestic.swipe_hint": { en: "👉 Swipe to see more zones", vi: "👉 Vuốt ngang để xem thêm zone", zh: "👉 滑动查看更多区域" },
   "domestic.collapse": { en: "Collapse", vi: "Thu gọn", zh: "收起" },
   "domestic.see_more": { en: "See more ({count} rows)", vi: "Xem thêm ({count} dòng)", zh: "查看更多 ({count} 行)" },

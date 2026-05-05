@@ -62,12 +62,12 @@ const DomesticPricingContent = () => {
         if (!lark.sheets) return fallbackRows;
         for (const [, sheet] of Object.entries(lark.sheets)) {
             const title = sheet.title?.trim().toLowerCase();
-            if (title === "domesticpricing" || title === "noidia" || title === "nội địa" || title === "domestic") {
+            if (title === "domesticpricing" || title === "noidia" || title === "nội địa" || title === "domestic" || title === "us domestic pricing") {
                 const transformed = transformSheetToDomesticData(sheet.data);
                 if (transformed.length > 0) {
                     return transformed.map(r => ({
-                        STT: r.STT || "",
-                        weight: r["Weight Not Over (in ounces)"] || "",
+                        STT: r.STT || r.No || "",
+                        weight: r["Weight Not Over (in ounces)"] || r["Weight Not Over (ounces)"] || "",
                         gram: r.Gram || r.gram || "",
                         zones: {
                             1: r["Zone 1"] || "",
@@ -188,6 +188,12 @@ const DomesticPricingContent = () => {
                                     <FileSpreadsheet size={14} />
                                 </button>
                             </div>
+                        </div>
+
+                        <div className="bg-amber-50/50 dark:bg-amber-900/10 px-4 py-2 border-b border-border/30">
+                            <p className="text-[11px] md:text-xs text-amber-700 dark:text-amber-400 font-medium flex items-center gap-1.5 italic">
+                                <span>*</span> {t("domestic.fuel_surcharge")}
+                            </p>
                         </div>
 
                         {(canScrollLeft || canScrollRight) && (

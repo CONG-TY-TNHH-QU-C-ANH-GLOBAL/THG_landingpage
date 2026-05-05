@@ -239,7 +239,7 @@ export function transformSheetToDomesticData(rows: any[][]): any[] {
             obj[key] = row[i] !== null && row[i] !== undefined ? String(row[i]) : "";
         });
         return obj;
-    }).filter(r => r.STT || r["Weight Not Over (in ounces)"]);
+    }).filter(r => r.STT || r.No || r["Weight Not Over (in ounces)"] || r["Weight Not Over (ounces)"]);
 }
 
 /**
