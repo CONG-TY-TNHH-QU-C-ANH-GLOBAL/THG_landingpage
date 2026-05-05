@@ -93,7 +93,7 @@ const DomesticPricingContent = () => {
     const exportConfig = useMemo(() => {
         const headers = ["Weight Not Over (in ounces)", "Gram", ...ZONES.map(z => `Zone ${z}`)];
         const rows = domesticPricingRows.map((row, i) => [
-            OZ_VALUES[i] || "",
+            row.weight ? (String(row.weight).includes('oz') ? row.weight : `${row.weight} oz`) : (OZ_VALUES[i] || ""),
             row.gram,
             ...ZONES.map(z => row.zones[z])
         ]);
@@ -229,16 +229,20 @@ const DomesticPricingContent = () => {
                                                     <span className="text-[11px] md:text-[13px]">{idx + 1}</span>
                                                 </td>
                                                 <td className="px-2 md:px-3 py-1.5 md:py-2 text-center font-semibold whitespace-nowrap border-r border-border/30">
-                                                    <span className="text-[11px] md:text-[13px]">{OZ_VALUES[idx] || row.weight}</span>
+                                                    <span className="text-[11px] md:text-[13px]">{row.weight ? (String(row.weight).includes('oz') ? row.weight : `${row.weight} oz`) : (OZ_VALUES[idx] || "")}</span>
                                                 </td>
                                                 <td className="px-2 md:px-3 py-1.5 md:py-2 text-center font-semibold whitespace-nowrap border-r border-border/30">
                                                     <span className="text-[11px] md:text-[13px]">{row.gram}</span>
                                                 </td>
-                                                {ZONES.map((z) => (
-                                                    <td key={z} className="px-2 md:px-3 py-1.5 md:py-2 text-center font-bold text-primary whitespace-nowrap border-r border-border/20 last:border-r-0">
-                                                        <span className="notranslate" translate="no">{row.zones[z]}</span>
-                                                    </td>
-                                                ))}
+                                                {ZONES.map((z) => {
+                                                    const val = row.zones[z];
+                                                    const displayVal = (val && val !== "-" && !String(val).includes("$")) ? `$${val}` : val;
+                                                    return (
+                                                        <td key={z} className="px-2 md:px-3 py-1.5 md:py-2 text-center font-bold text-primary whitespace-nowrap border-r border-border/20 last:border-r-0">
+                                                            <span className="notranslate" translate="no">{displayVal}</span>
+                                                        </td>
+                                                    );
+                                                })}
                                             </tr>
                                         ))}
                                     </tbody>
