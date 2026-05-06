@@ -65,9 +65,36 @@ const DomesticPricingContent = () => {
 
     const domesticPricingRows = useMemo(() => {
         if (!lark.sheets) return fallbackRows;
+
+        // Priority 1: Match by exact GID of "US domestic pricing" sheet
+        const US_DOMESTIC_GID = "1339656958";
+        const prioritySheet = lark.sheets[US_DOMESTIC_GID];
+        if (prioritySheet?.data) {
+            const transformed = transformSheetToDomesticData(prioritySheet.data);
+            if (transformed.length > 0) {
+                return transformed.map(r => ({
+                    STT: r.STT || r.No || "",
+                    weight: r["Weight Not Over (in ounces)"] || r["Weight Not Over (ounces)"] || "",
+                    gram: r.Gram || r.gram || "",
+                    zones: {
+                        1: r["Zone 1"] || "",
+                        2: r["Zone 2"] || "",
+                        3: r["Zone 3"] || "",
+                        4: r["Zone 4"] || "",
+                        5: r["Zone 5"] || "",
+                        6: r["Zone 6"] || "",
+                        7: r["Zone 7"] || "",
+                        8: r["Zone 8"] || "",
+                        9: r["Zone 9"] || "",
+                    },
+                })) as DomesticPricingRow[];
+            }
+        }
+
+        // Priority 2: Fallback — match by title (for backward compatibility)
         for (const [, sheet] of Object.entries(lark.sheets)) {
             const title = sheet.title?.trim().toLowerCase();
-            if (title === "domesticpricing" || title === "noidia" || title === "nội địa" || title === "domestic" || title === "us domestic pricing") {
+            if (title === "us domestic pricing" || title === "domesticpricing" || title === "noidia" || title === "nội địa" || title === "domestic") {
                 const transformed = transformSheetToDomesticData(sheet.data);
                 if (transformed.length > 0) {
                     return transformed.map(r => ({

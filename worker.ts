@@ -65,6 +65,25 @@ export default {
         const url = new URL(req.url);
         if (url.pathname === "/api/gemini") return handleGemini(req, env);
         if (url.pathname === "/api/imagen") return handleImagen(req, env);
-        return env.ASSETS.fetch(req);
+
+        // Serve static assets from Cloudflare
+        const response = await env.ASSETS.fetch(req);
+
+        // Force no-cache on HTML responses (index.html) so browsers always
+        // revalidate and pick up the latest JS bundle references after deploys.
+        // Hashed assets (JS/CSS/images) are fine to cache long-term.
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("text/html")) {
+            const headers = new Headers(response.headers);
+            headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+            headers.set("Pragma", "no-cache");
+            headers.set("Expires", "0");
+            return new Response(response.body, {
+                status: response.status,
+                headers,
+            });
+        }
+
+        return response;
     }
 };
