@@ -37,3 +37,29 @@ jobs:
           strip_components: 1
           overwrite: true
           rm: true
+
+      - name: Configure nginx cache headers
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            # Ensure nginx doesn't cache index.html so new deploys take effect immediately
+            NGINX_CONF="/etc/nginx/snippets/thg-cache.conf"
+            sudo tee $NGINX_CONF > /dev/null << 'EOF'
+            # HTML files: never cache (so new deploys are picked up immediately)
+            location ~* \.html$ {
+                add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+                add_header Pragma "no-cache" always;
+                add_header Expires "0" always;
+            }
+            # Hashed assets (JS/CSS/images): cache aggressively (Vite adds content hash)
+            location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?)$ {
+                expires 1y;
+                add_header Cache-Control "public, immutable" always;
+            }
+            EOF
+            # Test and reload nginx (only if config is valid)
+            sudo nginx -t && sudo systemctl reload nginx || echo "nginx config unchanged"
