@@ -64,6 +64,7 @@ const DomesticPricingContent = () => {
     };
 
     const domesticPricingRows = useMemo(() => {
+        // Show bundled fallback instantly (synced at build time by prebuild script)
         if (!lark.sheets) return fallbackRows;
 
         // Priority 1: Match by exact GID of "US domestic pricing" sheet
