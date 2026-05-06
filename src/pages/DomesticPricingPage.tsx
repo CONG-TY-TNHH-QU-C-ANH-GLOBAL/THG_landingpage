@@ -37,6 +37,11 @@ const DomesticPricingContent = () => {
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
 
+    // Always re-fetch fresh data when navigating to this page
+    useEffect(() => {
+        lark.refetch();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     const checkScroll = useCallback(() => {
         const el = scrollRef.current;
         if (!el) return;

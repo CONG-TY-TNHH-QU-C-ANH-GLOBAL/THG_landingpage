@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 
 import ContactSection from "@/components/ContactSection";
@@ -25,6 +25,11 @@ import ExpressCnUsPanel from "@/components/pricing/ExpressCnUsPanel";
 const InternationalPricingPage = () => {
   const { t, tVi, effectiveLanguage: lang } = useI18n();
   const lark = useLarkPricingContext();
+
+  // Always re-fetch fresh data when navigating to this page
+  useEffect(() => {
+    lark.refetch();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // State
   const [service, setService] = useState<ServiceTab>("epacket");
