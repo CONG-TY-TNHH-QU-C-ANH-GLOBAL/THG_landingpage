@@ -18,6 +18,35 @@ import packagingImg from "@/assets/Warehouse_bao bì.png";
 const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
 
+/** Lightweight CSV parser for Google Sheets export */
+function parseCSVSimple(csv: string): any[][] {
+    const rows: any[][] = [];
+    let i = 0;
+    const len = csv.length;
+    while (i < len) {
+        const row: any[] = [];
+        while (i < len) {
+            let value = "";
+            if (csv[i] === '"') {
+                i++;
+                while (i < len) {
+                    if (csv[i] === '"') {
+                        if (i + 1 < len && csv[i + 1] === '"') { value += '"'; i += 2; }
+                        else { i++; break; }
+                    } else { value += csv[i]; i++; }
+                }
+            } else {
+                while (i < len && csv[i] !== ',' && csv[i] !== '\n' && csv[i] !== '\r') { value += csv[i]; i++; }
+            }
+            row.push(value.trim());
+            if (i < len && csv[i] === ',') { i++; }
+            else { if (i < len && csv[i] === '\r') i++; if (i < len && csv[i] === '\n') i++; break; }
+        }
+        if (row.length > 0 && !(row.length === 1 && row[0] === '')) rows.push(row);
+    }
+    return rows;
+}
+
 const OZ_VALUES = [
     "4 oz", "8 oz", "12 oz", "16 oz", "32 oz", "48 oz", "64 oz", "80 oz", "96 oz",
     "112 oz", "128 oz", "144 oz", "160 oz", "176 oz", "192 oz", "208 oz", "224 oz", "240 oz", "256 oz",
@@ -63,42 +92,23 @@ const DomesticPricingContent = () => {
         scrollRef.current?.scrollBy({ left: dir * 150, behavior: "smooth" });
     };
 
-    const domesticPricingRows = useMemo(() => {
-        // Show bundled fallback instantly (synced at build time by prebuild script)
-        if (!lark.sheets) return fallbackRows;
+    // ── Direct fetch: always get fresh data from Google Sheets ──
+    // This runs independently of LarkPricingProvider, fetching ONLY the
+    // US domestic pricing tab (~500ms). Even if browser serves old cached JS,
+    // this fetch always gets the latest data.
+    const [liveRows, setLiveRows] = useState<DomesticPricingRow[] | null>(null);
 
-        // Priority 1: Match by exact GID of "US domestic pricing" sheet
-        const US_DOMESTIC_GID = "1339656958";
-        const prioritySheet = lark.sheets[US_DOMESTIC_GID];
-        if (prioritySheet?.data) {
-            const transformed = transformSheetToDomesticData(prioritySheet.data);
-            if (transformed.length > 0) {
-                return transformed.map(r => ({
-                    STT: r.STT || r.No || "",
-                    weight: r["Weight Not Over (in ounces)"] || r["Weight Not Over (ounces)"] || "",
-                    gram: r.Gram || r.gram || "",
-                    zones: {
-                        1: r["Zone 1"] || "",
-                        2: r["Zone 2"] || "",
-                        3: r["Zone 3"] || "",
-                        4: r["Zone 4"] || "",
-                        5: r["Zone 5"] || "",
-                        6: r["Zone 6"] || "",
-                        7: r["Zone 7"] || "",
-                        8: r["Zone 8"] || "",
-                        9: r["Zone 9"] || "",
-                    },
-                })) as DomesticPricingRow[];
-            }
-        }
+    useEffect(() => {
+        const SPREADSHEET_ID = "1woNrfCqybDs0zYKbGnilchhXE6JaWLAsOJxN-pQO0e4";
+        const GID = "1339656958";
+        const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}&_t=${Date.now()}`;
 
-        // Priority 2: Fallback — match by title (for backward compatibility)
-        for (const [, sheet] of Object.entries(lark.sheets)) {
-            const title = sheet.title?.trim().toLowerCase();
-            if (title === "us domestic pricing" || title === "domesticpricing" || title === "noidia" || title === "nội địa" || title === "domestic") {
-                const transformed = transformSheetToDomesticData(sheet.data);
-                if (transformed.length > 0) {
-                    return transformed.map(r => ({
+        fetch(url, { cache: "no-store" })
+            .then(res => res.ok ? res.text() : Promise.reject(res.status))
+            .then(csv => {
+                const rows = transformSheetToDomesticData(parseCSVSimple(csv));
+                if (rows.length > 0) {
+                    setLiveRows(rows.map(r => ({
                         STT: r.STT || r.No || "",
                         weight: r["Weight Not Over (in ounces)"] || r["Weight Not Over (ounces)"] || "",
                         gram: r.Gram || r.gram || "",
@@ -113,12 +123,14 @@ const DomesticPricingContent = () => {
                             8: r["Zone 8"] || "",
                             9: r["Zone 9"] || "",
                         },
-                    })) as DomesticPricingRow[];
+                    })) as DomesticPricingRow[]);
                 }
-            }
-        }
-        return fallbackRows;
-    }, [lark.sheets]);
+            })
+            .catch(err => console.warn("[Domestic] Direct fetch failed, using fallback:", err));
+    }, []);
+
+    // Use live data if available, otherwise bundled fallback (synced at build time)
+    const domesticPricingRows = liveRows || fallbackRows;
 
     const displayRows = showAll ? domesticPricingRows : domesticPricingRows.slice(0, INITIAL_ROWS);
     const hasMore = domesticPricingRows.length > INITIAL_ROWS;
