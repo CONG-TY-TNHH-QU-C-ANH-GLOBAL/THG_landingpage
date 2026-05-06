@@ -128,8 +128,8 @@ function parseCSVValue(trimmed: string): any {
  * Fetch a single sheet tab's data as CSV from Google Sheets.
  */
 async function fetchSheetCSV(gid: string): Promise<any[][]> {
-    const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}`;
-    const res = await fetch(url);
+    const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}&_t=${Date.now()}`;
+    const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status} for gid=${gid}`);
     const csv = await res.text();
     return parseCSV(csv);
@@ -142,8 +142,8 @@ async function fetchSheetCSV(gid: string): Promise<any[][]> {
 async function discoverSheetTabs(): Promise<{ gid: string; title: string }[]> {
     try {
         // Fetch the published HTML version to discover tabs
-        const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/htmlembed`;
-        const res = await fetch(url);
+        const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/htmlembed?_t=${Date.now()}`;
+        const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const html = await res.text();
 
@@ -283,8 +283,8 @@ export function useLarkSheetRange<T = any[][]>(
     const doFetch = useCallback(async () => {
         setLoading(true);
         try {
-            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${encodeURIComponent(sheetId)}`;
-            const res = await fetch(url);
+            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${encodeURIComponent(sheetId)}&_t=${Date.now()}`;
+            const res = await fetch(url, { cache: "no-store" });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const csv = await res.text();
             const parsed = parseCSV(csv);
