@@ -1,4 +1,7 @@
-const API_BASE = "https://dev.thgfulfill.com/api/public/catalog";
+// Canonical hub URL (was dev.thgfulfill.com — domain rename
+// 2026-05-09). Cloudflare DNS for the dev hostname is being retired
+// so the public catalog page must point at the new origin.
+const API_BASE = "https://hub.thgfulfill.com/api/public/catalog";
 
 export interface CatalogProduct {
   id: string;
