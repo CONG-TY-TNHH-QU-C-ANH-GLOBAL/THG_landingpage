@@ -303,7 +303,7 @@ const THGOrderPage = () => {
                       <iframe src={`https://www.youtube.com/embed/${v.id}?autoplay=1`} className="absolute inset-0 w-full h-full" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
                     ) : (
                       <div className="absolute inset-0 bg-navy/80 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group hover:bg-navy/60" onClick={() => setPlayingVideo(p => ({ ...p, [i]: true }))}>
-                        <img src={`https://img.youtube.com/vi/${v.id}/maxresdefault.jpg`} onError={(e) => { e.currentTarget.src = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`; }} alt="Video Thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:opacity-80 transition-opacity duration-500" />
+                        <img loading="lazy" src={`https://img.youtube.com/vi/${v.id}/maxresdefault.jpg`} onError={(e) => { e.currentTarget.src = `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`; }} alt="Video Thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:opacity-80 transition-opacity duration-500" />
                         <div className="relative z-10 w-16 h-16 rounded-full bg-red-600/90 border border-white/20 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 group-hover:bg-red-600 transition-all shadow-[0_4px_12px_rgba(220,38,38,0.4)]">
                           <Play className="w-6 h-6 text-white fill-white ml-1" />
                         </div>
@@ -341,7 +341,7 @@ const THGOrderPage = () => {
                   <div className="text-[hsl(var(--gold))] text-lg mb-3">★★★★★</div>
                   <p className="text-sm text-muted-foreground leading-relaxed flex-1 mb-4">{t(tm.textKey)}</p>
                   <div className="flex items-center gap-3 mt-auto pt-3 border-t border-border/30">
-                    <img src={tm.avatar} alt={tm.nameKey} className="w-10 h-10 rounded-full object-cover shadow-sm bg-secondary" />
+                    <img loading="lazy" src={tm.avatar} alt={tm.nameKey} className="w-10 h-10 rounded-full object-cover shadow-sm bg-secondary" />
                     <div>
                       <div className="text-sm font-bold text-navy">{tm.nameKey}</div>
                       <div className="text-xs text-muted-foreground">{tm.locKey}</div>

@@ -139,40 +139,21 @@ const Navbar = () => {
               style={{ transitionTimingFunction: "var(--motion-spring)" }}
             >
               <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 w-[320px] space-y-1">
-                {pricingItems.map((item: any) => (
-                  item.external ? (
-                    <a
-                      key={item.titleKey}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
-                      onClick={() => setShowPricing(false)}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
-                        <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
-                      </div>
-                      <div>
-                        <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{t(item.titleKey)}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{t(item.descKey)}</p>
-                      </div>
-                    </a>
-                  ) : (
-                    <Link
-                      key={item.titleKey}
-                      to={item.href}
-                      className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
-                      onClick={() => setShowPricing(false)}
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
-                        <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
-                      </div>
-                      <div>
-                        <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{t(item.titleKey)}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{t(item.descKey)}</p>
-                      </div>
-                    </Link>
-                  )
+                {pricingItems.map((item) => (
+                  <Link
+                    key={item.titleKey}
+                    to={item.href}
+                    className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
+                    onClick={() => setShowPricing(false)}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
+                      <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
+                    </div>
+                    <div>
+                      <p className={`text-sm font-semibold text-foreground ${item.titleKey.includes('thg_') ? 'notranslate' : ''}`}>{t(item.titleKey)}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed" >{t(item.descKey)}</p>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -254,30 +235,16 @@ const Navbar = () => {
           ))}
           <div className="border-t border-border/50 my-3" />
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{t("nav.pricing")}</span></p>
-          {pricingItems.map((item: any) => (
-            item.external ? (
-              <a
-                key={item.titleKey}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <item.icon className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium" translate="no">{t(item.titleKey)}</span>
-              </a>
-            ) : (
-              <Link
-                key={item.titleKey}
-                to={item.href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                <item.icon className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium" translate="no">{t(item.titleKey)}</span>
-              </Link>
-            )
+          {pricingItems.map((item) => (
+            <Link
+              key={item.titleKey}
+              to={item.href}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              <item.icon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium" translate="no">{t(item.titleKey)}</span>
+            </Link>
           ))}
           <div className="border-t border-border/50 my-3" />
           {navItems.map((item) =>

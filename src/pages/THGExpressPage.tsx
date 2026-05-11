@@ -462,7 +462,7 @@ const THGExpressPage = () => {
 
               {/* Card 01 */}
               <ScrollReveal delay={100} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_4390-20250726042334-q7ti-.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img loading="lazy" src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_4390-20250726042334-q7ti-.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>
@@ -476,7 +476,7 @@ const THGExpressPage = () => {
 
               {/* Card 02 */}
               <ScrollReveal delay={200} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_9554-20250726042334--dcox.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img loading="lazy" src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_9554-20250726042334--dcox.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>
@@ -491,7 +491,7 @@ const THGExpressPage = () => {
 
               {/* Card 03 */}
               <ScrollReveal delay={300} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_7919-20250811065942-lqajy.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img loading="lazy" src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_7919-20250811065942-lqajy.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>
@@ -505,7 +505,7 @@ const THGExpressPage = () => {
 
               {/* Card 04 */}
               <ScrollReveal delay={400} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/cong-ty-van-chuyen-quoc-te-20250808094223-li7pn.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img loading="lazy" src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/cong-ty-van-chuyen-quoc-te-20250808094223-li7pn.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>
@@ -568,9 +568,9 @@ const THGExpressPage = () => {
         <div className="container mx-auto px-4">
           <ScrollReveal delay={200} direction="up">
             <div className="flex flex-wrap justify-center items-center gap-12 opacity-80 mix-blend-multiply">
-              <img src="https://w.ladicdn.com/s500x500/67e69e24e8a7ba001127c80a/2-20250817133921-avbgq.png" alt="EVRi" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-              <img src="https://w.ladicdn.com/s550x550/67e69e24e8a7ba001127c80a/1-20250817133921-ocutm.png" alt="USPS" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
-              <img src="https://w.ladicdn.com/s500x500/67e69e24e8a7ba001127c80a/3-20250817133921-gvcob.png" alt="YunExpress" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+              <img loading="lazy" src="https://w.ladicdn.com/s500x500/67e69e24e8a7ba001127c80a/2-20250817133921-avbgq.png" alt="EVRi" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+              <img loading="lazy" src="https://w.ladicdn.com/s550x550/67e69e24e8a7ba001127c80a/1-20250817133921-ocutm.png" alt="USPS" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
+              <img loading="lazy" src="https://w.ladicdn.com/s500x500/67e69e24e8a7ba001127c80a/3-20250817133921-gvcob.png" alt="YunExpress" className="h-16 object-contain grayscale hover:grayscale-0 transition-all duration-300" />
             </div>
           </ScrollReveal>
         </div>

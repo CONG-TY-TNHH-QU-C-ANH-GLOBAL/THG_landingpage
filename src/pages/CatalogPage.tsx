@@ -701,7 +701,7 @@ const CatalogPage = () => {
                             className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-blue-600" : "border-border/30 opacity-60 hover:opacity-100"
                               }`}
                           >
-                            <img src={img} alt="" className="w-full h-full object-contain p-0.5" />
+                            <img loading="lazy" src={img} alt="" className="w-full h-full object-contain p-0.5" />
                           </button>
                         ))}
                       </div>
