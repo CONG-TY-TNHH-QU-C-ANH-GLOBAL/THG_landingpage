@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ScrollReveal from "@/components/ScrollReveal";
 import globeImage from "@/assets/globe-3d.png";
 import { useHomepageBlock } from "@/hooks/useCmsContent";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const HeroSection = () => {
   const { t, tVi, language } = useI18n();
@@ -73,18 +74,25 @@ const HeroSection = () => {
 
           <ScrollReveal delay={500}>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:justify-center lg:justify-start">
-              <Button
-                onClick={() => navigate('/catalog')}
-                className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
-                style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
-              >
-                <span  >{cta}</span> <ArrowRight className="w-4 h-4" />
-              </Button>
+              {/* Primary CTA — "Nhận báo giá miễn phí" → open lead form modal */}
+              <LeadFormDialog
+                sourcePage="/"
+                trigger={
+                  <Button
+                    className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
+                    style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
+                  >
+                    <span>{cta}</span> <ArrowRight className="w-4 h-4" />
+                  </Button>
+                }
+              />
+              {/* Secondary CTA — "Xem dịch vụ" → catalog page */}
               <Button
                 variant="outline"
+                onClick={() => navigate('/catalog')}
                 className="rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
               >
-                <span  >{ctaSecondary}</span>
+                <span>{ctaSecondary}</span>
               </Button>
             </div>
           </ScrollReveal>

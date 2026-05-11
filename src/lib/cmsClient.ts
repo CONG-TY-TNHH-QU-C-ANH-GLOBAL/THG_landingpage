@@ -97,6 +97,16 @@ export interface CmsRemoteAreaLink {
   url: string;
 }
 
+export interface CmsTerminologyTerm {
+  term: { vi: string; en: string; zh: string };
+  desc: { vi: string; en: string; zh: string };
+}
+
+export interface CmsTerminologyGroup {
+  title: { vi: string; en: string; zh: string };
+  terms: CmsTerminologyTerm[];
+}
+
 export interface CmsSiteSettings {
   brand_name: string;
   ga4_id: string | null;
@@ -111,6 +121,7 @@ export interface CmsSiteSettings {
   default_og_image_id: number | null;
   about_video_url: string | null;
   remote_area_links: CmsRemoteAreaLink[];
+  terminology: CmsTerminologyGroup[];
 }
 
 export interface CmsPolicyTextBlock {
