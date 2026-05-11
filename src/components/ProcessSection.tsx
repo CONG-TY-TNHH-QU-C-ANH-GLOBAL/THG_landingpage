@@ -1,14 +1,19 @@
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import { useHomepageBlock } from "@/hooks/useCmsContent";
 
 const ProcessSection = () => {
-  const { t, tVi } = useI18n();
+  const { t, tVi, language } = useI18n();
+  // Process block has step1..4 as single strings (operator-edited in admin).
+  // We use them as TITLE overrides for each step; descriptions stay from i18n
+  // because the block schema doesn't include per-step descriptions.
+  const block = useHomepageBlock(language, "process");
 
   const steps = [
-    { step: "01", titleKey: "process.s1_title", descKey: "process.s1_desc" },
-    { step: "02", titleKey: "process.s2_title", descKey: "process.s2_desc" },
-    { step: "03", titleKey: "process.s3_title", descKey: "process.s3_desc" },
-    { step: "04", titleKey: "process.s4_title", descKey: "process.s4_desc" },
+    { step: "01", title: block.step1 || tVi("process.s1_title"), descKey: "process.s1_desc" },
+    { step: "02", title: block.step2 || tVi("process.s2_title"), descKey: "process.s2_desc" },
+    { step: "03", title: block.step3 || tVi("process.s3_title"), descKey: "process.s3_desc" },
+    { step: "04", title: block.step4 || tVi("process.s4_title"), descKey: "process.s4_desc" },
   ];
 
   return (
@@ -41,7 +46,7 @@ const ProcessSection = () => {
                 <div className="text-6xl md:text-7xl font-bold text-[hsl(var(--gold))] mb-5 tracking-tight group-hover:scale-105 transition-all duration-300 drop-shadow-sm">
                   {s.step}
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-navy mb-3 tracking-tight">{tVi(s.titleKey)}</h3>
+                <h3 className="text-lg md:text-xl font-bold text-navy mb-3 tracking-tight">{s.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed font-medium pr-2">{tVi(s.descKey)}</p>
               </div>
             </ScrollReveal>

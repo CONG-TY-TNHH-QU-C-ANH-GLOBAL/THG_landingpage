@@ -1,12 +1,16 @@
 import { useState, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { ArrowRight, ChevronDown, ExternalLink, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
+import { useCmsServices } from "@/hooks/useCmsContent";
 
 import imgLanHuong from "@/assets/Ms Lan Huong.jpg";
 import imgMinhKhoa from "@/assets/Mr Minh Khoa.jpg";
@@ -106,15 +110,18 @@ const testimonials = [
   { nameKey: "Ms. Bao Ngoc", locKey: "📍 Georgia, USA", tagKey: "op.testi5_tag", textKey: "op.testi5_text", avatar: imgBaoNgoc },
 ];
 
-const videos = [
-  { id: "KPhQYnkYA68", capKey: "op.vid1_cap" },
-  { id: "ZgoqBsujyC0", capKey: "op.vid2_cap" },
-  { id: "ZgoqBsujyC0", capKey: "op.vid3_cap" },
-];
-
 /* ───────────────────── COMPONENT ───────────────────── */
 const THGOrderPage = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const { data: servicesData } = useCmsServices(language);
+  const service = servicesData?.services.find((s) => s.id === "thg-order");
+  // Map CMS video schema { youtube_id, caption_key, caption } → legacy { id, capKey } shape
+  // that the page renderer expects. caption_key takes precedence so existing i18n keys keep working.
+  const videos = (service?.videos ?? []).map((v) => ({
+    id: v.youtube_id,
+    capKey: v.caption_key ?? "",
+    caption: v.caption ?? null,
+  }));
   const [activeTab, setActiveTab] = useState<"ep" | "bulk">("ep");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [playingVideo, setPlayingVideo] = useState<Record<number, boolean>>({});
@@ -123,6 +130,22 @@ const THGOrderPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="THG Order — Buy from Taobao & 1688 Direct to USA"
+        description={t("op.hero_desc")}
+        path="/thg-order"
+      />
+      <JsonLdService
+        name="THG Order — Taobao & 1688 Sourcing to USA"
+        description="Sourcing service for Vietnamese Americans buying from Taobao and 1688. Safe purchase, no language barrier, direct delivery from China to USA."
+        url="https://thgfulfill.com/thg-order"
+      />
+      <JsonLdBreadcrumb
+        items={[
+          { name: "Home", url: "https://thgfulfill.com/" },
+          { name: "THG Order", url: "https://thgfulfill.com/thg-order" },
+        ]}
+      />
       <Navbar />
 
       {/* ═══════════ HERO ═══════════ */}
@@ -155,11 +178,14 @@ const THGOrderPage = () => {
 
           <ScrollReveal delay={300}>
             <div className="flex justify-center gap-4 flex-wrap">
-              <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer">
-                <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-8 py-6 text-base gap-2 shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:-translate-y-1">
-                  🚀 {t("op.hero_cta")}
-                </Button>
-              </a>
+              <LeadFormDialog
+                sourcePage="/thg-order"
+                trigger={
+                  <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-8 py-6 text-base gap-2 shadow-[0_8px_24px_hsl(36_45%_42%/0.4)] hover:shadow-[0_12px_32px_hsl(36_45%_42%/0.6)] transition-all duration-500 font-semibold tracking-wide hover:-translate-y-1">
+                    🚀 {t("op.hero_cta")}
+                  </Button>
+                }
+              />
               <Button variant="outline" className="rounded-full px-8 py-6 text-base border-[hsl(var(--gold))]/40 text-navy hover:bg-[hsl(var(--gold))]/10 transition-all duration-300 font-semibold" onClick={() => document.getElementById('how-section')?.scrollIntoView({ behavior: 'smooth' })}>
                 {t("op.hero_cta2")} <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
@@ -498,9 +524,17 @@ const THGOrderPage = () => {
           )}
 
           <div className="text-center mt-8">
-            <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-xl text-base font-bold transition-all hover:bg-primary/90 hover:-translate-y-1 shadow-lg">
-              💬 {t("op.price_cta")}
-            </a>
+            <LeadFormDialog
+              sourcePage="/thg-order#pricing"
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-xl text-base font-bold transition-all hover:bg-primary/90 hover:-translate-y-1 shadow-lg"
+                >
+                  💬 {t("op.price_cta")}
+                </button>
+              }
+            />
           </div>
         </div>
       </section>

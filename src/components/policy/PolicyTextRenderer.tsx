@@ -1,16 +1,15 @@
-import { policyTextContent, type PolicyTextBlock } from "@/data/policyTextContent";
 import { AlertTriangle, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
+import { useCmsPolicy } from "@/hooks/useCmsContent";
+import type { CmsPolicyTextBlock } from "@/lib/cmsClient";
 
 interface PolicyTextRendererProps {
     sectionId: string;
 }
 
-type Lang = "en" | "vi" | "zh";
-
-/** Render a single block */
-const Block = ({ block, lang }: { block: PolicyTextBlock; lang: Lang }) => {
+/** Render a single block (heading + bullet list). */
+const Block = ({ block }: { block: CmsPolicyTextBlock }) => {
     const isWarn = block.type === "warn";
     const isInfo = block.type === "info";
 
@@ -26,13 +25,13 @@ const Block = ({ block, lang }: { block: PolicyTextBlock; lang: Lang }) => {
             <h3 className="text-[14px] font-bold text-navy mb-3 flex items-center gap-2 notranslate" translate="no">
                 {isWarn && <AlertTriangle className="w-4 h-4 text-[#b8860b]" />}
                 {isInfo && <Info className="w-4 h-4 text-[#2563eb]" />}
-                {block.heading[lang] || block.heading.en}
+                {block.heading}
             </h3>
             <ul className="space-y-2">
                 {block.content.map((line, i) => (
                     <li key={i} className="text-[13px] text-navy/80 leading-relaxed flex gap-2">
                         <span className="text-primary mt-0.5 shrink-0">•</span>
-                        <span className="notranslate" translate="no">{line[lang] || line.en}</span>
+                        <span className="notranslate" translate="no">{line}</span>
                     </li>
                 ))}
             </ul>
@@ -41,16 +40,16 @@ const Block = ({ block, lang }: { block: PolicyTextBlock; lang: Lang }) => {
 };
 
 /**
- * Text-based policy renderer — supports EN/VI/ZH.
+ * Text-based policy renderer — fetches text_blocks from CMS per slug+locale.
+ *
+ * Special-case: section "shipping" always renders a redirect button to the
+ * dedicated /shipping-policy page (regardless of CMS content).
  */
 const PolicyTextRenderer = ({ sectionId }: PolicyTextRendererProps) => {
-    const { effectiveLanguage } = useI18n();
-    const lang = effectiveLanguage as Lang;
-    const section = policyTextContent[sectionId];
+    const { effectiveLanguage, language } = useI18n();
+    const lang = effectiveLanguage as "en" | "vi" | "zh";
+    const cmsLang = language;
 
-    if (!section) return null;
-
-    /* Mục "Vận chuyển" → link sang page chuyên biệt */
     if (sectionId === "shipping") {
         const desc = lang === "vi"
             ? "Nội dung chính sách vận chuyển đã được trình bày chi tiết tại trang riêng."
@@ -78,10 +77,29 @@ const PolicyTextRenderer = ({ sectionId }: PolicyTextRendererProps) => {
         );
     }
 
+    const { data, isLoading, error } = useCmsPolicy(sectionId, cmsLang);
+
+    if (isLoading) {
+        return (
+            <div className="py-8 text-center text-muted-foreground text-sm">
+                Đang tải nội dung...
+            </div>
+        );
+    }
+
+    const blocks = data?.policy?.text_blocks ?? [];
+    if (error || blocks.length === 0) {
+        return (
+            <div className="py-8 text-center text-muted-foreground text-sm">
+                Nội dung chính sách này chưa có. Vận hành cập nhật trong CMS.
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-0">
-            {section.blocks.map((block, i) => (
-                <Block key={i} block={block} lang={lang} />
+            {blocks.map((block, i) => (
+                <Block key={i} block={block} />
             ))}
         </div>
     );

@@ -4,10 +4,19 @@ import { useI18n } from "@/lib/i18n";
 import { useNavigate } from "react-router-dom";
 import ScrollReveal from "@/components/ScrollReveal";
 import globeImage from "@/assets/globe-3d.png";
+import { useHomepageBlock } from "@/hooks/useCmsContent";
 
 const HeroSection = () => {
-  const { t, tVi } = useI18n();
+  const { t, tVi, language } = useI18n();
   const navigate = useNavigate();
+  // homepage_blocks.hero overrides i18n keys when operator edits in admin.
+  // Only single-string fields are pulled (subtitle, badge, CTA labels); the
+  // gold-highlighted title stays split via i18n keys for layout reasons.
+  const hero = useHomepageBlock(language, "hero");
+  const subtitle = hero.sub || tVi("hero.subtitle");
+  const badge = hero.eyebrow || tVi("hero.badge");
+  const cta = hero.cta1 || tVi("hero.cta");
+  const ctaSecondary = hero.cta2 || tVi("hero.learn_more");
 
   const features = [tVi("hero.feature1"), tVi("hero.feature2"), tVi("hero.feature3"), tVi("hero.feature4")];
 
@@ -31,7 +40,7 @@ const HeroSection = () => {
             <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm glow-pulse">
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse flex-shrink-0" />
               <span className="font-medium text-muted-foreground tracking-wide uppercase text-[10px] md:text-xs truncate" >
-                {tVi("hero.badge")}
+                {badge}
               </span>
             </div>
           </ScrollReveal>
@@ -47,7 +56,7 @@ const HeroSection = () => {
 
           <ScrollReveal delay={300}>
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto lg:mx-0" >
-              {tVi("hero.subtitle")}
+              {subtitle}
             </p>
           </ScrollReveal>
 
@@ -69,13 +78,13 @@ const HeroSection = () => {
                 className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
                 style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
               >
-                <span  >{tVi("hero.cta")}</span> <ArrowRight className="w-4 h-4" />
+                <span  >{cta}</span> <ArrowRight className="w-4 h-4" />
               </Button>
               <Button
                 variant="outline"
                 className="rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
               >
-                <span  >{tVi("hero.learn_more")}</span>
+                <span  >{ctaSecondary}</span>
               </Button>
             </div>
           </ScrollReveal>

@@ -1,3 +1,4 @@
+# Allow major search engine crawlers (audit P2.1)
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +11,28 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+# AI search bots — opt-in for brand visibility in ChatGPT, Claude, Perplexity (audit P2.1)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# Default
 User-agent: *
 Allow: /
+
+# Sitemap location (generated at build time from CMS API — see scripts/generate-sitemap.ts)
+Sitemap: https://thgfulfill.com/sitemap.xml

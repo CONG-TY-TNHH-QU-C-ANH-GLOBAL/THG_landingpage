@@ -103,13 +103,3 @@ export const countryNames: Record<string, string> = {
     "ch-switzerland": "Switzerland (CH)", "cl-chile": "Chile (CL)",
 };
 
-// Maps each route+cargo combo to the relevant policy IDs in larkPoliciesI18n.json
-export const ROUTE_POLICY_MAP: Record<string, string[]> = {
-    "std-vn-ww_standard": ["amsgWr"],           // VNTHZXR
-    "std-vn-ww_cosmetics": ["BWc7wA"],          // VNMUZXR
-    "std-cn-ww_standard": ["7RqdMQ"],           // THPHR
-    "std-cn-ww_cosmetics": ["dECGAK"],          // MUZXR
-    "std-cn-ww_battery": ["s46HNu"],            // THZXR
-    "pri-vn-us_standard": ["LSTxjV"],   // VN-YTYCPREC
-    "pri-cn-us_standard": ["yjyfP8"],   // YTYCPREC
-};

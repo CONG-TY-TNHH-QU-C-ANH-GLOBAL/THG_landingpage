@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
-import { domesticPricingRows as fallbackRows } from "@/data/domesticPricingData";
-import { DomesticPricingRow } from "@/data/domesticPricingData";
 import { Link } from "react-router-dom";
 import {
     MapPin, Package, Truck, Globe, Shield,
@@ -11,52 +11,25 @@ import {
     FileSpreadsheet, FileText, ChevronLeft, ChevronRight, Mail, Layers, Box
 } from "lucide-react";
 import { exportToExcel } from "@/lib/exportUtils";
-import { useLarkPricingContext, SyncBadge, transformSheetToDomesticData } from "@/components/pricing/LarkPricingProvider";
+import { useLarkPricingContext, SyncBadge } from "@/components/pricing/LarkPricingProvider";
 import { useI18n } from "@/lib/i18n";
 import packagingImg from "@/assets/Warehouse_bao bì.png";
+
+interface DomesticPricingRow {
+    STT: string;
+    weight: string;
+    gram: string;
+    zones: Record<number, string>;
+}
 
 const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
 
-/** Lightweight CSV parser for Google Sheets export */
-function parseCSVSimple(csv: string): any[][] {
-    const rows: any[][] = [];
-    let i = 0;
-    const len = csv.length;
-    while (i < len) {
-        const row: any[] = [];
-        while (i < len) {
-            let value = "";
-            if (csv[i] === '"') {
-                i++;
-                while (i < len) {
-                    if (csv[i] === '"') {
-                        if (i + 1 < len && csv[i + 1] === '"') { value += '"'; i += 2; }
-                        else { i++; break; }
-                    } else { value += csv[i]; i++; }
-                }
-            } else {
-                while (i < len && csv[i] !== ',' && csv[i] !== '\n' && csv[i] !== '\r') { value += csv[i]; i++; }
-            }
-            row.push(value.trim());
-            if (i < len && csv[i] === ',') { i++; }
-            else { if (i < len && csv[i] === '\r') i++; if (i < len && csv[i] === '\n') i++; break; }
-        }
-        if (row.length > 0 && !(row.length === 1 && row[0] === '')) rows.push(row);
-    }
-    return rows;
+// Format weight cell: add "oz" suffix if missing.
+function formatWeight(weight: string): string {
+    if (!weight) return "";
+    return weight.includes("oz") ? weight : `${weight} oz`;
 }
-
-const OZ_VALUES = [
-    "4 oz", "8 oz", "12 oz", "16 oz", "32 oz", "48 oz", "64 oz", "80 oz", "96 oz",
-    "112 oz", "128 oz", "144 oz", "160 oz", "176 oz", "192 oz", "208 oz", "224 oz", "240 oz", "256 oz",
-    "272 oz", "288 oz", "304 oz", "320 oz", "336 oz", "352 oz", "368 oz", "384 oz", "400 oz", "416 oz",
-    "432 oz", "448 oz", "464 oz", "480 oz", "496 oz", "512 oz", "528 oz", "544 oz", "560 oz", "576 oz",
-    "592 oz", "608 oz", "624 oz", "640 oz", "656 oz", "672 oz", "688 oz", "704 oz", "720 oz", "736 oz",
-    "752 oz", "768 oz", "784 oz", "800 oz", "816 oz", "832 oz", "848 oz", "864 oz", "880 oz", "896 oz",
-    "912 oz", "928 oz", "944 oz", "960 oz", "976 oz", "992 oz", "1008 oz", "1024 oz", "1040 oz", "1056 oz",
-    "1072 oz", "1088 oz", "1104 oz", "1120 oz",
-];
 
 const DomesticPricingContent = () => {
     const { t } = useI18n();
@@ -92,53 +65,34 @@ const DomesticPricingContent = () => {
         scrollRef.current?.scrollBy({ left: dir * 150, behavior: "smooth" });
     };
 
-    // ── Direct fetch: always get fresh data from Google Sheets ──
-    // This runs independently of LarkPricingProvider, fetching ONLY the
-    // US domestic pricing tab (~500ms). Even if browser serves old cached JS,
-    // this fetch always gets the latest data.
-    const [liveRows, setLiveRows] = useState<DomesticPricingRow[] | null>(null);
-
-    useEffect(() => {
-        const SPREADSHEET_ID = "1woNrfCqybDs0zYKbGnilchhXE6JaWLAsOJxN-pQO0e4";
-        const GID = "1339656958";
-        const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=${GID}&_t=${Date.now()}`;
-
-        fetch(url, { cache: "no-store" })
-            .then(res => res.ok ? res.text() : Promise.reject(res.status))
-            .then(csv => {
-                const rows = transformSheetToDomesticData(parseCSVSimple(csv));
-                if (rows.length > 0) {
-                    setLiveRows(rows.map(r => ({
-                        STT: r.STT || r.No || "",
-                        weight: r["Weight Not Over (in ounces)"] || r["Weight Not Over (ounces)"] || "",
-                        gram: r.Gram || r.gram || "",
-                        zones: {
-                            1: r["Zone 1"] || "",
-                            2: r["Zone 2"] || "",
-                            3: r["Zone 3"] || "",
-                            4: r["Zone 4"] || "",
-                            5: r["Zone 5"] || "",
-                            6: r["Zone 6"] || "",
-                            7: r["Zone 7"] || "",
-                            8: r["Zone 8"] || "",
-                            9: r["Zone 9"] || "",
-                        },
-                    })) as DomesticPricingRow[]);
-                }
-            })
-            .catch(err => console.warn("[Domestic] Direct fetch failed, using fallback:", err));
-    }, []);
-
-    // Use live data if available, otherwise bundled fallback (synced at build time)
-    const domesticPricingRows = liveRows || fallbackRows;
+    // Read from CMS overlay (slug `usDomestic`) populated by useCmsPricingOverlay.
+    const domesticPricingRows = useMemo<DomesticPricingRow[]>(() => {
+        const cmsRows = (lark.cmsOverlay["usDomestic"] as Array<Record<string, string>> | undefined) ?? [];
+        return cmsRows.map((r, idx) => ({
+            STT: String(idx + 1),
+            weight: r.kg ?? "",
+            gram: r.gram ?? "",
+            zones: {
+                1: r.z1 ?? "",
+                2: r.z2 ?? "",
+                3: r.z3 ?? "",
+                4: r.z4 ?? "",
+                5: r.z5 ?? "",
+                6: r.z6 ?? "",
+                7: r.z7 ?? "",
+                8: r.z8 ?? "",
+                9: r.z9 ?? "",
+            },
+        }));
+    }, [lark.cmsOverlay]);
 
     const displayRows = showAll ? domesticPricingRows : domesticPricingRows.slice(0, INITIAL_ROWS);
     const hasMore = domesticPricingRows.length > INITIAL_ROWS;
 
     const exportConfig = useMemo(() => {
         const headers = ["Weight Not Over (in ounces)", "Gram", ...ZONES.map(z => `Zone ${z}`)];
-        const rows = domesticPricingRows.map((row, i) => [
-            row.weight ? (String(row.weight).includes('oz') ? row.weight : `${row.weight} oz`) : (OZ_VALUES[i] || ""),
+        const rows = domesticPricingRows.map((row) => [
+            formatWeight(row.weight),
             row.gram,
             ...ZONES.map(z => row.zones[z])
         ]);
@@ -274,7 +228,7 @@ const DomesticPricingContent = () => {
                                                     <span className="text-[11px] md:text-[13px]">{idx + 1}</span>
                                                 </td>
                                                 <td className="px-2 md:px-3 py-1.5 md:py-2 text-center font-semibold whitespace-nowrap border-r border-border/30">
-                                                    <span className="text-[11px] md:text-[13px]">{row.weight ? (String(row.weight).includes('oz') ? row.weight : `${row.weight} oz`) : (OZ_VALUES[idx] || "")}</span>
+                                                    <span className="text-[11px] md:text-[13px]">{formatWeight(row.weight)}</span>
                                                 </td>
                                                 <td className="px-2 md:px-3 py-1.5 md:py-2 text-center font-semibold whitespace-nowrap border-r border-border/30">
                                                     <span className="text-[11px] md:text-[13px]">{row.gram}</span>
@@ -437,6 +391,17 @@ const DomesticPricingContent = () => {
 
 const DomesticPricingPage = () => (
     <div className="min-h-screen bg-background">
+        <SeoHead
+            title="US Domestic Shipping Pricing — THG Fulfill"
+            description="US domestic shipping rates by zone (1-9) for THG Warehouse customers. UPS Ground, USPS, FedEx options. Updated weekly."
+            path="/domestic-pricing"
+        />
+        <JsonLdBreadcrumb
+            items={[
+                { name: "Home", url: "https://thgfulfill.com/" },
+                { name: "Domestic Pricing", url: "https://thgfulfill.com/domestic-pricing" },
+            ]}
+        />
         <Navbar />
         <DomesticPricingContent />
 

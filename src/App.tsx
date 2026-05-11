@@ -1,11 +1,26 @@
 import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import { LarkPricingProvider } from "@/components/pricing/LarkPricingProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { ConsentBanner } from "@/components/cookie/ConsentBanner";
+import { TrackingScripts } from "@/components/analytics/TrackingScripts";
+
+// QueryClient — singleton across re-renders. CMS content has 5min stale time,
+// so refetches are cheap. Consider hydration once SSR/prerender lands.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const Index = lazy(() => import("./pages/Index"));
 const PolicyPage = lazy(() => import("./pages/PolicyPage"));
@@ -18,7 +33,6 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const InternationalPricingPage = lazy(() => import("./pages/InternationalPricingPage"));
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
 const CatalogPage = lazy(() => import("./pages/CatalogPage"));
-const AgentPage = lazy(() => import("./pages/AgentPage"));
 const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
 const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
 const CareersPage = lazy(() => import("./pages/CareersPage"));
@@ -58,8 +72,6 @@ const AppRoutes = () => {
             <Route path="/thg-order" element={<THGOrderPage />} />
             <Route path="/catalog" element={<CatalogPage />} />
             <Route path="/careers" element={<CareersPage />} />
-            {/* Internal agent tool — not linked in public nav */}
-            <Route path="/agent" element={<AgentPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ErrorBoundary>
@@ -70,17 +82,23 @@ const AppRoutes = () => {
 
 const App = () => (
   <ErrorBoundary>
-    <I18nProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <LarkPricingProvider>
-            <AppRoutes />
-          </LarkPricingProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </I18nProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <I18nProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <LarkPricingProvider>
+                <AppRoutes />
+                <ConsentBanner />
+                <TrackingScripts />
+              </LarkPricingProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </I18nProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   </ErrorBoundary>
 );
 

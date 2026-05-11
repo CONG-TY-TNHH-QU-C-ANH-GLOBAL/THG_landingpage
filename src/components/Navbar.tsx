@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";
 import thgLogo from "@/assets/thg-logo.png";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const serviceItems = [
   { icon: Package, titleKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", href: "/thg-fulfill" },
@@ -77,8 +78,8 @@ const Navbar = () => {
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
-            <h1 className="text-base font-bold text-navy leading-tight tracking-tight" >THG Fulfill</h1>
-            <p className="text-[9px] tracking-[0.15em] text-muted-foreground uppercase" >Transport Happiness Group</p>
+            <span className="text-base font-bold text-navy leading-tight tracking-tight block">THG Fulfill</span>
+            <span className="text-[9px] tracking-[0.15em] text-muted-foreground uppercase block">Transport Happiness Group</span>
           </div>
         </Link>
 
@@ -210,16 +211,24 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-3">
           <LanguageSwitcher />
-          <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer">
-            <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-6 py-5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0">
-              {t("nav.consult")}
-            </Button>
-          </a>
+          <LeadFormDialog
+            sourcePage="navbar-desktop"
+            trigger={
+              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-6 py-5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0">
+                {t("nav.consult")}
+              </Button>
+            }
+          />
         </div>
 
         {/* Mobile toggle */}
         <div className="flex lg:hidden items-center gap-2">
-          <button className="p-3 bg-secondary/30 hover:bg-secondary/60 rounded-xl transition-colors" onClick={() => setIsOpen(!isOpen)}>
+          <button
+            className="p-3 bg-secondary/30 hover:bg-secondary/60 rounded-xl transition-colors"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+          >
             {isOpen ? <X size={22} className="text-navy" /> : <Menu size={22} className="text-navy" />}
           </button>
         </div>
@@ -302,11 +311,14 @@ const Navbar = () => {
             )
           )}
           <div className="pt-3">
-            <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer" className="w-full">
-              <Button className="w-full bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-5 py-6 text-base font-bold shadow-md rounded-xl mt-4">
-                {t("nav.consult")}
-              </Button>
-            </a>
+            <LeadFormDialog
+              sourcePage="navbar-mobile"
+              trigger={
+                <Button className="w-full bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-5 py-6 text-base font-bold shadow-md rounded-xl mt-4">
+                  {t("nav.consult")}
+                </Button>
+              }
+            />
           </div>
         </div>
       )}

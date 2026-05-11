@@ -1,10 +1,13 @@
-import { useState, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
+
+import { useCmsJob, useCmsJobs } from "@/hooks/useCmsContent";
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import ScrollReveal from "@/components/ScrollReveal";
 import { X } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { CAREERS_JOBS_I18N } from "@/data/careers_i18n";
 
 /* ─── TYPES ─── */
 interface Benefit { i: string; t: string; d: string; }
@@ -20,130 +23,28 @@ interface Job {
     bonuses: string[];
 }
 
-/* ─── ACCENT COLORS ─── */
+/* ─── ACCENT COLORS — keyed by category. Add new categories here when needed. ─── */
 const ACCENT: Record<string, string> = {
     ai: "#2E6F8E",
-    finance: "#6B8E5A", "sales-pod": "#C17B5E", "sales-ship": "#5A7A8E",
-    "sales-wh": "#8B6B9A", ops: "#D4A548", sourcing: "#B85C6E",
+    finance: "#6B8E5A",
+    "sales-pod": "#C17B5E",
+    "sales-ship": "#5A7A8E",
+    "sales-wh": "#8B6B9A",
+    sales: "#5A7A8E",
+    ops: "#D4A548",
+    sourcing: "#B85C6E",
+    marketing: "#7B5EA0",
 };
+const DEFAULT_ACCENT = "#A67845";
 
-/* ─── JOB DATA ─── */
-const JOBS: Job[] = [
-    {
-        id: "ai-intern", cat: "ai", filter: "ai", hot: true, badge: "🤖 AI R&D · Internship",
-        tagline: '"Xây dựng lớp AI cho hệ sinh thái fulfillment xuyên biên giới."',
-        title: "Thực tập sinh Nghiên cứu AI",
-        desc: "Tham gia R&D các giải pháp AI ứng dụng vào vận hành thực tế của THG — từ AI Agent chăm sóc khách đến tool sourcing tự động trên 1688/Taobao.",
-        salary: "2 triệu", salaryUnit: "+ thưởng theo dự án", salaryNote: "Mentor 1-1 với CEO · Cơ hội làm dự án AI thực tế",
-        location: "TP.HCM · Hybrid", type: "Internship 3–6 tháng", deadline: "15/05/2026", experience: "Không bắt buộc",
-        lead: "Nếu bạn đang là sinh viên ngành công nghệ và có niềm đam mê với AI, đây là cơ hội tuyệt vời để bạn áp dụng kiến thức vào sản phẩm thực tế. Bạn sẽ được cùng đội ngũ THG R&D các giải pháp AI cho vận hành E-commerce xuyên biên giới, được mentor bởi CEO — chuyên gia chuyển đổi số cho cộng đồng Seller quốc tế. THG tạo môi trường để bạn học hỏi, thử nghiệm và trưởng thành cùng các dự án AI thực tế.",
-        responsibilities: {
-            "Tham gia R&D các giải pháp AI": ["Cùng team nghiên cứu và thử nghiệm các giải pháp AI ứng dụng vào THG", "Hỗ trợ xây dựng AI Agent tự động hóa các tác vụ chăm sóc khách hàng", "Tham gia dự án AI Sourcing — hỗ trợ tìm kiếm & phân tích sản phẩm trên 1688/Taobao", "Hỗ trợ phát triển các công cụ AI nội bộ giúp đội CSKH/Sales làm việc hiệu quả hơn"],
-            "Học hỏi & thử nghiệm": ["Tìm hiểu và thử nghiệm các công cụ AI hiện đại (ChatGPT, Claude, n8n...)", "Được hướng dẫn cách viết prompt hiệu quả cho các bài toán E-commerce & logistics", "So sánh và lựa chọn model phù hợp cho từng use case của công ty", "Ghi chép tài liệu và chia sẻ lại cho đội vận hành khi được yêu cầu"],
-            "Làm việc cùng team": ["Tham gia review dự án AI định kỳ cùng CEO và mentor", "Chủ động đề xuất ý tưởng AI mới cho sản phẩm THG", "Trình bày kết quả nghiên cứu & demo cho team"]
-        },
-        requirements: ["Đang là sinh viên hoặc mới tốt nghiệp các ngành liên quan: CNTT, Khoa học máy tính, Kỹ thuật phần mềm, Toán - Tin, Khoa học dữ liệu, hoặc các ngành kỹ thuật khác", "Có niềm đam mê thực sự với công nghệ và AI — yếu tố quan trọng nhất", "Tinh thần ham học hỏi, chủ động tìm hiểu — AI là lĩnh vực thay đổi liên tục", "Biết tiếng Anh đọc hiểu tài liệu kỹ thuật cơ bản", "Có kiến thức lập trình cơ bản (bất kỳ ngôn ngữ nào) — sẽ được hỗ trợ học thêm khi cần", "Từng tìm hiểu / thử nghiệm với ChatGPT, Claude hoặc các công cụ AI khác là lợi thế (không bắt buộc)", "Cam kết thực tập tối thiểu 3 tháng — part-time hoặc full-time đều được"],
-        benefits: [{ i: "💰", t: "Lương cứng 2 triệu", d: "Cộng thưởng theo từng dự án AI deploy thành công" }, { i: "🎓", t: "Mentor 1-1 với CEO", d: "CEO THG là chuyên gia chuyển đổi số cho cộng đồng Seller quốc tế" }, { i: "🔬", t: "Hỗ trợ công cụ AI", d: "Được cấp quyền sử dụng các AI API & tài nguyên theo từng dự án cụ thể" }, { i: "🏆", t: "Portfolio thực tế", d: "Dự án AI triển khai vào công ty đang vận hành tại 3 nước" }, { i: "🚀", t: "Cơ hội lên chính thức", d: "Hoàn thành tốt → được cân nhắc offer full-time sau kỳ thực tập" }, { i: "🏢", t: "Hybrid linh hoạt", d: "Lên văn phòng 2–3 buổi/tuần, còn lại làm remote" }],
-        bonuses: ["Thưởng theo từng milestone dự án AI được hoàn thành", "Thưởng khi giải pháp AI được triển khai vào vận hành thực tế", "Ghi nhận và khen thưởng khi có đóng góp ý tưởng AI hữu ích", "Cơ hội được tài trợ tham dự hội thảo, khóa học về AI tùy theo dự án", "Cơ hội được cân nhắc chuyển thành nhân viên chính thức sau kỳ thực tập"]
-    },
-    {
-        id: "finance", cat: "finance", filter: "finance", badge: "Kế toán · Finance",
-        tagline: '"Người giữ sổ sách cho cả hệ sinh thái."',
-        title: "Nhân viên Kế toán",
-        desc: "Quản lý thu chi, công nợ và hỗ trợ nhân sự cho đội ngũ THG Fulfill. Vị trí then chốt trong bộ máy tài chính.",
-        salary: "10 triệu", salaryUnit: "+ thưởng hiệu suất", salaryNote: "Thu nhập thực nhận cao hơn lương cứng",
-        location: "TP.HCM", type: "Full-time", deadline: "15/05/2026", experience: "Từ 2 năm",
-        lead: "THG Fulfill tìm kiếm một Kế toán kinh nghiệm, cẩn thận và trách nhiệm cao để tham gia quản lý thu chi, theo dõi công nợ và hỗ trợ nhân sự cho đội ngũ đang phát triển nhanh.",
-        responsibilities: {
-            "Quản lý thu chi nội bộ": ["Ghi chép, kiểm tra và kiểm soát các khoản thu chi hằng ngày", "Lập và quản lý báo cáo thu chi theo tuần / tháng / quý", "Làm báo cáo lợi nhuận (lãi/lỗ) hàng tháng", "Lên phiếu thu / phiếu chi khi phát sinh giao dịch", "Duyệt và chi tiền theo phiếu chi của các bộ phận khác"],
-            "Theo dõi công nợ": ["Đối chiếu, theo dõi công nợ phải thu / phải trả trên hệ thống kế toán (Ecount...)", "Theo dõi công nợ tạm ứng của khách hàng, cảnh báo kịp thời", "Lập kế hoạch thanh toán và báo cáo tình hình công nợ định kỳ"],
-            "Hỗ trợ nhân sự": ["Theo dõi tình hình nhân sự, làm hợp đồng thử việc / chính thức", "Theo dõi nghỉ phép, đi trễ, về sớm", "Lập các báo cáo nội bộ và thực hiện công việc khác theo phân công"]
-        },
-        requirements: ["Tốt nghiệp ĐH/CĐ chuyên ngành Kế toán, Tài chính hoặc liên quan", "Có từ 2 năm kinh nghiệm trở lên ở vị trí tương đương", "Thành thạo phần mềm kế toán (MISA, Ecount hoặc tương đương)", "Kỹ năng tổ chức và quản lý thời gian tốt", "Trung thực, cẩn thận và có tinh thần trách nhiệm cao"],
-        benefits: [{ i: "💰", t: "Lương cứng 10 triệu", d: "Cộng thưởng hiệu suất & lợi nhuận" }, { i: "🏖️", t: "Company Trip 1–2 lần/năm", d: "Du lịch cùng toàn thể THG" }, { i: "🎁", t: "Thưởng tháng 13", d: "Thưởng Tết & các dịp lễ lớn" }, { i: "🛡️", t: "BHXH / BHYT đầy đủ", d: "Theo quy định pháp luật" }, { i: "⏰", t: "Giờ hành chính", d: "T2–T6: 8h–17h · T7: 8h–12h" }, { i: "🎓", t: "Thử việc 85% lương", d: "2 tháng thử việc — lộ trình thăng tiến rõ ràng" }],
-        bonuses: ["Thưởng KPI hàng tháng theo xếp hạng (Grade B / A / A+)", "Thưởng 100% task đúng hạn trong tháng", "Thưởng Nhân viên xuất sắc tháng do CEO chọn", "Các khoản thưởng phúc lợi khác theo hiệu suất công việc"]
-    },
-    {
-        id: "sales-pod", cat: "sales-pod", filter: "sales", badge: "Sales · POD / Dropship",
-        tagline: '"Cầu nối giữa Seller toàn cầu và nhà máy Việt – Trung."',
-        title: "Nhân viên Sales POD / Dropship",
-        desc: "Phát triển khách hàng Seller bán POD, Dropship từ Việt Nam và Trung Quốc đi Mỹ, Châu Âu.",
-        salary: "8 triệu", salaryUnit: "+ hoa hồng + thưởng", salaryNote: "Thu nhập không giới hạn theo hiệu suất",
-        location: "TP.HCM", type: "Full-time", deadline: "15/05/2026", experience: "Không bắt buộc",
-        lead: "THG Fulfill đang mở rộng đội ngũ Sales POD/Dropship để đồng hành cùng hàng ngàn Seller Việt Nam và Trung Quốc đưa sản phẩm đến người tiêu dùng Mỹ, EU và toàn cầu.",
-        responsibilities: {
-            "Phát triển khách hàng": ["Tìm kiếm khách hàng là các Seller bán online từ VN / TQ đi Mỹ, Châu Âu trong mảng POD, Dropship", "Tư vấn và chăm sóc khách hàng về dịch vụ nguồn hàng, in ấn và vận chuyển", "Xây dựng mối quan hệ tốt với khách hàng hiện có, chủ động tìm kiếm khách hàng mới"],
-            "Tư vấn & hỗ trợ": ["Giới thiệu sản phẩm / dịch vụ sẵn có của THG (hơn 1000 mẫu tại kho Mỹ)", "Hỗ trợ khách hàng giải quyết các vấn đề trong quy trình vận hành", "Phối hợp chặt chẽ với đội Operations để đảm bảo trải nghiệm khách hàng tốt nhất"]
-        },
-        requirements: ["Kinh nghiệm trong lĩnh vực POD hoặc Dropship là một lợi thế (không bắt buộc)", "Kỹ năng giao tiếp và thuyết phục tốt", "Khả năng giải quyết vấn đề và xử lý tình huống nhanh nhẹn", "Chủ động, nhiệt tình và có trách nhiệm trong công việc", "Có tiếng Anh cơ bản để làm việc với khách quốc tế là lợi thế"],
-        benefits: [{ i: "💰", t: "Lương cứng 8 triệu", d: "Cộng hoa hồng và thưởng" }, { i: "📈", t: "Hoa hồng không giới hạn", d: "Đạt và vượt KPI càng nhiều, thu nhập càng cao" }, { i: "🚀", t: "Đào tạo POD/Dropship", d: "Đào tạo chuyên sâu về sản phẩm và thị trường quốc tế" }, { i: "🎁", t: "Thưởng tháng 13", d: "Thưởng Tết & các dịp lễ lớn" }, { i: "🏖️", t: "Company Trip", d: "Du lịch cùng công ty hàng năm" }, { i: "⏰", t: "Làm việc linh hoạt", d: "T2–T6: văn phòng · T7 chiều: online" }],
-        bonuses: ["Hoa hồng theo bảng doanh thu cá nhân", "Thưởng chốt đơn lớn (Express / Dropship / POD / Warehouse)", "Thưởng khai thác khách hàng mới lần đầu giao dịch", "Thưởng tỷ lệ chốt request cao (≥ 80%)", "Thưởng đưa khách hàng lên hạng VIP trong tháng", "Thưởng KPI hàng tháng theo xếp hạng Grade B / A / A+", "Thưởng Nhân viên xuất sắc tháng do CEO chọn"]
-    },
-    {
-        id: "sales-ship", cat: "sales-ship", filter: "sales", badge: "Sales · Vận chuyển E-commerce",
-        tagline: '"Chuyên gia tuyến vận chuyển xuyên biên giới."',
-        title: "Nhân viên Sales Vận chuyển Quốc tế",
-        desc: "Tư vấn gói cước vận chuyển Ecommerce cho Seller trên TikTok Shop US, Shopify, Amazon, Etsy...",
-        salary: "8 triệu", salaryUnit: "+ hoa hồng + thưởng", salaryNote: "Thu nhập không giới hạn theo hiệu suất",
-        location: "TP.HCM", type: "Full-time", deadline: "15/05/2026", experience: "Không bắt buộc",
-        lead: "THG đang tìm kiếm Sales có niềm đam mê với logistics xuyên biên giới, chuyên tư vấn các gói cước vận chuyển cho cộng đồng Seller đang kinh doanh trên TikTok Shop US, Shopify, Amazon, Etsy.",
-        responsibilities: {
-            "Phát triển khách hàng": ["Tìm kiếm Seller Việt Nam kinh doanh trên TikTok Shop US, Shopify, Amazon, Etsy", "Tiếp cận khách có nhu cầu vận chuyển hàng từ VN / TQ sang Mỹ hoặc toàn cầu", "Tư vấn gói cước vận chuyển Ecommerce phù hợp theo nhu cầu"],
-            "Xử lý & chăm sóc": ["Tiếp nhận yêu cầu vận chuyển từ khách và chuyển bộ phận xử lý", "Theo dõi và cập nhật trạng thái đơn hàng cho khách hàng", "Hỗ trợ giải đáp thắc mắc liên quan đến quy trình vận chuyển"]
-        },
-        requirements: ["Kinh nghiệm trong lĩnh vực vận chuyển E-commerce là lợi thế", "Kỹ năng giao tiếp và tư vấn tốt", "Khả năng giải quyết vấn đề và xử lý tình huống nhanh nhẹn", "Kỹ năng tổ chức công việc và quản lý thời gian hiệu quả", "Chủ động, tận tâm với khách hàng và có trách nhiệm cao"],
-        benefits: [{ i: "💰", t: "Lương cứng 8 triệu", d: "Cộng hoa hồng và thưởng" }, { i: "📈", t: "Hoa hồng không giới hạn", d: "Đạt và vượt KPI càng nhiều, thu nhập càng cao" }, { i: "✈️", t: "Kiến thức logistics", d: "Đào tạo về các tuyến vận chuyển quốc tế VN/CN → US/WW" }, { i: "🎁", t: "Thưởng tháng 13", d: "Thưởng Tết & các dịp lễ lớn" }, { i: "🏖️", t: "Company Trip", d: "Du lịch cùng công ty hàng năm" }, { i: "⏰", t: "Làm việc linh hoạt", d: "T2–T6: văn phòng · T7 chiều: online" }],
-        bonuses: ["Hoa hồng theo bảng doanh thu cá nhân", "Thưởng chốt đơn Express Bulk theo tầng khối lượng (> 50kg / 100kg / 500kg)", "Thưởng khai thác khách hàng mới lần đầu giao dịch", "Thưởng tỷ lệ chốt request cao (≥ 80%)", "Thưởng đưa khách hàng lên hạng VIP trong tháng", "Thưởng KPI hàng tháng theo xếp hạng Grade B / A / A+", "Thưởng Nhân viên xuất sắc tháng do CEO chọn"]
-    },
-    {
-        id: "sales-wh", cat: "sales-wh", filter: "sales", badge: "Sales · Warehouse US",
-        tagline: '"Người đưa hàng Việt vào kho Mỹ."',
-        title: "Nhân viên Sales Warehouse Mỹ",
-        desc: "Phát triển khách hàng cho dịch vụ kho bãi và fulfillment tại Mỹ — mảng chiến lược của THG.",
-        salary: "8 triệu", salaryUnit: "+ hoa hồng + thưởng", salaryNote: "Thu nhập không giới hạn theo hiệu suất",
-        location: "TP.HCM", type: "Full-time", deadline: "15/05/2026", experience: "Không bắt buộc",
-        lead: "Với hơn 1000 mẫu sản phẩm sẵn tại kho Mỹ, THG đang cần Sales am hiểu mô hình fulfillment xuyên biên giới để phát triển mảng Warehouse US.",
-        responsibilities: {
-            "Phát triển khách hàng": ["Tìm kiếm và phát triển khách hàng có nhu cầu gửi hàng qua kho Mỹ để fulfill & phân phối", "Tư vấn dịch vụ kho bãi tại US: lưu trữ, quản lý tồn kho, giao hàng cuối cùng", "Bán các sản phẩm sẵn trong kho Warehouse US qua website công ty"],
-            "Vận hành & phối hợp": ["Phối hợp với đội ngũ Operations để đảm bảo hàng hóa được xử lý đúng tiến độ", "Cập nhật thông tin sản phẩm và dịch vụ để tư vấn chính xác, hiệu quả"]
-        },
-        requirements: ["Kinh nghiệm trong bán hàng hoặc quản lý kho hàng là lợi thế", "Kỹ năng giao tiếp và tư vấn tốt", "Khả năng giải quyết vấn đề và xử lý tình huống nhanh nhẹn", "Kỹ năng tổ chức công việc và quản lý thời gian hiệu quả", "Chủ động, nhiệt tình, tận tâm với khách hàng"],
-        benefits: [{ i: "💰", t: "Lương cứng 8 triệu", d: "Cộng hoa hồng và thưởng" }, { i: "🏭", t: "Kho US chiến lược", d: "1000+ mẫu sản phẩm sẵn kho Mỹ" }, { i: "📈", t: "Hoa hồng không giới hạn", d: "Đạt và vượt KPI càng nhiều, thu nhập càng cao" }, { i: "🎁", t: "Thưởng tháng 13", d: "Thưởng Tết & các dịp lễ lớn" }, { i: "🏖️", t: "Company Trip", d: "Du lịch cùng công ty hàng năm" }, { i: "⏰", t: "Làm việc linh hoạt", d: "T2–T6: văn phòng · T7 chiều: online" }],
-        bonuses: ["Hoa hồng theo bảng doanh thu cá nhân", "Thưởng chốt đơn Warehouse giá trị lớn", "Thưởng khai thác khách hàng mới lần đầu giao dịch", "Thưởng đưa khách hàng lên hạng VIP trong tháng", "Thưởng KPI hàng tháng theo xếp hạng Grade B / A / A+", "Thưởng Nhân viên xuất sắc tháng do CEO chọn"]
-    },
-    {
-        id: "ops", cat: "ops", filter: "ops", badge: "Operations · Vận hành",
-        tagline: '"Xương sống của bộ máy fulfillment."',
-        title: "Nhân viên Vận hành TMĐT",
-        desc: "Mua hàng, vận chuyển và xử lý đơn Dropship từ 1688 / Alibaba. Vai trò xương sống của bộ máy vận hành.",
-        salary: "10 triệu", salaryUnit: "+ hoa hồng + thưởng", salaryNote: "Thu nhập không giới hạn theo hiệu suất",
-        location: "TP.HCM", type: "Full-time", deadline: "15/05/2026", experience: "Từ 6 tháng",
-        lead: "Vị trí Vận hành là xương sống của bộ máy THG Fulfill — trực tiếp sourcing sản phẩm trên các sàn TMĐT lớn của Trung Quốc, đàm phán với nhà cung cấp và đảm bảo đơn Dropship được xử lý trơn tru.",
-        responsibilities: {
-            "Mua hàng & Sourcing": ["Tìm kiếm và đánh giá các nguồn hàng mới trên 1688, Alibaba", "Thực hiện mua hàng: thương thảo, đàm phán, đặt hàng và theo dõi đơn", "Hỗ trợ quản lý làm báo giá, tối ưu chi phí vận hành"],
-            "Vận hành đơn Dropship": ["Quản lý vận hành đơn Dropship: xử lý đơn từ khách, liên lạc nhà cung cấp", "Đảm bảo giao hàng đúng thời hạn và chất lượng", "Quản lý các đơn vận chuyển từ VN → toàn cầu và từ TQ → toàn cầu"]
-        },
-        requirements: ["Tối thiểu 6 tháng kinh nghiệm trong TMĐT, vận hành Dropship", "Hiểu biết về quy trình thương mại điện tử", "Kỹ năng giao tiếp và đàm phán tốt", "Cẩn thận là điều kiện tiên quyết", "Có tiếng Trung cơ bản là lợi thế"],
-        benefits: [{ i: "💰", t: "Lương cứng 10 triệu", d: "Cộng hoa hồng và thưởng" }, { i: "📈", t: "Hoa hồng theo doanh số", d: "Đạt KPI hàng tháng nhận hoa hồng" }, { i: "🛒", t: "Thông thạo 1688 / Alibaba", d: "Đào tạo bài bản về sourcing Trung Quốc" }, { i: "🎁", t: "Thưởng tháng 13", d: "Thưởng Tết & các dịp lễ lớn" }, { i: "🏖️", t: "Company Trip", d: "Du lịch cùng công ty hàng năm" }, { i: "⏰", t: "Giờ hành chính", d: "T2–T6: 8h–17h" }],
-        bonuses: ["Thưởng KPI hàng tháng theo xếp hạng (Grade B / A / A+)", "Thưởng CSKH & Vận hành hỗ trợ chốt đơn giá trị lớn", "Thưởng Upsell thành công dịch vụ THG cho khách hàng", "Thưởng 100% task đúng hạn trong tháng", "Thưởng Nhân viên xuất sắc tháng do CEO chọn"]
-    },
-    {
-        id: "sourcing", cat: "sourcing", filter: "sourcing", badge: "Ngoại giao & Báo giá",
-        tagline: '"Cánh tay nối dài đến các nhà máy Trung Quốc."',
-        title: "Nhân viên Ngoại giao & Báo giá (China Desk)",
-        desc: "Làm việc trực tiếp với nhà máy và supplier Trung Quốc — cầu nối giữa THG và hệ sinh thái sản xuất TQ.",
-        salary: "10 triệu", salaryUnit: "+ hoa hồng + thưởng", salaryNote: "Thu nhập không giới hạn theo hiệu suất",
-        location: "TP.HCM", type: "Full-time", deadline: "15/05/2026", experience: "Không bắt buộc",
-        lead: "Vị trí Ngoại giao & Báo giá là cầu nối chiến lược giữa THG và hệ sinh thái sản xuất Trung Quốc — trực tiếp đàm phán với nhà máy, tìm kiếm supplier mới.",
-        responsibilities: {
-            "Làm việc với nhà cung cấp": ["Giao tiếp và làm việc trực tiếp với nhà máy, supplier Trung Quốc", "Đàm phán và tìm kiếm nhà cung cấp mới cho các nhóm sản phẩm theo yêu cầu", "Hỗ trợ phiên dịch trong các cuộc họp với nhà máy, đối tác TQ"],
-            "Báo giá & Logistics": ["Tính toán và đề xuất chi phí vận chuyển, giá thành sản phẩm", "Tìm kiếm và xây dựng mối quan hệ với các kho lưu trữ & đơn vị vận chuyển", "Soạn thảo báo cáo chi tiết về tình hình làm việc với supplier & logistics"]
-        },
-        requirements: ["Có tiếng Trung là lợi thế lớn (không bắt buộc)", "Kinh nghiệm làm việc với nhà máy hoặc logistics tại Trung Quốc là lợi thế", "Kỹ năng đàm phán và tìm kiếm thông tin nhà cung cấp tốt", "Làm việc chi tiết, cẩn thận với số liệu", "Tinh thần trách nhiệm, chủ động"],
-        benefits: [{ i: "💰", t: "Lương cứng 10 triệu", d: "Cộng hoa hồng và thưởng" }, { i: "🇨🇳", t: "Sử dụng tiếng Trung", d: "Cơ hội phát triển kỹ năng tiếng Trung chuyên nghiệp" }, { i: "🎁", t: "Thưởng tháng 13", d: "Thưởng Tết & các dịp lễ lớn" }, { i: "🌍", t: "Thị trường quốc tế", d: "Tiếp xúc trực tiếp với đối tác Trung Quốc" }, { i: "🎓", t: "Được đào tạo bài bản", d: "Hỗ trợ đào tạo trong suốt quá trình làm việc" }, { i: "🏖️", t: "Company Trip", d: "Du lịch cùng công ty hàng năm" }],
-        bonuses: ["Thưởng KPI hàng tháng theo xếp hạng (Grade B / A / A+)", "Thưởng hỗ trợ báo giá & chốt đơn giá trị lớn", "Thưởng đàm phán thành công với supplier chiến lược", "Thưởng 100% task đúng hạn trong tháng", "Thưởng Nhân viên xuất sắc tháng do CEO chọn"]
-    },
-];
+/** Map CMS category → filter group (left chip filters). */
+function categoryToFilter(cat: string | null | undefined): string {
+    if (!cat) return "other";
+    if (cat === "ai" || cat === "finance" || cat === "ops" || cat === "sourcing") return cat;
+    if (cat.startsWith("sales")) return "sales";
+    return cat;
+}
+
 
 const FILTERS = [
     { key: "all", label: "Tất cả", count: 7 },
@@ -176,48 +77,86 @@ const REWARDS = [
 /* ─── COMPONENT ─── */
 const CareersPage = () => {
     const { t, language } = useI18n();
+    const cmsJobs = useCmsJobs(language);
     const [filter, setFilter] = useState("all");
-    const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+    const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 
-    const filtered = filter === "all" ? JOBS : JOBS.filter(j => j.filter === filter);
+    // Adapt CMS list endpoint shape → Job-like surface fields used in card grid.
+    // Rich content (responsibilities/requirements/benefits/bonuses/lead) only loads
+    // when modal opens (per-slug fetch via useCmsJob).
+    const allJobs = useMemo<Job[]>(() => {
+        if (!cmsJobs.data) return [];
+        return cmsJobs.data.jobs
+            .slice()
+            .sort((a, b) => a.position - b.position)
+            .map((j) => ({
+                id: j.slug,
+                cat: j.category ?? "other",
+                filter: categoryToFilter(j.category),
+                hot: j.hot,
+                badge: j.badge ?? "",
+                tagline: j.tagline ?? "",
+                title: j.title,
+                desc: j.tagline ?? "",
+                salary: j.salary ?? "",
+                salaryUnit: j.salary_unit ?? "",
+                salaryNote: j.salary_note ?? "",
+                location: j.location ?? "",
+                type: j.employment_type ?? "",
+                deadline: j.deadline ?? "",
+                experience: j.experience ?? "",
+                lead: "",
+                responsibilities: {},
+                requirements: [],
+                benefits: [],
+                bonuses: [],
+            }));
+    }, [cmsJobs.data]);
 
-    const jMap: Record<string, string> = {
-        "ai-intern": "j1",
-        "finance": "j2",
-        "sales-pod": "j3",
-        "sales-ship": "j4",
-        "sales-wh": "j5",
-        "ops": "j6",
-        "sourcing": "j7"
-    };
-
-    const getJobDetails = (job: Job) => {
-        const trans = CAREERS_JOBS_I18N[job.id]?.[language];
-        if (!trans) return job;
-        return {
-            ...job,
-            responsibilities: trans.responsibilities || job.responsibilities,
-            requirements: trans.requirements || job.requirements,
-            benefits: trans.benefits ? trans.benefits.map((b: any, i: number) => ({ ...job.benefits[i], t: b.t, d: b.d })) : job.benefits,
-            bonuses: trans.bonuses || job.bonuses
-        };
-    };
+    const filtered = filter === "all" ? allJobs : allJobs.filter((j) => j.filter === filter);
 
     const closeModal = useCallback(() => {
-        setSelectedJob(null);
+        setSelectedSlug(null);
         document.body.style.overflow = "";
     }, []);
 
     const openJob = useCallback((job: Job) => {
-        setSelectedJob(job);
+        setSelectedSlug(job.id);
         document.body.style.overflow = "hidden";
     }, []);
 
-    const activeJob = selectedJob ? getJobDetails(selectedJob) : null;
-    const accent = activeJob ? ACCENT[activeJob.cat] || "#A67845" : "#A67845";
+    // Per-slug rich detail — only fetched while modal open.
+    const cmsDetail = useCmsJob(selectedSlug ?? "", language);
+    const activeJob: Job | null = useMemo(() => {
+        if (!selectedSlug) return null;
+        const summary = allJobs.find((j) => j.id === selectedSlug);
+        if (!summary) return null;
+        const d = cmsDetail.data?.job;
+        if (!d) return summary; // show loading-ish state — modal renders empty arrays gracefully
+        return {
+            ...summary,
+            lead: d.lead ?? "",
+            responsibilities: d.responsibilities ?? {},
+            requirements: d.requirements ?? [],
+            benefits: d.benefits ?? [],
+            bonuses: d.bonuses ?? [],
+        };
+    }, [selectedSlug, allJobs, cmsDetail.data]);
+    const accent = activeJob ? ACCENT[activeJob.cat] || DEFAULT_ACCENT : DEFAULT_ACCENT;
 
     return (
         <div className="min-h-screen bg-background">
+            <SeoHead
+                title="Careers — THG Fulfill"
+                description={t("careers.hero_subtitle")}
+                path="/careers"
+            />
+            <JsonLdBreadcrumb
+                items={[
+                    { name: "Home", url: "https://thgfulfill.com/" },
+                    { name: "Careers", url: "https://thgfulfill.com/careers" },
+                ]}
+            />
             <Navbar />
 
             {/* ═══ HERO ═══ */}
@@ -294,49 +233,55 @@ const CareersPage = () => {
                         })}
                     </div>
 
-                    {/* Job cards grid */}
+                    {/* Job cards grid — CMS data only. Empty state when CMS unseeded. */}
+                    {cmsJobs.isLoading && (
+                        <div className="text-center text-muted-foreground py-12">Đang tải tin tuyển dụng...</div>
+                    )}
+                    {!cmsJobs.isLoading && allJobs.length === 0 && (
+                        <div className="text-center text-muted-foreground py-12">
+                            Hiện chưa có vị trí tuyển dụng nào. Vui lòng quay lại sau.
+                        </div>
+                    )}
                     <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))' }}>
                         {filtered.map((job, i) => {
-                            const jTransKey = jMap[job.id];
+                            const accentColor = ACCENT[job.cat] || DEFAULT_ACCENT;
                             return (
                                 <ScrollReveal key={job.id} delay={i * 80} className="h-full">
                                     <div onClick={() => openJob(job)}
                                         className="bg-white border border-border rounded-2xl p-[30px] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl relative overflow-hidden flex flex-col h-full min-h-[320px] group"
-                                        style={{ "--accent": ACCENT[job.cat] } as React.CSSProperties}>
-                                        {/* Top accent bar */}
-                                        <div className="absolute top-0 left-0 right-0 h-[3px] opacity-70 group-hover:opacity-100 group-hover:h-1 transition-all" style={{ background: ACCENT[job.cat] }} />
-                                        {/* HOT · MỚI ribbon */}
+                                        style={{ "--accent": accentColor } as React.CSSProperties}>
+                                        <div className="absolute top-0 left-0 right-0 h-[3px] opacity-70 group-hover:opacity-100 group-hover:h-1 transition-all" style={{ background: accentColor }} />
                                         {job.hot && (
                                             <div className="absolute top-[18px] -right-[32px] text-white px-9 py-1 text-[10px] font-extrabold tracking-[0.12em] rotate-[35deg] z-10 whitespace-nowrap"
                                                 style={{ background: '#2E6F8E', boxShadow: '0 4px 12px rgba(46,111,142,0.25)' }}>
                                                 {t("careers.hot")}
                                             </div>
                                         )}
-                                        <span className="inline-flex items-center gap-1.5 text-[10.5px] font-bold tracking-[0.12em] uppercase px-2.5 py-1.5 rounded-[5px] self-start" style={{ background: `${ACCENT[job.cat]}18`, color: ACCENT[job.cat] }}>
-                                            {t(`careers.${jTransKey}_badge`) || job.badge}
+                                        <span className="inline-flex items-center gap-1.5 text-[10.5px] font-bold tracking-[0.12em] uppercase px-2.5 py-1.5 rounded-[5px] self-start" style={{ background: `${accentColor}18`, color: accentColor }}>
+                                            {job.badge}
                                         </span>
-                                        <div className="text-[13px] font-bold italic mt-3.5 tracking-[0.3px]" style={{ color: ACCENT[job.cat] }}>
-                                            {t(`careers.${jTransKey}_tagline`) || job.tagline}
+                                        <div className="text-[13px] font-bold italic mt-3.5 tracking-[0.3px]" style={{ color: accentColor }}>
+                                            {job.tagline}
                                         </div>
                                         <h3 className="text-[23px] font-extrabold text-navy mt-1.5 leading-[1.2] tracking-[-0.01em]">
-                                            {t(`careers.${jTransKey}_title`) || job.title}
+                                            {job.title}
                                         </h3>
                                         <p className="text-muted-foreground text-sm leading-[1.6] mt-3 flex-1">
-                                            {t(`careers.${jTransKey}_desc`) || job.desc}
+                                            {job.desc}
                                         </p>
                                         <div className="flex flex-wrap gap-2.5 mt-[18px] pt-[18px] border-t border-dashed border-border text-[12.5px] text-muted-foreground font-medium">
-                                            <span className="inline-flex items-center gap-[5px]">📍 {t(`careers.${jTransKey}_location`) || job.location}</span>
-                                            <span className="inline-flex items-center gap-[5px]">⏱ {t(`careers.${jTransKey}_type`) || job.type}</span>
-                                            <span className="inline-flex items-center gap-[5px]">📅 {t(`careers.stat4_label`)} {job.deadline}</span>
+                                            {job.location && <span className="inline-flex items-center gap-[5px]">📍 {job.location}</span>}
+                                            {job.type && <span className="inline-flex items-center gap-[5px]">⏱ {job.type}</span>}
+                                            {job.deadline && <span className="inline-flex items-center gap-[5px]">📅 {t(`careers.stat4_label`)} {job.deadline}</span>}
                                         </div>
                                         <div className="flex justify-between items-center mt-[18px]">
                                             <div className="font-extrabold text-lg text-navy leading-[1.2] tracking-[-0.01em]">
-                                                {t(`careers.${jTransKey}_salary`) || job.salary}
+                                                {job.salary}
                                                 <span className="block text-primary font-bold text-[12.5px] mt-0.5 tracking-[0.2px]">
-                                                    {t(`careers.${jTransKey}_salaryUnit`) || job.salaryUnit}
+                                                    {job.salaryUnit}
                                                 </span>
                                             </div>
-                                            <div className="w-[38px] h-[38px] rounded-full border border-border flex items-center justify-center text-navy transition-all duration-300 group-hover:rotate-[-45deg] group-hover:text-white group-hover:border-transparent" style={{ backgroundColor: 'var(--bg, #F7F5F0)' }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = ACCENT[job.cat]; (e.currentTarget as HTMLElement).style.borderColor = ACCENT[job.cat]; }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg, #F7F5F0)'; (e.currentTarget as HTMLElement).style.borderColor = ''; }}>
+                                            <div className="w-[38px] h-[38px] rounded-full border border-border flex items-center justify-center text-navy transition-all duration-300 group-hover:rotate-[-45deg] group-hover:text-white group-hover:border-transparent" style={{ backgroundColor: 'var(--bg, #F7F5F0)' }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = accentColor; (e.currentTarget as HTMLElement).style.borderColor = accentColor; }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg, #F7F5F0)'; (e.currentTarget as HTMLElement).style.borderColor = ''; }}>
                                                 →
                                             </div>
                                         </div>
@@ -437,16 +382,16 @@ const CareersPage = () => {
                         {/* Modal Hero */}
                         <div className="p-10 md:p-14 pb-8 border-b border-border relative" style={{ background: `linear-gradient(180deg, ${accent}0F, white)` }}>
                             <div className="absolute top-0 left-0 right-0 h-1" style={{ background: accent }} />
-                            <span className="inline-flex items-center gap-1.5 text-[10.5px] font-bold tracking-[0.15em] uppercase px-3 py-1.5 rounded" style={{ background: `${accent}15`, color: accent }}>{t(`careers.${jMap[activeJob.id]}_badge`) || activeJob.badge}</span>
-                            <div className="text-sm font-bold italic mt-4" style={{ color: accent }}>{t(`careers.${jMap[activeJob.id]}_tagline`) || activeJob.tagline}</div>
-                            <h2 className="text-3xl md:text-4xl font-extrabold text-navy mt-1.5 tracking-tight">{t(`careers.${jMap[activeJob.id]}_title`) || activeJob.title}</h2>
-                            <p className="text-muted-foreground text-[15.5px] max-w-2xl mt-3.5 leading-relaxed">{t(`careers.${jMap[activeJob.id]}_desc`) || activeJob.lead}</p>
+                            <span className="inline-flex items-center gap-1.5 text-[10.5px] font-bold tracking-[0.15em] uppercase px-3 py-1.5 rounded" style={{ background: `${accent}15`, color: accent }}>{activeJob.badge}</span>
+                            <div className="text-sm font-bold italic mt-4" style={{ color: accent }}>{activeJob.tagline}</div>
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-navy mt-1.5 tracking-tight">{activeJob.title}</h2>
+                            <p className="text-muted-foreground text-[15.5px] max-w-2xl mt-3.5 leading-relaxed">{activeJob.lead || activeJob.desc}</p>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-7 pt-6 border-t border-dashed border-border">
                                 {[
-                                    { l: t("careers.modal_salary"), v: `${t(`careers.${jMap[activeJob.id]}_salary`) || activeJob.salary} ${t(`careers.${jMap[activeJob.id]}_salaryUnit`) || activeJob.salaryUnit}` },
-                                    { l: t("careers.modal_exp"), v: t(`careers.${jMap[activeJob.id]}_exp`) || activeJob.experience },
-                                    { l: t("careers.modal_type"), v: t(`careers.${jMap[activeJob.id]}_type`) || activeJob.type },
-                                    { l: t("careers.modal_loc"), v: t(`careers.${jMap[activeJob.id]}_location`) || activeJob.location },
+                                    { l: t("careers.modal_salary"), v: `${activeJob.salary} ${activeJob.salaryUnit}` },
+                                    { l: t("careers.modal_exp"), v: activeJob.experience },
+                                    { l: t("careers.modal_type"), v: activeJob.type },
+                                    { l: t("careers.modal_loc"), v: activeJob.location },
                                     { l: t("careers.stat4_label"), v: activeJob.deadline },
                                 ].map((qi, i) => (
                                     <div key={i}>
@@ -464,8 +409,8 @@ const CareersPage = () => {
                                 <h3 className="text-xl font-extrabold text-navy flex items-center gap-3 mb-4"><span className="w-[5px] h-[22px] rounded" style={{ background: accent }} /> 💎 {t("careers.modal_ben_title") || "Quyền lợi hấp dẫn"}</h3>
                                 <div className="rounded-2xl p-6 mb-5" style={{ background: `linear-gradient(135deg, ${accent}0C, hsl(36 30% 96%))`, border: `1px solid ${accent}30` }}>
                                     <div className="flex items-center gap-4 flex-wrap mb-4">
-                                        <div className="text-3xl font-extrabold text-navy leading-tight">{t(`careers.${jMap[activeJob.id]}_salary`) || activeJob.salary}<span className="block text-primary font-bold text-[15px] mt-0.5">{t(`careers.${jMap[activeJob.id]}_salaryUnit`) || activeJob.salaryUnit}</span></div>
-                                        <span className="bg-white border border-border rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold text-navy">{t(`careers.${jMap[activeJob.id]}_salaryNote`) || activeJob.salaryNote}</span>
+                                        <div className="text-3xl font-extrabold text-navy leading-tight">{activeJob.salary}<span className="block text-primary font-bold text-[15px] mt-0.5">{activeJob.salaryUnit}</span></div>
+                                        {activeJob.salaryNote && <span className="bg-white border border-border rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold text-navy">{activeJob.salaryNote}</span>}
                                     </div>
                                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                         {activeJob.benefits.map((b: any, i: number) => (

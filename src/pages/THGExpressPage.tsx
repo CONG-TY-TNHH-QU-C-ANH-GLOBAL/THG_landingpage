@@ -1,5 +1,7 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
@@ -7,6 +9,7 @@ import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
 import { Truck, ArrowRight, Plane, Ship, Shield, Clock, Search, MapPin, Globe, Sparkles, CheckCircle2, Factory, Database, Lock, Users, Headphones, PackageCheck, ChevronRight, CircleDollarSign, Rocket, Warehouse, UsersRound, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Carousel,
@@ -73,6 +76,22 @@ const THGExpressPage = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      <SeoHead
+        title="THG Express — International Shipping Sea/Air/Express VN-CN to US"
+        description={t("express_page.hero_subtitle")}
+        path="/thg-express"
+      />
+      <JsonLdService
+        name="THG Express — International Shipping"
+        description="Multi-route international shipping from Vietnam and China to USA: Sea 20-25 days, Air 3-5 days, Express 6-10 days. TikTok Shop supported."
+        url="https://thgfulfill.com/thg-express"
+      />
+      <JsonLdBreadcrumb
+        items={[
+          { name: "Home", url: "https://thgfulfill.com/" },
+          { name: "THG Express", url: "https://thgfulfill.com/thg-express" },
+        ]}
+      />
       <Navbar />
 
 
@@ -112,11 +131,14 @@ const THGExpressPage = () => {
               <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
                 {t("express_page.partnership_desc")}
               </p>
-              <a href="https://www.facebook.com/thgexpress1" target="_blank" rel="noopener noreferrer">
-                <Button className="bg-primary hover:bg-gold-dark text-white px-10 py-7 rounded-full text-lg font-bold shadow-lg transition-transform hover:-translate-y-1">
-                  {t("express_page.shipping_comprehensive_cta")}
-                </Button>
-              </a>
+              <LeadFormDialog
+                sourcePage="/thg-express#partnership"
+                trigger={
+                  <Button className="bg-primary hover:bg-gold-dark text-white px-10 py-7 rounded-full text-lg font-bold shadow-lg transition-transform hover:-translate-y-1">
+                    {t("express_page.shipping_comprehensive_cta")}
+                  </Button>
+                }
+              />
             </div>
           </ScrollReveal>
         </div>
@@ -273,11 +295,14 @@ const THGExpressPage = () => {
                     <span className="text-muted-foreground">{t("express_page.shipping_comprehensive_feat4")}</span>
                   </p>
                 </div>
-                <a href="https://www.facebook.com/thgexpress1" target="_blank" rel="noopener noreferrer">
-                  <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-8 py-6 rounded-full text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
-                    {t("express_page.shipping_comprehensive_cta")}
-                  </Button>
-                </a>
+                <LeadFormDialog
+                  sourcePage="/thg-express#comprehensive"
+                  trigger={
+                    <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-8 py-6 rounded-full text-lg font-bold shadow-xl transition-transform hover:-translate-y-1">
+                      {t("express_page.shipping_comprehensive_cta")}
+                    </Button>
+                  }
+                />
               </div>
             </ScrollReveal>
           </div>
@@ -414,11 +439,14 @@ const THGExpressPage = () => {
                 {t("express_page.line_routes_desc")}
               </p>
               <div className="flex justify-center">
-                <a href="https://www.facebook.com/thgexpress1" target="_blank" rel="noopener noreferrer">
-                  <Button className="bg-[#F27125] text-white hover:bg-[#d95c1a] font-black px-10 py-[1.4rem] rounded-full text-sm lg:text-[15px] shadow-2xl shadow-orange-500/30 uppercase tracking-widest transition-transform hover:-translate-y-1">
-                    {t("express_page.get_quote_cta")}
-                  </Button>
-                </a>
+                <LeadFormDialog
+                  sourcePage="/thg-express#routes"
+                  trigger={
+                    <Button className="bg-[#F27125] text-white hover:bg-[#d95c1a] font-black px-10 py-[1.4rem] rounded-full text-sm lg:text-[15px] shadow-2xl shadow-orange-500/30 uppercase tracking-widest transition-transform hover:-translate-y-1">
+                      {t("express_page.get_quote_cta")}
+                    </Button>
+                  }
+                />
               </div>
             </ScrollReveal>
           </div>
@@ -434,7 +462,7 @@ const THGExpressPage = () => {
 
               {/* Card 01 */}
               <ScrollReveal delay={100} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_4390-20250726042334-q7ti-.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_4390-20250726042334-q7ti-.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>
@@ -448,7 +476,7 @@ const THGExpressPage = () => {
 
               {/* Card 02 */}
               <ScrollReveal delay={200} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_9554-20250726042334--dcox.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_9554-20250726042334--dcox.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>
@@ -463,7 +491,7 @@ const THGExpressPage = () => {
 
               {/* Card 03 */}
               <ScrollReveal delay={300} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_7919-20250811065942-lqajy.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/img_7919-20250811065942-lqajy.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>
@@ -477,7 +505,7 @@ const THGExpressPage = () => {
 
               {/* Card 04 */}
               <ScrollReveal delay={400} direction="up" className="relative group rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] aspect-[16/10] bg-white">
-                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/cong-ty-van-chuyen-quoc-te-20250808094223-li7pn.jpg" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
+                <img src="https://w.ladicdn.com/s500x400/67e69e24e8a7ba001127c80a/cong-ty-van-chuyen-quoc-te-20250808094223-li7pn.jpg" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 mix-blend-multiply" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#df7238]/95 via-[#d46535]/85 to-[#3b73cd]/95 mix-blend-normal"></div>
                 <div className="relative z-10 p-5 lg:p-6 flex flex-col h-full text-white justify-between">
                   <div>

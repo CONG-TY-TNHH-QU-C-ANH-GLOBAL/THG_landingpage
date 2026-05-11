@@ -1,4 +1,5 @@
 import { useI18n } from "@/lib/i18n";
+import { useCmsIntegrations } from "@/hooks/useCmsContent";
 import ScrollReveal from "@/components/ScrollReveal";
 import thgLogo from "@/assets/thg-logo.png";
 
@@ -8,17 +9,31 @@ const TikTokSVG = () => (
   </svg>
 );
 
-const platforms: { name: string; icon: string | null; svg?: React.ReactNode; color: string }[] = [
-  { name: "Etsy", icon: "🛍️", color: "bg-orange-50 border-orange-200" },
-  { name: "Amazon", icon: "📦", color: "bg-amber-50 border-amber-200" },
-  { name: "TikTok Shop", icon: null, svg: <TikTokSVG />, color: "bg-slate-50 border-slate-200" },
-  { name: "eBay", icon: "🏷️", color: "bg-blue-50 border-blue-200" },
-  { name: "Shopify", icon: "🛒", color: "bg-green-50 border-green-200" },
-  { name: "WooCommerce", icon: "🔌", color: "bg-purple-50 border-purple-200" },
-];
+// Visual config (icons/svgs) hardcoded by platform name; CMS provides name + color + url.
+// When a CMS row's name matches one of these keys, use the visual; else fall back to emoji.
+const VISUAL_BY_NAME: Record<string, { icon: string | null; svg?: React.ReactNode }> = {
+  Etsy: { icon: "🛍️" },
+  Amazon: { icon: "📦" },
+  "TikTok Shop": { icon: null, svg: <TikTokSVG /> },
+  eBay: { icon: "🏷️" },
+  Shopify: { icon: "🛒" },
+  WooCommerce: { icon: "🔌" },
+};
+
+interface Platform {
+  id: number;
+  position: number;
+  name: string;
+  url: string | null;
+  color_class: string | null;
+  logo_media_id: number | null;
+}
 
 const IntegrationsSection = () => {
-  const { t, tVi } = useI18n();
+  const { tVi } = useI18n();
+  const { data } = useCmsIntegrations();
+  const platforms: Platform[] = data?.integrations ?? [];
+  const sortedPlatforms = [...platforms].sort((a, b) => a.position - b.position);
 
   return (
     <section className="py-28 bg-card relative overflow-hidden">
@@ -46,22 +61,25 @@ const IntegrationsSection = () => {
 
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-            {platforms.map((p, i) => (
-              <ScrollReveal key={p.name} delay={i * 80}>
-                <div className={`rounded-2xl border ${p.color} p-6 flex flex-col items-center gap-3 tilt-card transition-all duration-300 group`}>
-                  <span className="text-4xl group-hover:scale-110 transition-transform duration-300">
-                    {p.svg ?? p.icon}
-                  </span>
-                  <span className="text-sm font-semibold text-navy">{p.name}</span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-olive animate-pulse" />
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
-                      {tVi("integrations.sync_ready")}
+            {sortedPlatforms.map((p, i) => {
+              const visual = VISUAL_BY_NAME[p.name];
+              return (
+                <ScrollReveal key={p.id} delay={i * 80}>
+                  <div className={`rounded-2xl border ${p.color_class ?? "bg-card border-border"} p-6 flex flex-col items-center gap-3 tilt-card transition-all duration-300 group`}>
+                    <span className="text-4xl group-hover:scale-110 transition-transform duration-300">
+                      {visual?.svg ?? visual?.icon ?? "🔌"}
                     </span>
+                    <span className="text-sm font-semibold text-navy">{p.name}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-olive animate-pulse" />
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+                        {tVi("integrations.sync_ready")}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              );
+            })}
           </div>
 
           <ScrollReveal delay={500}>

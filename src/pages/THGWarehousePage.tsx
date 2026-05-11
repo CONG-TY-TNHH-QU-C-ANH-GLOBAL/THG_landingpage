@@ -1,5 +1,7 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import warehouseUS from "@/assets/warehouse_US.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
@@ -89,6 +91,22 @@ const THGWarehousePage = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      <SeoHead
+        title="THG Warehouse US — Last-Mile Fulfillment Pennsylvania & North Carolina"
+        description={t("warehouse_page.hero_subtitle")}
+        path="/thg-warehouse"
+      />
+      <JsonLdService
+        name="THG Warehouse US — Last-Mile Fulfillment"
+        description="US-based warehousing in Pennsylvania (Milford, PA) and North Carolina (Winston-Salem, NC). 2-5 day domestic delivery, transparent storage and pick-pack fees."
+        url="https://thgfulfill.com/thg-warehouse"
+      />
+      <JsonLdBreadcrumb
+        items={[
+          { name: "Home", url: "https://thgfulfill.com/" },
+          { name: "THG Warehouse", url: "https://thgfulfill.com/thg-warehouse" },
+        ]}
+      />
       <Navbar />
 
       {/* Hero – Gold Mint */}

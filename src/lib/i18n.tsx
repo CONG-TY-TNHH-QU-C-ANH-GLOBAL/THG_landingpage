@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
+
+import { useCmsTranslations } from "@/hooks/useCmsContent";
 
 export type Language = "en" | "vi" | "zh";
 
@@ -39,6 +41,15 @@ const translations: Translations = {
   "catalog_page.lbl_sku": { en: "SKU:", vi: "Mã SKU:", zh: "SKU:" },
   "catalog_page.lbl_size": { en: "Sizes:", vi: "Kích cỡ:", zh: "尺寸:" },
   "catalog_page.lbl_cost": { en: "Base Cost from", vi: "Giá gốc từ", zh: "基础成本起" },
+
+  "consent.aria_label": { en: "Cookie consent", vi: "Đồng ý cookie", zh: "Cookie 同意" },
+  "consent.message": {
+    en: "We use cookies to improve your experience and analyze traffic. You can accept or reject analytics tracking.",
+    vi: "Chúng tôi sử dụng cookie để cải thiện trải nghiệm và phân tích traffic. Bạn có thể chấp nhận hoặc từ chối tracking analytics.",
+    zh: "我们使用 Cookie 来改善您的体验并分析流量。您可以接受或拒绝分析跟踪。",
+  },
+  "consent.accept": { en: "Accept", vi: "Đồng ý", zh: "同意" },
+  "consent.reject": { en: "Reject", vi: "Từ chối", zh: "拒绝" },
 
   "hero.badge": { en: "15% OFF for first 50 orders", vi: "Ưu đãi 15% cho 50 đơn hàng đầu tiên", zh: "前50单享85折优惠" },
   "hero.title1": { en: "Your Global", vi: "Giải pháp", zh: "您的全球" },
@@ -1387,22 +1398,34 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     return "en";
   });
 
+  // Fetch translations from CMS API. Hardcoded `translations` object stays as
+  // fallback for offline / initial load before CMS responds. When CMS data
+  // arrives, it OVERRIDES the hardcoded values (single source of truth = CMS).
+  const cmsQuery = useCmsTranslations(language);
+
+  // Effective lookup map: hardcoded base + CMS overrides
+  const effectiveMap = useMemo(() => {
+    const base: Record<string, string> = {};
+    for (const [key, byLocale] of Object.entries(translations)) {
+      base[key] = byLocale[language] || byLocale.en || key;
+    }
+    if (cmsQuery.data?.translations) {
+      Object.assign(base, cmsQuery.data.translations);
+    }
+    return base;
+  }, [language, cmsQuery.data]);
+
+  useEffect(() => {
+    document.documentElement.lang = language === "zh" ? "zh-CN" : language;
+  }, [language]);
+
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem("thg_lang", lang);
-    // Set html lang attribute for SEO / accessibility (no GTranslate dependency)
-    document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
   };
 
-  // Standard t() — returns text in the selected language
-  const t = (key: string): string => {
-    return translations[key]?.[language] || translations[key]?.en || key;
-  };
-
-  // tVi() — same as t() now (both use selected language)
-  const tVi = (key: string): string => {
-    return translations[key]?.[language] || translations[key]?.en || key;
-  };
+  const t = (key: string): string => effectiveMap[key] ?? key;
+  const tVi = (key: string): string => effectiveMap[key] ?? key;
 
   const effectiveLanguage: Language = language;
 

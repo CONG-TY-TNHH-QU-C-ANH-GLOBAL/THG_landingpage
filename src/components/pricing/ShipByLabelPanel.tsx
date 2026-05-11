@@ -1,19 +1,21 @@
 import { useState } from "react";
-import { pricingData } from "@/data/pricingData";
 import PriceTable from "./PriceTable";
 import { useI18n } from "@/lib/i18n";
+import { useLarkPricingContext } from "@/components/pricing/LarkPricingProvider";
 
 const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: any[] } | null }) => {
     const [tab, setTab] = useState<"regular" | "special">("regular");
     const { t } = useI18n();
+    const { cmsOverlay } = useLarkPricingContext();
 
     const tabs = [
-        { id: "regular" as const, label: t("sbl.tab_regular"), fallbackKey: "tiktokCnUsNormal" },
-        { id: "special" as const, label: t("sbl.tab_special"), fallbackKey: "tiktokCnUsSpecial" },
+        { id: "regular" as const, label: t("sbl.tab_regular"), cmsSlug: "tiktokCnUsNormal" },
+        { id: "special" as const, label: t("sbl.tab_special"), cmsSlug: "tiktokCnUsSpecial" },
     ];
 
     const activeTab = tabs.find(tb => tb.id === tab)!;
-    const data = larkData?.[tab]?.length ? larkData[tab] : (pricingData as any)[activeTab.fallbackKey] || [];
+    const cmsData = (cmsOverlay[activeTab.cmsSlug] as any[]) ?? [];
+    const data = larkData?.[tab]?.length ? larkData[tab] : cmsData;
 
     return (
         <div className="mt-6">

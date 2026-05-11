@@ -1,9 +1,11 @@
 import Navbar from "@/components/Navbar";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ContactSection from "@/components/ContactSection";
+import { useCmsPolicies, useCmsPolicy } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
-import { useState } from "react";
-import { policySections } from "@/data/policyData";
+import { useMemo, useState } from "react";
 import PolicyImageViewer from "@/components/policy/PolicyImageViewer";
 import PolicyTextRenderer from "@/components/policy/PolicyTextRenderer";
 
@@ -20,16 +22,47 @@ const SectionIcon = ({ icon }: { icon: string }) => {
   return <span>{icon}</span>;
 };
 
+interface DisplaySection {
+  id: string;
+  title: string;
+  icon: string;
+}
+
 const PolicyPage = () => {
-  const { t, effectiveLanguage } = useI18n();
+  const { t, effectiveLanguage, language } = useI18n();
+  const cmsList = useCmsPolicies(language);
   const [activeSection, setActiveSection] = useState(0);
-  const current = policySections[activeSection];
+
+  const sections: DisplaySection[] = useMemo(() => {
+    if (!cmsList.data) return [];
+    return cmsList.data.policies
+      .slice()
+      .sort((a, b) => a.position - b.position)
+      .map((p) => ({ id: p.slug, title: p.title, icon: p.icon ?? "📄" }));
+  }, [cmsList.data]);
+
+  const current = sections[activeSection] ?? sections[0];
+
+  // Per-slug fetch for image_list.
+  const cmsDetail = useCmsPolicy(current ? current.id : "", language);
+  const images = cmsDetail.data?.policy.image_list ?? [];
 
   /* Dual-mode: VI = ảnh gốc, EN/ZH = text (GTranslate dịch tự động) */
   const isVietnamese = effectiveLanguage === "vi";
 
   return (
     <div className="min-h-screen bg-[#f5f0e8]">
+      <SeoHead
+        title={`${t("policy.title")} — THG Fulfill`}
+        description={t("policy.subtitle")}
+        path="/policy"
+      />
+      <JsonLdBreadcrumb
+        items={[
+          { name: "Home", url: "https://thgfulfill.com/" },
+          { name: t("policy.title"), url: "https://thgfulfill.com/policy" },
+        ]}
+      />
       <Navbar />
       <div className="max-w-[900px] mx-auto px-4 sm:px-6 pt-28 pb-20">
         {/* ── Header ── */}
@@ -42,7 +75,7 @@ const PolicyPage = () => {
 
         {/* ── Section Tabs ── */}
         <div className="flex gap-2 flex-wrap mb-6">
-          {policySections.map((section, i) => (
+          {sections.map((section, i) => (
             <button
               key={section.id}
               onClick={() => setActiveSection(i)}
@@ -52,25 +85,37 @@ const PolicyPage = () => {
                 }`}
             >
               <SectionIcon icon={section.icon} />
-              <span className="notranslate" translate="no">{t(section.titleKey)}</span>
+              <span className="notranslate" translate="no">{section.title}</span>
             </button>
           ))}
         </div>
 
-        {/* ── Content: Dual-mode rendering ── */}
-        <PolicyImageViewer
-          key={`${current.id}-img`}
-          images={current.images}
-          title={current.title}
-        />
-        <p className="text-center text-[12px] text-muted-foreground mt-4 mb-6 notranslate" translate="no">
-          {t(current.titleKey)} — {current.images.length} {effectiveLanguage === 'vi' ? 'trang' : effectiveLanguage === 'zh' ? '页' : 'pages'}
-        </p>
+        {/* Loading / empty states */}
+        {cmsList.isLoading && (
+          <div className="text-center text-muted-foreground py-12 text-sm">Đang tải chính sách...</div>
+        )}
+        {!cmsList.isLoading && sections.length === 0 && (
+          <div className="text-center text-muted-foreground py-12 text-sm">Chưa có chính sách nào.</div>
+        )}
 
-        {!isVietnamese && (
-          <div className="mt-8">
-            <PolicyTextRenderer key={`${current.id}-txt`} sectionId={current.id} />
-          </div>
+        {/* ── Content: Dual-mode rendering ── */}
+        {current && (
+          <>
+            <PolicyImageViewer
+              key={`${current.id}-img`}
+              images={images}
+              title={current.title}
+            />
+            <p className="text-center text-[12px] text-muted-foreground mt-4 mb-6 notranslate" translate="no">
+              {current.title} — {images.length} {effectiveLanguage === 'vi' ? 'trang' : effectiveLanguage === 'zh' ? '页' : 'pages'}
+            </p>
+
+            {!isVietnamese && (
+              <div className="mt-8">
+                <PolicyTextRenderer key={`${current.id}-txt`} sectionId={current.id} />
+              </div>
+            )}
+          </>
         )}
       </div>
       <ContactSection />

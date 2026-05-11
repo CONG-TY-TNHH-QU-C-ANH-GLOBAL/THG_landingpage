@@ -13,17 +13,31 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
 
     const weightKeys = data[0]?.prices ? Object.keys(data[0].prices).sort((a, b) => Number(a) - Number(b)) : [];
 
+    const toNumeric = (v: unknown): number | null => {
+        if (typeof v === "number" && Number.isFinite(v)) return v;
+        if (typeof v === "string") {
+            const cleaned = v.trim().replace(/\s/g, "").replace(/,/g, "");
+            if (/^-?\d+(\.\d+)?$/.test(cleaned)) {
+                const n = Number(cleaned);
+                if (Number.isFinite(n)) return n;
+            }
+        }
+        return null;
+    };
+
     const exportConfig = useMemo(() => {
         const headers = ["Vùng (Zone)", ...weightKeys.map(k => k + " kg"), "Thời gian (SLA)"];
         const rows = data.map((row: any) => [
             row.name,
             ...weightKeys.map(k => {
                 const val = row.prices[k];
-                if (val === null || val === undefined) return "—";
+                if (val === null || val === undefined || val === "") return "—";
+                const num = toNumeric(val);
+                if (num === null) return String(val);
                 if (currencySymbol === "₫") {
-                    return `${Math.round(val * rate).toLocaleString("vi-VN")} ₫`;
+                    return `${Math.round(num * rate).toLocaleString("vi-VN")} ₫`;
                 }
-                return `${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+                return `${currencySymbol}${(num * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
             }),
             row.sla || "—"
         ]);
@@ -31,12 +45,17 @@ const BulkDataTable = ({ title, badge, data, rate = 1, currencySymbol = "$" }: {
     }, [data, weightKeys, title, currencySymbol, rate]);
     const displayData = isExpanded ? data : data.slice(0, 6);
 
-    const fmtPrice = (price: number | null | undefined) => {
-        if (price == null) return "—";
+    const fmtPrice = (price: unknown) => {
+        if (price === null || price === undefined || price === "") return "—";
+        const num = toNumeric(price);
+        if (num === null) return String(price);
         const sym = currencySymbol;
-        return `${sym}${(price * rate).toLocaleString("en-US", {
-            maximumFractionDigits: sym === "₫" ? 0 : 2,
-            minimumFractionDigits: sym === "₫" ? 0 : 2,
+        if (sym === "₫") {
+            return `${Math.round(num * rate).toLocaleString("vi-VN")} ₫`;
+        }
+        return `${sym}${(num * rate).toLocaleString("en-US", {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
         })}`;
     };
 

@@ -1,15 +1,45 @@
-import { Play, Package, Truck, Globe, ShieldCheck } from "lucide-react";
+import { Package, Truck, Globe, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import { useCmsSiteSettings, useHomepageBlock } from "@/hooks/useCmsContent";
+
+const FALLBACK_VIDEO_ID = "Cvj8kqFMLfk";
+
+// Extract YouTube videoId from any common URL shape:
+//   https://www.youtube.com/watch?v=ID
+//   https://youtu.be/ID
+//   https://www.youtube.com/embed/ID
+//   raw ID (11 chars alnum/_-)
+function extractYouTubeId(input: string | null | undefined): string {
+  if (!input) return FALLBACK_VIDEO_ID;
+  const trimmed = input.trim();
+  if (/^[A-Za-z0-9_-]{11}$/.test(trimmed)) return trimmed;
+  try {
+    const url = new URL(trimmed);
+    const v = url.searchParams.get("v");
+    if (v && /^[A-Za-z0-9_-]{11}$/.test(v)) return v;
+    const parts = url.pathname.split("/").filter(Boolean);
+    const last = parts[parts.length - 1];
+    if (last && /^[A-Za-z0-9_-]{11}$/.test(last)) return last;
+  } catch {
+    // not a URL — fall through
+  }
+  return FALLBACK_VIDEO_ID;
+}
 
 const AboutVideoSection = () => {
-  const { t, tVi } = useI18n();
+  const { tVi, language } = useI18n();
+  const { data: settings } = useCmsSiteSettings();
+  // homepage_blocks.about_video.payload wins over site_settings.about_video_url
+  // so operator can override per locale; settings still works as global default.
+  const block = useHomepageBlock(language, "about_video");
+  const videoId = extractYouTubeId(block.video_url || settings?.about_video_url);
 
   const highlights = [
-    { icon: Package, label: tVi("about.highlight1") },
-    { icon: Truck, label: tVi("about.highlight2") },
-    { icon: Globe, label: tVi("about.highlight3") },
-    { icon: ShieldCheck, label: tVi("about.highlight4") },
+    { icon: Package, label: block.highlight1 || tVi("about.highlight1") },
+    { icon: Truck, label: block.highlight2 || tVi("about.highlight2") },
+    { icon: Globe, label: block.highlight3 || tVi("about.highlight3") },
+    { icon: ShieldCheck, label: block.highlight4 || tVi("about.highlight4") },
   ];
 
   return (
@@ -39,7 +69,7 @@ const AboutVideoSection = () => {
             >
               <iframe
                 className="w-full h-full absolute inset-0"
-                src="https://www.youtube.com/embed/Cvj8kqFMLfk?autoplay=1&mute=1&loop=1&playlist=Cvj8kqFMLfk"
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`}
                 title="THG Fulfill Introduction"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

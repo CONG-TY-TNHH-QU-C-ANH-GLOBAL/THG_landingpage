@@ -1,50 +1,18 @@
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import ImageMarquee from "@/components/ImageMarquee";
 import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
+import { useCmsServices } from "@/hooks/useCmsContent";
 import { Package, CheckCircle2, ArrowRight, Zap, DollarSign, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-const products = [
-  {
-    name: "Hawaiian Shirt",
-    price: "$10.83",
-    time: "3 - 5 days",
-    origin: "Việt Nam 🇻🇳",
-    image: "https://w.ladicdn.com/s600x600/67e69e24e8a7ba001127c80a/post-bai-3-2-20250904045611-nsqtt.png",
-  },
-  {
-    name: "Jersey Thêu",
-    price: "$34.00",
-    time: "5 - 10 days",
-    origin: "Trung Quốc 🇨🇳",
-    image: "https://w.ladicdn.com/s600x600/67e69e24e8a7ba001127c80a/7-20250903095516-2lcoo.png",
-  },
-  {
-    name: "Phonecase",
-    price: "$6.00",
-    time: "1 - 2 days",
-    origin: "USA 🇺🇸",
-    image: "https://w.ladicdn.com/s600x600/67e69e24e8a7ba001127c80a/1-20250904045247-dyrmm.png",
-  },
-];
-
-const sliderImages = [
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/1-20250724024641-4oczs.png",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-13-20250724024632-bt6u-.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9873-20250801074610-q-tfu.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/retouch_2025072518361201-20250801074608-tsi9a.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_7181-20250801190217-bvrod.jpg",
-];
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const painPoints = [
   { num: "01", titleKey: "fulfill_page.pain1_title", descKey: "fulfill_page.pain1_desc" },
@@ -67,7 +35,11 @@ const processSteps = [
 ];
 
 const THGFulfillPage = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const { data: servicesData } = useCmsServices(language);
+  const service = servicesData?.services.find((s) => s.id === "thg-fulfill");
+  const products = service?.products ?? [];
+  const sliderImages = (service?.gallery ?? []).map((g) => g.url).filter((u): u is string => !!u);
 
   const faqItems = [
     { question: t("fulfill_page.faq1_q"), answer: t("fulfill_page.faq1_a") },
@@ -81,6 +53,22 @@ const THGFulfillPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="THG Fulfill — POD & Dropship Fulfillment for US Sellers"
+        description={t("fulfill_page.hero_subtitle")}
+        path="/thg-fulfill"
+      />
+      <JsonLdService
+        name="THG Fulfill — POD & Dropship Fulfillment"
+        description="End-to-end Print-on-Demand and Dropship fulfillment from Vietnam, China and USA warehouses. Optimized basecost, multi-route shipping, transparent pricing."
+        url="https://thgfulfill.com/thg-fulfill"
+      />
+      <JsonLdBreadcrumb
+        items={[
+          { name: "Home", url: "https://thgfulfill.com/" },
+          { name: "THG Fulfill", url: "https://thgfulfill.com/thg-fulfill" },
+        ]}
+      />
       <Navbar />
 
       {/* Hero */}
@@ -109,11 +97,14 @@ const THGFulfillPage = () => {
               </ScrollReveal>
               <ScrollReveal delay={300}>
                 <div className="flex flex-wrap gap-4 mt-10">
-                  <a href="https://order.thgfulfill.com/" target="_blank" rel="noopener noreferrer">
-                    <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
-                      {t("nav.consult")} <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  </a>
+                  <LeadFormDialog
+                    sourcePage="/thg-fulfill"
+                    trigger={
+                      <Button className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 shadow-lg">
+                        {t("nav.consult")} <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    }
+                  />
                 </div>
               </ScrollReveal>
               {/* Platform logos */}

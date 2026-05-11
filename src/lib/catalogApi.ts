@@ -1,7 +1,7 @@
-// Canonical hub URL (was dev.thgfulfill.com — domain rename
-// 2026-05-09). Cloudflare DNS for the dev hostname is being retired
-// so the public catalog page must point at the new origin.
-const API_BASE = "https://hub.thgfulfill.com/api/public/catalog";
+// Catalog API base URL — override per environment via VITE_CATALOG_API_URL
+// (set in .env.local / GitHub Actions secret). Falls back to the canonical
+// hub origin (formerly dev.thgfulfill.com — DNS retired 2026-05-09).
+const API_BASE = import.meta.env.VITE_CATALOG_API_URL ?? "https://hub.thgfulfill.com/api/public/catalog";
 
 export interface CatalogProduct {
   id: string;

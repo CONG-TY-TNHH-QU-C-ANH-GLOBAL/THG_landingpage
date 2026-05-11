@@ -6,8 +6,8 @@ import Accordion from "@/components/pricing/Accordion";
 import PriceTable from "@/components/pricing/PriceTable";
 import CompactAccordionTable from "@/components/pricing/CompactAccordionTable";
 import ShipByLabelPanel from "@/components/pricing/ShipByLabelPanel";
-import { pricingData } from "@/data/pricingData";
 import ShippingTermsQnAPanel from "@/components/pricing/ShippingTermsQnAPanel";
+import { useCmsSiteSettings } from "@/hooks/useCmsContent";
 
 interface EpacketPanelProps {
     route: EpacketRoute;
@@ -36,6 +36,8 @@ const EpacketPanel = ({
     origin, setOrigin,
 }: EpacketPanelProps) => {
     const { t, effectiveLanguage: lang } = useI18n();
+    const { data: settings } = useCmsSiteSettings();
+    const remoteAreaLinks = settings?.remote_area_links ?? [];
     const [reshipSearch, setReshipSearch] = useState("");
 
     const RESHIP_FLAGS: Record<string, string> = {
@@ -261,7 +263,7 @@ const EpacketPanel = ({
                             <PriceTable
                                 title={t("ep.detail_table_vn_us")}
                                 badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
-                                data={larkOverlay["uspsCn"]?.length ? larkOverlay["uspsCn"] : (pricingData as any)["uspsCn"] || []}
+                                data={larkOverlay["uspsCn"] ?? []}
                                 columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
                                 currencySymbol="₫"
                             />
@@ -269,7 +271,7 @@ const EpacketPanel = ({
                             <PriceTable
                                 title={t("ep.detail_table_cn_us")}
                                 badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
-                                data={larkOverlay["uspsCnUs"]?.length ? larkOverlay["uspsCnUs"] : (pricingData as any)["uspsCnUs"] || []}
+                                data={larkOverlay["uspsCnUs"] ?? []}
                                 columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
                             />
                         ) : (
@@ -281,7 +283,7 @@ const EpacketPanel = ({
                                 currencySymbol={route.startsWith("std-vn") ? "₫" : "$"}
                                 sla={(currentData as any)?.meta || (() => {
                                     const keyMap: Record<string, string> = { "std-vn-ww_standard": "vnThuongMeta", "std-vn-ww_cosmetics": "vnMyphamMeta", "std-cn-ww_standard": "cnThuongMeta", "std-cn-ww_cosmetics": "cnMyphamMeta", "std-cn-ww_battery": "cnPinMeta" };
-                                    return (pricingData as any)?.[keyMap[`${route}_${cargo}`]];
+                                    return larkOverlay[keyMap[`${route}_${cargo}`]];
                                 })()}
                             />
                         )}
@@ -313,8 +315,8 @@ const EpacketPanel = ({
                                 </div>
                             </div>
                         )}
-                        {/* Fallback for Priority route when both tables are empty */}
-                        {route === "pri-vn-us" && !larkOverlay["uspsCn"]?.length && !(pricingData as any)["uspsCn"]?.length && (
+                        {/* Empty state for Priority route */}
+                        {route === "pri-vn-us" && !larkOverlay["uspsCn"]?.length && (
                             <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-navy px-4 py-2.5">
                                     <span className="text-white font-bold text-[13px]">📋 {t("ep.price_table_pri")}</span>
@@ -335,7 +337,7 @@ const EpacketPanel = ({
                                 </div>
                             </div>
                         )}
-                        {route === "pri-cn-us" && !larkOverlay["uspsCnUs"]?.length && !(pricingData as any)["uspsCnUs"]?.length && (
+                        {route === "pri-cn-us" && !larkOverlay["uspsCnUs"]?.length && (
                             <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
                                 <div className="bg-navy px-4 py-2.5">
                                     <span className="text-white font-bold text-[13px]">📋 {t("ep.price_table_pri")}</span>
@@ -363,35 +365,31 @@ const EpacketPanel = ({
                         {/* 1. Surcharges */}
                         <Accordion icon="💰" title={t("ep.surcharges")} defaultOpen>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 className="font-bold text-[13px] text-navy mb-2">{t("ep.remote_title")}</h4>
-                                    <p className="text-[12px] text-muted-foreground mb-3">
-                                        {t("ep.remote_desc")}
-                                    </p>
-                                    <div className="flex flex-col gap-2">
-                                        {[
-                                            { label: "🇺🇸 U.S. Remote Area Price Table", icon: "📊", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=Wsz3Aw" },
-                                            { label: "🇯🇵 Japan (JP) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=rfsGfU" },
-                                            { label: "🇭🇷 Croatia (HR) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=PQLJFL" },
-                                            { label: "🇬🇧 Great Britain (GB) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=XzQ2aN" },
-                                            { label: "🇸🇪 Sweden (SE) Remote Zipcode", icon: "📮", url: "https://thgfulfill.sg.larksuite.com/sheets/GeOhsIMqrhJ3JztNKVDlfWi9gAe?sheet=DqD99A" },
-                                        ].map((file, i) => (
-                                            <a
-                                                key={i}
-                                                href={file.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[var(--pricing-border)] hover:border-primary hover:bg-[#FFFBF0] transition-all group text-[13px]"
-                                            >
-                                                <span className="text-xl shrink-0">{file.icon}</span>
-                                                <span className="flex-1 font-medium text-navy group-hover:text-primary transition-colors">{file.label}</span>
-                                                <span className="text-[11px] text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1">
-                                                    {t("ep.download_file")}
-                                                </span>
-                                            </a>
-                                        ))}
+                                {remoteAreaLinks.length > 0 && (
+                                    <div>
+                                        <h4 className="font-bold text-[13px] text-navy mb-2">{t("ep.remote_title")}</h4>
+                                        <p className="text-[12px] text-muted-foreground mb-3">
+                                            {t("ep.remote_desc")}
+                                        </p>
+                                        <div className="flex flex-col gap-2">
+                                            {remoteAreaLinks.map((file, i) => (
+                                                <a
+                                                    key={i}
+                                                    href={file.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[var(--pricing-border)] hover:border-primary hover:bg-[#FFFBF0] transition-all group text-[13px]"
+                                                >
+                                                    {file.icon && <span className="text-xl shrink-0">{file.icon}</span>}
+                                                    <span className="flex-1 font-medium text-navy group-hover:text-primary transition-colors">{file.label}</span>
+                                                    <span className="text-[11px] text-muted-foreground bg-secondary px-2 py-1 rounded-full flex items-center gap-1">
+                                                        {t("ep.download_file")}
+                                                    </span>
+                                                </a>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 <div>
                                     <h4 className="font-bold text-[13px] text-navy mb-2">{t("ep.vat_title")}</h4>
                                     {vatData.length > 0 ? (

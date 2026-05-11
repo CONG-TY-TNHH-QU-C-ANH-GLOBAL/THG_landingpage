@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Navbar from "@/components/Navbar";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
@@ -283,6 +285,17 @@ const CatalogPage = () => {
 
   return (
     <div className="min-h-screen bg-cream">
+      <SeoHead
+        title={`${t("catalog_page.title")} — THG Fulfill`}
+        description={t("catalog_page.subtitle")}
+        path="/catalog"
+      />
+      <JsonLdBreadcrumb
+        items={[
+          { name: "Home", url: "https://thgfulfill.com/" },
+          { name: t("catalog_page.title"), url: "https://thgfulfill.com/catalog" },
+        ]}
+      />
       <Navbar />
 
       {/* Hero */}

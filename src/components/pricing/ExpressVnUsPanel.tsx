@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { pricingData } from "@/data/pricingData";
 
 interface ExpressVnUsPanelProps {
     larkOverlay: Record<string, any>;
@@ -8,10 +7,20 @@ interface ExpressVnUsPanelProps {
 
 const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
     const [city, setCity] = useState<"hcm" | "hn">("hcm");
-    const { t, effectiveLanguage: lang } = useI18n();
+    const { t } = useI18n();
 
-    // Use larkOverlay if available, otherwise fallback to pricingData
-    const expressData = larkOverlay["expressVnUs"] || (pricingData as any).expressVnUs;
+    const asArray = (v: unknown) => (Array.isArray(v) ? v : []);
+    const saverRows = asArray(
+        city === "hcm"
+            ? larkOverlay["expressVnUsHcmSaver"]
+            : larkOverlay["expressVnUsHnSaver"],
+    );
+    const expeditedRows = asArray(
+        city === "hcm"
+            ? larkOverlay["expressVnUsHcmExpedited"]
+            : larkOverlay["expressVnUsHnExpedited"],
+    );
+    const hasData = saverRows.length > 0 || expeditedRows.length > 0;
 
     return (
         <div>
@@ -39,7 +48,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                 </div>
             </div>
 
-            {expressData && (
+            {hasData && (
 
                 <div className="space-y-6">
                     {/* Saver <= 20kg */}
@@ -55,7 +64,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
 
                         {/* Mobile Cards */}
                         <div className="md:hidden flex flex-col gap-3 p-3">
-                            {(expressData?.[city]?.saver || []).map((r: any, i: number) => (
+                            {saverRows.map((r: any, i: number) => (
                                 <div key={i} className="bg-card border border-[hsl(var(--pricing-border))] rounded-lg p-3 flex justify-between items-center">
                                     <div>
                                         <span className="text-[11px] font-bold text-muted-foreground uppercase">{t("evn.weight_label")}</span>
@@ -83,7 +92,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {(expressData?.[city]?.saver || []).map((r: any, i: number) => (
+                                    {saverRows.map((r: any, i: number) => (
                                         <tr key={i} className="border-b border-[hsl(var(--pricing-border))] last:border-0 hover:bg-accent/5 transition-colors">
                                             <td className="px-5 py-2 notranslate" translate="no">{typeof r.kg === 'string' && isNaN(Number(r.kg)) ? r.kg : r.kg}</td>
                                             <td className="px-5 py-2 font-bold text-navy notranslate" translate="no">
@@ -111,7 +120,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
 
                         {/* Mobile Cards */}
                         <div className="md:hidden flex flex-col gap-3 p-3">
-                            {(expressData?.[city]?.expedited || []).map((r: any, i: number) => (
+                            {expeditedRows.map((r: any, i: number) => (
                                 <div key={i} className="bg-card border border-[hsl(var(--pricing-border))] rounded-lg p-3 flex justify-between items-center">
                                     <div>
                                         <span className="text-[11px] font-bold text-muted-foreground uppercase">{t("evn.bracket_label")}</span>
@@ -139,7 +148,7 @@ const ExpressVnUsPanel = ({ larkOverlay }: ExpressVnUsPanelProps) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {(expressData?.[city]?.expedited || []).map((r: any, i: number) => (
+                                    {expeditedRows.map((r: any, i: number) => (
                                         <tr key={i} className="border-b border-[hsl(var(--pricing-border))] last:border-0 hover:bg-accent/5 transition-colors">
                                             <td className="px-5 py-2 notranslate" translate="no">{r.bracket}</td>
                                             <td className="px-5 py-2 font-bold text-navy notranslate" translate="no">

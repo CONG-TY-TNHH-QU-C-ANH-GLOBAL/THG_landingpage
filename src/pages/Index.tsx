@@ -12,25 +12,40 @@ import ContactSection from "@/components/ContactSection";
 import ImageMarquee from "@/components/ImageMarquee";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
+import { useCmsMarqueeImages, useCmsFaqs } from "@/hooks/useCmsContent";
+import { SeoHead } from "@/components/seo/SeoHead";
+import { JsonLdOrganization, JsonLdFaqPage } from "@/components/seo/JsonLd";
 
-
-const sliderImages = [
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-10-1-20250729095528-mkcfd.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-11-1-20250729095528-nzruq.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-14-1-20250729095528-dcsxm.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/1-20250724024641-4oczs.png",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/kho-my-13-20250724024632-bt6u-.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9873-20250801074610-q-tfu.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_9988-20250801074609-jjvij.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/retouch_2025072518361201-20250801074608-tsi9a.jpg",
-  "https://w.ladicdn.com/s1500x1100/67e69e24e8a7ba001127c80a/img_7181-20250801190217-bvrod.jpg",
-];
 
 const Index = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const { data: marqueeData } = useCmsMarqueeImages();
+  const { data: faqsData } = useCmsFaqs(language, "home");
+  const sliderImages = marqueeData?.images
+    ? [...marqueeData.images].sort((a, b) => a.position - b.position).map((img) => img.src)
+    : [];
+
+  // Per-locale SEO copy (audit P0.3, P0.4, P1.1)
+  const seo = {
+    en: {
+      title: "THG Fulfill — Global fulfillment for eCommerce sellers",
+      description: "Comprehensive fulfillment ecosystem connecting Vietnam – China – to US warehouses. POD printing, dropship support, US domestic fulfillment from $1.2.",
+    },
+    vi: {
+      title: "THG Fulfill — Giải pháp fulfillment toàn cầu cho seller TMĐT",
+      description: "Hệ sinh thái fulfillment kết nối Việt Nam – Trung Quốc – đến kho Mỹ. POD printing, hỗ trợ dropship, fulfill nội địa Mỹ từ $1.2.",
+    },
+    zh: {
+      title: "THG Fulfill — 面向电商卖家的全球履约方案",
+      description: "全面的履约生态系统，无缝连接越南-中国-美国仓库。POD印刷、代发支持、美国国内履约低至1.2美元。",
+    },
+  }[language];
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead title={seo.title} description={seo.description} path="/" />
+      <JsonLdOrganization />
+      {faqsData?.faqs && faqsData.faqs.length > 0 && <JsonLdFaqPage faqs={faqsData.faqs} />}
       <Navbar />
       <HeroSection />
       <ServicesSection />

@@ -37,6 +37,19 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
         scrollRef.current?.scrollBy({ left: dir * 120, behavior: "smooth" });
     };
 
+    // CMS may serialize numeric cells as strings (e.g. "147758"). Coerce defensively.
+    const toNumeric = (v: unknown): number | null => {
+        if (typeof v === "number" && Number.isFinite(v)) return v;
+        if (typeof v === "string") {
+            const cleaned = v.trim().replace(/\s/g, "").replace(/,/g, "");
+            if (/^-?\d+(\.\d+)?$/.test(cleaned)) {
+                const n = Number(cleaned);
+                if (Number.isFinite(n)) return n;
+            }
+        }
+        return null;
+    };
+
     const exportConfig = useMemo(() => {
         if (!data || data.length === 0) return { filename: title, headers: [], rows: [] };
         const headers = [t("pt.weight_header"), ...columns.map(c => c.label)];
@@ -45,12 +58,13 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                 row.kg ?? row.weight ?? "—",
                 ...columns.map(c => {
                     const val = row[c.key];
-                    if (val === null || val === undefined) return "—";
-                    if (typeof val === "number") {
+                    if (val === null || val === undefined || val === "") return "—";
+                    const num = toNumeric(val);
+                    if (num !== null) {
                         if (currencySymbol === "₫") {
-                            return `${Math.round(val * rate).toLocaleString("vi-VN")} ₫`;
+                            return `${Math.round(num * rate).toLocaleString("vi-VN")} ₫`;
                         }
-                        return `${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+                        return `${currencySymbol}${(num * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
                     }
                     return val;
                 })
@@ -132,17 +146,18 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                                     <td className="px-2 py-1.5 md:py-2 text-center font-bold whitespace-nowrap sticky left-0 bg-white z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)] border-r border-r-[var(--pricing-border)]">{row.kg ?? row.weight ?? "—"}</td>
                                     {columns.map((c, ci) => {
                                         const val = row[c.key];
-                                        const isNull = val === null || val === undefined;
+                                        const isNull = val === null || val === undefined || val === "";
+                                        const num = isNull ? null : toNumeric(val);
                                         const isContact = typeof val === 'string' && val.includes('Liên hệ');
                                         return (
                                             <td key={c.key} className={`px-2 md:px-3 py-1.5 md:py-2 text-center whitespace-nowrap ${ci < columns.length - 1 ? "border-r border-r-[var(--pricing-border)]" : ""} ${isNull ? "text-muted-foreground/30" : isContact ? "text-primary font-bold" : "font-bold"}`}>
                                                 {isNull ? (
                                                     <span className="inline-block px-1 py-0 bg-muted/20 rounded text-[11px]">—</span>
-                                                ) : typeof val === "number" ? (
+                                                ) : num !== null ? (
                                                     <span className="notranslate" translate="no">
                                                         {currencySymbol === "₫"
-                                                            ? `${Math.round(val * rate).toLocaleString("vi-VN")} ₫`
-                                                            : `${currencySymbol}${(val * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`}
+                                                            ? `${Math.round(num * rate).toLocaleString("vi-VN")} ₫`
+                                                            : `${currencySymbol}${(num * rate).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`}
                                                     </span>
                                                 ) : val}
                                             </td>
