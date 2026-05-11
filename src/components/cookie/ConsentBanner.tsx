@@ -16,13 +16,30 @@ declare global {
   }
 }
 
+function readCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function writeCookie(name: string, value: string) {
+  if (typeof document === "undefined") return;
+  // 1 year, root path, SameSite=Lax. Cookie survives Safari ITP storage purge
+  // (7-day localStorage limit) that the browser sometimes triggers.
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=31536000; SameSite=Lax`;
+}
+
 function readStored(): ConsentValue | null {
+  // Try localStorage first (preferred — survives tab close)
   try {
     const v = localStorage.getItem(STORAGE_KEY);
-    return v === "accepted" || v === "rejected" ? v : null;
+    if (v === "accepted" || v === "rejected") return v;
   } catch {
-    return null;
+    /* private mode / quota / etc */
   }
+  // Cookie fallback
+  const c = readCookie(STORAGE_KEY);
+  return c === "accepted" || c === "rejected" ? c : null;
 }
 
 function persist(value: ConsentValue) {
@@ -31,6 +48,7 @@ function persist(value: ConsentValue) {
   } catch {
     /* storage unavailable — fall through */
   }
+  writeCookie(STORAGE_KEY, value);
   window.__thgConsent = value;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: "thg_consent_update", consent: value });

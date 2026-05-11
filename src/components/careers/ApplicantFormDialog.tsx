@@ -1,9 +1,11 @@
 // Apply-for-job modal — replaces mailto: CTA on Careers page.
+// Two-step UX: upload CV file (PDF/DOC/DOCX) → fill form → submit.
 // POSTs to CMS /api/v1/applicants → row appears in /admin/content/careers/applicants
 // and fires Telegram notify to HR chat if configured.
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
+import { FileText, Loader2, Upload, X } from "lucide-react";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,17 +21,58 @@ interface Props {
   jobTitle: string;
   /** Source page for analytics — defaults to current pathname */
   sourcePage?: string;
+  /** Optional callback when modal opens — used to close parent job-detail modal */
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage }: Props) {
+interface UploadedCv {
+  url: string;
+  filename: string;
+  size: number;
+}
+
+const ACCEPT = "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx";
+const MAX_BYTES = 10 * 1024 * 1024;
+
+function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, onOpenChange }: Props) {
   const { language, t } = useI18n();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [cv, setCv] = useState<UploadedCv | null>(null);
+  const [cvLink, setCvLink] = useState("");
   const [done, setDone] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", cv_url: "", cover_letter: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", cover_letter: "" });
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function onFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // reset so the same file can be re-uploaded after error
+    if (!file) return;
+    if (file.size > MAX_BYTES) {
+      toast.error(t("careers.form_err_size") || "File quá lớn — tối đa 10MB");
+      return;
+    }
+    setUploading(true);
+    try {
+      const result = await cmsClient.uploadApplicantCv(file);
+      setCv(result);
+      setCvLink(""); // clear text link if a file was uploaded
+      toast.success(t("careers.form_cv_uploaded") || "Đã upload CV");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : (t("careers.form_err_upload") || "Upload thất bại"));
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -38,7 +81,12 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage }: 
       toast.error(t("careers.form_err_required") || "Vui lòng điền họ tên và email.");
       return;
     }
-    if (form.cv_url && !/^https?:\/\//i.test(form.cv_url.trim())) {
+    const effectiveCvUrl = cv?.url || cvLink.trim();
+    if (!effectiveCvUrl) {
+      toast.error(t("careers.form_err_cv") || "Vui lòng upload CV hoặc dán link CV.");
+      return;
+    }
+    if (!cv && cvLink && !/^https?:\/\//i.test(cvLink.trim())) {
       toast.error(t("careers.form_err_cv_url") || "Link CV phải bắt đầu bằng http(s)://");
       return;
     }
@@ -51,7 +99,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage }: 
         name: form.name.trim(),
         email: form.email.trim(),
         phone: form.phone.trim() || undefined,
-        cv_url: form.cv_url.trim() || undefined,
+        cv_url: effectiveCvUrl,
         cover_letter: form.cover_letter.trim() || undefined,
         locale: language,
         source_page: path,
@@ -67,25 +115,27 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage }: 
   }
 
   function reset() {
-    setForm({ name: "", email: "", phone: "", cv_url: "", cover_letter: "" });
+    setForm({ name: "", email: "", phone: "", cover_letter: "" });
+    setCv(null);
+    setCvLink("");
     setDone(false);
   }
 
+  function handleOpenChange(o: boolean) {
+    setOpen(o);
+    onOpenChange?.(o);
+    if (!o) setTimeout(reset, 200);
+  }
+
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        if (!o) setTimeout(reset, 200);
-      }}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("careers.form_title") || "Ứng tuyển vị trí"}</DialogTitle>
-          <DialogDescription>
-            <span className="font-semibold text-foreground">{jobTitle}</span>
-            <span className="block mt-1 text-xs">{t("careers.form_desc") || "Để lại thông tin — HR THG sẽ phản hồi trong 3 ngày làm việc."}</span>
+          <DialogDescription className="space-y-1">
+            <span className="block font-semibold text-foreground">{jobTitle}</span>
+            <span className="block text-xs">{t("careers.form_desc") || "Để lại thông tin — HR THG sẽ phản hồi trong 3 ngày làm việc."}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -96,7 +146,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage }: 
             <p className="text-sm text-muted-foreground">
               {t("careers.form_success_desc") || "HR sẽ liên hệ với"} <strong>{form.email}</strong> {t("careers.form_success_desc2") || "trong vòng 3 ngày làm việc."}
             </p>
-            <Button onClick={() => setOpen(false)} className="mt-2 w-full">{t("careers.form_close") || "Đóng"}</Button>
+            <Button onClick={() => handleOpenChange(false)} className="mt-2 w-full">{t("careers.form_close") || "Đóng"}</Button>
           </div>
         ) : (
           <form onSubmit={onSubmit} className="space-y-3">
@@ -136,20 +186,73 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage }: 
                 />
               </div>
             </div>
+
+            {/* CV upload area */}
             <div>
-              <Label htmlFor="applicant-cv">{t("careers.form_cv_url") || "Link CV (Google Drive / Dropbox / LinkedIn)"}</Label>
-              <Input
-                id="applicant-cv"
-                type="url"
-                value={form.cv_url}
-                onChange={(e) => set("cv_url", e.target.value)}
-                placeholder="https://drive.google.com/..."
-                disabled={pending}
-              />
-              <div className="text-[10px] text-muted-foreground mt-1">
-                {t("careers.form_cv_hint") || "Đảm bảo link được set 'Anyone with the link can view'."}
-              </div>
+              <Label>{t("careers.form_cv_label") || "CV (PDF/DOC/DOCX, tối đa 10MB)"} *</Label>
+              {cv ? (
+                <div className="flex items-center gap-3 mt-1 p-3 rounded-md border border-primary/30 bg-primary/5">
+                  <FileText className="w-5 h-5 text-primary shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium truncate">{cv.filename}</div>
+                    <div className="text-xs text-muted-foreground">{formatBytes(cv.size)}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCv(null)}
+                    disabled={pending}
+                    className="text-muted-foreground hover:text-foreground p-1"
+                    aria-label="Xoá CV"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  className={`mt-1 flex flex-col items-center justify-center gap-2 px-4 py-6 rounded-md border-2 border-dashed border-border bg-secondary/30 hover:bg-secondary/50 cursor-pointer transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                      <span className="text-xs text-muted-foreground">{t("careers.form_uploading") || "Đang upload..."}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-6 h-6 text-muted-foreground" />
+                      <span className="text-sm font-medium text-foreground">{t("careers.form_cv_pick") || "Chọn file CV"}</span>
+                      <span className="text-xs text-muted-foreground">{t("careers.form_cv_hint2") || "Hoặc kéo thả vào đây"}</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    className="sr-only"
+                    accept={ACCEPT}
+                    onChange={onFileSelected}
+                    disabled={uploading || pending}
+                  />
+                </label>
+              )}
+
+              {!cv && (
+                <details className="mt-2 text-xs">
+                  <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                    {t("careers.form_cv_alt") || "Hoặc dán link CV (Google Drive / Dropbox / LinkedIn)"}
+                  </summary>
+                  <Input
+                    type="url"
+                    value={cvLink}
+                    onChange={(e) => setCvLink(e.target.value)}
+                    placeholder="https://drive.google.com/..."
+                    disabled={pending}
+                    className="mt-2 text-xs"
+                  />
+                  <p className="mt-1 text-[10px] text-muted-foreground">
+                    {t("careers.form_cv_share_hint") || "Đảm bảo link được set 'Anyone with the link can view'."}
+                  </p>
+                </details>
+              )}
             </div>
+
             <div>
               <Label htmlFor="applicant-cover">{t("careers.form_cover_letter") || "Thư giới thiệu (tùy chọn)"}</Label>
               <Textarea
@@ -162,7 +265,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage }: 
               />
             </div>
 
-            <Button type="submit" disabled={pending} className="w-full">
+            <Button type="submit" disabled={pending || uploading} className="w-full">
               {pending ? (t("careers.form_submitting") || "Đang gửi…") : (t("careers.form_submit") || "Gửi hồ sơ ứng tuyển")}
             </Button>
 

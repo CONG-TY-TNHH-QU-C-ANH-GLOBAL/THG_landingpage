@@ -374,6 +374,23 @@ export const cmsClient = {
     });
   },
 
+  /** Upload a CV (PDF/DOC/DOCX, ≤10MB) before submitting the applicant form. */
+  async uploadApplicantCv(file: File): Promise<{ url: string; filename: string; size: number }> {
+    const form = new FormData();
+    form.append("file", file);
+    const url = `${BASE}/applicant-cv`;
+    const res = await fetch(url, { method: "POST", body: form });
+    if (!res.ok) {
+      let message = `${res.status} ${res.statusText}`;
+      try {
+        const body = (await res.json()) as { error?: string };
+        if (body.error) message = body.error;
+      } catch { /* ignore */ }
+      throw new Error(message);
+    }
+    return (await res.json()) as { url: string; filename: string; size: number };
+  },
+
   getShippingRoutes(locale: Locale) {
     return fetchJson<{
       locale: Locale;
