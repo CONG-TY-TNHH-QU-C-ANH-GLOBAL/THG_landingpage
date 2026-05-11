@@ -9,6 +9,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { X } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { ApplicantFormDialog } from "@/components/careers/ApplicantFormDialog";
+import { isPastDeadline } from "@/lib/deadline";
 
 /* ─── TYPES ─── */
 interface Benefit { i: string; t: string; d: string; }
@@ -246,13 +247,18 @@ const CareersPage = () => {
                     <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))' }}>
                         {filtered.map((job, i) => {
                             const accentColor = ACCENT[job.cat] || DEFAULT_ACCENT;
+                            const expired = isPastDeadline(job.deadline);
                             return (
                                 <ScrollReveal key={job.id} delay={i * 80} className="h-full">
                                     <div onClick={() => openJob(job)}
-                                        className="bg-white border border-border rounded-2xl p-[30px] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl relative overflow-hidden flex flex-col h-full min-h-[320px] group"
+                                        className={`bg-white border border-border rounded-2xl p-[30px] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl relative overflow-hidden flex flex-col h-full min-h-[320px] group ${expired ? "opacity-60 grayscale" : ""}`}
                                         style={{ "--accent": accentColor } as React.CSSProperties}>
                                         <div className="absolute top-0 left-0 right-0 h-[3px] opacity-70 group-hover:opacity-100 group-hover:h-1 transition-all" style={{ background: accentColor }} />
-                                        {job.hot && (
+                                        {expired ? (
+                                            <div className="absolute top-[18px] right-[18px] bg-red-100 text-red-700 border border-red-200 px-2.5 py-1 text-[10px] font-extrabold tracking-[0.1em] uppercase rounded-md z-10">
+                                                {t("careers.expired_badge") || "Đã hết hạn"}
+                                            </div>
+                                        ) : job.hot && (
                                             <div className="absolute top-[18px] -right-[32px] text-white px-9 py-1 text-[10px] font-extrabold tracking-[0.12em] rotate-[35deg] z-10 whitespace-nowrap"
                                                 style={{ background: '#2E6F8E', boxShadow: '0 4px 12px rgba(46,111,142,0.25)' }}>
                                                 {t("careers.hot")}
@@ -483,19 +489,27 @@ const CareersPage = () => {
                                         <h4 className="text-xl font-extrabold">{t("careers.modal_apply_title")}</h4>
                                         <p className="text-white/70 text-[13.5px] mt-1.5" dangerouslySetInnerHTML={{ __html: t("careers.modal_apply_desc") }}></p>
                                     </div>
-                                    <div className="flex gap-2.5 flex-wrap relative z-10">
-                                        <ApplicantFormDialog
-                                            jobSlug={activeJob.id}
-                                            jobTitle={activeJob.title}
-                                            sourcePage="/careers"
-                                            trigger={
-                                                <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3.5 rounded-full font-bold text-sm shadow-lg transition-all hover:-translate-y-0.5">📩 {t("careers.modal_btn_apply") || "Ứng tuyển ngay"}</button>
-                                            }
-                                        />
-                                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=careers@thgfulfill.com" target="_blank" rel="noopener noreferrer">
-                                            <button className="bg-transparent border border-white/25 text-white hover:border-[hsl(var(--gold))] hover:text-[hsl(var(--gold))] px-5 py-3.5 rounded-full font-semibold text-sm transition-all">📧 {t("careers.modal_btn_email") || "Gửi email"}</button>
-                                        </a>
-                                    </div>
+                                    {isPastDeadline(activeJob.deadline) ? (
+                                        <div className="relative z-10">
+                                            <div className="inline-flex items-center gap-2 bg-red-500/15 border border-red-400/30 text-red-300 px-4 py-3 rounded-xl text-sm font-semibold">
+                                                ⏰ {t("careers.expired") || "Vị trí này đã hết hạn nộp hồ sơ"} ({activeJob.deadline})
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-2.5 flex-wrap relative z-10">
+                                            <ApplicantFormDialog
+                                                jobSlug={activeJob.id}
+                                                jobTitle={activeJob.title}
+                                                sourcePage="/careers"
+                                                trigger={
+                                                    <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3.5 rounded-full font-bold text-sm shadow-lg transition-all hover:-translate-y-0.5">📩 {t("careers.modal_btn_apply")}</button>
+                                                }
+                                            />
+                                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=careers@thgfulfill.com" target="_blank" rel="noopener noreferrer">
+                                                <button className="bg-transparent border border-white/25 text-white hover:border-[hsl(var(--gold))] hover:text-[hsl(var(--gold))] px-5 py-3.5 rounded-full font-semibold text-sm transition-all">📧 {t("careers.modal_btn_email")}</button>
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
