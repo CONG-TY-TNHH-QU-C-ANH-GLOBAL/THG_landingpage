@@ -1,7 +1,12 @@
 // Catalog API base URL — override per environment via VITE_CATALOG_API_URL
 // (set in .env.local / GitHub Actions secret). Falls back to the canonical
 // hub origin (formerly dev.thgfulfill.com — DNS retired 2026-05-09).
-const API_BASE = import.meta.env.VITE_CATALOG_API_URL ?? "https://hub.thgfulfill.com/api/public/catalog";
+//
+// Uses `||` not `??` because an unset/empty GitHub Actions secret gets
+// inlined by Vite as the empty string `""`. `?? fallback` short-circuits only
+// on null/undefined, so an empty string would fall through and break the
+// fetch URL. `|| fallback` covers empty + null + undefined.
+const API_BASE = import.meta.env.VITE_CATALOG_API_URL || "https://hub.thgfulfill.com/api/public/catalog";
 
 export interface CatalogProduct {
   id: string;
