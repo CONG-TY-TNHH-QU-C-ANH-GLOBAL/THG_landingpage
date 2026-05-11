@@ -17,22 +17,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Setup Bun (prebuild script uses bun)
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.13
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Build
         env:
           # CMS API base URL for prod (REQUIRED — fallback would point to localhost)
           VITE_CMS_API_URL: ${{ secrets.VITE_CMS_API_URL }}
           # Catalog API (legacy public catalog service). Optional — if blank,
-          # falls back to https://thgfulfill.com/api/public/catalog at runtime.
+          # falls back to https://hub.thgfulfill.com/api/public/catalog at runtime.
           VITE_CATALOG_API_URL: ${{ secrets.VITE_CATALOG_API_URL }}
           # Optional analytics — TrackingScripts skips injection when blank
           VITE_GA4_ID: ${{ secrets.VITE_GA4_ID }}
@@ -46,7 +45,7 @@ jobs:
             echo "::error::Missing secret VITE_CMS_API_URL — landing build would default to localhost. Add it in GitHub repo settings → Secrets."
             exit 1
           fi
-          npm run build
+          bun run build
 
       - name: Deploy to server via SSH
         uses: appleboy/scp-action@v0.1.7
