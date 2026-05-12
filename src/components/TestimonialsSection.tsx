@@ -34,7 +34,7 @@ const testimonials = [
 ];
 
 const TestimonialsSection = () => {
-  const { t, tVi } = useI18n();
+  const { tVi } = useI18n();
 
   return (
     <section className="py-28 bg-background relative overflow-hidden">

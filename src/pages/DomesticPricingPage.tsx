@@ -6,9 +6,9 @@ import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Link } from "react-router-dom";
 import {
-    MapPin, Package, Truck, Globe, Shield,
-    ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Warehouse, CheckCircle2,
-    FileSpreadsheet, FileText, ChevronLeft, ChevronRight, Mail, Layers, Box
+    MapPin, Package, Globe,
+    ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Warehouse,
+    FileSpreadsheet, ChevronLeft, ChevronRight,
 } from "lucide-react";
 // xlsx + jspdf weigh ~290KB combined; lazy-load only when user actually exports.
 async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfig) {

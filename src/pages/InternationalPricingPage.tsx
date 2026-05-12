@@ -49,7 +49,7 @@ const InternationalPricingContent = () => {
   const [origin, setOriginState] = useState<"vn" | "cn">("vn");
   const [route, setRoute] = useState<EpacketRoute>("std-vn-ww");
   const [cargo, setCargo] = useState<CargoType>("standard");
-  const [expressRoute, setExpressRoute] = useState<ExpressRoute>("vn-us");
+  const [, setExpressRoute] = useState<ExpressRoute>("vn-us");
 
   // When changing origin, snap route + expressRoute to first available for that origin
   const setOrigin = (o: "vn" | "cn") => {

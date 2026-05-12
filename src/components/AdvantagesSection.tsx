@@ -3,7 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const AdvantagesSection = () => {
-  const { t, tVi } = useI18n();
+  const { tVi } = useI18n();
 
   const advantages = [
     { icon: DollarSign, titleKey: "adv.a1_title", descKey: "adv.a1_desc" },

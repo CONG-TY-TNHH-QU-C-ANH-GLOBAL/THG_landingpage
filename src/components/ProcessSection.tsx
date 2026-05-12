@@ -3,7 +3,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useHomepageBlock } from "@/hooks/useCmsContent";
 
 const ProcessSection = () => {
-  const { t, tVi, language } = useI18n();
+  const { tVi, language } = useI18n();
   // Process block has step1..4 as single strings (operator-edited in admin).
   // We use them as TITLE overrides for each step; descriptions stay from i18n
   // because the block schema doesn't include per-step descriptions.

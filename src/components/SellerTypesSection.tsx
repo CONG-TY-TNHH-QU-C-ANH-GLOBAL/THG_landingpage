@@ -3,7 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const SellerTypesSection = () => {
-  const { t, tVi } = useI18n();
+  const { tVi } = useI18n();
 
   const types = [
     { icon: Store, titleKey: "sellers.t1_title", descKey: "sellers.t1_desc" },

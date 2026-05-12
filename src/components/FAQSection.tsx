@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 
 const FAQSection = () => {
-  const { t, tVi } = useI18n();
+  const { tVi } = useI18n();
 
   const faqs = [
     { q: tVi("faq.q1"), a: tVi("faq.a1") },

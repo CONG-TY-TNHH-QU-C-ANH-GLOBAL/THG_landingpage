@@ -7,7 +7,7 @@ import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
 import ImageMarquee from "@/components/ImageMarquee";
 import { useI18n } from "@/lib/i18n";
-import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Monitor, Package, Truck, Video, Mail, Layers, Box } from "lucide-react";
+import { Warehouse, ArrowRight, CheckCircle2, Monitor, Package, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 
@@ -47,14 +47,6 @@ const THGWarehousePage = () => {
     { icon: "🏷️", titleKey: "warehouse_page.feat1_title", descKey: "warehouse_page.feat1_desc" },
     { icon: "📦", titleKey: "warehouse_page.feat2_title", descKey: "warehouse_page.feat2_desc" },
     { icon: "🚚", titleKey: "warehouse_page.feat3_title", descKey: "warehouse_page.feat3_desc" },
-  ];
-
-  const strengths = [
-    { icon: DollarSign, titleKey: "warehouse_page.str1_title", descKey: "warehouse_page.str1_desc" },
-    { icon: MapPin, titleKey: "warehouse_page.str2_title", descKey: "warehouse_page.str2_desc" },
-    { icon: Clock, titleKey: "warehouse_page.str3_title", descKey: "warehouse_page.str3_desc" },
-    { icon: Monitor, titleKey: "warehouse_page.str4_title", descKey: "warehouse_page.str4_desc" },
-    { icon: Video, titleKey: "warehouse_page.str5_title", descKey: "warehouse_page.str5_desc" },
   ];
 
   const processSteps = [

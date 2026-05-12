@@ -7,10 +7,9 @@ import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
-import { Truck, ArrowRight, Plane, Ship, Shield, Clock, Search, MapPin, Globe, Sparkles, CheckCircle2, Factory, Database, Lock, Users, Headphones, PackageCheck, ChevronRight, CircleDollarSign, Rocket, Warehouse, UsersRound, Network } from "lucide-react";
+import { Truck, Plane, Shield, MapPin, Globe, CheckCircle2, Lock, Users, Headphones, CircleDollarSign, Rocket, Warehouse, UsersRound, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Carousel,
   CarouselContent,
@@ -18,7 +17,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { EXPRESS_HERO_URL } from "@/config/cmsAssets";
@@ -29,13 +27,6 @@ const features = [
   { icon: Plane, titleKey: "express_page.feat1_title", descKey: "express_page.feat1_desc" },
   { icon: Users, titleKey: "express_page.feat4_title", descKey: "express_page.feat4_desc" },
   { icon: Rocket, titleKey: "express_page.feat3_title", descKey: "express_page.feat3_desc" },
-];
-
-const shippingLines = [
-  { num: "01", routeKey: "express_page.route1", typesKey: "express_page.route1_types", flags: "🇻🇳 → 🇺🇸", link: "/international-pricing?from=vn&to=US" },
-  { num: "02", routeKey: "express_page.route2", typesKey: "express_page.route2_types", flags: "🇨🇳 → 🇺🇸", link: "/international-pricing?from=cn&to=US" },
-  { num: "03", routeKey: "express_page.route3", typesKey: "express_page.route3_types", flags: "🌏 → 🌎", link: "/international-pricing" },
-  { num: "04", routeKey: "express_page.route4", typesKey: "express_page.route4_types", flags: "🎵 → 🛍️", link: "/international-pricing?from=cn&to=US&goods=tiktok", special: true },
 ];
 
 const processSteps = [
@@ -57,9 +48,6 @@ const galleryImages = [
 /* ─── Page ─── */
 const THGExpressPage = () => {
   const { t } = useI18n();
-  const plugin = useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
-  );
 
   const faqItems = [
     { question: t("express_page.faq1_q"), answer: t("express_page.faq1_a") },

@@ -9,7 +9,7 @@ import ImageMarquee from "@/components/ImageMarquee";
 import FAQAccordion from "@/components/FAQAccordion";
 import { useI18n } from "@/lib/i18n";
 import { useCmsServices } from "@/hooks/useCmsContent";
-import { Package, CheckCircle2, ArrowRight, Zap, DollarSign, Palette } from "lucide-react";
+import { Package, ArrowRight, Zap, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
@@ -19,12 +19,6 @@ const painPoints = [
   { num: "02", titleKey: "fulfill_page.pain2_title", descKey: "fulfill_page.pain2_desc" },
   { num: "03", titleKey: "fulfill_page.pain3_title", descKey: "fulfill_page.pain3_desc" },
   { num: "04", titleKey: "fulfill_page.pain4_title", descKey: "fulfill_page.pain4_desc" },
-];
-
-const advantages = [
-  { icon: Package, titleKey: "fulfill_page.adv1_title", descKey: "fulfill_page.adv1_desc" },
-  { icon: Zap, titleKey: "fulfill_page.adv2_title", descKey: "fulfill_page.adv2_desc" },
-  { icon: DollarSign, titleKey: "fulfill_page.adv3_title", descKey: "fulfill_page.adv3_desc" },
 ];
 
 const processSteps = [

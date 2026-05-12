@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, DollarSign, MapPin, Tag } from "lucide-react";
+import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, MapPin, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";

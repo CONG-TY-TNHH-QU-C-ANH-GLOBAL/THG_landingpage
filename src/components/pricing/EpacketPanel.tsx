@@ -34,9 +34,9 @@ const EpacketPanel = ({
     route, cargo,
     handleRouteSwitch, handleCargoSwitch,
     routeConfig, currentData, tableColumns,
-    larkOverlay, vatData, remoteSurcharge, redeliveryData,
+    larkOverlay, vatData, remoteSurcharge: _remoteSurcharge, redeliveryData,
     larkLoading, larkError,
-    origin, setOrigin,
+    origin, setOrigin: _setOrigin,
 }: EpacketPanelProps) => {
     const { t, effectiveLanguage: lang } = useI18n();
     const { data: settings } = useCmsSiteSettings();
@@ -77,27 +77,6 @@ const EpacketPanel = ({
             .filter(([_, r]) => r.origin.includes(origin)),
         [origin]
     );
-
-    const originCards: { id: OriginCountry; flag: string; title: string; subtitle: string; activeRing: string; activeBg: string; activeText: string; iconBg: string }[] = [
-        {
-            id: "vn", flag: "🇻🇳",
-            title: lang === 'zh' ? "从越南发货" : lang === 'en' ? "Ship from Vietnam" : "Gửi từ Việt Nam",
-            subtitle: lang === 'zh' ? "ePacket 标准 · 优先" : lang === 'en' ? "ePacket Standard · Priority" : "ePacket Standard · Priority",
-            activeRing: "border-blue-500",
-            activeBg: "bg-gradient-to-br from-blue-50 to-white",
-            activeText: "text-blue-700",
-            iconBg: "bg-blue-100",
-        },
-        {
-            id: "cn", flag: "🇨🇳",
-            title: lang === 'zh' ? "从中国发货" : lang === 'en' ? "Ship from China" : "Gửi từ China",
-            subtitle: lang === 'zh' ? "ePacket · 优先 · 贴标" : lang === 'en' ? "ePacket · Priority · Ship by Label" : "ePacket · Priority · Ship by Label",
-            activeRing: "border-rose-500",
-            activeBg: "bg-gradient-to-br from-rose-50 to-white",
-            activeText: "text-rose-700",
-            iconBg: "bg-rose-100",
-        },
-    ];
 
     return (
         <div>

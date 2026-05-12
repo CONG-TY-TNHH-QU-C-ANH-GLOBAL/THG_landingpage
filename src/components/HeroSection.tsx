@@ -12,7 +12,7 @@ import { useHomepageBlock } from "@/hooks/useCmsContent";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const HeroSection = () => {
-  const { t, tVi, language } = useI18n();
+  const { tVi, language } = useI18n();
   const navigate = useNavigate();
   // homepage_blocks.hero overrides i18n keys when operator edits in admin.
   // Only single-string fields are pulled (subtitle, badge, CTA labels); the

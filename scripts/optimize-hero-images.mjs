@@ -45,6 +45,6 @@ async function convert({ src, width }) {
 }
 
 for (const t of TARGETS) {
-  // eslint-disable-next-line no-await-in-loop
+   
   await convert(t);
 }
