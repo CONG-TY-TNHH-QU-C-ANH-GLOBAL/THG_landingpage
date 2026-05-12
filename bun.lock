@@ -32,6 +32,7 @@
         "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
         "xlsx": "^0.18.5",
+        "zod": "^4.4.3",
       },
       "devDependencies": {
         "@eslint/js": "^9.32.0",
@@ -1231,7 +1232,7 @@
 
     "yocto-queue": ["yocto-queue@0.1.0", "", {}, ""],
 
-    "zod": ["zod@3.25.76", "", {}, ""],
+    "zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
 
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, ""],
 
@@ -1244,6 +1245,38 @@
     "@isaacs/cliui/strip-ansi": ["strip-ansi@7.1.0", "", { "dependencies": { "ansi-regex": "^6.0.1" } }, ""],
 
     "@isaacs/cliui/wrap-ansi": ["wrap-ansi@8.1.0", "", { "dependencies": { "ansi-styles": "^6.1.0", "string-width": "^5.0.1", "strip-ansi": "^7.0.1" } }, ""],
+
+    "@jimp/plugin-blit/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-circle/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-color/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-contain/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-cover/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-crop/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-displace/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-fisheye/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-flip/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-mask/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-print/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-quantize/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-resize/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-rotate/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/plugin-threshold/zod": ["zod@3.25.76", "", {}, ""],
+
+    "@jimp/types/zod": ["zod@3.25.76", "", {}, ""],
 
     "@testing-library/dom/dom-accessibility-api": ["dom-accessibility-api@0.5.16", "", {}, ""],
 
