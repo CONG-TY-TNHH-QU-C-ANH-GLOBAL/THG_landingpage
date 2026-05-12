@@ -4,6 +4,7 @@
 
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
 import { TURNSTILE_DEV_TOKEN, TURNSTILE_SITE_KEY, isTurnstileEnabled } from "@/lib/turnstile";
+import { getUtmPayload } from "@/lib/utm";
 
 interface Props {
   trigger: ReactNode;
@@ -28,15 +30,23 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // Track which fields the user already touched so we only highlight invalid
+  // ones after they've had a chance to enter something (avoids red borders
+  // on initial render).
+  const [touched, setTouched] = useState<{ name?: boolean; email?: boolean }>({});
   const turnstileRef = useRef<TurnstileInstance | null>(null);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  const nameInvalid = touched.name && !form.name.trim();
+  const emailInvalid = touched.email && !form.email.trim();
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim()) {
+      setTouched({ name: true, email: true });
       toast.error(t("lead_form.err_required"));
       return;
     }
@@ -48,6 +58,7 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
     setPending(true);
     try {
       const path = sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : "/");
+      const utm = getUtmPayload();
       await cmsClient.postLead({
         name: form.name.trim(),
         email: form.email.trim(),
@@ -55,6 +66,7 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
         message: form.message.trim() || undefined,
         source_page: path,
         locale: language,
+        utm: Object.keys(utm).length > 0 ? utm : undefined,
         turnstile_token: token,
       });
       setDone(true);
@@ -73,6 +85,7 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
     setForm({ name: "", email: "", phone: "", message: "" });
     setDone(false);
     setCaptchaToken(null);
+    setTouched({});
     turnstileRef.current?.reset();
   }
 
@@ -111,8 +124,11 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
                 required
                 value={form.name}
                 onChange={(e) => set("name", e.target.value)}
+                onBlur={() => setTouched((s) => ({ ...s, name: true }))}
                 placeholder={t("lead_form.name_placeholder")}
                 disabled={pending}
+                aria-invalid={nameInvalid || undefined}
+                className={nameInvalid ? "border-destructive focus-visible:ring-destructive" : undefined}
               />
             </div>
             <div>
@@ -123,8 +139,11 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
                 required
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
+                onBlur={() => setTouched((s) => ({ ...s, email: true }))}
                 placeholder={t("lead_form.email_placeholder")}
                 disabled={pending}
+                aria-invalid={emailInvalid || undefined}
+                className={emailInvalid ? "border-destructive focus-visible:ring-destructive" : undefined}
               />
             </div>
             <div>
@@ -164,7 +183,14 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
             )}
 
             <Button type="submit" disabled={pending} className="w-full">
-              {pending ? t("lead_form.submitting") : t("lead_form.submit")}
+              {pending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" aria-hidden="true" />
+                  {t("lead_form.submitting")}
+                </>
+              ) : (
+                t("lead_form.submit")
+              )}
             </Button>
 
             <div className="text-[10px] text-center text-muted-foreground">

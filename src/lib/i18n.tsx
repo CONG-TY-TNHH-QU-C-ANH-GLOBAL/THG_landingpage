@@ -1441,6 +1441,20 @@ const translations: Translations = {
     vi: "Vui lòng hoàn thành xác thực captcha trước khi gửi.",
     zh: "请先完成验证码再提交。",
   },
+
+  // Floating contact widget (sticky mobile CTA bar + desktop chat icons)
+  "floating.call": { en: "Call", vi: "Gọi", zh: "电话" },
+  "floating.zalo": { en: "Zalo", vi: "Zalo", zh: "Zalo" },
+  "floating.chat": { en: "Chat", vi: "Chat", zh: "聊天" },
+  "floating.back_to_top": { en: "Back to top", vi: "Lên đầu trang", zh: "返回顶部" },
+
+  // Trust microcopy under primary CTAs — small reassurance to lower commit
+  // friction. Single string with bullets so it renders inline.
+  "trust.cta_micro": {
+    en: "Free consultation · 24h response · No commitment",
+    vi: "Tư vấn miễn phí · Phản hồi trong 24h · Không cam kết",
+    zh: "免费咨询 · 24小时响应 · 无义务",
+  },
 };
 
 

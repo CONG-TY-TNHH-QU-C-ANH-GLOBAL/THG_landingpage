@@ -132,8 +132,10 @@ function ContactCtaCard() {
           </Button>
         }
       />
+      {/* Trust microcopy — same line we render under the hero CTA. */}
+      <p className="mt-3 text-[11px] text-muted-foreground/80">{t("trust.cta_micro")}</p>
       {/* Backup channel — Facebook page (audit P0.6: keep as secondary, not primary CTA) */}
-      <p className="mt-3 text-[10px] text-muted-foreground">
+      <p className="mt-2 text-[10px] text-muted-foreground">
         Hoặc{" "}
         <a href="https://www.facebook.com/THGFulfill" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">
           chat trực tiếp Facebook page

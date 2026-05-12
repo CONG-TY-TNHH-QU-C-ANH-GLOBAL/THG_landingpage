@@ -99,6 +99,10 @@ const HeroSection = () => {
                 <span>{ctaSecondary}</span>
               </Button>
             </div>
+            {/* Trust microcopy — soft reassurance after the commit-heavy CTAs. */}
+            <p className="text-[11px] sm:text-xs text-muted-foreground/80 mt-3 text-center lg:text-left">
+              {tVi("trust.cta_micro")}
+            </p>
           </ScrollReveal>
         </div>
 

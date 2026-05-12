@@ -81,11 +81,14 @@ const PolicyImageViewer = ({ images, title }: PolicyImageViewerProps) => {
                     {images.map((src, i) => (
                         <button
                             key={i}
+                            type="button"
                             onClick={() => setCurrent(i)}
+                            aria-label={`Open page ${i + 1} of ${total}`}
+                            aria-current={i === current ? "true" : undefined}
                             className={`shrink-0 w-12 h-8 rounded border-2 overflow-hidden transition-all cursor-pointer ${i === current ? "border-primary" : "border-transparent opacity-60 hover:opacity-100"
                                 }`}
                         >
-                            <img src={src} alt="" className="w-full h-full object-cover" loading="lazy" />
+                            <img src={src} alt="" aria-hidden="true" className="w-full h-full object-cover" loading="lazy" />
                         </button>
                     ))}
                 </div>

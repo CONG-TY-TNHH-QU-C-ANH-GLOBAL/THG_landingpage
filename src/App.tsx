@@ -10,6 +10,8 @@ import { LarkPricingProvider } from "@/components/pricing/LarkPricingProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { ConsentBanner } from "@/components/cookie/ConsentBanner";
 import { TrackingScripts } from "@/components/analytics/TrackingScripts";
+import { FloatingContact } from "@/components/FloatingContact";
+import { captureUtmOnce } from "@/lib/utm";
 
 // QueryClient — singleton across re-renders. CMS content has 5min stale time,
 // so refetches are cheap. Consider hydration once SSR/prerender lands.
@@ -43,6 +45,17 @@ const CareersPage = lazy(() => import("./pages/CareersPage"));
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+};
+
+/**
+ * UtmCapture — runs once on first mount to snapshot incoming utm_* / gclid /
+ * fbclid params + the referring page into sessionStorage. Lead and applicant
+ * forms read the snapshot on submit so marketing keeps attribution even when
+ * the user wanders across pages before converting.
+ */
+const UtmCapture = () => {
+  useEffect(() => { captureUtmOnce(); }, []);
   return null;
 };
 
@@ -90,7 +103,9 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <LarkPricingProvider>
+                <UtmCapture />
                 <AppRoutes />
+                <FloatingContact />
                 <ConsentBanner />
                 <TrackingScripts />
               </LarkPricingProvider>

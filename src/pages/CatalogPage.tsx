@@ -740,7 +740,7 @@ const CatalogPage = () => {
                               <img
                                 loading="lazy"
                                 src={img}
-                                alt=""
+                                alt={`${selectedProduct.name} — image ${i + 1}`}
                                 onError={() => markBroken(img)}
                                 className="w-full h-full object-contain p-0.5"
                               />

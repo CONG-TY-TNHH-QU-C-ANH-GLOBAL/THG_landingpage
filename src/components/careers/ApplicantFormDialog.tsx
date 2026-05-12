@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
 import { TURNSTILE_DEV_TOKEN, TURNSTILE_SITE_KEY, isTurnstileEnabled } from "@/lib/turnstile";
+import { getUtmPayload } from "@/lib/utm";
 
 interface Props {
   trigger: ReactNode;
@@ -102,6 +103,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
     setPending(true);
     try {
       const path = sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : "/careers");
+      const utm = getUtmPayload();
       await cmsClient.postApplicant({
         job_slug: jobSlug,
         name: form.name.trim(),
@@ -111,6 +113,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
         cover_letter: form.cover_letter.trim() || undefined,
         locale: language,
         source_page: path,
+        utm: Object.keys(utm).length > 0 ? utm : undefined,
         turnstile_token: token,
       });
       setDone(true);
