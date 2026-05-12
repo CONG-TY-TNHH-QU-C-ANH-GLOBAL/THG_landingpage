@@ -721,7 +721,9 @@ const CatalogPage = () => {
                         <Package className="w-20 h-20 text-muted-foreground/30" />
                       )}
                     </div>
-                    {selectedProduct.images.length > 1 && (
+                    {/* Hide strip if fewer than 2 non-broken thumbs remain —
+                        avoids the empty bar when all images failed to load. */}
+                    {selectedProduct.images.filter((img) => !brokenImages.has(img)).length > 1 && (
                       <div className="flex gap-2 overflow-x-auto p-3 border-t border-border/30 bg-white">
                         {selectedProduct.images.map((img, i) => {
                           // Skip thumbnails for URLs known-broken so the strip
