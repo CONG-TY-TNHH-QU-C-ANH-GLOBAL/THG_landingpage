@@ -10,7 +10,11 @@ import {
     ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Warehouse, CheckCircle2,
     FileSpreadsheet, FileText, ChevronLeft, ChevronRight, Mail, Layers, Box
 } from "lucide-react";
-import { exportToExcel } from "@/lib/exportUtils";
+// xlsx + jspdf weigh ~290KB combined; lazy-load only when user actually exports.
+async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfig) {
+    const { exportToExcel } = await import("@/lib/exportUtils");
+    exportToExcel(config);
+}
 import { useLarkPricingContext, SyncBadge } from "@/components/pricing/LarkPricingProvider";
 import { useI18n } from "@/lib/i18n";
 import packagingImg from "@/assets/Warehouse_bao bì.png";
@@ -183,7 +187,7 @@ const DomesticPricingContent = () => {
                                 </div>
                             </div>
                             <div className="flex-shrink-0">
-                                <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 bg-secondary hover:bg-primary/20 rounded text-primary transition-colors" title="Export Excel">
+                                <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-secondary hover:bg-primary/20 rounded text-primary transition-colors" title="Export Excel">
                                     <FileSpreadsheet size={14} />
                                 </button>
                             </div>

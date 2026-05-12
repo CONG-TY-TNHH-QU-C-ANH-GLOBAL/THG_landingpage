@@ -4,6 +4,10 @@ import { useI18n } from "@/lib/i18n";
 import { useNavigate } from "react-router-dom";
 import ScrollReveal from "@/components/ScrollReveal";
 import globeImage from "@/assets/globe-3d.png";
+// AVIF (~43KB) and WebP (~57KB) siblings — regenerate via
+// `bun run scripts/optimize-hero-images.mjs` after replacing the source PNG.
+import globeImageAvif from "@/assets/globe-3d.avif";
+import globeImageWebp from "@/assets/globe-3d.webp";
 import { useHomepageBlock } from "@/hooks/useCmsContent";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
@@ -109,7 +113,21 @@ const HeroSection = () => {
             </div>
 
             <div className="globe-real-container">
-              <img src={globeImage} alt="THG Global Network" className="globe-real-image" />
+              {/* LCP candidate — AVIF/WebP fallbacks shrink from 536KB PNG → ~43KB.
+                  Width/height attrs reserve aspect ratio so CSS scaling doesn't shift layout. */}
+              <picture>
+                <source srcSet={globeImageAvif} type="image/avif" />
+                <source srcSet={globeImageWebp} type="image/webp" />
+                <img
+                  src={globeImage}
+                  alt="THG Global Network"
+                  className="globe-real-image"
+                  width={1024}
+                  height={1024}
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </picture>
               <div className="globe-orbit" />
               <div className="globe-orbit globe-orbit-2" />
 

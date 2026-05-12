@@ -1,8 +1,13 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { exportToExcel } from "@/lib/exportUtils";
 import type { PricingRow } from "@/components/pricing/types";
+
+// xlsx + jspdf weigh ~290KB combined; lazy-load only when user actually exports.
+async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfig) {
+    const { exportToExcel } = await import("@/lib/exportUtils");
+    exportToExcel(config);
+}
 
 const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbol = "$", sla }: {
     title: string; badge?: React.ReactNode; note?: React.ReactNode;
@@ -87,7 +92,7 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                 </div>
                 <div className="flex items-center gap-2 ml-auto">
                     {note && <span className="text-[#9CA3AF] text-[12px] mr-2">{note}</span>}
-                    <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title={t("pt.export_excel")}>
+                    <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title={t("pt.export_excel")}>
                         <FileSpreadsheet size={14} />
                     </button>
                 </div>

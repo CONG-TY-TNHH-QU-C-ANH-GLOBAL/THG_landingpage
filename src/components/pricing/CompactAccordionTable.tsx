@@ -1,7 +1,12 @@
 import { useState, useMemo } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet, FileText, FileIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { exportToExcel } from "@/lib/exportUtils";
+
+// xlsx + jspdf weigh ~290KB combined; lazy-load only when user actually exports.
+async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfig) {
+    const { exportToExcel } = await import("@/lib/exportUtils");
+    exportToExcel(config);
+}
 
 const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table", extractRowData }: { headers: string[], data: any[], renderRow: (row: any, i: number) => React.ReactNode, title?: string, extractRowData?: (row: any) => (string | number)[] }) => {
     const { tVi } = useI18n();
@@ -21,7 +26,7 @@ const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table",
     return (
         <div className="relative">
             <div className="absolute top-[-36px] right-0 flex items-center gap-1">
-                <button onClick={() => exportToExcel(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Xuất Excel">
+                <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Xuất Excel">
                     <FileSpreadsheet size={13} />
                 </button>
             </div>

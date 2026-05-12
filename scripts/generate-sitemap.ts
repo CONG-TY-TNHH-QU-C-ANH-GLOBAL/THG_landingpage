@@ -24,8 +24,6 @@ const STATIC_ROUTES = [
   "/domestic-pricing",
 ];
 
-const LOCALES = ["en", "vi", "zh"] as const;
-
 interface SitemapEntry {
   loc: string;
   lastmod: string;
@@ -45,14 +43,13 @@ ${e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>\n` : ""}${e.prior
 }
 
 function buildAlternates(path: string): SitemapEntry["alternates"] {
-  // Landing currently serves all 3 locales at SAME URL with client-side language switcher.
-  // For SEO, declare all 3 hreflangs pointing to same URL — Google respects the lang switch.
-  // (When subpath /en/ /vi/ /zh/ routing is added, update this to actual variants.)
+  // Landing currently serves all 3 locales at SAME URL with client-side switcher.
+  // Listing en/vi/zh hreflangs pointing to the same URL is technically incorrect
+  // — Google reads it as "this URL is canonical for 3 simultaneous languages",
+  // which we can't fulfill in a CSR SPA. Stick to x-default until URL-prefix
+  // routing (/en/*, /vi/*, /zh/*) lands in Sprint 3 plan.
   const url = `${SITE}${path}`;
-  return [
-    ...LOCALES.map((l) => ({ hreflang: l, href: url })),
-    { hreflang: "x-default", href: url },
-  ];
+  return [{ hreflang: "x-default", href: url }];
 }
 
 async function main() {
