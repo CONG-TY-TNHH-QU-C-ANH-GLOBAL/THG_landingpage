@@ -18,6 +18,8 @@ async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfi
 import { useLarkPricingContext, SyncBadge } from "@/components/pricing/LarkPricingProvider";
 import { useI18n } from "@/lib/i18n";
 import { WAREHOUSE_PACKAGING_URL } from "@/config/cmsAssets";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
+import { Button } from "@/components/ui/button";
 
 interface DomesticPricingRow {
     STT: string;
@@ -375,17 +377,22 @@ const DomesticPricingContent = () => {
                     </div>
                 </ScrollReveal>
 
-                {/* CTA */}
+                {/* CTA — opens the shared lead form modal. Was an anchor to /#contact
+                    which left the pricing page entirely. */}
                 <ScrollReveal>
                     <div className="bg-gradient-to-br from-navy via-navy/95 to-primary/80 text-white rounded-xl p-6 md:p-10 text-center">
                         <h3 className="text-xl md:text-2xl font-bold mb-2">{t("domestic.cta_title")}</h3>
                         <p className="text-white/70 mb-5 text-sm max-w-lg mx-auto">{t("domestic.cta_desc")}</p>
-                        <a
-                            href="/#contact"
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-[13px] hover:bg-primary/90 transition-colors shadow-lg shadow-primary/30"
-                        >
-                            {t("domestic.cta_btn")} <ArrowRight className="w-4 h-4" />
-                        </a>
+                        <LeadFormDialog
+                            sourcePage="/domestic-pricing#cta"
+                            trigger={
+                                <Button
+                                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-[13px] hover:bg-primary/90 transition-colors shadow-lg shadow-primary/30"
+                                >
+                                    {t("domestic.cta_btn")} <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            }
+                        />
                     </div>
                 </ScrollReveal>
             </div>

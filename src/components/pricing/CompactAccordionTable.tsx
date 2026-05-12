@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useId, useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet, FileText, FileIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -11,7 +11,8 @@ async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfi
 const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table", extractRowData }: { headers: string[], data: any[], renderRow: (row: any, i: number) => React.ReactNode, title?: string, extractRowData?: (row: any) => (string | number)[] }) => {
     const { tVi } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
-    const tableId = useMemo(() => "table-compact-" + Math.random().toString(36).substring(2, 9), []);
+    // Stable across SSR/prerender + client hydration (was Math.random).
+    const tableId = `table-compact-${useId()}`;
 
     const exportConfig = useMemo(() => {
         const safe = data ?? [];

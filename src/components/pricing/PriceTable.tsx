@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback, useId } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import type { PricingRow } from "@/components/pricing/types";
@@ -17,7 +17,10 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
 }) => {
     const { t, tVi } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
-    const tableId = useMemo(() => "table-price-" + Math.random().toString(36).substring(2, 9), []);
+    // useId — stable across SSR/prerender + client hydration. Previously used
+    // Math.random which produced different IDs on server vs client and tripped
+    // React hydration warnings once we started prerendering.
+    const tableId = `table-price-${useId()}`;
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
