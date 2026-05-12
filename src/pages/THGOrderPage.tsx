@@ -11,12 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { useCmsServices } from "@/hooks/useCmsContent";
-
-import imgLanHuong from "@/assets/Ms Lan Huong.jpg";
-import imgMinhKhoa from "@/assets/Mr Minh Khoa.jpg";
-import imgThuyPhuong from "@/assets/Ms. Thuy Phuong.jpg";
-import imgQuangTri from "@/assets/Mr. Quang Tri.jpg";
-import imgBaoNgoc from "@/assets/Ms.Bao Ngoc.jpg";
+import { TESTIMONIAL_AVATARS } from "@/config/cmsAssets";
 
 /* ───────────────────── DATA ───────────────────── */
 const stats = [
@@ -103,11 +98,11 @@ const faqItems = [
 ];
 
 const testimonials = [
-  { nameKey: "Ms. Lan Huong", locKey: "📍 California, USA", tagKey: "op.testi1_tag", textKey: "op.testi1_text", avatar: imgLanHuong },
-  { nameKey: "Mr. Minh Khoa", locKey: "📍 Texas, USA", tagKey: "op.testi2_tag", textKey: "op.testi2_text", avatar: imgMinhKhoa },
-  { nameKey: "Ms. Thuy Phuong", locKey: "📍 Virginia, USA", tagKey: "op.testi3_tag", textKey: "op.testi3_text", avatar: imgThuyPhuong },
-  { nameKey: "Mr. Quang Tri", locKey: "📍 New York, USA", tagKey: "op.testi4_tag", textKey: "op.testi4_text", avatar: imgQuangTri },
-  { nameKey: "Ms. Bao Ngoc", locKey: "📍 Georgia, USA", tagKey: "op.testi5_tag", textKey: "op.testi5_text", avatar: imgBaoNgoc },
+  { nameKey: "Ms. Lan Huong", locKey: "📍 California, USA", tagKey: "op.testi1_tag", textKey: "op.testi1_text", avatar: TESTIMONIAL_AVATARS.lanHuong },
+  { nameKey: "Mr. Minh Khoa", locKey: "📍 Texas, USA", tagKey: "op.testi2_tag", textKey: "op.testi2_text", avatar: TESTIMONIAL_AVATARS.minhKhoa },
+  { nameKey: "Ms. Thuy Phuong", locKey: "📍 Virginia, USA", tagKey: "op.testi3_tag", textKey: "op.testi3_text", avatar: TESTIMONIAL_AVATARS.thuyPhuong },
+  { nameKey: "Mr. Quang Tri", locKey: "📍 New York, USA", tagKey: "op.testi4_tag", textKey: "op.testi4_text", avatar: TESTIMONIAL_AVATARS.quangTri },
+  { nameKey: "Ms. Bao Ngoc", locKey: "📍 Georgia, USA", tagKey: "op.testi5_tag", textKey: "op.testi5_text", avatar: TESTIMONIAL_AVATARS.baoNgoc },
 ];
 
 /* ───────────────────── COMPONENT ───────────────────── */

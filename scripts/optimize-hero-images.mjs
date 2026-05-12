@@ -1,6 +1,7 @@
-// One-shot image optimizer for hero/LCP-critical assets.
-// Converts large PNGs in src/assets/ into AVIF + WebP siblings.
-// Re-run after replacing the source PNG; output filenames stay stable.
+// One-shot image optimizer for LCP-critical and bandwidth-heavy assets.
+// For each source, writes AVIF + WebP siblings next to the original.
+// Re-run after replacing source files; output filenames stay stable so the
+// Vite asset pipeline rehashes them automatically.
 //
 //   bun run scripts/optimize-hero-images.mjs
 
@@ -11,7 +12,13 @@ import sharp from "sharp";
 
 const ROOT = process.cwd();
 
-// (source, max width) — preserves aspect ratio. Width >= original is a no-op.
+// (source, max width) — preserves aspect ratio. `width` above the original
+// is a no-op (sharp respects withoutEnlargement).
+//
+// Only LCP-critical / branding assets that we *want* shipped with the bundle
+// belong here. Marketing illustrations and testimonial avatars are CMS-served
+// (operator-editable) and resolved through the media pipeline, so they don't
+// need a build-time optimization pass.
 const TARGETS = [
   { src: "src/assets/globe-3d.png", width: 1024 },
 ];
@@ -32,7 +39,7 @@ async function convert({ src, width }) {
   const webp = statSync(`${base}.webp`).size;
   const fmt = (n) => `${(n / 1024).toFixed(1)} KB`;
   console.log(`✓ ${src}`);
-  console.log(`    PNG  ${fmt(original)}  (baseline)`);
+  console.log(`    src  ${fmt(original)}  (baseline)`);
   console.log(`    WebP ${fmt(webp)}  (-${(100 - (webp / original) * 100).toFixed(0)}%)`);
   console.log(`    AVIF ${fmt(avif)}  (-${(100 - (avif / original) * 100).toFixed(0)}%)`);
 }

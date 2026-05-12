@@ -17,7 +17,7 @@ async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfi
 }
 import { useLarkPricingContext, SyncBadge } from "@/components/pricing/LarkPricingProvider";
 import { useI18n } from "@/lib/i18n";
-import packagingImg from "@/assets/Warehouse_bao bì.png";
+import { WAREHOUSE_PACKAGING_URL } from "@/config/cmsAssets";
 
 interface DomesticPricingRow {
     STT: string;
@@ -367,7 +367,7 @@ const DomesticPricingContent = () => {
                 <ScrollReveal>
                     <div className="mb-10">
                         <img
-                            src={packagingImg}
+                            src={WAREHOUSE_PACKAGING_URL}
                             alt={t("warehouse_page.pkg_title")}
                             className="w-full max-w-3xl mx-auto rounded-xl shadow-sm"
                             loading="lazy"

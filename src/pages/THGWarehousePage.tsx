@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
-import warehouseUS from "@/assets/warehouse_US.jpg";
 import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";

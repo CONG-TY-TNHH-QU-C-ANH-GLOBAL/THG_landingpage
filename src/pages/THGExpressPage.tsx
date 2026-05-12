@@ -21,7 +21,7 @@ import {
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
-import express2Img from "@/assets/Express-2.png";
+import { EXPRESS_HERO_URL } from "@/config/cmsAssets";
 
 /* ─── Data ─── */
 const features = [
@@ -46,7 +46,7 @@ const processSteps = [
 ];
 
 const galleryImages = [
-  express2Img,
+  EXPRESS_HERO_URL,
   "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/standee-thg-7-20250721100534-85tng.png",
   "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/img_9979-20250724025706-v7ewy.jpg",
   "https://w.ladicdn.com/s750x450/67e69e24e8a7ba001127c80a/img_7303-20250724025705-mco7x.jpg",
