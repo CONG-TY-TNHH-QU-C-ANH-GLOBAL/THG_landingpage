@@ -129,6 +129,21 @@ const CatalogPage = () => {
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
   const [shareCopied, setShareCopied] = useState(false);
+  // THG-TASK-019: track image URLs that failed to load so subsequent
+  // re-renders fall back to the Package placeholder instead of the
+  // browser default broken-image icon. Keyed by URL, deduped across
+  // list cards + modal so the same broken CDN URL doesn't render the
+  // broken icon multiple times.
+  const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
+  const markBroken = useCallback((src: string) => {
+    if (!src) return;
+    setBrokenImages((prev) => {
+      if (prev.has(src)) return prev;
+      const next = new Set(prev);
+      next.add(src);
+      return next;
+    });
+  }, []);
   // v4 modal state — shipping channel toggle + selected variant + active series
   const [shipping, setShipping] = useState<"lbl" | "mer">("lbl");
   // Track selection by variant id (stable across series filter changes) rather
@@ -471,11 +486,15 @@ const CatalogPage = () => {
                   >
                     {/* Image */}
                     <div className="relative aspect-square bg-gray-50 overflow-hidden">
-                      {item.images?.[0] ? (
+                      {/* THG-TASK-019: !brokenImages.has guards 404/expired CDN URLs
+                          so broken images fall through to Package placeholder instead
+                          of the browser's default broken-img icon. */}
+                      {item.images?.[0] && !brokenImages.has(item.images[0]) ? (
                         <img
                           src={item.images[0]}
                           alt={item.name}
                           loading="lazy"
+                          onError={() => markBroken(item.images[0])}
                           className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
@@ -502,8 +521,15 @@ const CatalogPage = () => {
                             : `$${item.priceFrom.toFixed(2)} – $${item.priceTo.toFixed(2)}`
                           : t("catalog.contact_price")}
                       </p>
-                      <p className="text-[10px] md:text-xs text-muted-foreground truncate">
-                        SKU: <span className="font-mono text-red-500">{item.sku}</span>
+                      {/* THG-TASK-019: prefer thgSku (canonical THG-VN001-...) over
+                          product.sku (short internal code) for parity with the modal
+                          detail view. title= surfaces full value on hover when
+                          truncated on narrow viewports. */}
+                      <p
+                        className="text-[10px] md:text-xs text-muted-foreground truncate"
+                        title={item.thgSku || item.sku}
+                      >
+                        SKU: <span className="font-mono text-red-500">{item.thgSku || item.sku}</span>
                       </p>
                       {item.sizes.length > 0 && (
                         <p className="text-[10px] md:text-xs text-muted-foreground">
@@ -682,10 +708,13 @@ const CatalogPage = () => {
                   {/* ════ LEFT: image (fixed on desktop, top on mobile) ════ */}
                   <div className="bg-gray-50/70 border-r border-border/30 flex flex-col overflow-hidden">
                     <div className="relative flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/50 to-gray-50/50 min-h-[240px]">
-                      {selectedProduct.images?.[activeImage] ? (
+                      {/* THG-TASK-019: same brokenImages guard as list card. */}
+                      {selectedProduct.images?.[activeImage] &&
+                       !brokenImages.has(selectedProduct.images[activeImage]) ? (
                         <img
                           src={selectedProduct.images[activeImage]}
                           alt={selectedProduct.name}
+                          onError={() => markBroken(selectedProduct.images[activeImage])}
                           className="max-w-full max-h-[240px] object-contain"
                         />
                       ) : (
@@ -694,16 +723,28 @@ const CatalogPage = () => {
                     </div>
                     {selectedProduct.images.length > 1 && (
                       <div className="flex gap-2 overflow-x-auto p-3 border-t border-border/30 bg-white">
-                        {selectedProduct.images.map((img, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setActiveImage(i)}
-                            className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-blue-600" : "border-border/30 opacity-60 hover:opacity-100"
-                              }`}
-                          >
-                            <img loading="lazy" src={img} alt="" className="w-full h-full object-contain p-0.5" />
-                          </button>
-                        ))}
+                        {selectedProduct.images.map((img, i) => {
+                          // Skip thumbnails for URLs known-broken so the strip
+                          // doesn't show empty boxes. Keep the index alignment
+                          // with images[] so click → activeImage stays correct.
+                          if (brokenImages.has(img)) return null;
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => setActiveImage(i)}
+                              className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-blue-600" : "border-border/30 opacity-60 hover:opacity-100"
+                                }`}
+                            >
+                              <img
+                                loading="lazy"
+                                src={img}
+                                alt=""
+                                onError={() => markBroken(img)}
+                                className="w-full h-full object-contain p-0.5"
+                              />
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
