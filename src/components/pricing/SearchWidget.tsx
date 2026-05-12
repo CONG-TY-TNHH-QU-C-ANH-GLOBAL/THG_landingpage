@@ -1,5 +1,5 @@
 import { useI18n } from "@/lib/i18n";
-import { countryNames, CARGO_LABELS, type CargoType } from "@/components/pricing/types";
+import { countryNames, CARGO_LABELS, type CargoType, type EstimatedPrice } from "@/components/pricing/types";
 
 interface SearchWidgetProps {
     searchFrom: string;
@@ -15,7 +15,7 @@ interface SearchWidgetProps {
     showResult: boolean;
     handleSearch: () => void;
     searchCountries: { key: string; label: string }[];
-    estimatedPrice: any;
+    estimatedPrice: EstimatedPrice | null;
     searchTrigger: number;
 }
 
@@ -50,7 +50,7 @@ const SearchWidget = ({
                         <label className="block text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase mb-1 sm:mb-2 tracking-widest">{tVi("pricing.search_to")}</label>
                         <select value={searchTo} onChange={(e) => setSearchTo(e.target.value)} className={selectClass}>
                             <option value="ALL">{tVi("pricing.opt_all")}</option>
-                            {searchCountries.map((col: any) => (
+                            {searchCountries.map((col) => (
                                 <option key={col.key} value={col.key.toUpperCase()}>{col.label}</option>
                             ))}
                         </select>

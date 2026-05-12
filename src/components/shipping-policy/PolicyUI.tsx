@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { SafeHtml } from "@/lib/sanitizeHtml";
 
 /* ═══ Collapsible Section ═══ */
 export const Sec = ({ icon, title, children, defaultOpen = false }: {
@@ -44,7 +45,7 @@ export const PT = ({ headers, rows }: { headers: string[]; rows: string[][] }) =
         </thead>
         <tbody>
             {rows.map((r, i) => (
-                <tr key={i}>{r.map((c, j) => <td key={j} className="px-2 py-1.5 border-b border-[#ede5d5] align-top" dangerouslySetInnerHTML={{ __html: c }} />)}</tr>
+                <tr key={i}>{r.map((c, j) => <SafeHtml key={j} as="td" className="px-2 py-1.5 border-b border-[#ede5d5] align-top" html={c} />)}</tr>
             ))}
         </tbody>
     </table>

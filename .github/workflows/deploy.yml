@@ -26,6 +26,26 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bunx tsc --noEmit -p tsconfig.app.json
+
+      - name: Unit tests
+        run: bun run test
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: E2E tests
+        env:
+          # Force the DEV_BYPASS path so the test doesn't depend on a live
+          # Turnstile site key. Production builds (next step) still get the key.
+          VITE_TURNSTILE_SITE_KEY: ""
+          VITE_CMS_API_URL: "http://localhost:8080/api/v1"
+        run: bun run test:e2e
+
       - name: Build
         env:
           # CMS API base URL for prod (REQUIRED — fallback would point to localhost)

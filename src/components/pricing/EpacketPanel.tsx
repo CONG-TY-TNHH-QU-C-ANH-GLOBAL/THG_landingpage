@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Link } from "react-router-dom";
-import { EpacketRoute, CargoType, ROUTES, CARGO_LABELS, CARGO_ICONS, OriginCountry } from "@/components/pricing/types";
+import { EpacketRoute, CargoType, ROUTES, CARGO_LABELS, CARGO_ICONS, OriginCountry, type PricingRow } from "@/components/pricing/types";
 import Accordion from "@/components/pricing/Accordion";
 import PriceTable from "@/components/pricing/PriceTable";
 import CompactAccordionTable from "@/components/pricing/CompactAccordionTable";
@@ -15,12 +15,15 @@ interface EpacketPanelProps {
     handleRouteSwitch: (r: EpacketRoute) => void;
     handleCargoSwitch: (c: CargoType) => void;
     routeConfig: typeof ROUTES[EpacketRoute];
-    currentData: any[];
+    currentData: PricingRow[];
     tableColumns: { key: string; label: string }[];
+    // Lark overlay is the CMS-edited blob — keys hold heterogeneous shapes
+    // (PricingRow[], { regular, special }, etc.) so consumers cast per use.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     larkOverlay: Record<string, any>;
-    vatData: any[];
-    remoteSurcharge: any[];
-    redeliveryData: any[];
+    vatData: PricingRow[];
+    remoteSurcharge: PricingRow[];
+    redeliveryData: PricingRow[];
     larkLoading?: boolean;
     larkError?: string | null;
     origin: OriginCountry;

@@ -10,6 +10,7 @@ import ImageMarquee from "@/components/ImageMarquee";
 import { useI18n } from "@/lib/i18n";
 import { Warehouse, ArrowRight, CheckCircle2, MapPin, DollarSign, Clock, Monitor, Package, Truck, Video, Mail, Layers, Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SafeHtml } from "@/lib/sanitizeHtml";
 
 const sliderImages = [
   "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-1-20250729095528-wnjai.jpg",
@@ -194,7 +195,7 @@ const THGWarehousePage = () => {
                 <div className="glass-card rounded-2xl p-8 text-center hover-lift h-full">
                   <span className="text-4xl block mb-4">{f.icon}</span>
                   <h3 className="text-xl font-bold text-navy mb-3">{t(f.titleKey)}</h3>
-                  <p className="text-base text-navy/70 leading-relaxed" dangerouslySetInnerHTML={{ __html: t(f.descKey) }} />
+                  <SafeHtml as="p" className="text-base text-navy/70 leading-relaxed" html={t(f.descKey)} />
                 </div>
               </ScrollReveal>
             ))}

@@ -5,7 +5,7 @@
 export function parseDeadline(s: string | null | undefined): Date | null {
   if (!s) return null;
   const trimmed = s.trim();
-  const dmy = trimmed.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+  const dmy = trimmed.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/);
   if (dmy) {
     const d = new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
     return Number.isNaN(d.getTime()) ? null : d;

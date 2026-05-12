@@ -7,12 +7,15 @@ const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table",
     const { tVi } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
     const tableId = useMemo(() => "table-compact-" + Math.random().toString(36).substring(2, 9), []);
-    if (!data || data.length === 0) return null;
 
     const exportConfig = useMemo(() => {
-        const rows = extractRowData ? data.map(extractRowData) : data.map((r: any) => Object.values(r) as string[]);
+        const safe = data ?? [];
+        const rows = extractRowData ? safe.map(extractRowData) : safe.map((r: any) => Object.values(r) as string[]);
         return { filename: title, headers, rows };
     }, [data, headers, title, extractRowData]);
+
+    if (!data || data.length === 0) return null;
+
     const displayData = isExpanded ? data : data.slice(0, 6);
 
     return (

@@ -105,6 +105,7 @@ export function useCmsSiteSettings() {
   return useQuery({
     queryKey: ["cms", "site-settings"],
     queryFn: () => cmsClient.getSiteSettings(),
+    select: (res) => res.settings,
     staleTime: STALE_MS,
     gcTime: GC_MS,
   });

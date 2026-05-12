@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import { useCmsSiteSettings } from "@/hooks/useCmsContent";
+import { SafeHtml } from "@/lib/sanitizeHtml";
 
 const TerminologyPanel = () => {
     const { effectiveLanguage: language } = useI18n();
@@ -36,11 +37,15 @@ const TerminologyPanel = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {group.terms.map((t, ti) => (
                                     <div key={ti} className="bg-[#FAFAF8] p-5 rounded-lg border border-[#E9E9E6]">
-                                        <h5 className="font-bold text-[14px] text-navy mb-2 notranslate"
-                                            dangerouslySetInnerHTML={{ __html: t.term[language as keyof typeof t.term] }}
+                                        <SafeHtml
+                                            as="h5"
+                                            className="font-bold text-[14px] text-navy mb-2 notranslate"
+                                            html={t.term[language as keyof typeof t.term]}
                                         />
-                                        <p className="text-[12.5px] text-muted-foreground leading-relaxed"
-                                            dangerouslySetInnerHTML={{ __html: t.desc[language as keyof typeof t.desc] }}
+                                        <SafeHtml
+                                            as="p"
+                                            className="text-[12.5px] text-muted-foreground leading-relaxed"
+                                            html={t.desc[language as keyof typeof t.desc]}
                                         />
                                     </div>
                                 ))}

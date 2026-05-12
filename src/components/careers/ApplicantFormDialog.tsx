@@ -3,9 +3,10 @@
 // POSTs to CMS /api/v1/applicants → row appears in /admin/content/careers/applicants
 // and fires Telegram notify to HR chat if configured.
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 import { FileText, Loader2, Upload, X } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
+import { TURNSTILE_DEV_TOKEN, TURNSTILE_SITE_KEY, isTurnstileEnabled } from "@/lib/turnstile";
 
 interface Props {
   trigger: ReactNode;
@@ -49,6 +51,8 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
   const [cvLink, setCvLink] = useState("");
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", cover_letter: "" });
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -90,10 +94,14 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
       toast.error(t("careers.form_err_cv_url") || "Link CV phải bắt đầu bằng http(s)://");
       return;
     }
+    const token = isTurnstileEnabled() ? captchaToken : TURNSTILE_DEV_TOKEN;
+    if (!token) {
+      toast.error(t("careers.form_err_captcha"));
+      return;
+    }
     setPending(true);
     try {
       const path = sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : "/careers");
-      const token = "DEV_BYPASS";
       await cmsClient.postApplicant({
         job_slug: jobSlug,
         name: form.name.trim(),
@@ -109,6 +117,9 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
       toast.success(t("careers.form_success_toast") || "Đã gửi hồ sơ — HR sẽ liên hệ trong 3 ngày!");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : (t("careers.form_err_generic") || "Gửi thất bại. Thử lại sau."));
+      // Turnstile tokens are single-use — reset so the user can retry.
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
     } finally {
       setPending(false);
     }
@@ -119,6 +130,8 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
     setCv(null);
     setCvLink("");
     setDone(false);
+    setCaptchaToken(null);
+    turnstileRef.current?.reset();
   }
 
   function handleOpenChange(o: boolean) {
@@ -264,6 +277,19 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
                 disabled={pending}
               />
             </div>
+
+            {isTurnstileEnabled() && (
+              <div className="flex justify-center" data-testid="applicant-turnstile">
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onSuccess={setCaptchaToken}
+                  onError={() => setCaptchaToken(null)}
+                  onExpire={() => setCaptchaToken(null)}
+                  options={{ theme: "light", size: "normal" }}
+                />
+              </div>
+            )}
 
             <Button type="submit" disabled={pending || uploading} className="w-full">
               {pending ? (t("careers.form_submitting") || "Đang gửi…") : (t("careers.form_submit") || "Gửi hồ sơ ứng tuyển")}

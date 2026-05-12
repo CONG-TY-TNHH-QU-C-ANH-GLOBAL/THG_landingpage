@@ -10,6 +10,7 @@ import { X } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { ApplicantFormDialog } from "@/components/careers/ApplicantFormDialog";
 import { isPastDeadline } from "@/lib/deadline";
+import { SafeHtml } from "@/lib/sanitizeHtml";
 
 /* ─── TYPES ─── */
 interface Benefit { i: string; t: string; d: string; }
@@ -363,7 +364,7 @@ const CareersPage = () => {
                             <div className="absolute -right-36 -bottom-36 w-80 h-80 rounded-full bg-gradient-radial from-primary/25 to-transparent" />
                             <div className="relative z-10">
                                 <h3 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">{t("careers.cta_title1")}<br /><span className="text-[hsl(var(--gold))]">{t("careers.cta_title2")}</span></h3>
-                                <p className="text-white/70 mt-3 text-[15px]" dangerouslySetInnerHTML={{ __html: t("careers.cta_desc") }}></p>
+                                <SafeHtml as="p" className="text-white/70 mt-3 text-[15px]" html={t("careers.cta_desc")} />
                             </div>
                             <div className="relative z-10 shrink-0">
                                 <button
@@ -439,7 +440,11 @@ const CareersPage = () => {
                             <div>
                                 <h3 className="text-xl font-extrabold text-navy flex items-center gap-3 mb-4"><span className="w-[5px] h-[22px] rounded" style={{ background: accent }} /> 🎯 {t("careers.modal_bonus_title") || "Hệ thống thưởng & hoa hồng"}</h3>
                                 <div className="rounded-2xl p-6" style={{ background: "linear-gradient(135deg, rgba(201,163,106,0.06), transparent)", border: "1px solid rgba(201,163,106,0.2)" }}>
-                                    <p className="text-muted-foreground text-sm leading-relaxed mb-3.5" dangerouslySetInnerHTML={{ __html: t("careers.modal_bonus_desc") || 'Ngoài lương cứng và hoa hồng cơ bản, THG áp dụng <strong className="text-navy">hệ thống thưởng đa tầng</strong> để ghi nhận nỗ lực:' }}></p>
+                                    <SafeHtml
+                                        as="p"
+                                        className="text-muted-foreground text-sm leading-relaxed mb-3.5"
+                                        html={t("careers.modal_bonus_desc") || 'Ngoài lương cứng và hoa hồng cơ bản, THG áp dụng <strong class="text-navy">hệ thống thưởng đa tầng</strong> để ghi nhận nỗ lực:'}
+                                    />
                                     <ul className="space-y-2">
                                         {activeJob.bonuses.map((b: string, i: number) => (
                                             <li key={i} className="text-navy text-[13.5px] leading-relaxed pl-6 relative">
@@ -487,7 +492,7 @@ const CareersPage = () => {
                                     <div className="absolute -right-24 -bottom-24 w-72 h-72 rounded-full bg-gradient-radial from-primary/10 to-transparent" />
                                     <div className="relative z-10">
                                         <h4 className="text-xl font-extrabold">{t("careers.modal_apply_title")}</h4>
-                                        <p className="text-white/70 text-[13.5px] mt-1.5" dangerouslySetInnerHTML={{ __html: t("careers.modal_apply_desc") }}></p>
+                                        <SafeHtml as="p" className="text-white/70 text-[13.5px] mt-1.5" html={t("careers.modal_apply_desc")} />
                                     </div>
                                     {isPastDeadline(activeJob.deadline) ? (
                                         <div className="relative z-10">

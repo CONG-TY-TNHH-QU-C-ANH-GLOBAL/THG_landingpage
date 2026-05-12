@@ -50,7 +50,12 @@ const PolicyTextRenderer = ({ sectionId }: PolicyTextRendererProps) => {
     const lang = effectiveLanguage as "en" | "vi" | "zh";
     const cmsLang = language;
 
-    if (sectionId === "shipping") {
+    // Always call the hook to satisfy rules-of-hooks; the `enabled` flag below
+    // skips the request when we're rendering the shipping shortcut instead.
+    const isShipping = sectionId === "shipping";
+    const { data, isLoading, error } = useCmsPolicy(isShipping ? "" : sectionId, cmsLang);
+
+    if (isShipping) {
         const desc = lang === "vi"
             ? "Nội dung chính sách vận chuyển đã được trình bày chi tiết tại trang riêng."
             : lang === "zh"
@@ -76,8 +81,6 @@ const PolicyTextRenderer = ({ sectionId }: PolicyTextRendererProps) => {
             </div>
         );
     }
-
-    const { data, isLoading, error } = useCmsPolicy(sectionId, cmsLang);
 
     if (isLoading) {
         return (

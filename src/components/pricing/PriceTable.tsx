@@ -2,10 +2,11 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { exportToExcel } from "@/lib/exportUtils";
+import type { PricingRow } from "@/components/pricing/types";
 
 const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbol = "$", sla }: {
     title: string; badge?: React.ReactNode; note?: React.ReactNode;
-    data: any[]; columns: { key: string; label: string }[];
+    data: PricingRow[]; columns: { key: string; label: string }[];
     rate?: number; currencySymbol?: string;
     sla?: Record<string, string>;
 }) => {
@@ -53,7 +54,7 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
     const exportConfig = useMemo(() => {
         if (!data || data.length === 0) return { filename: title, headers: [], rows: [] };
         const headers = [t("pt.weight_header"), ...columns.map(c => c.label)];
-        const rows = data.map((row: any) => {
+        const rows = data.map((row) => {
             return [
                 row.kg ?? row.weight ?? "—",
                 ...columns.map(c => {

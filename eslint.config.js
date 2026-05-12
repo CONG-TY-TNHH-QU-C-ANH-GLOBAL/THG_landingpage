@@ -20,7 +20,22 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
-      "@typescript-eslint/no-unused-vars": "off",
+      // Unused vars surface dead code; prefix with `_` to opt out per usage.
+      // Warning (not error) until the existing 50+ stale imports get cleaned up.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
+      ],
+      // `any` is a smell but not always avoidable (CMS overlays, third-party
+      // libs). Keep as a warning so it shows in CI without blocking deploys.
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
+  {
+    // Tailwind config + scripts run in Node and use CommonJS plugins.
+    files: ["tailwind.config.ts", "scripts/**/*"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 );

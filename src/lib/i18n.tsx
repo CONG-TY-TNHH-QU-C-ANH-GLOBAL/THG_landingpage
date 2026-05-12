@@ -1379,6 +1379,68 @@ const translations: Translations = {
     vi: "Hệ thống Kho Bãi & Vận Hành",
     zh: "仓储与运营画廊",
   },
+
+  // Lead form dialog (homepage / nav consult CTA)
+  "lead_form.title": { en: "Talk to us", vi: "Liên hệ tư vấn", zh: "联系咨询" },
+  "lead_form.desc": {
+    en: "Leave your details and the THG team will get back within 24h. For urgent questions you can also chat with us on Facebook.",
+    vi: "Để lại thông tin, đội THG sẽ phản hồi trong 24h. Bạn cũng có thể chat trực tiếp qua Facebook nếu cần gấp.",
+    zh: "请留下您的信息，THG团队将在24小时内回复。紧急情况可通过Facebook直接联系。",
+  },
+  "lead_form.name_label": { en: "Full name", vi: "Họ tên", zh: "姓名" },
+  "lead_form.name_placeholder": { en: "John Doe", vi: "Nguyễn Văn A", zh: "张三" },
+  "lead_form.email_label": { en: "Email", vi: "Email", zh: "电子邮箱" },
+  "lead_form.email_placeholder": { en: "you@example.com", vi: "ban@example.com", zh: "you@example.com" },
+  "lead_form.phone_label": { en: "Phone (optional)", vi: "Điện thoại (tuỳ chọn)", zh: "电话（可选）" },
+  "lead_form.phone_placeholder": { en: "+1 555 123 4567", vi: "0901 234 567", zh: "138 0000 0000" },
+  "lead_form.message_label": { en: "Your needs (optional)", vi: "Nhu cầu (tuỳ chọn)", zh: "需求（可选）" },
+  "lead_form.message_placeholder": {
+    en: "E.g.: We sell POD on TikTok Shop and need to fulfill 200 orders/day from VN to US…",
+    vi: "Vd: Em đang bán POD trên TikTok Shop, cần fulfill 200 đơn/ngày từ VN sang US…",
+    zh: "例如：我们在TikTok Shop销售POD，需要从越南到美国每天履行200个订单…",
+  },
+  "lead_form.submit": { en: "Send consultation request", vi: "Gửi yêu cầu tư vấn", zh: "发送咨询请求" },
+  "lead_form.submitting": { en: "Sending…", vi: "Đang gửi…", zh: "正在发送…" },
+  "lead_form.close": { en: "Close", vi: "Đóng", zh: "关闭" },
+  "lead_form.consent": {
+    en: "By submitting, you agree that THG may process your data to contact you.",
+    vi: "Bằng cách submit, bạn đồng ý cho THG xử lý dữ liệu để liên hệ tư vấn.",
+    zh: "提交即表示您同意THG处理您的数据以联系您。",
+  },
+  "lead_form.err_required": {
+    en: "Please fill in your name and email.",
+    vi: "Vui lòng điền tên và email.",
+    zh: "请填写您的姓名和电子邮箱。",
+  },
+  "lead_form.err_generic": {
+    en: "Submission failed. Please try again later.",
+    vi: "Gửi thất bại. Thử lại sau.",
+    zh: "提交失败，请稍后再试。",
+  },
+  "lead_form.err_captcha": {
+    en: "Please complete the captcha challenge before submitting.",
+    vi: "Vui lòng hoàn thành xác thực captcha trước khi gửi.",
+    zh: "请先完成验证码再提交。",
+  },
+  "lead_form.success_toast": {
+    en: "Thanks! THG will reach out within 24h.",
+    vi: "Cảm ơn bạn! THG sẽ liên hệ trong 24h.",
+    zh: "感谢您！THG将在24小时内联系您。",
+  },
+  "lead_form.success_title": {
+    en: "Request received successfully!",
+    vi: "Đã gửi yêu cầu thành công!",
+    zh: "请求已成功提交！",
+  },
+  "lead_form.success_desc_before": { en: "The THG team will contact ", vi: "Đội ngũ THG sẽ liên hệ với ", zh: "THG团队将通过 " },
+  "lead_form.success_desc_after": { en: " within 24 hours.", vi: " trong vòng 24 giờ.", zh: " 联系您（24小时内）。" },
+
+  // Applicant form (careers apply CTA) — captcha shared with lead form
+  "careers.form_err_captcha": {
+    en: "Please complete the captcha challenge before submitting.",
+    vi: "Vui lòng hoàn thành xác thực captcha trước khi gửi.",
+    zh: "请先完成验证码再提交。",
+  },
 };
 
 

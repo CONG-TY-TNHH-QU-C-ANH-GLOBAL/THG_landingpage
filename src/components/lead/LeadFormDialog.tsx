@@ -1,8 +1,10 @@
 // Modal lead form — replaces "Get Started" → facebook.com CTA (audit P0.6).
-// POSTs to CMS /api/v1/leads with Turnstile token (DEV_BYPASS in dev).
+// POSTs to CMS /api/v1/leads with a Cloudflare Turnstile token. Falls back to
+// DEV_BYPASS only when VITE_TURNSTILE_SITE_KEY is unset (local dev).
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
+import { TURNSTILE_DEV_TOKEN, TURNSTILE_SITE_KEY, isTurnstileEnabled } from "@/lib/turnstile";
 
 interface Props {
   trigger: ReactNode;
@@ -19,11 +22,13 @@ interface Props {
 }
 
 export function LeadFormDialog({ trigger, sourcePage }: Props) {
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -32,15 +37,17 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim()) {
-      toast.error("Vui lòng điền tên và email.");
+      toast.error(t("lead_form.err_required"));
+      return;
+    }
+    const token = isTurnstileEnabled() ? captchaToken : TURNSTILE_DEV_TOKEN;
+    if (!token) {
+      toast.error(t("lead_form.err_captcha"));
       return;
     }
     setPending(true);
     try {
       const path = sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : "/");
-      // Turnstile token — DEV_BYPASS works when CMS has empty TURNSTILE_SECRET_KEY.
-      // Production: replace with @marsidev/react-turnstile widget output.
-      const token = "DEV_BYPASS";
       await cmsClient.postLead({
         name: form.name.trim(),
         email: form.email.trim(),
@@ -51,9 +58,12 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
         turnstile_token: token,
       });
       setDone(true);
-      toast.success("Cảm ơn bạn! THG sẽ liên hệ trong 24h.");
+      toast.success(t("lead_form.success_toast"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Submit thất bại. Thử lại sau.");
+      toast.error(err instanceof Error ? err.message : t("lead_form.err_generic"));
+      // Turnstile tokens are single-use — reset so the user can retry.
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
     } finally {
       setPending(false);
     }
@@ -62,6 +72,8 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
   function reset() {
     setForm({ name: "", email: "", phone: "", message: "" });
     setDone(false);
+    setCaptchaToken(null);
+    turnstileRef.current?.reset();
   }
 
   return (
@@ -75,75 +87,88 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Liên hệ tư vấn</DialogTitle>
-          <DialogDescription>
-            Để lại thông tin, đội THG sẽ phản hồi trong 24h. Bạn cũng có thể chat trực tiếp qua Facebook nếu cần gấp.
-          </DialogDescription>
+          <DialogTitle>{t("lead_form.title")}</DialogTitle>
+          <DialogDescription>{t("lead_form.desc")}</DialogDescription>
         </DialogHeader>
 
         {done ? (
           <div className="py-6 text-center space-y-3">
             <div className="text-3xl">✅</div>
-            <div className="font-semibold text-base">Đã gửi yêu cầu thành công!</div>
+            <div className="font-semibold text-base">{t("lead_form.success_title")}</div>
             <p className="text-sm text-muted-foreground">
-              Đội ngũ THG sẽ liên hệ với <strong>{form.email}</strong> trong vòng 24 giờ.
+              {t("lead_form.success_desc_before")}
+              <strong>{form.email}</strong>
+              {t("lead_form.success_desc_after")}
             </p>
-            <Button onClick={() => setOpen(false)} className="mt-2 w-full">Đóng</Button>
+            <Button onClick={() => setOpen(false)} className="mt-2 w-full">{t("lead_form.close")}</Button>
           </div>
         ) : (
           <form onSubmit={onSubmit} className="space-y-3">
             <div>
-              <Label htmlFor="lead-name">Họ tên *</Label>
+              <Label htmlFor="lead-name">{t("lead_form.name_label")} *</Label>
               <Input
                 id="lead-name"
                 required
                 value={form.name}
                 onChange={(e) => set("name", e.target.value)}
-                placeholder="Nguyễn Văn A"
+                placeholder={t("lead_form.name_placeholder")}
                 disabled={pending}
               />
             </div>
             <div>
-              <Label htmlFor="lead-email">Email *</Label>
+              <Label htmlFor="lead-email">{t("lead_form.email_label")} *</Label>
               <Input
                 id="lead-email"
                 type="email"
                 required
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
-                placeholder="ban@example.com"
+                placeholder={t("lead_form.email_placeholder")}
                 disabled={pending}
               />
             </div>
             <div>
-              <Label htmlFor="lead-phone">Điện thoại (optional)</Label>
+              <Label htmlFor="lead-phone">{t("lead_form.phone_label")}</Label>
               <Input
                 id="lead-phone"
                 type="tel"
                 value={form.phone}
                 onChange={(e) => set("phone", e.target.value)}
-                placeholder="0901 234 567"
+                placeholder={t("lead_form.phone_placeholder")}
                 disabled={pending}
               />
             </div>
             <div>
-              <Label htmlFor="lead-message">Nhu cầu (optional)</Label>
+              <Label htmlFor="lead-message">{t("lead_form.message_label")}</Label>
               <Textarea
                 id="lead-message"
                 value={form.message}
                 onChange={(e) => set("message", e.target.value)}
-                placeholder="Vd: Em đang bán POD trên TikTok Shop, cần fulfill 200 đơn/ngày từ VN sang US…"
+                placeholder={t("lead_form.message_placeholder")}
                 rows={4}
                 disabled={pending}
               />
             </div>
 
+            {isTurnstileEnabled() && (
+              <div className="flex justify-center" data-testid="lead-turnstile">
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onSuccess={setCaptchaToken}
+                  onError={() => setCaptchaToken(null)}
+                  onExpire={() => setCaptchaToken(null)}
+                  options={{ theme: "light", size: "normal" }}
+                />
+              </div>
+            )}
+
             <Button type="submit" disabled={pending} className="w-full">
-              {pending ? "Đang gửi…" : "Gửi yêu cầu tư vấn"}
+              {pending ? t("lead_form.submitting") : t("lead_form.submit")}
             </Button>
 
             <div className="text-[10px] text-center text-muted-foreground">
-              Bằng cách submit, bạn đồng ý cho THG xử lý dữ liệu để liên hệ tư vấn.
+              {t("lead_form.consent")}
             </div>
           </form>
         )}

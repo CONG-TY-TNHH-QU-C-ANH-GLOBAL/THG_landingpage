@@ -3,6 +3,24 @@ import React from "react";
 /* ═══════════════════════════════════════════════
    TYPES & CONFIG
    ═══════════════════════════════════════════════ */
+
+/** Row shape served by the CMS pricing tables. `kg`/`weight` is the row key;
+ *  other keys map to the destination columns and may be a numeric string,
+ *  number, or absent. */
+export type PricingRow = {
+    kg?: string | number;
+    weight?: string | number;
+} & Record<string, string | number | null | undefined>;
+
+/** Estimated price card payload returned from the search widget pipeline.
+ *  Result variants are non-exclusive (the search builder produces a few
+ *  shapes), so the consumer is responsible for branching on `error`/`type`. */
+export interface EstimatedPrice {
+    error?: string;
+    type?: "flat" | "contact" | string;
+    text?: string;
+}
+
 export type ServiceTab = "epacket" | "express" | "terms";
 export type EpacketRoute = "std-vn-ww" | "std-cn-ww" | "pri-vn-us" | "pri-cn-us" | "cn-us-label";
 export type ExpressRoute = "vn-us" | "cn-us";
