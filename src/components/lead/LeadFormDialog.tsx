@@ -2,10 +2,10 @@
 // POSTs to CMS /api/v1/leads with a Cloudflare Turnstile token. Falls back to
 // DEV_BYPASS only when VITE_TURNSTILE_SITE_KEY is unset (local dev).
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
-import { TURNSTILE_DEV_TOKEN, TURNSTILE_SITE_KEY, isTurnstileEnabled } from "@/lib/turnstile";
+import { useTurnstile } from "@/lib/useTurnstile";
 import { getUtmPayload } from "@/lib/utm";
+import { DELAYS } from "@/lib/constants";
 
 interface Props {
   trigger: ReactNode;
@@ -29,12 +30,11 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   // Track which fields the user already touched so we only highlight invalid
   // ones after they've had a chance to enter something (avoids red borders
   // on initial render).
   const [touched, setTouched] = useState<{ name?: boolean; email?: boolean }>({});
-  const turnstileRef = useRef<TurnstileInstance | null>(null);
+  const captcha = useTurnstile();
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -50,7 +50,7 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
       toast.error(t("lead_form.err_required"));
       return;
     }
-    const token = isTurnstileEnabled() ? captchaToken : TURNSTILE_DEV_TOKEN;
+    const token = captcha.resolveSubmitToken();
     if (!token) {
       toast.error(t("lead_form.err_captcha"));
       return;
@@ -73,9 +73,7 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
       toast.success(t("lead_form.success_toast"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("lead_form.err_generic"));
-      // Turnstile tokens are single-use — reset so the user can retry.
-      turnstileRef.current?.reset();
-      setCaptchaToken(null);
+      captcha.resetForRetry();
     } finally {
       setPending(false);
     }
@@ -84,9 +82,8 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
   function reset() {
     setForm({ name: "", email: "", phone: "", message: "" });
     setDone(false);
-    setCaptchaToken(null);
     setTouched({});
-    turnstileRef.current?.reset();
+    captcha.resetForRetry();
   }
 
   return (
@@ -94,7 +91,7 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
       open={open}
       onOpenChange={(o) => {
         setOpen(o);
-        if (!o) setTimeout(reset, 200);
+        if (!o) setTimeout(reset, DELAYS.DIALOG_RESET_AFTER_CLOSE_MS);
       }}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -169,14 +166,14 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
               />
             </div>
 
-            {isTurnstileEnabled() && (
+            {captcha.enabled && (
               <div className="flex justify-center" data-testid="lead-turnstile">
                 <Turnstile
-                  ref={turnstileRef}
-                  siteKey={TURNSTILE_SITE_KEY}
-                  onSuccess={setCaptchaToken}
-                  onError={() => setCaptchaToken(null)}
-                  onExpire={() => setCaptchaToken(null)}
+                  ref={captcha.widgetRef}
+                  siteKey={captcha.siteKey}
+                  onSuccess={captcha.onSuccess}
+                  onError={captcha.onError}
+                  onExpire={captcha.onExpire}
                   options={{ theme: "light", size: "normal" }}
                 />
               </div>

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { useCmsSiteSettings } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import { SCROLL } from "@/lib/constants";
 
 /** Strip non-digits and rewrite VN local prefix `0…` → `84…`. */
 function normalizePhone(raw: string | null | undefined): string | null {
@@ -47,7 +48,7 @@ export function FloatingContact() {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShowBackToTop(window.scrollY > 600);
+    const onScroll = () => setShowBackToTop(window.scrollY > SCROLL.BACK_TO_TOP_THRESHOLD_PX);
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);

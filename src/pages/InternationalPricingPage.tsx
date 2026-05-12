@@ -20,10 +20,22 @@ import SearchWidget from "@/components/pricing/SearchWidget";
 import EpacketPanel from "@/components/pricing/EpacketPanel";
 import ExpressVnUsPanel from "@/components/pricing/ExpressVnUsPanel";
 import ExpressCnUsPanel from "@/components/pricing/ExpressCnUsPanel";
+import { PricingSearchProvider, usePricingSearch } from "@/components/pricing/PricingSearchContext";
+
 /* ═══════════════════════════════════════════════
    MAIN PAGE
-   ═══════════════════════════════════════════════ */
-const InternationalPricingPage = () => {
+   ═══════════════════════════════════════════════
+   Wrapper just installs the search-state context so SearchWidget can pull
+   from it instead of receiving 11 separate props.  All real logic lives in
+   <InternationalPricingContent> below. */
+const InternationalPricingPage = () => (
+  <PricingSearchProvider>
+    <InternationalPricingContent />
+  </PricingSearchProvider>
+);
+export default InternationalPricingPage;
+
+const InternationalPricingContent = () => {
   const { t, tVi, effectiveLanguage: lang } = useI18n();
   const lark = useLarkPricingContext();
 
@@ -125,14 +137,11 @@ const InternationalPricingPage = () => {
   const remoteSurcharge = larkOverlay.remoteSurcharge ?? [];
   const redeliveryData = larkOverlay.redelivery ?? [];
 
-  /* ─── Search Widget State ─── */
-  const [searchFrom, setSearchFrom] = useState("VN");
-  const [searchTo, setSearchTo] = useState("ALL");
-  const [searchSvc, setSearchSvc] = useState("epacket");
-  const [searchCargo, setSearchCargo] = useState("standard");
-  const [searchWeight, setSearchWeight] = useState(1);
-  const [showResult, setShowResult] = useState(false);
-  const [searchTrigger, setSearchTrigger] = useState(0);
+  /* ─── Search Widget State (owned by PricingSearchContext) ─── */
+  const {
+    searchFrom, searchTo, searchSvc, searchCargo, searchWeight,
+    showResult, searchTrigger,
+  } = usePricingSearch();
 
   // Derive country options for the search dropdown based on search widget state (independent of main tabs)
   const searchCountries = useMemo(() => {
@@ -165,11 +174,6 @@ const InternationalPricingPage = () => {
       label: countryNames[k.toLowerCase()] || k.toUpperCase()
     }));
   }, [searchFrom, searchCargo, larkOverlay]);
-
-  const handleSearch = () => {
-    setSearchTrigger(prev => prev + 1);
-    setShowResult(true);
-  };
 
   const estimatedPrice = useMemo(() => {
     if (!showResult) return null;
@@ -282,17 +286,7 @@ const InternationalPricingPage = () => {
       <div className="max-w-[1100px] mx-auto px-2 sm:px-6 lg:px-12 py-4 sm:py-10 pb-12 sm:pb-20">
 
         {/* ──── SEARCH WIDGET ──── */}
-        <SearchWidget
-          searchFrom={searchFrom} setSearchFrom={setSearchFrom}
-          searchTo={searchTo} setSearchTo={setSearchTo}
-          searchSvc={searchSvc} setSearchSvc={setSearchSvc}
-          searchCargo={searchCargo} setSearchCargo={setSearchCargo}
-          searchWeight={searchWeight} setSearchWeight={setSearchWeight}
-          showResult={showResult} handleSearch={handleSearch}
-          searchCountries={searchCountries}
-          estimatedPrice={estimatedPrice}
-          searchTrigger={searchTrigger}
-        />
+        <SearchWidget searchCountries={searchCountries} estimatedPrice={estimatedPrice} />
 
         {/* ──── STEP 1: ORIGIN COUNTRY ──── */}
         <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3 mt-2 sm:mt-4">
@@ -414,5 +408,3 @@ const InternationalPricingPage = () => {
     </div>
   );
 };
-
-export default InternationalPricingPage;

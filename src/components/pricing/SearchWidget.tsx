@@ -1,33 +1,26 @@
 import { useI18n } from "@/lib/i18n";
 import { countryNames, CARGO_LABELS, type CargoType, type EstimatedPrice } from "@/components/pricing/types";
+import { usePricingSearch } from "@/components/pricing/PricingSearchContext";
 
 interface SearchWidgetProps {
-    searchFrom: string;
-    setSearchFrom: (v: string) => void;
-    searchTo: string;
-    setSearchTo: (v: string) => void;
-    searchSvc: string;
-    setSearchSvc: (v: string) => void;
-    searchCargo: string;
-    setSearchCargo: (v: string) => void;
-    searchWeight: number;
-    setSearchWeight: (v: number) => void;
-    showResult: boolean;
-    handleSearch: () => void;
+    /** Country options derived from the lark overlay — parent computes from
+     *  context state and passes through (lives outside the context because the
+     *  derivation needs CMS data the context never sees). */
     searchCountries: { key: string; label: string }[];
+    /** Quote card payload likewise derived from CMS data + context state. */
     estimatedPrice: EstimatedPrice | null;
-    searchTrigger: number;
 }
 
-const SearchWidget = ({
-    searchFrom, setSearchFrom,
-    searchTo, setSearchTo,
-    searchSvc, setSearchSvc,
-    searchCargo, setSearchCargo,
-    searchWeight, setSearchWeight,
-    showResult, handleSearch,
-    searchCountries, estimatedPrice, searchTrigger,
-}: SearchWidgetProps) => {
+const SearchWidget = ({ searchCountries, estimatedPrice }: SearchWidgetProps) => {
+    const {
+        searchFrom, setSearchFrom,
+        searchTo, setSearchTo,
+        searchSvc, setSearchSvc,
+        searchCargo, setSearchCargo,
+        searchWeight, setSearchWeight,
+        showResult, searchTrigger,
+        runSearch,
+    } = usePricingSearch();
     const { t, tVi, effectiveLanguage: lang } = useI18n();
     const getCargoLabel = (c: CargoType) => CARGO_LABELS[c]?.[lang] || CARGO_LABELS[c]?.vi || c;
 
@@ -88,7 +81,7 @@ const SearchWidget = ({
 
                     <div className="col-span-2 sm:col-span-1 w-full lg:w-auto mt-1 sm:mt-0">
                         <button
-                            onClick={handleSearch}
+                            onClick={runSearch}
                             className="w-full lg:w-[130px] h-[40px] sm:h-[46px] bg-[#161B29] hover:bg-[#1f2638] text-white rounded-lg text-[13px] font-bold tracking-wide transition-colors flex items-center justify-center gap-2"
                         >
                             <span className="text-[#8B5CF6] text-lg">🔍</span> {tVi("pricing.search_btn")}

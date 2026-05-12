@@ -11,106 +11,13 @@ import {
 } from "@/components/ui/dialog";
 import {
   Search, Tag, Filter, ChevronLeft, ChevronRight, X,
-  Shirt, Phone, Coffee, Home, Gem, Car, Frame, Package, Crown,
-  MessageCircle, Share2, Check,
+  MessageCircle, Share2, Check, Package,
 } from "lucide-react";
 
-// Category-based product details (since DB has no description fields)
-const categoryMeta: Record<string, { material: string[]; features: string[]; care: string[]; prodTime: string; shipTime: string }> = {
-  Apparel: {
-    material: ["Bird-Eye Pique (Polyester Blend)", "Lightweight, breathable", "Moisture-wicking", "Soft, flexible, easy to move"],
-    features: ["Full button front: classic baseball design", "Customizable: add name, number or logo", "Great for sports events, team uniforms, group outings or streetwear", "Easy to mix with jeans, leggings or shorts", "Bulk discount available for large orders"],
-    care: ["Machine wash inside out, cold water, same colors", "Gentle cycle", "Non-chlorine bleach only when needed", "Tumble dry low", "Cool iron if needed"],
-    prodTime: "3 - 5",
-    shipTime: "8 - 12",
-  },
-  "Phone Cases": {
-    material: ["Premium TPU / Polycarbonate", "Shockproof protection", "Slim profile, lightweight", "Precise cutouts for ports & buttons"],
-    features: ["All-over print with vivid colors", "Scratch-resistant surface", "Wireless charging compatible", "Supports most phone models"],
-    care: ["Wipe clean with damp cloth", "Avoid prolonged sun exposure"],
-    prodTime: "1 - 2",
-    shipTime: "5 - 8",
-  },
-  Drinkware: {
-    material: ["Stainless steel / Ceramic", "BPA-free, food-safe", "Double-wall insulation (tumblers)", "Durable sublimation print"],
-    features: ["Keeps drinks hot/cold for hours", "Dishwasher safe (top rack)", "Full wrap-around printing", "Perfect for gifts & merchandise"],
-    care: ["Hand wash recommended for printed items", "Do not microwave (metal items)", "Avoid abrasive cleaners"],
-    prodTime: "1 - 3",
-    shipTime: "5 - 8",
-  },
-  "Home & Living": {
-    material: ["Polyester / Cotton blend", "Soft-touch fabric", "Vibrant dye-sublimation print", "Durable construction"],
-    features: ["Full-color edge-to-edge printing", "Machine washable", "Multiple size options", "Perfect for home decor & gifts"],
-    care: ["Machine wash cold, gentle cycle", "Tumble dry low", "Do not bleach", "Iron on low heat if needed"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-  "Wall Art": {
-    material: ["Premium canvas / Metal / Acrylic", "High-resolution giclée printing", "UV-resistant inks", "Ready to hang"],
-    features: ["Gallery-quality finish", "Vibrant, long-lasting colors", "Multiple size options", "Frameless or framed options available"],
-    care: ["Dust with soft, dry cloth", "Avoid direct sunlight for extended periods", "Do not use harsh chemicals"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-  Jewelry: {
-    material: ["Stainless steel / Zinc alloy", "Tarnish-resistant finish", "Hypoallergenic", "Lightweight & comfortable"],
-    features: ["Custom engraving available", "High-detail photo printing", "Gift-ready packaging", "Multiple finish options"],
-    care: ["Store in dry place", "Avoid contact with water & chemicals", "Polish with soft cloth"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-  "Cap & Hat": {
-    material: ["Cotton twill / Polyester", "Structured front panel", "Adjustable strap closure", "Breathable eyelets"],
-    features: ["Embroidery or print customization", "One size fits most", "Available in multiple colors", "Pre-curved visor"],
-    care: ["Spot clean recommended", "Hand wash with mild detergent", "Air dry — do not machine dry", "Do not iron on decoration"],
-    prodTime: "2 - 3",
-    shipTime: "5 - 8",
-  },
-  "Car Accessories": {
-    material: ["Durable aluminum / Polyester", "Weather-resistant", "UV-protected print", "Rust-proof"],
-    features: ["Easy installation", "Custom full-color printing", "Fits standard sizes", "Great for personalization & gifts"],
-    care: ["Wipe clean with damp cloth", "Avoid abrasive cleaners"],
-    prodTime: "2 - 3",
-    shipTime: "5 - 8",
-  },
-  Accessories: {
-    material: ["Mixed materials (product-specific)", "Durable construction", "High-quality print finish"],
-    features: ["Full-color custom printing", "Multiple size/style options", "Great for gifts & merchandise"],
-    care: ["Follow product-specific care instructions", "Store in cool, dry place"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-};
+import { CATEGORIES, NO_SERIES_KEY, categoryIcons, categoryMeta, originFlags } from "@/pages/catalog/data";
+import { DELAYS, LIMITS } from "@/lib/constants";
 
-const originFlags: Record<string, string> = {
-  VN: "\u{1F1FB}\u{1F1F3}",
-  US: "\u{1F1FA}\u{1F1F8}",
-  CN: "\u{1F1E8}\u{1F1F3}",
-};
-
-const categoryIcons: Record<string, typeof Shirt> = {
-  Apparel: Shirt,
-  "Phone Cases": Phone,
-  Drinkware: Coffee,
-  "Home & Living": Home,
-  Jewelry: Gem,
-  "Car Accessories": Car,
-  "Wall Art": Frame,
-  Accessories: Package,
-  "Cap & Hat": Crown,
-};
-
-const CATEGORIES = [
-  "Apparel", "Phone Cases", "Cap & Hat", "Drinkware",
-  "Home & Living", "Jewelry", "Car Accessories", "Wall Art", "Accessories",
-];
-
-const PAGE_LIMIT = 20;
-
-// Sentinel key for variants without a `series` value. Used to bucket them into
-// an "Other" tab alongside real series groups. Chosen to never collide with a
-// user-entered free-text series label.
-const NO_SERIES_KEY = "__no_series__";
+const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
 
 const CatalogPage = () => {
   const { t } = useI18n();
@@ -225,7 +132,7 @@ const CatalogPage = () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setShareCopied(true);
-      setTimeout(() => setShareCopied(false), 2000);
+      setTimeout(() => setShareCopied(false), DELAYS.CLIPBOARD_COPIED_FEEDBACK_MS);
     } catch { /* ignore */ }
   }, [selectedProduct]);
 
@@ -692,7 +599,7 @@ const CatalogPage = () => {
               if (!navigator.clipboard?.writeText) return;
               navigator.clipboard.writeText(sku).catch(() => { /* ignore */ });
               setShareCopied(true);
-              setTimeout(() => setShareCopied(false), 1400);
+              setTimeout(() => setShareCopied(false), DELAYS.CLIPBOARD_COPIED_INLINE_MS);
             };
 
             return (

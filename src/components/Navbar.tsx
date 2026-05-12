@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";
 import thgLogo from "@/assets/thg-logo.png";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
+import { DELAYS, SCROLL } from "@/lib/constants";
 
 const serviceItems = [
   { icon: Package, titleKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", href: "/thg-fulfill" },
@@ -33,7 +34,7 @@ const Navbar = () => {
   const pricingTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
+    const handler = () => setScrolled(window.scrollY > SCROLL.NAVBAR_OPAQUE_THRESHOLD_PX);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
@@ -50,14 +51,14 @@ const Navbar = () => {
     setShowServices(true);
   };
   const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setShowServices(false), 150);
+    timeoutRef.current = setTimeout(() => setShowServices(false), DELAYS.NAVBAR_DROPDOWN_CLOSE_MS);
   };
   const handlePricingEnter = () => {
     if (pricingTimeoutRef.current) clearTimeout(pricingTimeoutRef.current);
     setShowPricing(true);
   };
   const handlePricingLeave = () => {
-    pricingTimeoutRef.current = setTimeout(() => setShowPricing(false), 150);
+    pricingTimeoutRef.current = setTimeout(() => setShowPricing(false), DELAYS.NAVBAR_DROPDOWN_CLOSE_MS);
   };
 
   const navItems = [
@@ -258,7 +259,7 @@ const Navbar = () => {
                   setIsOpen(false);
                   const hash = item.href.split("#")[1];
                   if (location.pathname === "/") {
-                    setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" }), 100);
+                    setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" }), DELAYS.NAVBAR_MOBILE_SCROLL_DELAY_MS);
                   } else {
                     window.location.href = item.href;
                   }

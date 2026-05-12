@@ -3,10 +3,10 @@
 // POSTs to CMS /api/v1/applicants → row appears in /admin/content/careers/applicants
 // and fires Telegram notify to HR chat if configured.
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 import { FileText, Loader2, Upload, X } from "lucide-react";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
-import { TURNSTILE_DEV_TOKEN, TURNSTILE_SITE_KEY, isTurnstileEnabled } from "@/lib/turnstile";
+import { useTurnstile } from "@/lib/useTurnstile";
 import { getUtmPayload } from "@/lib/utm";
+import { DELAYS, LIMITS } from "@/lib/constants";
 
 interface Props {
   trigger: ReactNode;
@@ -35,7 +36,7 @@ interface UploadedCv {
 }
 
 const ACCEPT = "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx";
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = LIMITS.APPLICANT_CV_MAX_BYTES;
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
@@ -52,8 +53,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
   const [cvLink, setCvLink] = useState("");
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", cover_letter: "" });
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const turnstileRef = useRef<TurnstileInstance | null>(null);
+  const captcha = useTurnstile();
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -95,7 +95,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
       toast.error(t("careers.form_err_cv_url") || "Link CV phải bắt đầu bằng http(s)://");
       return;
     }
-    const token = isTurnstileEnabled() ? captchaToken : TURNSTILE_DEV_TOKEN;
+    const token = captcha.resolveSubmitToken();
     if (!token) {
       toast.error(t("careers.form_err_captcha"));
       return;
@@ -120,9 +120,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
       toast.success(t("careers.form_success_toast") || "Đã gửi hồ sơ — HR sẽ liên hệ trong 3 ngày!");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : (t("careers.form_err_generic") || "Gửi thất bại. Thử lại sau."));
-      // Turnstile tokens are single-use — reset so the user can retry.
-      turnstileRef.current?.reset();
-      setCaptchaToken(null);
+      captcha.resetForRetry();
     } finally {
       setPending(false);
     }
@@ -133,14 +131,13 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
     setCv(null);
     setCvLink("");
     setDone(false);
-    setCaptchaToken(null);
-    turnstileRef.current?.reset();
+    captcha.resetForRetry();
   }
 
   function handleOpenChange(o: boolean) {
     setOpen(o);
     onOpenChange?.(o);
-    if (!o) setTimeout(reset, 200);
+    if (!o) setTimeout(reset, DELAYS.DIALOG_RESET_AFTER_CLOSE_MS);
   }
 
   return (
@@ -281,14 +278,14 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
               />
             </div>
 
-            {isTurnstileEnabled() && (
+            {captcha.enabled && (
               <div className="flex justify-center" data-testid="applicant-turnstile">
                 <Turnstile
-                  ref={turnstileRef}
-                  siteKey={TURNSTILE_SITE_KEY}
-                  onSuccess={setCaptchaToken}
-                  onError={() => setCaptchaToken(null)}
-                  onExpire={() => setCaptchaToken(null)}
+                  ref={captcha.widgetRef}
+                  siteKey={captcha.siteKey}
+                  onSuccess={captcha.onSuccess}
+                  onError={captcha.onError}
+                  onExpire={captcha.onExpire}
                   options={{ theme: "light", size: "normal" }}
                 />
               </div>
