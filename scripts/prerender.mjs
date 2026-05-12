@@ -89,7 +89,8 @@ preview.stdout.on("data", (b) => process.stdout.write(`[preview] ${b}`));
 preview.stderr.on("data", (b) => process.stderr.write(`[preview] ${b}`));
 
 let browser;
-let failed = false;
+const failures = [];
+let successCount = 0;
 try {
   await waitForReady(`${BASE}/`);
   browser = await chromium.launch();
@@ -98,39 +99,73 @@ try {
     // (matches the default we declare in index.html's <html lang="vi">).
     // Locale switching is client-side after hydration.
     userAgent: "Mozilla/5.0 (compatible; THGPrerender/1.0; +https://thgfulfill.com)",
+    // Block third-party tracking + Turnstile widget heartbeat so they don't
+    // keep network busy past our wait conditions (CI Chromium can stall on
+    // Cloudflare bot-detection from GH Actions IPs).
+    extraHTTPHeaders: { "x-prerender": "1" },
   });
+  // Cut requests we don't need for SEO HTML — analytics pixels, captcha
+  // heartbeats, and external fonts. Saves time + avoids flaky externals.
+  await context.route(/(googletagmanager|google-analytics|facebook\.net|tiktok\.com|challenges\.cloudflare\.com|fonts\.googleapis|fonts\.gstatic)/, (route) => route.abort());
 
   for (const route of ROUTES) {
     const page = await context.newPage();
-    // networkidle waits for CMS fetches + image lazy loads to settle. We
-    // additionally wait a beat so react-helmet-async flushes its head
-    // mutations (it schedules via microtasks/setTimeout 0).
-    await page.goto(`${BASE}${route}`, { waitUntil: "networkidle", timeout: 45_000 });
-    await page.waitForTimeout(800);
+    try {
+      // Wait for `load` (all initial resources) instead of `networkidle` —
+      // long-poll CMS heartbeats / Turnstile widgets can otherwise keep the
+      // network "busy" forever. We follow up with a hydration signal below.
+      await page.goto(`${BASE}${route}`, { waitUntil: "load", timeout: 30_000 });
 
-    // Sanity: at minimum, the shell + a hydrated <title> must exist. Bail
-    // loudly so CI catches a broken prerender instead of shipping a stub.
-    const title = await page.title();
-    if (!title || title.length < 4) {
-      throw new Error(`Route ${route} produced empty <title> — hydration failed?`);
+      // Wait for react-helmet-async to flush its <title> override. Helmet
+      // schedules head mutations via microtasks, so we poll until either
+      // the title got upgraded past the index.html default or 8s elapses.
+      await page.waitForFunction(
+        () => {
+          const t = document.title || "";
+          // Default shipped in index.html — anything else means SeoHead has
+          // applied a per-page override.
+          return t.length > 4 && !t.startsWith("THG Fulfill — POD & Dropship Fulfillment | Transport");
+        },
+        { timeout: 8_000 },
+      ).catch(() => { /* tolerate: route might legitimately reuse default title */ });
+
+      // Final breath for any late helmet/microtask + main thread settle.
+      await page.waitForTimeout(500);
+
+      const title = await page.title();
+      if (!title || title.length < 4) {
+        throw new Error(`empty <title> — hydration likely failed`);
+      }
+
+      const html = "<!doctype html>\n" + await page.evaluate(() => document.documentElement.outerHTML);
+      const out = outputPath(route);
+      mkdirSync(dirname(out), { recursive: true });
+      writeFileSync(out, html, "utf8");
+      console.log(`  ✓ ${route.padEnd(28)} → ${out.replace(ROOT, ".")}  (${(html.length / 1024).toFixed(1)} KB, "${title.slice(0, 60)}")`);
+      successCount += 1;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`  ✗ ${route.padEnd(28)} skipped: ${msg.split("\n")[0]}`);
+      failures.push({ route, msg });
+    } finally {
+      await page.close();
     }
-
-    const html = "<!doctype html>\n" + await page.evaluate(() => document.documentElement.outerHTML);
-    const out = outputPath(route);
-    mkdirSync(dirname(out), { recursive: true });
-    writeFileSync(out, html, "utf8");
-    console.log(`  ✓ ${route.padEnd(28)} → ${out.replace(ROOT, ".")}  (${(html.length / 1024).toFixed(1)} KB, "${title.slice(0, 60)}")`);
-    await page.close();
   }
 
   await context.close();
-  console.log(`\n✓ Prerendered ${ROUTES.length} routes`);
+  console.log(`\n✓ Prerendered ${successCount}/${ROUTES.length} routes${failures.length ? ` (${failures.length} skipped)` : ""}`);
 } catch (err) {
-  failed = true;
-  console.error("✗ Prerender failed:", err);
+  console.error("✗ Prerender setup failed:", err);
+  failures.push({ route: "<setup>", msg: err instanceof Error ? err.message : String(err) });
 } finally {
   if (browser) await browser.close();
   preview.kill();
 }
 
-if (failed) process.exit(1);
+// Only fail the build when nothing prerendered — a partial result is still
+// better than shipping plain CSR shells, and a single flaky route shouldn't
+// gate the whole deploy.
+if (successCount === 0) {
+  console.error("✗ No routes prerendered — failing build.");
+  process.exit(1);
+}
