@@ -10,6 +10,7 @@ import { useI18n } from "@/lib/i18n";
 import { Warehouse, ArrowRight, CheckCircle2, Monitor, Package, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeHtml } from "@/lib/sanitizeHtml";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 
 const sliderImages = [
   "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-1-20250729095528-wnjai.jpg",
@@ -175,10 +176,7 @@ const THGWarehousePage = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4" >THG Warehouse</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.solution_title")}</h2>
-            </div>
+            <SectionHeader className="mb-12" eyebrow="THG Warehouse" title={t("warehouse_page.solution_title")} />
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {features.map((f, i) => (
@@ -268,11 +266,12 @@ const THGWarehousePage = () => {
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("warehouse_page.ops_badge")}</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.gallery_title")}</h2>
-              <p className="text-navy/70 mt-3 max-w-xl mx-auto">{t("warehouse_page.gallery_desc")}</p>
-            </div>
+            <SectionHeader
+              className="mb-12"
+              eyebrow={t("warehouse_page.ops_badge")}
+              title={t("warehouse_page.gallery_title")}
+              description={t("warehouse_page.gallery_desc")}
+            />
           </ScrollReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {operationCards.map((card, i) => (
@@ -359,11 +358,12 @@ const THGWarehousePage = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Q&A</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("wh_faq.title")}</h2>
-              <p className="text-navy/70 mt-3 max-w-xl mx-auto">{t("wh_faq.subtitle")}</p>
-            </div>
+            <SectionHeader
+              className="mb-12"
+              eyebrow="Q&A"
+              title={t("wh_faq.title")}
+              description={t("wh_faq.subtitle")}
+            />
           </ScrollReveal>
           <div className="max-w-3xl mx-auto">
             <FAQAccordion items={warehouseFAQs} />

@@ -1,6 +1,7 @@
 import { Shield, Clock, DollarSign, Headphones, Globe, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 
 const AdvantagesSection = () => {
   const { tVi } = useI18n();
@@ -21,13 +22,13 @@ const AdvantagesSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-20">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("adv.subtitle")}</p>
-            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
-              {tVi("adv.title")}{" "}
-              <span className="text-gradient-gold">{tVi("adv.title_highlight")}</span>
-            </h2>
-          </div>
+          <SectionHeader
+            size="xl"
+            className="mb-20"
+            eyebrow={tVi("adv.subtitle")}
+            title={tVi("adv.title")}
+            titleHighlight={tVi("adv.title_highlight")}
+          />
         </ScrollReveal>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

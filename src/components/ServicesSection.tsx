@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import ScrollReveal from "@/components/ScrollReveal";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 import { useCmsServices } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 
@@ -127,14 +128,14 @@ const ServicesSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-6">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("services.subtitle")}</p>
-            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-navy tracking-tight">
-              {tVi("services.title")}{" "}
-              <span className="text-gradient-gold">{tVi("services.title_highlight")}</span>{" "}
-              {tVi("services.title2")}
-            </h2>
-          </div>
+          <SectionHeader
+            size="xl"
+            className="mb-6"
+            eyebrow={tVi("services.subtitle")}
+            title={tVi("services.title")}
+            titleHighlight={tVi("services.title_highlight")}
+            titleSuffix={tVi("services.title2")}
+          />
         </ScrollReveal>
         <ScrollReveal delay={50}>
           <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto">{tVi("services.tagline")}</p>

@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsContactLocations } from "@/hooks/useCmsContent";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import ScrollReveal from "@/components/ScrollReveal";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 import thgLogo from "@/assets/thg-logo.png";
 
 const ContactSection = () => {
@@ -17,14 +18,13 @@ const ContactSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-16">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("contact.subtitle")}</p>
-            <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight leading-tight">
-              {t("contact.title")}{" "}
-              <span className="text-gradient-gold">{t("contact.title_highlight")}</span>{" "}
-              {t("contact.title2")}
-            </h2>
-          </div>
+          <SectionHeader
+            size="lg"
+            eyebrow={t("contact.subtitle")}
+            title={t("contact.title")}
+            titleHighlight={t("contact.title_highlight")}
+            titleSuffix={t("contact.title2")}
+          />
         </ScrollReveal>
 
         <div className="grid lg:grid-cols-2 gap-16 items-start">

@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 import { useHomepageBlock } from "@/hooks/useCmsContent";
 
 const ProcessSection = () => {
@@ -25,13 +26,13 @@ const ProcessSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-20">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("process.subtitle")}</p>
-            <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-navy">
-              {tVi("process.title")}{" "}
-              <span className="text-gradient-gold">{tVi("process.title_highlight")}</span>
-            </h2>
-          </div>
+          <SectionHeader
+            size="xl"
+            className="mb-20"
+            eyebrow={tVi("process.subtitle")}
+            title={tVi("process.title")}
+            titleHighlight={tVi("process.title_highlight")}
+          />
         </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">

@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 
 const testimonials = [
   {
@@ -43,15 +44,12 @@ const TestimonialsSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-16">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">
-              {tVi("testimonials.subtitle")}
-            </p>
-            <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">
-              {tVi("testimonials.title")}{" "}
-              <span className="text-gradient-gold">{tVi("testimonials.title_highlight")}</span>
-            </h2>
-          </div>
+          <SectionHeader
+            size="lg"
+            eyebrow={tVi("testimonials.subtitle")}
+            title={tVi("testimonials.title")}
+            titleHighlight={tVi("testimonials.title_highlight")}
+          />
         </ScrollReveal>
 
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">

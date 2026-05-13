@@ -1,6 +1,7 @@
 import { useI18n } from "@/lib/i18n";
 import { useCmsIntegrations } from "@/hooks/useCmsContent";
 import ScrollReveal from "@/components/ScrollReveal";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 import thgLogo from "@/assets/thg-logo.png";
 
 const TikTokSVG = () => (
@@ -43,15 +44,13 @@ const IntegrationsSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-6">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">
-              {tVi("integrations.subtitle")}
-            </p>
-            <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">
-              {tVi("integrations.title")}{" "}
-              <span className="text-gradient-gold">{tVi("integrations.title_highlight")}</span>
-            </h2>
-          </div>
+          <SectionHeader
+            size="lg"
+            className="mb-6"
+            eyebrow={tVi("integrations.subtitle")}
+            title={tVi("integrations.title")}
+            titleHighlight={tVi("integrations.title_highlight")}
+          />
         </ScrollReveal>
         <ScrollReveal delay={50}>
           <p className="text-center text-muted-foreground mb-16 max-w-2xl mx-auto" >

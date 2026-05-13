@@ -1,5 +1,6 @@
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 import {
   Accordion,
   AccordionContent,
@@ -25,10 +26,7 @@ const FAQSection = () => {
 
       <div className="container mx-auto px-4 max-w-3xl relative z-10">
         <ScrollReveal>
-          <div className="text-center mb-16">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{tVi("faq.subtitle")}</p>
-            <h2 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">Q&A</h2>
-          </div>
+          <SectionHeader size="lg" eyebrow={tVi("faq.subtitle")} title="Q&A" />
         </ScrollReveal>
 
         <ScrollReveal delay={200}>

@@ -12,6 +12,7 @@ import { useCmsServices } from "@/hooks/useCmsContent";
 import { Package, ArrowRight, Zap, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { SectionHeader } from "@/components/sections/SectionHeader";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const painPoints = [
@@ -196,10 +197,7 @@ const THGFulfillPage = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.pain_subtitle")}</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.pain_title")}</h2>
-            </div>
+            <SectionHeader eyebrow={t("fulfill_page.pain_subtitle")} title={t("fulfill_page.pain_title")} />
           </ScrollReveal>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {painPoints.map((p, i) => (
@@ -219,13 +217,12 @@ const THGFulfillPage = () => {
       <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.solution_subtitle")}</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-6">
-                <span  >THG Fulfill</span> – <span className="text-gradient-gold">{t("fulfill_page.solution_highlight")}</span>
-              </h2>
-              <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">{t("fulfill_page.solution_desc")}</p>
-            </div>
+            <SectionHeader
+              eyebrow={t("fulfill_page.solution_subtitle")}
+              title="THG Fulfill –"
+              titleHighlight={t("fulfill_page.solution_highlight")}
+              description={t("fulfill_page.solution_desc")}
+            />
           </ScrollReveal>
 
           {/* Advantage blocks with images */}
@@ -267,10 +264,12 @@ const THGFulfillPage = () => {
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-12">
-              <div>
-                <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.products_subtitle")}</p>
-                <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.products_title")}</h2>
-              </div>
+              <SectionHeader
+                align="left"
+                className="mb-0"
+                eyebrow={t("fulfill_page.products_subtitle")}
+                title={t("fulfill_page.products_title")}
+              />
             </div>
           </ScrollReveal>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -357,15 +356,13 @@ const THGFulfillPage = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4 max-w-5xl">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_ecount.section_title")}</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">
-                <span className="text-gradient-gold">{t("fulfill_ecount.video_title")}</span>
-              </h2>
-              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                {t("fulfill_ecount.video_desc")}
-              </p>
-            </div>
+            <SectionHeader
+              className="mb-12"
+              eyebrow={t("fulfill_ecount.section_title")}
+              title=""
+              titleHighlight={t("fulfill_ecount.video_title")}
+              description={t("fulfill_ecount.video_desc")}
+            />
           </ScrollReveal>
 
           <ScrollReveal delay={100}>
@@ -546,13 +543,11 @@ const THGFulfillPage = () => {
       <section className="py-24 bg-card border-y border-border/50">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">Dashboard</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.hub_title")}</h2>
-              <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                {t("fulfill_page.hub_desc")}
-              </p>
-            </div>
+            <SectionHeader
+              eyebrow="Dashboard"
+              title={t("fulfill_page.hub_title")}
+              description={t("fulfill_page.hub_desc")}
+            />
           </ScrollReveal>
           <div className="max-w-5xl mx-auto">
             <ScrollReveal delay={100}>
@@ -624,10 +619,11 @@ const THGFulfillPage = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-12">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{t("fulfill_page.faq_subtitle")}</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.faq_title")}</h2>
-            </div>
+            <SectionHeader
+              className="mb-12"
+              eyebrow={t("fulfill_page.faq_subtitle")}
+              title={t("fulfill_page.faq_title")}
+            />
           </ScrollReveal>
           <div className="max-w-3xl mx-auto">
             <FAQAccordion items={faqItems} />
