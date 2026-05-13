@@ -30,7 +30,7 @@ const BlogPage = lazy(() => import("./pages/BlogPage"));
 const THGFulfillPage = lazy(() => import("./pages/THGFulfillPage"));
 const THGExpressPage = lazy(() => import("./pages/THGExpressPage"));
 const THGWarehousePage = lazy(() => import("./pages/THGWarehousePage"));
-const THGOrderPage = lazy(() => import("./pages/THGOrderPage"));
+const THGOrderPage = lazy(() => import("./pages/order/THGOrderPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const InternationalPricingPage = lazy(() => import("./pages/InternationalPricingPage"));
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
