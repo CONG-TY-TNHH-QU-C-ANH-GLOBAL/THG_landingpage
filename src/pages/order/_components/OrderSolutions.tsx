@@ -1,10 +1,39 @@
+import { useMemo } from "react";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
+import { useCmsServiceBlocks } from "@/hooks/useCmsContent";
 
-import { solutions } from "../data/solutions";
+import { solutions as staticSolutions } from "../data/solutions";
+
+interface RenderItem {
+  icon: string;
+  tag: string;
+  title: string;
+  description: string;
+}
 
 export function OrderSolutions() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const cms = useCmsServiceBlocks({ page_slug: "thg-order", locale: language, kind: "solution" });
+
+  const items = useMemo<RenderItem[]>(() => {
+    const rows = cms.data?.blocks ?? [];
+    if (rows.length > 0) {
+      return rows.map((b) => ({
+        icon: b.icon ?? "•",
+        tag: typeof b.payload.tag === "string" ? b.payload.tag : "",
+        title: b.title ?? "",
+        description: b.description ?? "",
+      }));
+    }
+    return staticSolutions.map((s) => ({
+      icon: s.icon,
+      tag: t(s.tagKey),
+      title: t(s.titleKey),
+      description: t(s.descKey),
+    }));
+  }, [cms.data, t]);
 
   return (
     <section className="py-20 md:py-24 bg-card">
@@ -17,15 +46,15 @@ export function OrderSolutions() {
           </div>
         </ScrollReveal>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {solutions.map((s, i) => (
+          {items.map((s, i) => (
             <ScrollReveal key={i} delay={i * 80}>
               <div className="glass-card rounded-2xl p-6 hover-lift h-full border border-border/50">
-                <span className="inline-block bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">{t(s.tagKey)}</span>
+                <span className="inline-block bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">{s.tag}</span>
                 <div className="flex items-start gap-4 mb-3">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl flex-shrink-0">{s.icon}</div>
-                  <h3 className="text-base font-bold text-navy pt-1">{t(s.titleKey)}</h3>
+                  <h3 className="text-base font-bold text-navy pt-1">{s.title}</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t(s.descKey)}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{s.description}</p>
               </div>
             </ScrollReveal>
           ))}

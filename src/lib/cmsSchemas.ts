@@ -461,6 +461,40 @@ export const applicantCvUploadResponseSchema = z.object({
   size: z.number(),
 });
 
+/* ---------- Generic service blocks (per-page card sections) ---------- */
+
+/** Block kind drives which payload fields are expected by each landing
+ *  renderer. Keep this list in sync with cmsthgfulfill/db/migrations/0017_*.sql */
+export const serviceBlockKindSchema = z.enum([
+  "pain_point",
+  "process_step",
+  "solution",
+  "shipping_lane",
+  "policy",
+  "stat",
+]);
+export type ServiceBlockKind = z.infer<typeof serviceBlockKindSchema>;
+
+/** Raw row as the public API emits it. `payload` is already a parsed object;
+ *  consumers narrow it per `kind` via the discriminated unions below. */
+export const serviceBlockSchema = z.object({
+  id: z.number(),
+  kind: z.string(),
+  position: z.number(),
+  icon: z.string().nullable(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  payload: z.record(z.string(), z.unknown()),
+});
+export type ServiceBlock = z.infer<typeof serviceBlockSchema>;
+
+export const serviceBlocksResponseSchema = z.object({
+  locale: localeSchema,
+  page_slug: z.string(),
+  kind: z.string().nullable(),
+  blocks: z.array(serviceBlockSchema),
+});
+
 /* ---------- Lead form input (request body, not a response) ---------- */
 
 export const cmsLeadInputSchema = z.object({

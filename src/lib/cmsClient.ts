@@ -26,6 +26,7 @@ import {
   policyResponseSchema,
   pricingResponseSchema,
   pricingTableResponseSchema,
+  serviceBlocksResponseSchema,
   servicesResponseSchema,
   shippingRouteResponseSchema,
   shippingRoutesResponseSchema,
@@ -111,6 +112,15 @@ export const cmsClient = {
 
   getServices(locale: Locale) {
     return fetchJson(`/services?lang=${locale}`, servicesResponseSchema);
+  },
+
+  /** Generic per-page card blocks (pain_point / process_step / solution /
+   *  shipping_lane / policy / stat). Omit `kind` to fetch every block on
+   *  the page in one round-trip. */
+  getServiceBlocks(input: { page_slug: string; locale: Locale; kind?: string }) {
+    const qs = new URLSearchParams({ page_slug: input.page_slug, lang: input.locale });
+    if (input.kind) qs.set("kind", input.kind);
+    return fetchJson(`/service-blocks?${qs.toString()}`, serviceBlocksResponseSchema);
   },
 
   getFaqs(locale: Locale, scope = "home") {

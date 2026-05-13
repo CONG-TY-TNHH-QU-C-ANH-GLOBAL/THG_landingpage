@@ -65,6 +65,18 @@ export function useCmsFaqs(locale: Locale, scope = "home") {
   });
 }
 
+/** Fetch generic service blocks for one page+locale, optionally filtered to
+ *  a single kind. Returns the parent query result so callers can render
+ *  loading/error/fallback states explicitly. */
+export function useCmsServiceBlocks(input: { page_slug: string; locale: Locale; kind?: string }) {
+  return useQuery({
+    queryKey: ["cms", "service-blocks", input.page_slug, input.locale, input.kind ?? "all"],
+    queryFn: () => cmsClient.getServiceBlocks(input),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
 export function useCmsTestimonials(locale: Locale) {
   return useQuery({
     queryKey: ["cms", "testimonials", locale],
