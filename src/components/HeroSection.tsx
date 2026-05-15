@@ -11,17 +11,28 @@ import globeImageWebp from "@/assets/globe-3d.webp";
 import { useHomepageBlock } from "@/hooks/useCmsContent";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
+// Parse `**word**` markers into gold-highlighted spans. Odd-indexed chunks
+// of split() are the matches; even-indexed are the surrounding plain text.
+function renderTitle(raw: string) {
+  const parts = raw.split(/\*\*([^*]+)\*\*/g);
+  return parts.map((p, i) =>
+    i % 2 === 1 ? <span key={i} className="text-gradient-gold">{p}</span> : p,
+  );
+}
+
 const HeroSection = () => {
   const { tVi, language } = useI18n();
   const navigate = useNavigate();
   // homepage_blocks.hero overrides i18n keys when operator edits in admin.
-  // Only single-string fields are pulled (subtitle, badge, CTA labels); the
-  // gold-highlighted title stays split via i18n keys for layout reasons.
+  // Title supports `**word**` syntax to mark gold-highlighted spans, so
+  // operators can edit one string in CMS while keeping the design's gold
+  // accents. Falls back to the 4-key i18n composition when CMS has no title.
   const hero = useHomepageBlock(language, "hero");
   const subtitle = hero.sub || tVi("hero.subtitle");
   const badge = hero.eyebrow || tVi("hero.badge");
   const cta = hero.cta1 || tVi("hero.cta");
   const ctaSecondary = hero.cta2 || tVi("hero.learn_more");
+  const cmsTitle = hero.title?.trim();
 
   const features = [tVi("hero.feature1"), tVi("hero.feature2"), tVi("hero.feature3"), tVi("hero.feature4")];
 
@@ -52,10 +63,16 @@ const HeroSection = () => {
 
           <ScrollReveal delay={200}>
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-[4.2rem] font-bold leading-[1.1] text-navy tracking-tight mx-auto lg:mx-0" >
-              {tVi("hero.title1")}{" "}
-              <span className="text-gradient-gold">{tVi("hero.title_highlight")}</span>{" "}
-              {tVi("hero.title2")}{" "}
-              <span className="text-gradient-gold">{tVi("hero.title3")}</span>
+              {cmsTitle ? (
+                renderTitle(cmsTitle)
+              ) : (
+                <>
+                  {tVi("hero.title1")}{" "}
+                  <span className="text-gradient-gold">{tVi("hero.title_highlight")}</span>{" "}
+                  {tVi("hero.title2")}{" "}
+                  <span className="text-gradient-gold">{tVi("hero.title3")}</span>
+                </>
+              )}
             </h1>
           </ScrollReveal>
 
