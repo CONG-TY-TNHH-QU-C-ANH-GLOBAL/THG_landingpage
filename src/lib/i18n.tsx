@@ -6,7 +6,12 @@ export type Language = "en" | "vi" | "zh";
 
 type Translations = Record<string, Record<Language, string>>;
 
-const translations: Translations = {
+// Exported so a one-shot CMS import script can read this dictionary and
+// generate a migration that seeds D1 `translations` with the same values.
+// Operator can then override per-key via /admin/content/translations and
+// landing's `useCmsTranslations` hook merges the override over this static
+// fallback.
+export const translations: Translations = {
   // Navbar
   "nav.services": { en: "Services", vi: "Dịch vụ", zh: "服务" },
   "nav.pricing": { en: "Pricing list", vi: "Bảng giá", zh: "价格" },
