@@ -132,23 +132,12 @@ export default function LogisticsAnimationSection() {
                 <animate attributeName="opacity" from="0.7" to="0" dur="2.6s" repeatCount="indefinite" />
               </circle>
               <text x="115" y="148" textAnchor="middle"
-                fill="rgba(255,255,255,0.85)" fontSize="11" fontFamily="inherit">🇻🇳 Ho Chi Minh City</text>
+                fill="rgba(255,255,255,0.85)" fontSize="11" fontFamily="inherit">VN / CN</text>
               <text x="115" y="163" textAnchor="middle"
                 fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="inherit" fontWeight="600" letterSpacing="1.5">ORIGIN</text>
             </g>
 
-            {/* ── Node: China ── */}
-            <g>
-              <circle cx="378" cy="84" r="7" fill="hsl(36,58%,58%)" />
-              <circle cx="378" cy="84" r="9" fill="none" stroke="hsl(36,58%,58%)" strokeWidth="1.5">
-                <animate attributeName="r" from="9" to="26" dur="2.6s" begin="0.9s" repeatCount="indefinite" />
-                <animate attributeName="opacity" from="0.7" to="0" dur="2.6s" begin="0.9s" repeatCount="indefinite" />
-              </circle>
-              <text x="378" y="68" textAnchor="middle"
-                fill="rgba(255,255,255,0.85)" fontSize="11" fontFamily="inherit">🇨🇳 Dongguan</text>
-              <text x="378" y="54" textAnchor="middle"
-                fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="inherit" fontWeight="600" letterSpacing="1.5">TRANSIT HUB</text>
-            </g>
+
 
             {/* ── Node: USA ── */}
             <g>
@@ -158,7 +147,7 @@ export default function LogisticsAnimationSection() {
                 <animate attributeName="opacity" from="0.7" to="0" dur="2.6s" begin="1.8s" repeatCount="indefinite" />
               </circle>
               <text x="768" y="148" textAnchor="middle"
-                fill="rgba(255,255,255,0.85)" fontSize="11" fontFamily="inherit">🇺🇸 North Carolina</text>
+                fill="rgba(255,255,255,0.85)" fontSize="11" fontFamily="inherit">USA / EU</text>
               <text x="768" y="163" textAnchor="middle"
                 fill="rgba(255,255,255,0.35)" fontSize="9" fontFamily="inherit" fontWeight="600" letterSpacing="1.5">DESTINATION</text>
             </g>
