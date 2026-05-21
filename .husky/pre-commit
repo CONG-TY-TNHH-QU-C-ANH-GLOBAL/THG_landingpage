@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+# Pre-commit gate — runs ESLint on staged TS/TSX files via lint-staged so
+# typos and rule violations get caught before they reach CI. Bypass with
+# `git commit --no-verify` only when you know what you're doing (broken CI
+# fix-up commits, automated tooling, etc.).
+
+bunx lint-staged

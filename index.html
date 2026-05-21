@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Default meta — react-helmet-async overrides per page (SeoHead component). -->
+    <title>THG Fulfill — POD & Dropship Fulfillment | Transport Happiness Group</title>
+    <meta name="description"
+        content="THG Fulfill — POD & Dropship fulfillment from Vietnam, China and US warehouses. Express international shipping, transparent pricing, 24/7 support for global eCommerce sellers." />
+    <meta name="author" content="THG Fulfill" />
+    <link rel="canonical" href="https://thgfulfill.com/" />
+
+    <!-- Favicon — SVG primary (scales), PNG fallback for older browsers + iOS. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0c1e3e" />
+
+    <!-- OpenGraph defaults — absolute URLs required for crawlers. SeoHead overrides per page. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="THG Fulfill" />
+    <meta property="og:title" content="THG Fulfill — POD & Dropship Fulfillment | Transport Happiness Group" />
+    <meta property="og:description"
+        content="THG Fulfill — POD & Dropship fulfillment from Vietnam, China and US warehouses. Express international shipping, transparent pricing, 24/7 support for global eCommerce sellers." />
+    <meta property="og:url" content="https://thgfulfill.com/" />
+    <meta property="og:image" content="https://thgfulfill.com/og-default.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="vi_VN" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@THGFulfill" />
+    <meta name="twitter:title" content="THG Fulfill — POD & Dropship Fulfillment" />
+    <meta name="twitter:description"
+        content="POD & Dropship fulfillment from Vietnam, China and US warehouses. Express shipping, transparent pricing." />
+    <meta name="twitter:image" content="https://thgfulfill.com/og-default.jpg" />
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+        // Register service worker to prevent stale HTML cache after deploys
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+name: Build and Deploy Landing Page
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.13
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bunx tsc --noEmit -p tsconfig.app.json
+
+      - name: Unit tests
+        run: bun run test
+
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
+      - name: E2E tests
+        env:
+          # Force the DEV_BYPASS path so the test doesn't depend on a live
+          # Turnstile site key. Production builds (next step) still get the key.
+          VITE_TURNSTILE_SITE_KEY: ""
+          VITE_CMS_API_URL: "http://localhost:8080/api/v1"
+        run: bun run test:e2e
+
+      - name: Build
+        env:
+          # CMS API base URL for prod (REQUIRED — fallback would point to localhost)
+          VITE_CMS_API_URL: ${{ secrets.VITE_CMS_API_URL }}
+          # Catalog API (legacy public catalog service). Optional — if blank,
+          # falls back to https://hub.thgfulfill.com/api/public/catalog at runtime.
+          VITE_CATALOG_API_URL: ${{ secrets.VITE_CATALOG_API_URL }}
+          # Optional analytics — TrackingScripts skips injection when blank
+          VITE_GA4_ID: ${{ secrets.VITE_GA4_ID }}
+          VITE_GTM_ID: ${{ secrets.VITE_GTM_ID }}
+          VITE_FB_PIXEL_ID: ${{ secrets.VITE_FB_PIXEL_ID }}
+          VITE_TIKTOK_PIXEL_ID: ${{ secrets.VITE_TIKTOK_PIXEL_ID }}
+          # Optional Turnstile — LeadFormDialog uses DEV_BYPASS when blank
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+        run: |
+          if [ -z "${VITE_CMS_API_URL}" ]; then
+            echo "::error::Missing secret VITE_CMS_API_URL — landing build would default to localhost. Add it in GitHub repo settings → Secrets."
+            exit 1
+          fi
+          bun run build
+
+      - name: Deploy to server via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: "dist/*"
+          target: /var/www/thgfulfill
+          strip_components: 1
+          overwrite: true
+          rm: true
+
+      - name: Configure nginx cache headers
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            # Ensure nginx doesn't cache index.html so new deploys take effect immediately
+            NGINX_CONF="/etc/nginx/snippets/thg-cache.conf"
+            sudo tee $NGINX_CONF > /dev/null << 'EOF'
+            # HTML files: never cache (so new deploys are picked up immediately)
+            location ~* \.html$ {
+                add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+                add_header Pragma "no-cache" always;
+                add_header Expires "0" always;
+            }
+            # Hashed assets (JS/CSS/images): cache aggressively (Vite adds content hash)
+            location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?)$ {
+                expires 1y;
+                add_header Cache-Control "public, immutable" always;
+            }
+            EOF
+            # Test and reload nginx (only if config is valid)
+            sudo nginx -t && sudo systemctl reload nginx || echo "nginx config unchanged"
