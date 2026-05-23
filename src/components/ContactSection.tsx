@@ -1,9 +1,11 @@
-import { MapPin, Phone, Mail, Globe } from "lucide-react";
+import { MapPin, Phone, Mail, Globe, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useCmsContactLocations } from "@/hooks/useCmsContent";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
 import thgLogo from "@/assets/thg-logo.png";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
+import { Button } from "@/components/ui/button";
 
 const ContactSection = () => {
   const { t } = useI18n();
@@ -121,6 +123,25 @@ function ContactCtaCard() {
       <p className="text-muted-foreground mb-8 leading-relaxed">{t("contact.cta_desc")}</p>
 
       <div className="flex flex-col gap-3 w-full">
+        {/* Submit Inquiry */}
+        <LeadFormDialog
+          trigger={
+            <Button
+              size="lg"
+              className="w-full rounded-full font-semibold gap-2 text-sm"
+            >
+              Để lại thông tin liên hệ
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          }
+        />
+
+        <div className="relative flex items-center gap-3 my-1">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-muted-foreground">hoặc liên hệ qua</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
         {/* Facebook */}
         <a
           href="https://www.facebook.com/THGFulfill"
