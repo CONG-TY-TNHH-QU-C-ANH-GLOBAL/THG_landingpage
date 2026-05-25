@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, MapPin, Tag } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";
 import thgLogo from "@/assets/thg-logo.png";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { DELAYS, SCROLL } from "@/lib/constants";
 
 const serviceItems = [
@@ -195,10 +197,18 @@ const Navbar = () => {
             href="https://hub.thgfulfill.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-6 py-2.5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Hub System
           </a>
+          <LeadFormDialog
+            sourcePage="navbar-desktop"
+            trigger={
+              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-6 py-5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0">
+                {t("nav.consult")}
+              </Button>
+            }
+          />
         </div>
 
         {/* Mobile toggle */}
@@ -277,11 +287,19 @@ const Navbar = () => {
             )
           )}
           <div className="pt-3">
+            <LeadFormDialog
+              sourcePage="navbar-mobile"
+              trigger={
+                <Button className="w-full bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-5 py-6 text-base font-bold shadow-md rounded-xl mt-4">
+                  {t("nav.consult")}
+                </Button>
+              }
+            />
             <a
               href="https://hub.thgfulfill.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-5 py-4 text-base font-bold shadow-md rounded-xl mt-4 transition-colors"
+              className="block text-center mt-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Hub System
             </a>
