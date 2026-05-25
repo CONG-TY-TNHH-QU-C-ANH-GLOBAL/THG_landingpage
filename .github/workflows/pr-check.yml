@@ -1,0 +1,78 @@
+name: PR Check
+
+# Runs on PRs targeting main. Specifically guards against the class of incident
+# that produced commit 11e9230 — a merge between two unrelated histories where
+# a branch was started from initial commit instead of forking from current main.
+# That merge clobbered ~9000 lines of mature work; nothing in standard CI caught
+# it because each individual file resolved cleanly.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  branch-freshness:
+    runs-on: ubuntu-latest
+    name: Branch freshness guard
+
+    steps:
+      - name: Checkout PR head with full history
+        uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0 → full history so merge-base can resolve.
+          # Default shallow clone (depth 1) makes git merge-base return wrong results.
+          fetch-depth: 0
+
+      - name: Verify branch originates from current main
+        run: |
+          set -euo pipefail
+
+          # actions/checkout already fetches origin/main when fetch-depth: 0;
+          # this is a safety net for edge cases.
+          git fetch origin main --no-tags 2>/dev/null || true
+
+          BASE=$(git merge-base HEAD origin/main)
+          DISTANCE=$(git rev-list --count "$BASE..origin/main")
+          BRANCH_COMMITS=$(git rev-list --count "$BASE..HEAD")
+
+          BASE_TS=$(git show -s --format=%ct "$BASE")
+          NOW_TS=$(date +%s)
+          AGE_DAYS=$(( (NOW_TS - BASE_TS) / 86400 ))
+
+          echo "::group::Branch freshness metrics"
+          echo "Merge base: $BASE"
+          echo "  ↳ age:               ${AGE_DAYS} day(s)"
+          echo "  ↳ main ahead by:     ${DISTANCE} commit(s)"
+          echo "  ↳ branch commits:    ${BRANCH_COMMITS}"
+          echo "::endgroup::"
+
+          # Hybrid threshold rationale:
+          # - 50 commits in a fast-moving repo = a few hours of work (false alarm).
+          # - 50 commits in a slow-moving repo = several months (real risk).
+          # Age is the better invariant. We trip only when BOTH distance and age
+          # exceed their thresholds (to avoid false alarms during active sprints),
+          # OR when age alone exceeds the hard ceiling.
+          DISTANCE_THRESHOLD=50
+          AGE_THRESHOLD_DAYS=14
+          AGE_HARD_LIMIT=60
+
+          if [ "$AGE_DAYS" -gt "$AGE_HARD_LIMIT" ]; then
+            echo "::error::Fork point is ${AGE_DAYS} days old (hard limit ${AGE_HARD_LIMIT}d). Re-fork your branch from current origin/main: 'git fetch origin && git rebase origin/main'."
+            exit 1
+          fi
+
+          if [ "$DISTANCE" -gt "$DISTANCE_THRESHOLD" ] && [ "$AGE_DAYS" -gt "$AGE_THRESHOLD_DAYS" ]; then
+            echo "::error::Branch fork point is ${DISTANCE} commits AND ${AGE_DAYS} days behind origin/main. Rebase before merging: 'git fetch origin && git rebase origin/main'. This guard exists because the unrelated-history merge that produced commit 11e9230 took ~9000 lines of mature work down."
+            exit 1
+          fi
+
+          # Sanity: merge-base must not equal the repo's initial commit
+          # (unless the branch IS main with a single commit, which won't be PR'd).
+          INITIAL=$(git rev-list --max-parents=0 origin/main | tail -1)
+          if [ "$BASE" = "$INITIAL" ] && [ "$BRANCH_COMMITS" -gt 1 ]; then
+            echo "::error::Branch merge-base equals the repository's initial commit. This means your branch was started from a fresh repository fork rather than from origin/main. Re-clone and create your branch from origin/main: 'git clone <repo-url> && cd <repo> && git checkout -b your-branch origin/main'."
+            exit 1
+          fi
+
+          echo "✅ Branch freshness OK."
