@@ -296,7 +296,7 @@ export const blogListResponseSchema = z.object({
 
 const blogPostSlideSchema = z.object({
   src: z.string(),
-  alt_text: z.string().nullable(),
+  alt_text: z.string(),
 });
 
 export const blogPostResponseSchema = z.object({
