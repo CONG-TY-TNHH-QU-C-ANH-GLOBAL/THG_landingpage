@@ -26,6 +26,29 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # ── CMS type drift gate (Phase D3.3) ───────────────────────────────
+      # Regenerates src/lib/cms-generated.d.ts from the live CMS OpenAPI
+      # spec and fails if the committed file no longer matches. This catches
+      # the failure mode where a backend annotation changed but a downstream
+      # frontend PR forgot to regenerate. The committed file is the
+      # contract-of-record between repos.
+      - name: Check CMS types are up-to-date
+        if: vars.SKIP_CMS_TYPE_CHECK != '1'
+        env:
+          VITE_CMS_API_URL: ${{ secrets.VITE_CMS_API_URL }}
+        run: bun run check:cms-types
+
+      # Audit trail when the gate is bypassed via the repository variable.
+      # Admins set vars.SKIP_CMS_TYPE_CHECK=1 (Settings → Secrets and
+      # variables → Actions → Variables) during a CMS outage to keep
+      # landing CI green. The ::notice annotation appears in PR Checks so
+      # the bypass is visible at review time. UNSET the variable after
+      # the incident is resolved.
+      - name: Notice — CMS type check bypassed (audit)
+        if: vars.SKIP_CMS_TYPE_CHECK == '1'
+        run: |
+          echo "::notice title=CMS type check bypassed::Repository variable SKIP_CMS_TYPE_CHECK=1 is set. cms-generated.d.ts drift detection is OFF. Verify no backend schema changes are in this PR. Unset SKIP_CMS_TYPE_CHECK in repo Settings → Variables when CMS is reachable again."
+
       - name: Lint
         run: bun run lint
 
