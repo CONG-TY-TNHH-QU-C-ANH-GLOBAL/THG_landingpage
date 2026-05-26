@@ -672,6 +672,496 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List services for a locale (flat per-locale projection)
+         * @description Returns each service flattened with i18n applied for the requested locale. gallery[] and products[] media_id references are hydrated to resolved URLs server-side. Archived services are filtered out.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Service list (draft + live) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            services: {
+                                id: string;
+                                position: number;
+                                icon: string | null;
+                                /** @enum {string} */
+                                status: "draft" | "live" | "archived";
+                                name: string;
+                                tagline: string | null;
+                                hero_eyebrow: string | null;
+                                hero_title: string | null;
+                                hero_sub: string | null;
+                                cta_text: string | null;
+                                cta_url: string | null;
+                                body_md: string | null;
+                                bullets: string[];
+                                gallery: {
+                                    url?: string;
+                                    media_id?: number;
+                                    alt?: string;
+                                }[];
+                                videos: {
+                                    youtube_id: string;
+                                    caption_key?: string;
+                                    caption?: string;
+                                    thumb?: string;
+                                }[];
+                                products: {
+                                    name: string;
+                                    price?: string;
+                                    time?: string;
+                                    origin?: string;
+                                    image?: string;
+                                    media_id?: number;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/homepage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get homepage blocks for a locale
+         * @description Returns the ordered list of homepage blocks (hero, trust, services_grid, etc.) with their string-keyed payload maps. EN/ZH JOIN homepage_block_translations filtered to status='reviewed'.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Homepage block list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            blocks: {
+                                id: number;
+                                /** @enum {string} */
+                                kind: "hero" | "trust" | "services_grid" | "about_video" | "marquee" | "sellers" | "process" | "advantages" | "integrations" | "testimonials" | "faq" | "contact";
+                                position: number;
+                                payload: {
+                                    [key: string]: string;
+                                };
+                                /** @enum {string} */
+                                locale: "en" | "vi" | "zh";
+                            }[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/site-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get global site settings (singleton)
+         * @description Returns the singleton site-settings document with brand info, tracking IDs, contact details, and parsed remote_area_links / terminology arrays. `settings` is null when the row is missing.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Site settings document or null */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            settings: {
+                                brand_name: string;
+                                ga4_id: string | null;
+                                gtm_id: string | null;
+                                fb_pixel_id: string | null;
+                                tiktok_pixel_id: string | null;
+                                contact_phone: string | null;
+                                contact_email: string | null;
+                                facebook_url: string | null;
+                                lead_form_destination: string | null;
+                                logo_media_id: number | null;
+                                default_og_image_id: number | null;
+                                about_video_url: string | null;
+                                remote_area_links: {
+                                    label: string;
+                                    icon?: string;
+                                    url: string;
+                                }[];
+                                terminology: unknown[];
+                            } | null;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List pricing tables grouped by category
+         * @description Returns all pricing tables grouped into categories inferred from slug. Each entry is a summary (no schema/data blobs) — fetch the detail endpoint for full table content.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Pricing categories + table summaries */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            categories: {
+                                name: string;
+                                tables: {
+                                    id: number;
+                                    slug: string;
+                                    name: string;
+                                    /** @enum {string} */
+                                    kind: "weight_grid" | "meta_kv";
+                                    version: number;
+                                    /** @enum {string} */
+                                    status: "draft" | "live" | "archived";
+                                    updated_at: number;
+                                    row_count: number;
+                                    col_count: number;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/pricing/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one pricing table by slug
+         * @description Returns the full pricing table including parsed schema + data blobs. 404 if slug not found. Parse failures on schema_json or data_json produce `null` for the affected field rather than the whole table — consumers should defend against partial payloads.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Pricing table detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            table: {
+                                id: number;
+                                slug: string;
+                                name: string;
+                                /** @enum {string} */
+                                kind: "weight_grid" | "meta_kv";
+                                description: string | null;
+                                schema?: unknown;
+                                data?: unknown;
+                                version: number;
+                                /** @enum {string} */
+                                status: "draft" | "live" | "archived";
+                                updated_at: number;
+                            };
+                        };
+                    };
+                };
+                /** @description No pricing table with given slug */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List policies for a locale
+         * @description Returns the ordered list of policy summaries for the given locale. Each entry has slug, title, icon, mode (image|text), summary, position — no body_md or full content. Fetch the detail endpoint for full policy text.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Policy summary list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            policies: {
+                                slug: string;
+                                title: string;
+                                icon: string | null;
+                                /** @enum {string} */
+                                mode: "image" | "text";
+                                summary: string | null;
+                                position: number;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/policies/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one policy by slug for a locale
+         * @description Returns the full policy including body_md (markdown) and parsed image_list + text_blocks arrays. 404 if slug+locale not found.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Policy detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            policy: {
+                                slug: string;
+                                title: string;
+                                icon: string | null;
+                                /** @enum {string} */
+                                mode: "image" | "text";
+                                body_md: string;
+                                image_list: string[];
+                                text_blocks: {
+                                    /** @enum {string} */
+                                    type: "normal" | "warn" | "info";
+                                    heading: string;
+                                    content: string[];
+                                }[];
+                                summary: string | null;
+                                position: number;
+                                updated_at: number;
+                                version: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Policy not found in locale */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
