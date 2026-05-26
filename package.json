@@ -16,6 +16,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test --config=playwright.e2e.config.ts",
     "generate:cms-types": "bun run scripts/generate-cms-types.ts",
+    "check:cms-types": "bun run scripts/check-cms-types.ts",
     "prepare": "husky"
   },
   "lint-staged": {

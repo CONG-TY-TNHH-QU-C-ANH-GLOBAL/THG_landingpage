@@ -1,4 +1,4 @@
 # Mark generated files so GitHub collapses them in PR diffs by default and
 # excludes them from language/contributor stats. They are still committed and
 # tracked (CI relies on `git diff` against this file in D3.3).
-src/lib/cms-generated.d.ts linguist-generated=true
+src/lib/cms-generated.d.ts linguist-generated=true text eol=lf
