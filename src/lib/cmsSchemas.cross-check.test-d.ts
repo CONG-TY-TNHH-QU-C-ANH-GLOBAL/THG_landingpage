@@ -49,10 +49,14 @@ import type { z } from "zod";
 import {
   blogListResponseSchema,
   blogPostResponseSchema,
+  contactLocationsResponseSchema,
   faqsResponseSchema,
+  integrationsResponseSchema,
   jobResponseSchema,
   jobsResponseSchema,
   marqueeImagesResponseSchema,
+  testimonialsResponseSchema,
+  translationsResponseSchema,
 } from "@/lib/cmsSchemas";
 import type { paths } from "@/lib/cms-generated";
 
@@ -153,5 +157,68 @@ describe("D5.2 — /api/v1/jobs/{slug} Zod ↔ OpenAPI cross-check (detail, JSON
 
   it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract — covers responsibilities/requirements/benefits/bonuses always-present invariant)", () => {
     expectTypeOf<JobResponseFromOpenApi>().toExtend<JobResponseFromZod>();
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════
+// D5.3 — Remaining flat-content endpoints
+// ════════════════════════════════════════════════════════════════════════
+// MED-risk surfaces (no alt_text class). Covers the last 4 annotated
+// endpoints so the full 10-endpoint OpenAPI surface is bidirectionally
+// type-checked. After this, EVERY annotated CMS response shape is gated.
+
+type TestimonialsResponseFromZod = z.infer<typeof testimonialsResponseSchema>;
+type TestimonialsResponseFromOpenApi =
+  paths["/api/v1/testimonials"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.3 — /api/v1/testimonials Zod ↔ OpenAPI cross-check", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<TestimonialsResponseFromZod>().toExtend<TestimonialsResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
+    expectTypeOf<TestimonialsResponseFromOpenApi>().toExtend<TestimonialsResponseFromZod>();
+  });
+});
+
+type ContactLocationsResponseFromZod = z.infer<typeof contactLocationsResponseSchema>;
+type ContactLocationsResponseFromOpenApi =
+  paths["/api/v1/contact-locations"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.3 — /api/v1/contact-locations Zod ↔ OpenAPI cross-check", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<ContactLocationsResponseFromZod>().toExtend<ContactLocationsResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
+    expectTypeOf<ContactLocationsResponseFromOpenApi>().toExtend<ContactLocationsResponseFromZod>();
+  });
+});
+
+type IntegrationsResponseFromZod = z.infer<typeof integrationsResponseSchema>;
+type IntegrationsResponseFromOpenApi =
+  paths["/api/v1/integrations"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.3 — /api/v1/integrations Zod ↔ OpenAPI cross-check", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<IntegrationsResponseFromZod>().toExtend<IntegrationsResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
+    expectTypeOf<IntegrationsResponseFromOpenApi>().toExtend<IntegrationsResponseFromZod>();
+  });
+});
+
+type TranslationsResponseFromZod = z.infer<typeof translationsResponseSchema>;
+type TranslationsResponseFromOpenApi =
+  paths["/api/v1/translations"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.3 — /api/v1/translations Zod ↔ OpenAPI cross-check", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<TranslationsResponseFromZod>().toExtend<TranslationsResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
+    expectTypeOf<TranslationsResponseFromOpenApi>().toExtend<TranslationsResponseFromZod>();
   });
 });
