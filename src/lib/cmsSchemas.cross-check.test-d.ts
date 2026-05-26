@@ -46,7 +46,14 @@
 import { describe, it, expectTypeOf } from "vitest";
 import type { z } from "zod";
 
-import { faqsResponseSchema } from "@/lib/cmsSchemas";
+import {
+  blogListResponseSchema,
+  blogPostResponseSchema,
+  faqsResponseSchema,
+  jobResponseSchema,
+  jobsResponseSchema,
+  marqueeImagesResponseSchema,
+} from "@/lib/cmsSchemas";
 import type { paths } from "@/lib/cms-generated";
 
 // Named aliases so the type quote in any failure message clearly
@@ -57,10 +64,94 @@ type FaqsResponseFromOpenApi =
 
 describe("D5.1 — /api/v1/faqs Zod ↔ OpenAPI cross-check", () => {
   it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
-    expectTypeOf<FaqsResponseFromZod>().toMatchTypeOf<FaqsResponseFromOpenApi>();
+    expectTypeOf<FaqsResponseFromZod>().toExtend<FaqsResponseFromOpenApi>();
   });
 
   it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
-    expectTypeOf<FaqsResponseFromOpenApi>().toMatchTypeOf<FaqsResponseFromZod>();
+    expectTypeOf<FaqsResponseFromOpenApi>().toExtend<FaqsResponseFromZod>();
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════
+// D5.2 — Heightened-watch surfaces
+// ════════════════════════════════════════════════════════════════════════
+// These endpoints share the regression class that produced incident
+// 11e9230: nullable-vs-non-null mismatches on identifier-like string
+// fields. The bidirectional check fails asymmetrically in EITHER
+// direction the moment Zod and OpenAPI diverge on:
+//   - blog_slides[].alt_text   (DB: TEXT NOT NULL — must NOT be nullable)
+//   - marquee_images[].alt_text (DB: TEXT NOT NULL — must NOT be nullable)
+//   - job.responsibilities / requirements / benefits / bonuses
+//     (parsed JSON columns, handler fallback `?? {}` / `?? []` so the
+//     wire shape is ALWAYS materialized — must NOT be nullable)
+// D5.4 will deliberately re-introduce one of these as a regression test.
+
+type BlogListResponseFromZod = z.infer<typeof blogListResponseSchema>;
+type BlogListResponseFromOpenApi =
+  paths["/api/v1/blog"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.2 — /api/v1/blog Zod ↔ OpenAPI cross-check (list)", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<BlogListResponseFromZod>().toExtend<BlogListResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
+    expectTypeOf<BlogListResponseFromOpenApi>().toExtend<BlogListResponseFromZod>();
+  });
+});
+
+type BlogPostResponseFromZod = z.infer<typeof blogPostResponseSchema>;
+type BlogPostResponseFromOpenApi =
+  paths["/api/v1/blog/{slug}"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.2 — /api/v1/blog/{slug} Zod ↔ OpenAPI cross-check (detail, heightened-watch: slides[].alt_text non-null)", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<BlogPostResponseFromZod>().toExtend<BlogPostResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract — would catch alt_text nullable regression)", () => {
+    expectTypeOf<BlogPostResponseFromOpenApi>().toExtend<BlogPostResponseFromZod>();
+  });
+});
+
+type MarqueeImagesResponseFromZod = z.infer<typeof marqueeImagesResponseSchema>;
+type MarqueeImagesResponseFromOpenApi =
+  paths["/api/v1/marquee-images"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.2 — /api/v1/marquee-images Zod ↔ OpenAPI cross-check (heightened-watch: alt_text non-null)", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<MarqueeImagesResponseFromZod>().toExtend<MarqueeImagesResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract — would catch alt_text nullable regression)", () => {
+    expectTypeOf<MarqueeImagesResponseFromOpenApi>().toExtend<MarqueeImagesResponseFromZod>();
+  });
+});
+
+type JobsResponseFromZod = z.infer<typeof jobsResponseSchema>;
+type JobsResponseFromOpenApi =
+  paths["/api/v1/jobs"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.2 — /api/v1/jobs Zod ↔ OpenAPI cross-check (list)", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<JobsResponseFromZod>().toExtend<JobsResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
+    expectTypeOf<JobsResponseFromOpenApi>().toExtend<JobsResponseFromZod>();
+  });
+});
+
+type JobResponseFromZod = z.infer<typeof jobResponseSchema>;
+type JobResponseFromOpenApi =
+  paths["/api/v1/jobs/{slug}"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("D5.2 — /api/v1/jobs/{slug} Zod ↔ OpenAPI cross-check (detail, JSON-string fields materialized to wire shape)", () => {
+  it("forward — source: Zod, target: OpenAPI-generated (Zod is not stricter than contract)", () => {
+    expectTypeOf<JobResponseFromZod>().toExtend<JobResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract — covers responsibilities/requirements/benefits/bonuses always-present invariant)", () => {
+    expectTypeOf<JobResponseFromOpenApi>().toExtend<JobResponseFromZod>();
   });
 });
