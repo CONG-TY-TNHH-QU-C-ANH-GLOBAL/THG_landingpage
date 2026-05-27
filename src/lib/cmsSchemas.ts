@@ -245,11 +245,13 @@ export const homepageResponseSchema = z.object({
 /* ---------- Pricing ---------- */
 
 const pricingTableMetaSchema = z.object({
+  id: z.number(),
   slug: z.string(),
   name: z.string(),
   kind: z.enum(["weight_grid", "meta_kv"]),
   version: z.number(),
-  status: z.string(),
+  status: z.enum(["draft", "live", "archived"]),
+  updated_at: z.number(),
   row_count: z.number(),
   col_count: z.number(),
 });
@@ -265,14 +267,17 @@ export const pricingResponseSchema = z.object({
 
 export const pricingTableResponseSchema = z.object({
   table: z.object({
+    id: z.number(),
     slug: z.string(),
     name: z.string(),
     kind: z.enum(["weight_grid", "meta_kv"]),
+    description: z.string().nullable(),
     /** Shape varies per table — left as unknown so consumers narrow. */
     schema: z.unknown(),
     data: z.unknown(),
     version: z.number(),
-    status: z.string(),
+    status: z.enum(["draft", "live", "archived"]),
+    updated_at: z.number(),
   }),
 });
 
@@ -436,7 +441,7 @@ export const policyResponseSchema = z.object({
     title: z.string(),
     icon: z.string().nullable(),
     mode: z.enum(["image", "text"]),
-    body_md: z.string().nullable(),
+    body_md: z.string(),
     image_list: z.array(z.string()),
     text_blocks: z.array(cmsPolicyTextBlockSchema),
     summary: z.string().nullable(),
