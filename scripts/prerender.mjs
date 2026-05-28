@@ -37,9 +37,11 @@ function pickPort() {
 const PORT = Number(process.env.PRERENDER_PORT) || (await pickPort());
 const BASE = `http://127.0.0.1:${PORT}`;
 
-// Static routes only — blog/career detail are CSR-rendered (CMS slugs not
-// known at build time). Add new pages here when they ship.
-const ROUTES = [
+// Static routes. Blog detail stays CSR-only, but job detail pages (/careers/:slug)
+// ARE prerendered — recruiting links are shared externally (Google for Jobs,
+// LinkedIn, Zalo) and need real meta + JobPosting JSON-LD in the initial HTML.
+// We fetch the open-job slugs from the CMS at build time and append them below.
+const STATIC_ROUTES = [
   "/",
   "/thg-fulfill",
   "/thg-express",
@@ -53,6 +55,29 @@ const ROUTES = [
   "/international-pricing",
   "/domestic-pricing",
 ];
+
+const CMS_API = process.env.VITE_CMS_API_URL ?? "http://localhost:8080/api/v1";
+
+/** Fetch open-job slugs so each /careers/:slug gets a prerendered shell.
+ *  Best-effort — if the CMS is unreachable we still prerender static routes. */
+async function fetchJobRoutes() {
+  try {
+    const res = await fetch(`${CMS_API}/jobs?lang=vi`);
+    if (!res.ok) {
+      console.warn(`⚠ jobs fetch ${res.status} — skipping job-detail prerender`);
+      return [];
+    }
+    const data = await res.json();
+    const slugs = [...new Set((data.jobs ?? []).map((j) => j.slug))];
+    console.log(`✓ ${slugs.length} open jobs → /careers/:slug prerender`);
+    return slugs.map((s) => `/careers/${s}`);
+  } catch (err) {
+    console.warn(`⚠ jobs fetch failed (${err.message}) — skipping job-detail prerender`);
+    return [];
+  }
+}
+
+const ROUTES = [...STATIC_ROUTES, ...(await fetchJobRoutes())];
 
 if (!existsSync(DIST)) {
   console.error("✗ dist/ missing — run `bun run build` first.");

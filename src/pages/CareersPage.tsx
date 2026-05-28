@@ -1,53 +1,16 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
-import { useCmsJob, useCmsJobs } from "@/hooks/useCmsContent";
+import { useCmsJobs } from "@/hooks/useCmsContent";
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import ScrollReveal from "@/components/ScrollReveal";
-import { X } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { ApplicantFormDialog } from "@/components/careers/ApplicantFormDialog";
 import { isPastDeadline } from "@/lib/deadline";
 import { SafeHtml } from "@/lib/sanitizeHtml";
-
-/* ─── TYPES ─── */
-interface Benefit { i: string; t: string; d: string; }
-interface Job {
-    id: string; cat: string; filter: string; hot?: boolean;
-    badge: string; tagline: string; title: string; desc: string;
-    salary: string; salaryUnit: string; salaryNote: string;
-    location: string; type: string; deadline: string; experience: string;
-    lead: string;
-    responsibilities: Record<string, string[]>;
-    requirements: string[];
-    benefits: Benefit[];
-    bonuses: string[];
-}
-
-/* ─── ACCENT COLORS — keyed by category. Add new categories here when needed. ─── */
-const ACCENT: Record<string, string> = {
-    ai: "#2E6F8E",
-    finance: "#6B8E5A",
-    "sales-pod": "#C17B5E",
-    "sales-ship": "#5A7A8E",
-    "sales-wh": "#8B6B9A",
-    sales: "#5A7A8E",
-    ops: "#D4A548",
-    sourcing: "#B85C6E",
-    marketing: "#7B5EA0",
-};
-const DEFAULT_ACCENT = "#A67845";
-
-/** Map CMS category → filter group (left chip filters). */
-function categoryToFilter(cat: string | null | undefined): string {
-    if (!cat) return "other";
-    if (cat === "ai" || cat === "finance" || cat === "ops" || cat === "sourcing") return cat;
-    if (cat.startsWith("sales")) return "sales";
-    return cat;
-}
-
+import { ACCENT, DEFAULT_ACCENT, jobFromCmsListItem, type Job } from "@/lib/careers";
 
 const FILTERS = [
     { key: "all", label: "Tất cả", count: 7 },
@@ -82,70 +45,19 @@ const CareersPage = () => {
     const { t, language } = useI18n();
     const cmsJobs = useCmsJobs(language);
     const [filter, setFilter] = useState("all");
-    const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
 
-    // Adapt CMS list endpoint shape → Job-like surface fields used in card grid.
-    // Rich content (responsibilities/requirements/benefits/bonuses/lead) only loads
-    // when modal opens (per-slug fetch via useCmsJob).
+    // Adapt CMS list endpoint shape → card-level Job. Rich content
+    // (responsibilities/requirements/benefits/…) lives on the dedicated
+    // /careers/:slug detail page, which each card links to.
     const allJobs = useMemo<Job[]>(() => {
         if (!cmsJobs.data) return [];
         return cmsJobs.data.jobs
             .slice()
             .sort((a, b) => a.position - b.position)
-            .map((j) => ({
-                id: j.slug,
-                cat: j.category ?? "other",
-                filter: categoryToFilter(j.category),
-                hot: j.hot,
-                badge: j.badge ?? "",
-                tagline: j.tagline ?? "",
-                title: j.title,
-                desc: j.tagline ?? "",
-                salary: j.salary ?? "",
-                salaryUnit: j.salary_unit ?? "",
-                salaryNote: j.salary_note ?? "",
-                location: j.location ?? "",
-                type: j.employment_type ?? "",
-                deadline: j.deadline ?? "",
-                experience: j.experience ?? "",
-                lead: "",
-                responsibilities: {},
-                requirements: [],
-                benefits: [],
-                bonuses: [],
-            }));
+            .map(jobFromCmsListItem);
     }, [cmsJobs.data]);
 
     const filtered = filter === "all" ? allJobs : allJobs.filter((j) => j.filter === filter);
-
-    const closeModal = useCallback(() => {
-        setSelectedSlug(null);
-        document.body.style.overflow = "";
-    }, []);
-
-    const openJob = useCallback((job: Job) => {
-        setSelectedSlug(job.id);
-        document.body.style.overflow = "hidden";
-    }, []);
-
-    // Per-slug rich detail — only fetched while modal open.
-    const cmsDetail = useCmsJob(selectedSlug ?? "", language);
-    const activeJob: Job | null = useMemo(() => {
-        if (!selectedSlug) return null;
-        const summary = allJobs.find((j) => j.id === selectedSlug);
-        if (!summary) return null;
-        const d = cmsDetail.data?.job;
-        if (!d) return summary; // show loading-ish state — modal renders empty arrays gracefully
-        return {
-            ...summary,
-            lead: d.lead ?? "",
-            responsibilities: d.responsibilities ?? {},
-            requirements: d.requirements ?? [],
-            benefits: d.benefits ?? [],
-            bonuses: d.bonuses ?? [],
-        };
-    }, [selectedSlug, allJobs, cmsDetail.data]);
-    const accent = activeJob ? ACCENT[activeJob.cat] || DEFAULT_ACCENT : DEFAULT_ACCENT;
 
     return (
         <div className="min-h-screen bg-background">
@@ -251,7 +163,7 @@ const CareersPage = () => {
                             const expired = isPastDeadline(job.deadline);
                             return (
                                 <ScrollReveal key={job.id} delay={i * 80} className="h-full">
-                                    <div onClick={() => openJob(job)}
+                                    <Link to={`/careers/${job.id}`}
                                         className={`bg-white border border-border rounded-2xl p-[30px] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl relative overflow-hidden flex flex-col h-full min-h-[320px] group ${expired ? "opacity-60 grayscale" : ""}`}
                                         style={{ "--accent": accentColor } as React.CSSProperties}>
                                         <div className="absolute top-0 left-0 right-0 h-[3px] opacity-70 group-hover:opacity-100 group-hover:h-1 transition-all" style={{ background: accentColor }} />
@@ -293,7 +205,7 @@ const CareersPage = () => {
                                                 →
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </ScrollReveal>
                             );
                         })}
@@ -382,145 +294,6 @@ const CareersPage = () => {
 
             <ContactSection />
 
-            {/* ═══ JOB DETAIL MODAL ═══ */}
-            {activeJob && (
-                <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-start justify-center overflow-y-auto p-5 md:p-10 animate-in fade-in" onClick={closeModal}>
-                    <div className="bg-white rounded-[22px] max-w-[900px] w-full shadow-2xl relative animate-in slide-in-from-bottom-4" onClick={e => e.stopPropagation()}>
-                        {/* Close button */}
-                        <button onClick={closeModal} className="absolute top-5 right-5 z-10 w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center hover:bg-navy hover:text-white hover:border-navy transition-all">
-                            <X className="w-5 h-5" />
-                        </button>
-
-                        {/* Modal Hero */}
-                        <div className="p-10 md:p-14 pb-8 border-b border-border relative" style={{ background: `linear-gradient(180deg, ${accent}0F, white)` }}>
-                            <div className="absolute top-0 left-0 right-0 h-1" style={{ background: accent }} />
-                            <span className="inline-flex items-center gap-1.5 text-[10.5px] font-bold tracking-[0.15em] uppercase px-3 py-1.5 rounded" style={{ background: `${accent}15`, color: accent }}>{activeJob.badge}</span>
-                            <div className="text-sm font-bold italic mt-4" style={{ color: accent }}>{activeJob.tagline}</div>
-                            <h2 className="text-3xl md:text-4xl font-extrabold text-navy mt-1.5 tracking-tight">{activeJob.title}</h2>
-                            <p className="text-muted-foreground text-[15.5px] max-w-2xl mt-3.5 leading-relaxed">{activeJob.lead || activeJob.desc}</p>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-7 pt-6 border-t border-dashed border-border">
-                                {[
-                                    { l: t("careers.modal_salary"), v: `${activeJob.salary} ${activeJob.salaryUnit}` },
-                                    { l: t("careers.modal_exp"), v: activeJob.experience },
-                                    { l: t("careers.modal_type"), v: activeJob.type },
-                                    { l: t("careers.modal_loc"), v: activeJob.location },
-                                    { l: t("careers.stat4_label"), v: activeJob.deadline },
-                                ].map((qi, i) => (
-                                    <div key={i}>
-                                        <div className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{qi.l}</div>
-                                        <div className="text-navy font-bold mt-1 text-sm">{qi.v}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Modal Body */}
-                        <div className="p-10 md:p-14 space-y-9">
-                            {/* Benefits */}
-                            <div>
-                                <h3 className="text-xl font-extrabold text-navy flex items-center gap-3 mb-4"><span className="w-[5px] h-[22px] rounded" style={{ background: accent }} /> 💎 {t("careers.modal_ben_title") || "Quyền lợi hấp dẫn"}</h3>
-                                <div className="rounded-2xl p-6 mb-5" style={{ background: `linear-gradient(135deg, ${accent}0C, hsl(36 30% 96%))`, border: `1px solid ${accent}30` }}>
-                                    <div className="flex items-center gap-4 flex-wrap mb-4">
-                                        <div className="text-3xl font-extrabold text-navy leading-tight">{activeJob.salary}<span className="block text-primary font-bold text-[15px] mt-0.5">{activeJob.salaryUnit}</span></div>
-                                        {activeJob.salaryNote && <span className="bg-white border border-border rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold text-navy">{activeJob.salaryNote}</span>}
-                                    </div>
-                                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                        {activeJob.benefits.map((b: any, i: number) => (
-                                            <div key={i} className="bg-white p-4 rounded-xl border border-border hover:-translate-y-0.5 transition-transform">
-                                                <div className="text-xl mb-2">{b.i}</div>
-                                                <div className="text-sm font-bold text-navy">{b.t}</div>
-                                                <div className="text-[12.5px] text-muted-foreground mt-1">{b.d}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Bonuses */}
-                            <div>
-                                <h3 className="text-xl font-extrabold text-navy flex items-center gap-3 mb-4"><span className="w-[5px] h-[22px] rounded" style={{ background: accent }} /> 🎯 {t("careers.modal_bonus_title") || "Hệ thống thưởng & hoa hồng"}</h3>
-                                <div className="rounded-2xl p-6" style={{ background: "linear-gradient(135deg, rgba(201,163,106,0.06), transparent)", border: "1px solid rgba(201,163,106,0.2)" }}>
-                                    <SafeHtml
-                                        as="p"
-                                        className="text-muted-foreground text-sm leading-relaxed mb-3.5"
-                                        html={t("careers.modal_bonus_desc") || 'Ngoài lương cứng và hoa hồng cơ bản, THG áp dụng <strong class="text-navy">hệ thống thưởng đa tầng</strong> để ghi nhận nỗ lực:'}
-                                    />
-                                    <ul className="space-y-2">
-                                        {activeJob.bonuses.map((b: string, i: number) => (
-                                            <li key={i} className="text-navy text-[13.5px] leading-relaxed pl-6 relative">
-                                                <span className="absolute left-1 top-[5px] text-primary font-bold">✓</span>{b}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <p className="text-muted-foreground text-[12.5px] mt-3.5 pt-3.5 border-t border-dashed border-border italic">{t("careers.modal_bonus_note") || "* Chi tiết mức thưởng và điều kiện cụ thể sẽ được trao đổi trong buổi phỏng vấn."}</p>
-                                </div>
-                            </div>
-
-                            {/* Responsibilities */}
-                            <div>
-                                <h3 className="text-xl font-extrabold text-navy flex items-center gap-3 mb-4"><span className="w-[5px] h-[22px] rounded" style={{ background: accent }} /> 📋 {t("careers.modal_resp_title") || "Mô tả công việc"}</h3>
-                                {Object.entries(activeJob.responsibilities as Record<string, string[]>).map(([heading, items]) => (
-                                    <div key={heading} className="mb-5">
-                                        <div className="text-[12.5px] font-bold text-navy uppercase tracking-[0.1em] mb-3 flex items-center gap-2.5 after:content-[''] after:flex-1 after:h-px after:bg-border">{heading}</div>
-                                        <ul className="space-y-2.5">
-                                            {items.map((item, i) => (
-                                                <li key={i} className="text-muted-foreground text-[14.5px] leading-relaxed pl-6 relative">
-                                                    <span className="absolute left-1 top-[9px] w-2 h-2 rounded-full opacity-25" style={{ background: accent, boxShadow: `0 0 0 3px ${accent}20` }} />{item}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Requirements */}
-                            <div>
-                                <h3 className="text-xl font-extrabold text-navy flex items-center gap-3 mb-4"><span className="w-[5px] h-[22px] rounded" style={{ background: accent }} /> ✅ {t("careers.modal_req") || "Yêu cầu ứng viên"}</h3>
-                                <ul className="space-y-2.5">
-                                    {activeJob.requirements.map((r, i) => (
-                                        <li key={i} className="text-muted-foreground text-[14.5px] leading-relaxed pl-6 relative">
-                                            <span className="absolute left-1 top-[9px] w-2 h-2 rounded-full opacity-25" style={{ background: accent, boxShadow: `0 0 0 3px ${accent}20` }} />{r}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            {/* Apply box */}
-                            <div>
-                                <h3 className="text-xl font-extrabold text-navy flex items-center gap-3 mb-4"><span className="w-[5px] h-[22px] rounded" style={{ background: accent }} /> 📩 {t("careers.modal_apply") || "Ứng tuyển ngay"}</h3>
-                                <div className="bg-navy text-white rounded-2xl p-8 flex flex-col gap-6 relative overflow-hidden">
-                                    <div className="absolute -right-24 -bottom-24 w-72 h-72 rounded-full bg-gradient-radial from-primary/10 to-transparent" />
-                                    <div className="relative z-10">
-                                        <h4 className="text-xl font-extrabold">{t("careers.modal_apply_title")}</h4>
-                                        <SafeHtml as="p" className="text-white/70 text-[13.5px] mt-1.5" html={t("careers.modal_apply_desc")} />
-                                    </div>
-                                    {isPastDeadline(activeJob.deadline) ? (
-                                        <div className="relative z-10">
-                                            <div className="inline-flex items-center gap-2 bg-red-500/15 border border-red-400/30 text-red-300 px-4 py-3 rounded-xl text-sm font-semibold">
-                                                ⏰ {t("careers.expired") || "Vị trí này đã hết hạn nộp hồ sơ"} ({activeJob.deadline})
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="flex gap-2.5 flex-wrap relative z-10">
-                                            <ApplicantFormDialog
-                                                jobSlug={activeJob.id}
-                                                jobTitle={activeJob.title}
-                                                sourcePage="/careers"
-                                                trigger={
-                                                    <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3.5 rounded-full font-bold text-sm shadow-lg transition-all hover:-translate-y-0.5">📩 {t("careers.modal_btn_apply")}</button>
-                                                }
-                                            />
-                                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=careers@thgfulfill.com" target="_blank" rel="noopener noreferrer">
-                                                <button className="bg-transparent border border-white/25 text-white hover:border-[hsl(var(--gold))] hover:text-[hsl(var(--gold))] px-5 py-3.5 rounded-full font-semibold text-sm transition-all">📧 {t("careers.modal_btn_email")}</button>
-                                            </a>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

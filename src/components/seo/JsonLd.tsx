@@ -89,6 +89,80 @@ export function JsonLdFaqPage({ faqs }: { faqs: FaqItem[] }) {
   );
 }
 
+interface JobPostingProps {
+  title: string;
+  /** Plain-text or simple-HTML description (responsibilities + requirements). */
+  description: string;
+  url: string;
+  /** Display location, e.g. "TP.HCM". */
+  location?: string;
+  /** CMS employment_type free text, e.g. "Full-time", "Internship 3–6 tháng". */
+  employmentType?: string;
+  /** ISO 8601 date (YYYY-MM-DD). Omitted if not a valid ISO date. */
+  datePosted?: string;
+  /** ISO 8601 date the posting expires (from deadline). Omitted if not ISO. */
+  validThrough?: string;
+}
+
+// Map CMS free-text employment_type → schema.org employmentType enum.
+function toEmploymentTypeEnum(s?: string): string | undefined {
+  if (!s) return undefined;
+  const t = s.toLowerCase();
+  if (t.includes("intern") || t.includes("thực tập")) return "INTERN";
+  if (t.includes("part")) return "PART_TIME";
+  if (t.includes("contract")) return "CONTRACTOR";
+  if (t.includes("temp")) return "TEMPORARY";
+  return "FULL_TIME";
+}
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** schema.org/JobPosting — required for Google for Jobs eligibility. Emits only
+ *  the fields Google accepts; datePosted/validThrough are included only when a
+ *  real ISO date is available (a malformed date would invalidate the markup). */
+export function JsonLdJobPosting({
+  title,
+  description,
+  url,
+  location,
+  employmentType,
+  datePosted,
+  validThrough,
+}: JobPostingProps) {
+  const data: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title,
+    description,
+    url,
+    directApply: true,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: "THG Fulfill",
+      sameAs: SITE_BASE,
+      logo: `${SITE_BASE}/logo.png`,
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: location || "TP.HCM",
+        addressCountry: "VN",
+      },
+    },
+  };
+  const empEnum = toEmploymentTypeEnum(employmentType);
+  if (empEnum) data.employmentType = empEnum;
+  if (datePosted && ISO_DATE.test(datePosted)) data.datePosted = datePosted;
+  if (validThrough && ISO_DATE.test(validThrough)) data.validThrough = validThrough;
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(data)}</script>
+    </Helmet>
+  );
+}
+
 interface BreadcrumbItem {
   name: string;
   url: string;

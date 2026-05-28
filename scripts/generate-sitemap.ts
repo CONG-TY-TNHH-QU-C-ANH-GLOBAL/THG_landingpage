@@ -97,6 +97,33 @@ async function main() {
     console.warn(`⚠ Cannot reach CMS API at ${CMS_API} — sitemap will only include static routes:`, (err as Error).message);
   }
 
+  // 3. Open job postings from CMS (best-effort). Each JD has its own URL so HR
+  //    can distribute it + Google for Jobs can index it.
+  try {
+    const res = await fetch(`${CMS_API}/jobs?lang=vi`);
+    if (res.ok) {
+      const data = (await res.json()) as { jobs: Array<{ slug: string }> };
+      const seen = new Set<string>();
+      for (const job of data.jobs ?? []) {
+        if (seen.has(job.slug)) continue;
+        seen.add(job.slug);
+        const path = `/careers/${job.slug}`;
+        entries.push({
+          loc: `${SITE}${path}`,
+          lastmod: today,
+          changefreq: "weekly",
+          priority: 0.7,
+          alternates: buildAlternates(path),
+        });
+      }
+      console.log(`✓ Added ${seen.size} job postings from CMS`);
+    } else {
+      console.warn(`⚠ CMS jobs endpoint returned ${res.status} — skipping job URLs`);
+    }
+  } catch (err) {
+    console.warn(`⚠ Cannot reach CMS jobs API — sitemap will omit job URLs:`, (err as Error).message);
+  }
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
