@@ -38,6 +38,7 @@ const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
 const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
 const CareersPage = lazy(() => import("./pages/CareersPage"));
+const JobDetailPage = lazy(() => import("./pages/JobDetailPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
@@ -85,6 +86,7 @@ const AppRoutes = () => {
             <Route path="/thg-order" element={<THGOrderPage />} />
             <Route path="/catalog" element={<CatalogPage />} />
             <Route path="/careers" element={<CareersPage />} />
+            <Route path="/careers/:slug" element={<JobDetailPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ErrorBoundary>
