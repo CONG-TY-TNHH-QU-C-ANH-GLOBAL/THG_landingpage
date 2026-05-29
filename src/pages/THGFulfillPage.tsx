@@ -8,6 +8,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import ImageMarquee from "@/components/ImageMarquee";
 import FAQAccordion from "@/components/FAQAccordion";
+import thgHeroImage from "@/assets/THG.jpg";
 import { useI18n } from "@/lib/i18n";
 import { useCmsServices } from "@/hooks/useCmsContent";
 import { Package, ArrowRight, Zap, Palette } from "lucide-react";
@@ -53,6 +54,7 @@ const THGFulfillPage = () => {
         title="THG Fulfill — POD & Dropship Fulfillment for US Sellers"
         description={t("fulfill_page.hero_subtitle")}
         path="/thg-fulfill"
+        ogImage={thgHeroImage}
       />
       <JsonLdService
         name="THG Fulfill — POD & Dropship Fulfillment"

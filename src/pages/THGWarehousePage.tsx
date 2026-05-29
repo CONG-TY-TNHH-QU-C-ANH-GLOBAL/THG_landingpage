@@ -11,6 +11,7 @@ import { Warehouse, ArrowRight, CheckCircle2, Monitor, Package, Truck } from "lu
 import { Button } from "@/components/ui/button";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 import { SectionHeader } from "@/components/sections/SectionHeader";
+import { WAREHOUSE_PACKAGING_URL } from "@/config/cmsAssets";
 
 const sliderImages = [
   "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-1-20250729095528-wnjai.jpg",
@@ -88,6 +89,7 @@ const THGWarehousePage = () => {
         title="THG Warehouse US — Last-Mile Fulfillment Pennsylvania & North Carolina"
         description={t("warehouse_page.hero_subtitle")}
         path="/thg-warehouse"
+        ogImage={WAREHOUSE_PACKAGING_URL}
       />
       <JsonLdService
         name="THG Warehouse US — Last-Mile Fulfillment"
