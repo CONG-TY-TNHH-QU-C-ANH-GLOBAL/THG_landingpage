@@ -551,6 +551,7 @@ export interface paths {
                                 salary_note: string | null;
                                 deadline: string | null;
                                 experience: string | null;
+                                posted_at: number;
                             }[];
                             total: number;
                         };
@@ -625,6 +626,7 @@ export interface paths {
                                 salary_note: string | null;
                                 deadline: string | null;
                                 experience: string | null;
+                                posted_at: number;
                                 lead: string | null;
                                 responsibilities: {
                                     [key: string]: string[];

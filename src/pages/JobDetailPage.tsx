@@ -54,6 +54,7 @@ const JobDetailPage = () => {
       salary_note: d.salary_note,
       deadline: d.deadline,
       experience: d.experience,
+      posted_at: d.posted_at,
     });
     return withCmsDetail(summary, {
       lead: d.lead,
@@ -105,6 +106,7 @@ const JobDetailPage = () => {
         url={url}
         location={job.location}
         employmentType={job.type}
+        datePosted={job.postedAt ? new Date(job.postedAt * 1000).toISOString().slice(0, 10) : undefined}
         validThrough={job.deadline}
       />
       <JsonLdBreadcrumb
