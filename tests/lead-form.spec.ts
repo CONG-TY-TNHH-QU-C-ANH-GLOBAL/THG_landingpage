@@ -42,7 +42,9 @@ test.describe("Lead form modal", () => {
       }),
     );
 
-    await page.goto("/");
+    // URL-prefix i18n routes now live under /:lang, so pin to English route
+    // to keep CTA/dialog labels deterministic for this test suite.
+    await page.goto("/en");
   });
 
   test("submits a valid lead and shows the success state", async ({ page }) => {
