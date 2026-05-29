@@ -42,29 +42,37 @@ function entryXml(e: SitemapEntry): string {
 ${e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>\n` : ""}${e.priority !== undefined ? `    <priority>${e.priority.toFixed(1)}</priority>\n` : ""}${alternates ? alternates + "\n" : ""}  </url>`;
 }
 
-function buildAlternates(path: string): SitemapEntry["alternates"] {
-  // Landing currently serves all 3 locales at SAME URL with client-side switcher.
-  // Listing en/vi/zh hreflangs pointing to the same URL is technically incorrect
-  // — Google reads it as "this URL is canonical for 3 simultaneous languages",
-  // which we can't fulfill in a CSR SPA. Stick to x-default until URL-prefix
-  // routing (/en/*, /vi/*, /zh/*) lands in Sprint 3 plan.
-  const url = `${SITE}${path}`;
-  return [{ hreflang: "x-default", href: url }];
+function buildAlternates(langPath: string): SitemapEntry["alternates"] {
+  // langPath is already lang-prefixed, e.g. "/vi/thg-fulfill" or "/en"
+  // Strip the leading lang segment to get the base path ("/thg-fulfill" or "").
+  const basePath = langPath.replace(/^\/(en|vi|zh)(\/|$)/, "/").replace(/\/$/, "") || "/";
+  const base = basePath === "/" ? "" : basePath;
+  return [
+    { hreflang: "vi", href: `${SITE}/vi${base}` },
+    { hreflang: "en", href: `${SITE}/en${base}` },
+    { hreflang: "zh-CN", href: `${SITE}/zh${base}` },
+    // x-default → Vietnamese (primary audience)
+    { hreflang: "x-default", href: `${SITE}/vi${base}` },
+  ];
 }
 
 async function main() {
   const today = new Date().toISOString().slice(0, 10);
   const entries: SitemapEntry[] = [];
+  const LANGS = ["vi", "en", "zh"] as const;
 
-  // 1. Static routes
+  // 1. Static routes — 3 lang-prefixed entries per base path
   for (const path of STATIC_ROUTES) {
-    entries.push({
-      loc: `${SITE}${path}`,
-      lastmod: today,
-      changefreq: path === "/" ? "weekly" : "monthly",
-      priority: path === "/" ? 1.0 : 0.8,
-      alternates: buildAlternates(path),
-    });
+    for (const lang of LANGS) {
+      const langPath = path === "/" ? `/${lang}` : `/${lang}${path}`;
+      entries.push({
+        loc: `${SITE}${langPath}`,
+        lastmod: today,
+        changefreq: path === "/" ? "weekly" : "monthly",
+        priority: path === "/" ? 1.0 : 0.8,
+        alternates: buildAlternates(langPath),
+      });
+    }
   }
 
   // 2. Blog posts from CMS (best-effort — skip if CMS unreachable)
@@ -80,14 +88,18 @@ async function main() {
       for (const post of data.blog) {
         if (seenSlugs.has(post.slug)) continue;
         seenSlugs.add(post.slug);
-        const path = `/blog/${post.slug}`;
-        entries.push({
-          loc: `${SITE}${path}`,
-          lastmod: post.published_date ?? new Date(post.updated_at * 1000).toISOString().slice(0, 10),
-          changefreq: "monthly",
-          priority: 0.6,
-          alternates: buildAlternates(path),
-        });
+        const basePath = `/blog/${post.slug}`;
+        const lastmod = post.published_date ?? new Date(post.updated_at * 1000).toISOString().slice(0, 10);
+        for (const lang of LANGS) {
+          const langPath = `/${lang}${basePath}`;
+          entries.push({
+            loc: `${SITE}${langPath}`,
+            lastmod,
+            changefreq: "monthly",
+            priority: 0.6,
+            alternates: buildAlternates(langPath),
+          });
+        }
       }
       console.log(`✓ Added ${seenSlugs.size} blog posts from CMS`);
     } else {
@@ -107,14 +119,17 @@ async function main() {
       for (const job of data.jobs ?? []) {
         if (seen.has(job.slug)) continue;
         seen.add(job.slug);
-        const path = `/careers/${job.slug}`;
-        entries.push({
-          loc: `${SITE}${path}`,
-          lastmod: today,
-          changefreq: "weekly",
-          priority: 0.7,
-          alternates: buildAlternates(path),
-        });
+        const basePath = `/careers/${job.slug}`;
+        for (const lang of LANGS) {
+          const langPath = `/${lang}${basePath}`;
+          entries.push({
+            loc: `${SITE}${langPath}`,
+            lastmod: today,
+            changefreq: "weekly",
+            priority: 0.7,
+            alternates: buildAlternates(langPath),
+          });
+        }
       }
       console.log(`✓ Added ${seen.size} job postings from CMS`);
     } else {

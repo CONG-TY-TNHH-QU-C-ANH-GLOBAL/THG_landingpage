@@ -40,8 +40,8 @@ const BASE = `http://127.0.0.1:${PORT}`;
 // Static routes. Blog detail stays CSR-only, but job detail pages (/careers/:slug)
 // ARE prerendered — recruiting links are shared externally (Google for Jobs,
 // LinkedIn, Zalo) and need real meta + JobPosting JSON-LD in the initial HTML.
-// We fetch the open-job slugs from the CMS at build time and append them below.
-const STATIC_ROUTES = [
+// Base routes (without lang prefix). These are expanded × 3 langs below.
+const BASE_ROUTES = [
   "/",
   "/thg-fulfill",
   "/thg-express",
@@ -55,6 +55,13 @@ const STATIC_ROUTES = [
   "/international-pricing",
   "/domestic-pricing",
 ];
+
+const LANGS = ["vi", "en", "zh"];
+
+// Expand: each base route becomes /{lang} (for "/") or /{lang}/path for the rest.
+const STATIC_ROUTES = LANGS.flatMap((lang) =>
+  BASE_ROUTES.map((r) => (r === "/" ? `/${lang}` : `/${lang}${r}`))
+);
 
 const CMS_API = process.env.VITE_CMS_API_URL ?? "http://localhost:8080/api/v1";
 
@@ -70,7 +77,8 @@ async function fetchJobRoutes() {
     const data = await res.json();
     const slugs = [...new Set((data.jobs ?? []).map((j) => j.slug))];
     console.log(`✓ ${slugs.length} open jobs → /careers/:slug prerender`);
-    return slugs.map((s) => `/careers/${s}`);
+    // Prerender each job detail for all langs
+    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/careers/${s}`));
   } catch (err) {
     console.warn(`⚠ jobs fetch failed (${err.message}) — skipping job-detail prerender`);
     return [];

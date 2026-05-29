@@ -22,7 +22,9 @@ const pricingItems = [
 ];
 
 const Navbar = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  /** Prefix any absolute path with the current language. */
+  const lp = (path: string) => `/${language}${path}`;
   const [isOpen, setIsOpen] = useState(false);
   const [showServices, setShowServices] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
@@ -74,7 +76,7 @@ const Navbar = () => {
       : "bg-transparent"
       }`}>
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link to={`/${language}`} className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5">
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
@@ -106,7 +108,7 @@ const Navbar = () => {
                 {serviceItems.map((item) => (
                   <Link
                     key={item.titleKey}
-                    to={item.href}
+                    to={lp(item.href)}
                     className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
                     onClick={() => setShowServices(false)}
                   >
@@ -143,7 +145,7 @@ const Navbar = () => {
                 {pricingItems.map((item) => (
                   <Link
                     key={item.titleKey}
-                    to={item.href}
+                    to={lp(item.href)}
                     className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
                     onClick={() => setShowPricing(false)}
                   >
@@ -169,10 +171,10 @@ const Navbar = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   const hash = item.href.split("#")[1];
-                  if (location.pathname === "/") {
+                  if (location.pathname === `/${language}`) {
                     document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
                   } else {
-                    window.location.href = item.href;
+                    window.location.href = `/${language}/${hash}`;
                   }
                 }}
               >
@@ -181,8 +183,8 @@ const Navbar = () => {
             ) : (
               <Link
                 key={item.label}
-                to={item.href}
-                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-secondary/50 ${location.pathname === item.href ? "text-primary" : "text-foreground/80 hover:text-foreground"
+                to={lp(item.href)}
+                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-secondary/50 ${location.pathname === lp(item.href) ? "text-primary" : "text-foreground/80 hover:text-foreground"
                   }`}
               >
                 <span translate="no">{item.label}</span>
@@ -234,7 +236,7 @@ const Navbar = () => {
           {serviceItems.map((item) => (
             <Link
               key={item.titleKey}
-              to={item.href}
+              to={lp(item.href)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -247,7 +249,7 @@ const Navbar = () => {
           {pricingItems.map((item) => (
             <Link
               key={item.titleKey}
-              to={item.href}
+              to={lp(item.href)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -266,10 +268,10 @@ const Navbar = () => {
                   e.preventDefault();
                   setIsOpen(false);
                   const hash = item.href.split("#")[1];
-                  if (location.pathname === "/") {
+                  if (location.pathname === `/${language}`) {
                     setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" }), DELAYS.NAVBAR_MOBILE_SCROLL_DELAY_MS);
                   } else {
-                    window.location.href = item.href;
+                    window.location.href = `/${language}/#${hash}`;
                   }
                 }}
               >
@@ -278,7 +280,7 @@ const Navbar = () => {
             ) : (
               <Link
                 key={item.label}
-                to={item.href}
+                to={lp(item.href)}
                 className="block px-3 py-2.5 text-sm font-medium text-foreground/80 hover:text-foreground rounded-xl hover:bg-secondary/50"
                 onClick={() => setIsOpen(false)}
               >

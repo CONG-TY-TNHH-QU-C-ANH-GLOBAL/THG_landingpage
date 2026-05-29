@@ -1,11 +1,11 @@
 import { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { I18nProvider } from "@/lib/i18n";
+import { I18nProvider, Language, useI18n } from "@/lib/i18n";
 import { LarkPricingProvider } from "@/components/pricing/LarkPricingProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { ConsentBanner } from "@/components/cookie/ConsentBanner";
@@ -61,6 +61,31 @@ const UtmCapture = () => {
 };
 
 /**
+ * LangLayout — validates the :lang URL prefix, syncs it to I18n context,
+ * and redirects invalid lang codes to /vi/rest-of-path.
+ */
+const VALID_LANGS: Language[] = ["en", "vi", "zh"];
+
+const LangLayout = () => {
+  const { lang } = useParams<{ lang: string }>();
+  const { setLanguage } = useI18n();
+  const location = useLocation();
+
+  const isValid = !!lang && (VALID_LANGS as string[]).includes(lang);
+
+  useEffect(() => {
+    if (isValid) setLanguage(lang as Language);
+  }, [lang, isValid, setLanguage]);
+
+  if (!isValid) {
+    const rest = location.pathname.replace(/^\/[^/]*/, "");
+    return <Navigate to={`/vi${rest}`} replace />;
+  }
+
+  return <Outlet />;
+};
+
+/**
  * AppRoutes — uses location.key on ErrorBoundary to force clean React remounts
  * on every route change, preventing GTranslate-modified DOM nodes from causing
  * React reconciliation crashes (the root cause of the blank page bug).
@@ -73,20 +98,25 @@ const AppRoutes = () => {
       <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>}>
         <ErrorBoundary key={location.pathname}>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/policy" element={<PolicyPage />} />
-            <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/blog/:slug" element={<BlogDetailPage />} />
-            <Route path="/international-pricing" element={<InternationalPricingPage />} />
-            <Route path="/domestic-pricing" element={<DomesticPricingPage />} />
-            <Route path="/thg-fulfill" element={<THGFulfillPage />} />
-            <Route path="/thg-express" element={<THGExpressPage />} />
-            <Route path="/thg-warehouse" element={<THGWarehousePage />} />
-            <Route path="/thg-order" element={<THGOrderPage />} />
-            <Route path="/catalog" element={<CatalogPage />} />
-            <Route path="/careers" element={<CareersPage />} />
-            <Route path="/careers/:slug" element={<JobDetailPage />} />
+            {/* Root redirect — send bare / to default locale */}
+            <Route path="/" element={<Navigate to="/vi" replace />} />
+            {/* Lang-prefixed routes — /:lang validates and syncs language state */}
+            <Route path="/:lang" element={<LangLayout />}>
+              <Route index element={<Index />} />
+              <Route path="policy" element={<PolicyPage />} />
+              <Route path="shipping-policy" element={<ShippingPolicyPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/:slug" element={<BlogDetailPage />} />
+              <Route path="international-pricing" element={<InternationalPricingPage />} />
+              <Route path="domestic-pricing" element={<DomesticPricingPage />} />
+              <Route path="thg-fulfill" element={<THGFulfillPage />} />
+              <Route path="thg-express" element={<THGExpressPage />} />
+              <Route path="thg-warehouse" element={<THGWarehousePage />} />
+              <Route path="thg-order" element={<THGOrderPage />} />
+              <Route path="catalog" element={<CatalogPage />} />
+              <Route path="careers" element={<CareersPage />} />
+              <Route path="careers/:slug" element={<JobDetailPage />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ErrorBoundary>

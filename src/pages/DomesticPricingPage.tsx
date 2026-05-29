@@ -38,7 +38,7 @@ function formatWeight(weight: string): string {
 }
 
 const DomesticPricingContent = () => {
-    const { t } = useI18n();
+    const { t, language } = useI18n();
     const lark = useLarkPricingContext();
     const [showAll, setShowAll] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -141,20 +141,20 @@ const DomesticPricingContent = () => {
                 {/* Back + Nav */}
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
                     <Link
-                        to="/"
+                        to={`/${language}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground font-medium text-[12px] transition-colors"
                     >
                         <ArrowLeft className="w-3.5 h-3.5" /> {t("domestic.back_home")}
                     </Link>
                     <div className="flex gap-2">
                         <Link
-                            to="/domestic-pricing"
+                            to={`/${language}/domestic-pricing`}
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground font-semibold text-[12px] shadow-sm"
                         >
                             <MapPin className="w-3.5 h-3.5" /> {t("domestic.tab_domestic")}
                         </Link>
                         <Link
-                            to="/international-pricing"
+                            to={`/${language}/international-pricing`}
                             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-secondary text-foreground font-semibold text-[12px] hover:bg-secondary/80 transition-colors"
                         >
                             <Globe className="w-3.5 h-3.5" /> {t("domestic.tab_intl")}

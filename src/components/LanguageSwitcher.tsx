@@ -1,5 +1,6 @@
 import { useI18n, Language } from "@/lib/i18n";
 import { Globe } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const langs: { code: Language; label: string; aria: string }[] = [
   { code: "en", label: "EN", aria: "English" },
@@ -8,7 +9,15 @@ const langs: { code: Language; label: string; aria: string }[] = [
 ];
 
 const LanguageSwitcher = () => {
-  const { language, setLanguage } = useI18n();
+  const { language } = useI18n();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSwitch = (code: Language) => {
+    // Strip existing lang prefix (e.g. "/vi/thg-fulfill" → "/thg-fulfill", "/vi" → "")
+    const pathWithoutLang = location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, "");
+    navigate(`/${code}${pathWithoutLang}${location.search}${location.hash}`);
+  };
 
   return (
     <div
@@ -23,7 +32,7 @@ const LanguageSwitcher = () => {
           <button
             key={l.code}
             type="button"
-            onClick={() => setLanguage(l.code)}
+            onClick={() => handleSwitch(l.code)}
             aria-pressed={active}
             aria-current={active ? "true" : undefined}
             aria-label={`Switch to ${l.aria}`}

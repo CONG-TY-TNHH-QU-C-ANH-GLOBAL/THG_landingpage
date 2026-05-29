@@ -47,7 +47,7 @@ const galleryImages = [
 
 /* ─── Page ─── */
 const THGExpressPage = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   const faqItems = [
     { question: t("express_page.faq1_q"), answer: t("express_page.faq1_a") },
@@ -403,7 +403,7 @@ const THGExpressPage = () => {
               <div className="w-full md:w-1/2 p-10 md:p-16 text-center text-white flex flex-col justify-center items-center">
                 <h3 className="text-xl md:text-2xl font-bold uppercase mb-2">{t("express_page.policy_section_subtitle")}</h3>
                 <h2 className="text-4xl md:text-5xl font-black mb-8 uppercase drop-shadow-md">{t("express_page.policy_section_title")}</h2>
-                <Link to="/shipping-policy#express">
+                <Link to={`/${language}/shipping-policy#express`}>
                   <Button className="bg-white text-[#F27125] hover:bg-white/90 font-bold px-10 py-6 rounded-md text-lg shadow-lg">
                     {t("express_page.policy_cta")}
                   </Button>
