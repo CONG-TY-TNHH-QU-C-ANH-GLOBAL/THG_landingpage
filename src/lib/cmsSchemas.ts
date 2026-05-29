@@ -337,7 +337,7 @@ const jobSummarySchema = z.object({
   salary_note: z.string().nullable(),
   deadline: z.string().nullable(),
   experience: z.string().nullable(),
-  posted_at: z.number().optional(), // optional: tolerate the post-deploy edge-cache window
+  posted_at: z.number(), // required — must match the CMS generated type (cross-check gate)
 });
 
 export const jobsResponseSchema = z.object({
@@ -365,7 +365,7 @@ export const jobResponseSchema = z.object({
     salary_note: z.string().nullable(),
     deadline: z.string().nullable(),
     experience: z.string().nullable(),
-    posted_at: z.number().optional(), // optional: tolerate the post-deploy edge-cache window
+    posted_at: z.number(), // required — must match the CMS generated type (cross-check gate)
     lead: z.string().nullable(),
     responsibilities: z.record(z.string(), z.array(z.string())),
     requirements: z.array(z.string()),
