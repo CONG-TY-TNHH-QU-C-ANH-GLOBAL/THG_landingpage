@@ -33,7 +33,10 @@ const AboutVideoSection = () => {
   // homepage_blocks.about_video.payload wins over site_settings.about_video_url
   // so operator can override per locale; settings still works as global default.
   const block = useHomepageBlock(language, "about_video");
-  const videoId = extractYouTubeId(block.video_url || settings?.about_video_url);
+  // Video always uses the EN locale block so all tabs show the same video.
+  // Text content (highlights, title, desc) still follows the active language.
+  const enBlock = useHomepageBlock("en", "about_video");
+  const videoId = extractYouTubeId(enBlock.video_url || block.video_url || settings?.about_video_url);
 
   const highlights = [
     { icon: Package, label: block.highlight1 || tVi("about.highlight1") },
