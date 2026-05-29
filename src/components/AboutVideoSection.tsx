@@ -36,7 +36,7 @@ const AboutVideoSection = () => {
   // Video always uses the EN locale block so all tabs show the same video.
   // Text content (highlights, title, desc) still follows the active language.
   const enBlock = useHomepageBlock("en", "about_video");
-  const videoId = extractYouTubeId(enBlock.video_url || block.video_url || settings?.about_video_url);
+  const videoId = extractYouTubeId(enBlock.video_url || settings?.about_video_url);
 
   const highlights = [
     { icon: Package, label: block.highlight1 || tVi("about.highlight1") },
