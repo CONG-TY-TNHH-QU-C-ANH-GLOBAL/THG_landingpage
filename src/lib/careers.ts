@@ -28,6 +28,7 @@ export interface Job {
   requirements: string[];
   benefits: Benefit[];
   bonuses: string[];
+  postedAt?: number; // epoch seconds — for JobPosting datePosted
 }
 
 // Accent colors keyed by CMS category. Add new categories here when needed.
@@ -72,6 +73,7 @@ interface CmsJobListItem {
   salary_note: string | null;
   deadline: string | null;
   experience: string | null;
+  posted_at?: number;
 }
 
 interface CmsJobDetail {
@@ -105,6 +107,7 @@ export function jobFromCmsListItem(j: CmsJobListItem): Job {
     requirements: [],
     benefits: [],
     bonuses: [],
+    postedAt: j.posted_at,
   };
 }
 
