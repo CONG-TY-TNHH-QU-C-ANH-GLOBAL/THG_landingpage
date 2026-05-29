@@ -16,8 +16,25 @@ interface Props {
 }
 
 export function JobDetailContent({ job, accent, sourcePage }: Props) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const source = sourcePage ?? `/careers/${job.id}`;
+
+  const postedLabel = language === "en" ? "Posted" : language === "zh" ? "发布日期" : "Ngày đăng";
+  const postedValue = job.postedAt
+    ? new Date(job.postedAt * 1000).toLocaleDateString(
+        language === "en" ? "en-US" : language === "zh" ? "zh-CN" : "vi-VN",
+        { year: "numeric", month: "short", day: "numeric" },
+      )
+    : null;
+
+  const quickFacts = [
+    { l: t("careers.modal_salary"), v: `${job.salary} ${job.salaryUnit}` },
+    { l: t("careers.modal_exp"), v: job.experience },
+    { l: t("careers.modal_type"), v: job.type },
+    { l: t("careers.modal_loc"), v: job.location },
+    { l: t("careers.stat4_label"), v: job.deadline },
+    ...(postedValue ? [{ l: postedLabel, v: postedValue }] : []),
+  ];
 
   return (
     <div className="bg-white rounded-[22px] shadow-sm border border-border overflow-hidden">
@@ -28,14 +45,8 @@ export function JobDetailContent({ job, accent, sourcePage }: Props) {
         <div className="text-sm font-bold italic mt-4" style={{ color: accent }}>{job.tagline}</div>
         <h1 className="text-3xl md:text-4xl font-extrabold text-navy mt-1.5 tracking-tight">{job.title}</h1>
         <p className="text-muted-foreground text-[15.5px] max-w-2xl mt-3.5 leading-relaxed">{job.lead || job.desc}</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-7 pt-6 border-t border-dashed border-border">
-          {[
-            { l: t("careers.modal_salary"), v: `${job.salary} ${job.salaryUnit}` },
-            { l: t("careers.modal_exp"), v: job.experience },
-            { l: t("careers.modal_type"), v: job.type },
-            { l: t("careers.modal_loc"), v: job.location },
-            { l: t("careers.stat4_label"), v: job.deadline },
-          ].map((qi, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mt-7 pt-6 border-t border-dashed border-border">
+          {quickFacts.map((qi, i) => (
             <div key={i}>
               <div className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{qi.l}</div>
               <div className="text-navy font-bold mt-1 text-sm">{qi.v}</div>
