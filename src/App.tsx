@@ -78,8 +78,10 @@ const LangLayout = () => {
   }, [lang, isValid, setLanguage]);
 
   if (!isValid) {
-    const rest = location.pathname.replace(/^\/[^/]*/, "");
-    return <Navigate to={`/vi${rest}`} replace />;
+    // Legacy URL (e.g., /thg-fulfill, /blog/my-post) or unknown lang code —
+    // redirect to /vi + full original path so old links keep working.
+    // Nginx try_files serves index.html for all paths, so React handles this.
+    return <Navigate to={`/vi${location.pathname}`} replace />;
   }
 
   return <Outlet />;
