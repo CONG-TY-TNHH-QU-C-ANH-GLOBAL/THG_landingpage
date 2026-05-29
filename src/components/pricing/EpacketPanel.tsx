@@ -482,7 +482,7 @@ const EpacketPanel = ({
 
                         {/* 3. Shipping Policy — link to dedicated page */}
                         <Link
-                            to="/shipping-policy"
+                            to={`/${lang}/shipping-policy`}
                             className="flex items-center gap-3 px-5 py-4 bg-white rounded-xl border-[1.5px] border-[var(--pricing-border)] hover:border-primary hover:bg-[#FFFBF0] transition-all group"
                         >
                             <span className="text-xl">🛡️</span>

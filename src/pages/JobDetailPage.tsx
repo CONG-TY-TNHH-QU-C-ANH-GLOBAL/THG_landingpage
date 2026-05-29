@@ -80,7 +80,7 @@ const JobDetailPage = () => {
         <Navbar />
         <div className="pt-28 pb-20 text-center">
           <p className="text-xl text-muted-foreground">Vị trí này không còn tồn tại hoặc đã đóng.</p>
-          <Link to="/careers" className="text-primary font-semibold mt-4 inline-block hover:underline">
+          <Link to={`/${language}/careers`} className="text-primary font-semibold mt-4 inline-block hover:underline">
             ← Xem tất cả vị trí
           </Link>
         </div>
@@ -119,7 +119,7 @@ const JobDetailPage = () => {
       <Navbar />
       <div className="pt-24 pb-16">
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 mb-5">
-          <Link to="/careers" className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+          <Link to={`/${language}/careers`} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Tất cả vị trí
           </Link>

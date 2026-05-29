@@ -72,7 +72,7 @@ const PolicyTextRenderer = ({ sectionId }: PolicyTextRendererProps) => {
                     {desc}
                 </p>
                 <Link
-                    to="/shipping-policy"
+                    to={`/${language}/shipping-policy`}
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg font-medium text-[13px] hover:opacity-90 transition-opacity notranslate"
                     translate="no"
                 >

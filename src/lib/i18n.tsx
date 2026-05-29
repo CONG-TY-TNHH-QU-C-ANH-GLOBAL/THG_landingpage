@@ -1167,13 +1167,7 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>(() => {
-    if (typeof localStorage !== "undefined") {
-      const saved = localStorage.getItem("thg_lang") as Language | null;
-      if (saved && ["en", "vi", "zh"].includes(saved)) return saved;
-    }
-    return "en";
-  });
+  const [language, setLanguageState] = useState<Language>("vi");
 
   // Fetch translations from CMS API. Hardcoded `translations` object stays as
   // fallback for offline / initial load before CMS responds. When CMS data
@@ -1198,7 +1192,6 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem("thg_lang", lang);
   };
 
   const t = (key: string): string => effectiveMap[key] ?? key;

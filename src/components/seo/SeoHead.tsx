@@ -34,7 +34,8 @@ export function SeoHead({
 }: Props) {
   const { language } = useI18n();
   const fullPath = path.startsWith("/") ? path : `/${path}`;
-  const canonical = `${SITE_BASE}${fullPath}`;
+  // With URL-prefix routing, canonical always includes the language segment.
+  const canonical = `${SITE_BASE}/${language}${fullPath}`;
 
   return (
     <Helmet>
@@ -43,18 +44,13 @@ export function SeoHead({
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
 
-      {/* Hreflang. We serve 1 URL with client-side language switching, so we
-          can only honestly declare the language currently rendered plus
-          x-default. Listing all 3 locales pointing to the same URL would tell
-          Google "this URL is canonical for en/vi/zh simultaneously", which is
-          false — each crawl renders only one. True multi-locale hreflang needs
-          URL-prefix routing (/en/*, /vi/*) — tracked in Sprint 3 plan. */}
-      <link
-        rel="alternate"
-        hrefLang={language === "zh" ? "zh-CN" : language}
-        href={canonical}
-      />
-      <link rel="alternate" hrefLang="x-default" href={canonical} />
+      {/* Hreflang — now that URL-prefix routing (/en/*, /vi/*, /zh/*) is live
+          we can correctly declare all 3 alternate URLs for each page.
+          x-default points to /vi as the primary audience locale. */}
+      <link rel="alternate" hrefLang="vi" href={`${SITE_BASE}/vi${fullPath}`} />
+      <link rel="alternate" hrefLang="en" href={`${SITE_BASE}/en${fullPath}`} />
+      <link rel="alternate" hrefLang="zh-CN" href={`${SITE_BASE}/zh${fullPath}`} />
+      <link rel="alternate" hrefLang="x-default" href={`${SITE_BASE}/vi${fullPath}`} />
 
       {/* OpenGraph */}
       <meta property="og:type" content={ogType} />

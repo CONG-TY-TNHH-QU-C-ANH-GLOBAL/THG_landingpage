@@ -10,7 +10,7 @@ const CHIP_KEYS = ["op.chip1", "op.chip2", "op.chip3", "op.chip4", "op.chip5", "
  *  the catalog. CTA target is intentional (not the lead form) — visitors
  *  who scrolled this far have already seen the lead modal pitch upstream. */
 export function OrderTrustCTA() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   return (
     <section className="py-20 bg-gradient-to-r from-primary to-primary/80">
@@ -25,7 +25,7 @@ export function OrderTrustCTA() {
               </span>
             ))}
           </div>
-          <Link to="/catalog">
+          <Link to={`/${language}/catalog`}>
             <Button className="bg-white text-primary hover:bg-white/90 rounded-full px-10 py-6 text-base font-bold shadow-lg hover:-translate-y-1 transition-all">
               🚀 {t("op.trust_cta")}
             </Button>
