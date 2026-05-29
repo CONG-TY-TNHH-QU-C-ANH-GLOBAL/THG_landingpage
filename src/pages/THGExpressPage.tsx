@@ -68,6 +68,7 @@ const THGExpressPage = () => {
         title="THG Express — International Shipping Sea/Air/Express VN-CN to US"
         description={t("express_page.hero_subtitle")}
         path="/thg-express"
+        ogImage={EXPRESS_HERO_URL}
       />
       <JsonLdService
         name="THG Express — International Shipping"

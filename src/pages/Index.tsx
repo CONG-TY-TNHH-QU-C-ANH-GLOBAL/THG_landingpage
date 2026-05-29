@@ -12,6 +12,7 @@ import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import ImageMarquee from "@/components/ImageMarquee";
 import ScrollReveal from "@/components/ScrollReveal";
+import thgHeroImage from "@/assets/THG.jpg";
 import { useI18n } from "@/lib/i18n";
 import { useCmsMarqueeImages, useCmsFaqs } from "@/hooks/useCmsContent";
 import { SeoHead } from "@/components/seo/SeoHead";
@@ -44,7 +45,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SeoHead title={seo.title} description={seo.description} path="/" />
+      <SeoHead title={seo.title} description={seo.description} path="/" ogImage={thgHeroImage} />
       <JsonLdOrganization />
       {faqsData?.faqs && faqsData.faqs.length > 0 && <JsonLdFaqPage faqs={faqsData.faqs} />}
       <Navbar />
