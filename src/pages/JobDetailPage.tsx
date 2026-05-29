@@ -90,7 +90,7 @@ const JobDetailPage = () => {
 
   const accent = accentFor(job.cat);
   const description = buildDescription(job);
-  const url = `${SITE}/careers/${job.id}`;
+  const url = `${SITE}/${language}/careers/${job.id}`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,8 +111,8 @@ const JobDetailPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: `${SITE}/` },
-          { name: t("careers.title") || "Careers", url: `${SITE}/careers` },
+          { name: "Home", url: `${SITE}/${language}` },
+          { name: t("careers.title") || "Careers", url: `${SITE}/${language}/careers` },
           { name: job.title, url },
         ]}
       />

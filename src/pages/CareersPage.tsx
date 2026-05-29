@@ -163,7 +163,7 @@ const CareersPage = () => {
                             const expired = isPastDeadline(job.deadline);
                             return (
                                 <ScrollReveal key={job.id} delay={i * 80} className="h-full">
-                                    <Link to={`/careers/${job.id}`}
+                                    <Link to={`/${language}/careers/${job.id}`}
                                         className={`bg-white border border-border rounded-2xl p-[30px] cursor-pointer transition-all hover:-translate-y-1 hover:shadow-xl relative overflow-hidden flex flex-col h-full min-h-[320px] group ${expired ? "opacity-60 grayscale" : ""}`}
                                         style={{ "--accent": accentColor } as React.CSSProperties}>
                                         <div className="absolute top-0 left-0 right-0 h-[3px] opacity-70 group-hover:opacity-100 group-hover:h-1 transition-all" style={{ background: accentColor }} />
