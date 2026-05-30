@@ -174,7 +174,7 @@ const Navbar = () => {
                   if (location.pathname === `/${language}`) {
                     document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
                   } else {
-                    window.location.href = `/${language}/${hash}`;
+                    window.location.href = `/${language}/#${hash}`;
                   }
                 }}
               >
