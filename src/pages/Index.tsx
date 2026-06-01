@@ -8,6 +8,7 @@ import AdvantagesSection from "@/components/AdvantagesSection";
 import IntegrationsSection from "@/components/IntegrationsSection";
 import LogisticsAnimationSection from "@/components/LogisticsAnimationSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import TrustBadgesSection from "@/components/TrustBadgesSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import ImageMarquee from "@/components/ImageMarquee";
@@ -58,6 +59,7 @@ const Index = () => {
       <IntegrationsSection />
       <LogisticsAnimationSection />
       <TestimonialsSection />
+      <TrustBadgesSection />
       <FAQSection />
 
       {/* ════════════════════ IMAGE MARQUEE ════════════════════ */}

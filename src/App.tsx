@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
+import * as Sentry from "@sentry/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -130,27 +131,29 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <ErrorBoundary>
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <I18nProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <LarkPricingProvider>
-                <UtmCapture />
-                <AppRoutes />
-                <FloatingContact />
-                <ConsentBanner />
-                <TrackingScripts />
-              </LarkPricingProvider>
-            </BrowserRouter>
-          </TooltipProvider>
-        </I18nProvider>
-      </QueryClientProvider>
-    </HelmetProvider>
-  </ErrorBoundary>
+  <Sentry.ErrorBoundary fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin" /></div>}>
+    <ErrorBoundary>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <I18nProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <LarkPricingProvider>
+                  <UtmCapture />
+                  <AppRoutes />
+                  <FloatingContact />
+                  <ConsentBanner />
+                  <TrackingScripts />
+                </LarkPricingProvider>
+              </BrowserRouter>
+            </TooltipProvider>
+          </I18nProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
+  </Sentry.ErrorBoundary>
 );
 
 export default App;

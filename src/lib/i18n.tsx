@@ -51,12 +51,12 @@ export const translations: Translations = {
   "consent.accept": { en: "Accept", vi: "Đồng ý", zh: "同意" },
   "consent.reject": { en: "Reject", vi: "Từ chối", zh: "拒绝" },
 
-  "hero.badge": { en: "15% OFF for first 50 orders", vi: "Ưu đãi 15% cho 50 đơn hàng đầu tiên", zh: "前50单享85折优惠" },
-  "hero.title1": { en: "Your Global", vi: "Giải pháp", zh: "您的全球" },
+  "hero.badge": { en: "Vietnam + China ops, 4 warehouses in 3 countries", vi: "Vận hành Việt Nam + Trung Quốc, 4 kho tại 3 quốc gia", zh: "越南+中国联运，3国4仓" },
+  "hero.title1": { en: "Vietnam-to-Global", vi: "Fulfillment", zh: "越南到全球" },
   "hero.title_highlight": { en: "Fulfillment", vi: "vận chuyển quốc tế", zh: "Fulfillment" },
-  "hero.title2": { en: "Partner for", vi: "cho mọi", zh: "合作伙伴，为" },
-  "hero.title3": { en: "eCommerce Sellers", vi: "nhà bán hàng", zh: "电商卖家" },
-  "hero.subtitle": { en: "A comprehensive fulfillment ecosystem, seamlessly connecting from Vietnam – China – to warehouses in the US.", vi: "Nhanh, minh bạch, đáng tin cậy. Giao nhận liền mạch từ Việt Nam – Trung Quốc đi toàn cầu.", zh: "全面的履约生态系统，无缝连接越南-中国-美国仓库。" },
+  "hero.title2": { en: "Engineered for", vi: "xuyên biên giới cho", zh: "履约伙伴，服务" },
+  "hero.title3": { en: "Cross-Border Sellers", vi: "seller TMĐT", zh: "跨境电商卖家" },
+  "hero.subtitle": { en: "Scale with a Vietnam-first network: sourcing in VN/CN, linehaul to US/EU/UK, and domestic fulfill from $1.2 with transparent SLAs.", vi: "Tăng trưởng với mạng lưới lấy Việt Nam làm trung tâm: sourcing VN/CN, linehaul đi US/EU/UK và fulfill nội địa Mỹ từ $1.2 với SLA minh bạch.", zh: "以越南为核心网络实现增长：VN/CN采购、干线到US/EU/UK，并提供$1.2起美国本土履约与透明SLA。" },
   "hero.cta": { en: "Catalog site", vi: "Tham khảo catalog", zh: "浏览产品目录" },
   "hero.learn_more": { en: "Learn More", vi: "Tìm hiểu thêm", zh: "了解更多" },
   "hero.feature1": { en: "Product sourcing", vi: "Tìm nguồn cung ứng sản phẩm", zh: "产品采购" },
@@ -1180,6 +1180,18 @@ export const translations: Translations = {
     vi: "Tư vấn miễn phí · Phản hồi trong 24h · Không cam kết",
     zh: "免费咨询 · 24小时响应 · 无义务",
   },
+
+  // Homepage trust badges (static benchmark placeholders, not CMS-driven)
+  "trust_badges.eyebrow": { en: "Trust Signals", vi: "Tín Hiệu Tin Cậy", zh: "信任标识" },
+  "trust_badges.title": { en: "Built for Reliability at Scale", vi: "Năng Lực Vận Hành Đáng Tin Cậy", zh: "为规模化可靠履约而建" },
+  "trust_badges.subtitle": { en: "Public profiles and third-party reviews can be attached here as your team publishes them.", vi: "Có thể gắn profile công khai và đánh giá bên thứ ba tại đây khi đội ngũ xuất bản chính thức.", zh: "当团队发布后，可在此挂载公开资料与第三方评价。" },
+  "trust_badges.placeholder": { en: "Placeholder", vi: "Đang chuẩn bị", zh: "占位" },
+  "trust_badges.badge1_name": { en: "Trustpilot", vi: "Trustpilot", zh: "Trustpilot" },
+  "trust_badges.badge1_value": { en: "Profile pending publication", vi: "Hồ sơ đang chờ công khai", zh: "资料待发布" },
+  "trust_badges.badge2_name": { en: "G2", vi: "G2", zh: "G2" },
+  "trust_badges.badge2_value": { en: "Review page pending publication", vi: "Trang đánh giá đang chờ công khai", zh: "评价页待发布" },
+  "trust_badges.badge3_name": { en: "Compliance & Security", vi: "Tuân thủ & Bảo mật", zh: "合规与安全" },
+  "trust_badges.badge3_value": { en: "Operational policy and SLA proof", vi: "Bộ chính sách vận hành và bằng chứng SLA", zh: "运营政策与SLA证明" },
 };
 
 
