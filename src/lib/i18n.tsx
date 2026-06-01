@@ -21,6 +21,7 @@ export const translations: Translations = {
   "nav.domestic_pricing_desc": { en: "US domestic shipping rates by delivery zone", vi: "Biểu giá theo vùng giao hàng nội địa Mỹ", zh: "美国国内按区域运费" },
   "nav.policy": { en: "Policy", vi: "Chính sách", zh: "政策" },
   "nav.news": { en: "Blog", vi: "Blog", zh: "Blog" },
+  "nav.tracking": { en: "Tracking", vi: "Theo dõi đơn", zh: "订单追踪" },
   "nav.faq": { en: "Q&A", vi: "Q&A", zh: "问答" },
   "nav.consult": { en: "Get Started", vi: "Tư vấn ngay", zh: "立即咨询" },
   "nav.thg_fulfill": { en: "THG Fulfill", vi: "THG Fulfill", zh: "THG Fulfill" },
@@ -65,6 +66,32 @@ export const translations: Translations = {
   "hero.delivery_days": { en: "delivery days", vi: "ngày giao hàng", zh: "交货天数" },
   "hero.warehouses": { en: "warehouses in 3 countries", vi: "kho ở cả 3 quốc gia", zh: "3个国家的仓库" },
   "hero.us_fulfill": { en: "US domestic fulfill", vi: "Fulfill nội địa Mỹ", zh: "美国国内履约" },
+
+  // Tracking Page
+  "tracking.title": { en: "Track Your Shipment", vi: "Theo Dõi Đơn Hàng", zh: "追踪您的包裹" },
+  "tracking.subtitle": {
+    en: "Enter your order ID to check the latest shipping status.",
+    vi: "Nhập mã đơn để kiểm tra trạng thái vận chuyển mới nhất.",
+    zh: "输入订单编号以查看最新物流状态。"
+  },
+  "tracking.input_label": { en: "Order ID", vi: "Mã đơn hàng", zh: "订单编号" },
+  "tracking.input_placeholder": { en: "Example: THG-2026-000123", vi: "Ví dụ: THG-2026-000123", zh: "例如：THG-2026-000123" },
+  "tracking.submit": { en: "Track now", vi: "Tra cứu ngay", zh: "立即查询" },
+  "tracking.submitting": { en: "Checking...", vi: "Đang kiểm tra...", zh: "查询中..." },
+  "tracking.result_title": { en: "Tracking Result", vi: "Kết quả tra cứu", zh: "查询结果" },
+  "tracking.lookup_unavailable": {
+    en: "Live lookup API is not configured yet. Please contact support and provide your order ID.",
+    vi: "API tra cứu realtime chưa được cấu hình. Vui lòng liên hệ hỗ trợ và cung cấp mã đơn.",
+    zh: "实时查询接口尚未配置。请联系客服并提供订单编号。"
+  },
+  "tracking.invalid_order_id": {
+    en: "Please enter your order ID before searching.",
+    vi: "Vui lòng nhập mã đơn trước khi tra cứu.",
+    zh: "请先输入订单编号。"
+  },
+  "tracking.contact_support": { en: "Contact support", vi: "Liên hệ hỗ trợ", zh: "联系支持" },
+  "tracking.no_data": { en: "No tracking data found for this order ID.", vi: "Không tìm thấy dữ liệu cho mã đơn này.", zh: "未找到该订单编号的物流数据。" },
+  "tracking.request_failed": { en: "Lookup failed. Please try again later.", vi: "Tra cứu thất bại. Vui lòng thử lại sau.", zh: "查询失败，请稍后重试。" },
 
   // Services (updated for 3 cards)
   "services.subtitle": { en: "Our Services", vi: "Dịch vụ của chúng tôi", zh: "我们的服务" },

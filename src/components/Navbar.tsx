@@ -66,6 +66,7 @@ const Navbar = () => {
   const navItems = [
     { label: t("nav.policy"), href: "/policy" },
     { label: t("nav.news"), href: "/blog" },
+    { label: t("nav.tracking"), href: "/tracking" },
     { label: t("nav.faq"), href: "/#faq" },
     { label: t("nav.careers"), href: "/careers" },
   ];
