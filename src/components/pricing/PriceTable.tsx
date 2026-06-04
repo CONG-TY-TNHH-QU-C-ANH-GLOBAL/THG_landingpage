@@ -1,12 +1,17 @@
 import { useState, useMemo, useRef, useEffect, useCallback, useId } from "react";
-import { ChevronDown, ChevronUp, FileSpreadsheet, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronUp, FileSpreadsheet, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import type { PricingRow } from "@/components/pricing/types";
 
-// xlsx + jspdf weigh ~290KB combined; lazy-load only when user actually exports.
+// xlsx + jspdf + html2canvas weigh ~600KB combined; lazy-load only on export.
 async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfig) {
     const { exportToExcel } = await import("@/lib/exportUtils");
     exportToExcel(config);
+}
+
+async function lazyExportToPdf(element: HTMLElement, filename: string) {
+    const { exportElementToPdf } = await import("@/lib/exportUtils");
+    await exportElementToPdf({ element, filename });
 }
 
 const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbol = "$", sla }: {
@@ -22,6 +27,8 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
     // React hydration warnings once we started prerendering.
     const tableId = `table-price-${useId()}`;
     const scrollRef = useRef<HTMLDivElement>(null);
+    const tableRef = useRef<HTMLTableElement>(null);
+    const [pdfBusy, setPdfBusy] = useState(false);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -82,6 +89,26 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
         return { filename: title, headers, rows };
     }, [data, columns, title, currencySymbol, rate]);
 
+    // PDF export captures the rendered table, so every row must be in the DOM
+    // first. Temporarily expand, wait two frames for paint, capture, then restore.
+    const handleExportPdf = useCallback(async () => {
+        if (pdfBusy) return;
+        setPdfBusy(true);
+        const wasExpanded = isExpanded;
+        try {
+            if (!wasExpanded) setIsExpanded(true);
+            await new Promise<void>((resolve) =>
+                requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+            );
+            if (tableRef.current) {
+                await lazyExportToPdf(tableRef.current, exportConfig.filename);
+            }
+        } finally {
+            if (!wasExpanded) setIsExpanded(false);
+            setPdfBusy(false);
+        }
+    }, [pdfBusy, isExpanded, exportConfig.filename]);
+
     if (!data || data.length === 0) return null;
 
     const displayData = isExpanded ? data : data.slice(0, 6);
@@ -97,6 +124,9 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                     {note && <span className="text-[#9CA3AF] text-[12px] mr-2">{note}</span>}
                     <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title={t("pt.export_excel")}>
                         <FileSpreadsheet size={14} />
+                    </button>
+                    <button onClick={handleExportPdf} disabled={pdfBusy} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors disabled:opacity-50" title={t("pt.export_pdf")}>
+                        <FileText size={14} />
                     </button>
                 </div>
             </div>
@@ -127,7 +157,7 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
             {/* Horizontally-scrollable table with sticky weight column */}
             <div className="relative">
                 <div ref={scrollRef} className="overflow-x-auto scroll-smooth">
-                    <table id={tableId} className="w-full border-collapse text-[12px] md:text-[13px]">
+                    <table ref={tableRef} id={tableId} className="w-full border-collapse text-[12px] md:text-[13px]">
                         <thead>
                             <tr className="bg-[#FAFAF8]">
                                 <th className="px-2 py-2 md:py-2.5 text-center text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-muted-foreground border-b border-[var(--pricing-border)] border-r border-r-[var(--pricing-border)] whitespace-nowrap sticky left-0 bg-[#FAFAF8] z-10 min-w-[48px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]">KG</th>

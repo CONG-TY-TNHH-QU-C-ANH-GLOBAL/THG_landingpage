@@ -5,6 +5,7 @@ import AboutVideoSection from "@/components/AboutVideoSection";
 import SellerTypesSection from "@/components/SellerTypesSection";
 import ProcessSection from "@/components/ProcessSection";
 import AdvantagesSection from "@/components/AdvantagesSection";
+import EcosystemJourneySection from "@/components/EcosystemJourneySection";
 import IntegrationsSection from "@/components/IntegrationsSection";
 import LogisticsAnimationSection from "@/components/LogisticsAnimationSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -56,6 +57,7 @@ const Index = () => {
       <SellerTypesSection />
       <ProcessSection />
       <AdvantagesSection />
+      <EcosystemJourneySection />
       <IntegrationsSection />
       <LogisticsAnimationSection />
       <TestimonialsSection />

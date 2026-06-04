@@ -1,9 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
+import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ContactSection from "@/components/ContactSection";
+import ScrollReveal from "@/components/ScrollReveal";
+import { Button } from "@/components/ui/button";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { useI18n } from "@/lib/i18n";
 
 
@@ -109,6 +113,14 @@ const InternationalPricingContent = () => {
       label: countryNames[k.toLowerCase()] || k.toUpperCase()
     }));
   }, [currentData, route]);
+
+  // Pre-fill the quote-request message with the user's current selection so
+  // sales gets context. Uses unambiguous labels (not cryptic route ids).
+  const quoteMessage = useMemo(() => {
+    const originLabel = origin === "vn" ? "Vietnam (VN)" : "China (CN)";
+    const serviceLabel = service === "express" ? "Express / Bulk" : "ePacket";
+    return `${t("quote.email_prefix")} ${originLabel} → US/EU/UK · ${serviceLabel}`;
+  }, [origin, service, t]);
 
   // Handle cargo switch with validation
   const handleCargoSwitch = (c: CargoType) => {
@@ -401,6 +413,25 @@ const InternationalPricingContent = () => {
             {origin === "cn" && <ExpressCnUsPanel route={route} />}
           </div>
         )}
+
+        {/* CTA — export the tables (PDF button per table above) or request a
+            tailored quote by email. Reuses the shared lead form → CMS /leads,
+            pre-filled with the current route/service selection. (audit Gap 8) */}
+        <ScrollReveal>
+          <div className="mt-8 bg-gradient-to-br from-navy via-navy/95 to-primary/80 text-white rounded-xl p-6 md:p-10 text-center">
+            <h3 className="text-xl md:text-2xl font-bold mb-2">{t("quote.cta_title")}</h3>
+            <p className="text-white/70 mb-5 text-sm max-w-lg mx-auto">{t("quote.cta_desc")}</p>
+            <LeadFormDialog
+              sourcePage="/international-pricing#quote"
+              defaultMessage={quoteMessage}
+              trigger={
+                <Button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-[13px] hover:bg-primary/90 transition-colors shadow-lg shadow-primary/30">
+                  {t("quote.cta_btn")} <ArrowRight className="w-4 h-4" />
+                </Button>
+              }
+            />
+          </div>
+        </ScrollReveal>
       </div>
 
       <ContactSection />

@@ -1192,6 +1192,74 @@ export const translations: Translations = {
   "trust_badges.badge2_value": { en: "Review page pending publication", vi: "Trang đánh giá đang chờ công khai", zh: "评价页待发布" },
   "trust_badges.badge3_name": { en: "Compliance & Security", vi: "Tuân thủ & Bảo mật", zh: "合规与安全" },
   "trust_badges.badge3_value": { en: "Operational policy and SLA proof", vi: "Bộ chính sách vận hành và bằng chứng SLA", zh: "运营政策与SLA证明" },
+
+  // Brand promise — concretizes the "Happiness" brand into a measurable promise (audit Gap 5)
+  "brand.promise": {
+    en: "Happiness means: on time · on budget · in your customers' hands.",
+    vi: "Happiness nghĩa là: giao đúng hẹn · đúng giá · đúng tay khách hàng.",
+    zh: "Happiness 即：准时 · 价格透明 · 安全送达买家手中。",
+  },
+
+  // Pricing export (audit Gap 8)
+  "pt.export_pdf": { en: "Export to PDF", vi: "Xuất PDF", zh: "导出PDF" },
+
+  // Quote request CTA on pricing pages (audit Gap 8)
+  "quote.cta_title": { en: "Save this quote or get a tailored one", vi: "Lưu báo giá hoặc nhận báo giá riêng", zh: "保存此报价或获取专属报价" },
+  "quote.cta_desc": {
+    en: "Export the rate tables to PDF to share with your team, or request a personalized quote by email based on your route, weight and volume.",
+    vi: "Xuất bảng giá ra PDF để gửi cho đội ngũ, hoặc nhận báo giá cá nhân hóa qua email theo tuyến, trọng lượng và sản lượng của bạn.",
+    zh: "将运费表导出为PDF与团队分享，或根据您的线路、重量与销量通过邮件获取个性化报价。",
+  },
+  "quote.cta_btn": { en: "Request quote by email", vi: "Nhận báo giá qua email", zh: "通过邮件获取报价" },
+  "quote.email_prefix": { en: "Quote request for:", vi: "Yêu cầu báo giá cho:", zh: "报价请求：" },
+
+  // Ecosystem journey — land & expand roadmap across services (audit Gap 3)
+  "ecosystem.eyebrow": { en: "Grow With Us", vi: "Đồng Hành Tăng Trưởng", zh: "与我们共同成长" },
+  "ecosystem.title": { en: "One ecosystem, every stage of growth", vi: "Một hệ sinh thái, đồng hành mọi giai đoạn", zh: "一个生态系统，陪伴每个增长阶段" },
+  "ecosystem.subtitle": {
+    en: "Start with a single service and expand as you scale — no switching providers, one team end to end.",
+    vi: "Bắt đầu với một dịch vụ và mở rộng khi bạn lớn lên — không cần đổi nhà cung cấp, một đội ngũ xuyên suốt.",
+    zh: "从单一服务起步，随规模扩展——无需更换供应商，一个团队全程服务。",
+  },
+  "ecosystem.step1_tag": { en: "Start", vi: "Bắt đầu", zh: "起步" },
+  "ecosystem.step1_title": { en: "THG Express", vi: "THG Express", zh: "THG Express" },
+  "ecosystem.step1_desc": {
+    en: "Ship cross-border from VN/CN to the US/EU/UK with transparent rates — no warehouse needed yet.",
+    vi: "Vận chuyển xuyên biên giới từ VN/CN đi US/EU/UK với cước minh bạch — chưa cần kho.",
+    zh: "以透明运费从越南/中国发往美国/欧盟/英国——暂时无需仓库。",
+  },
+  "ecosystem.step1_when": {
+    en: "When you pass ~200 orders/month, you'll want stock closer to customers.",
+    vi: "Khi vượt ~200 đơn/tháng, bạn sẽ cần hàng nằm gần khách hơn.",
+    zh: "当每月订单超过约200单时，您会希望库存更靠近客户。",
+  },
+  "ecosystem.step1_cta": { en: "Explore Express", vi: "Xem THG Express", zh: "了解 Express" },
+  "ecosystem.step2_tag": { en: "Expand", vi: "Mở rộng", zh: "扩展" },
+  "ecosystem.step2_title": { en: "THG Warehouse", vi: "THG Warehouse", zh: "THG Warehouse" },
+  "ecosystem.step2_desc": {
+    en: "Store inventory in the US and fulfill domestically from $1.2 — faster delivery, lower per-order cost.",
+    vi: "Lưu kho tại Mỹ và fulfill nội địa từ $1.2 — giao nhanh hơn, chi phí mỗi đơn thấp hơn.",
+    zh: "在美国存储库存并以$1.2起的价格本土履约——更快交付，更低单均成本。",
+  },
+  "ecosystem.step2_when": {
+    en: "Ready to own your product and brand? Move into print-on-demand.",
+    vi: "Sẵn sàng tự chủ sản phẩm và thương hiệu? Chuyển sang in theo yêu cầu (POD).",
+    zh: "准备好拥有自己的产品和品牌了吗？进入按需印刷（POD）。",
+  },
+  "ecosystem.step2_cta": { en: "Explore Warehouse", vi: "Xem THG Warehouse", zh: "了解 Warehouse" },
+  "ecosystem.step3_tag": { en: "Scale", vi: "Tăng tốc", zh: "加速" },
+  "ecosystem.step3_title": { en: "THG Fulfill — POD & Sourcing", vi: "THG Fulfill — POD & Sourcing", zh: "THG Fulfill — POD与采购" },
+  "ecosystem.step3_desc": {
+    en: "Print on demand, source from VN/CN and run full fulfillment under one roof — built for sellers scaling globally.",
+    vi: "In theo yêu cầu, sourcing từ VN/CN và vận hành fulfillment trọn gói — dành cho seller mở rộng toàn cầu.",
+    zh: "按需印刷、从越南/中国采购并提供一站式履约——为全球扩张的卖家打造。",
+  },
+  "ecosystem.step3_when": {
+    en: "One team across the whole journey — from first order to global scale.",
+    vi: "Một đội ngũ xuyên suốt hành trình — từ đơn đầu tiên đến quy mô toàn cầu.",
+    zh: "一个团队贯穿整个旅程——从第一单到全球规模。",
+  },
+  "ecosystem.step3_cta": { en: "Explore Fulfill", vi: "Xem THG Fulfill", zh: "了解 Fulfill" },
 };
 
 
