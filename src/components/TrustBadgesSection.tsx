@@ -20,6 +20,7 @@ const TrustBadgesSection = () => {
           <div className="text-center max-w-3xl mx-auto mb-10">
             <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em]">{t("trust_badges.eyebrow")}</p>
             <h2 className="mt-3 text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("trust_badges.title")}</h2>
+            <p className="mt-4 text-base md:text-lg font-semibold text-navy/90">{t("brand.promise")}</p>
             <p className="mt-3 text-muted-foreground">{t("trust_badges.subtitle")}</p>
           </div>
         </ScrollReveal>

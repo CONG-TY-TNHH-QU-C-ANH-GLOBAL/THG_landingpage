@@ -22,14 +22,16 @@ interface Props {
   trigger: ReactNode;
   /** Source page for analytics — defaults to current pathname */
   sourcePage?: string;
+  /** Pre-fills the message textarea (e.g. a pricing quote context). */
+  defaultMessage?: string;
 }
 
-export function LeadFormDialog({ trigger, sourcePage }: Props) {
+export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
   const { language, t } = useI18n();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: defaultMessage ?? "" });
   // Track which fields the user already touched so we only highlight invalid
   // ones after they've had a chance to enter something (avoids red borders
   // on initial render).
@@ -80,7 +82,7 @@ export function LeadFormDialog({ trigger, sourcePage }: Props) {
   }
 
   function reset() {
-    setForm({ name: "", email: "", phone: "", message: "" });
+    setForm({ name: "", email: "", phone: "", message: defaultMessage ?? "" });
     setDone(false);
     setTouched({});
     captcha.resetForRetry();
