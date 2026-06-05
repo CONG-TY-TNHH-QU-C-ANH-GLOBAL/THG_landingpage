@@ -10,6 +10,17 @@ import { JobDetailContent } from "@/components/careers/JobDetailContent";
 import { useCmsJob } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { accentFor, jobFromCmsListItem, withCmsDetail, type Job } from "@/lib/careers";
+import { parseDeadline } from "@/lib/deadline";
+
+/** Google for Jobs wants validThrough as an ISO date (YYYY-MM-DD). CMS stores
+ *  operator-entered DD/MM/YYYY, so convert via parseDeadline. Format from the
+ *  parsed date's LOCAL components — toISOString() would shift VN (UTC+7) midnight
+ *  back a day. Returns undefined when there's no parseable deadline. */
+function deadlineToIso(deadline: string | null | undefined): string | undefined {
+  const d = parseDeadline(deadline);
+  if (!d) return undefined;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 const SITE = "https://thgfulfill.com";
 
@@ -107,7 +118,7 @@ const JobDetailPage = () => {
         location={job.location}
         employmentType={job.type}
         datePosted={job.postedAt ? new Date(job.postedAt * 1000).toISOString().slice(0, 10) : undefined}
-        validThrough={job.deadline}
+        validThrough={deadlineToIso(job.deadline)}
       />
       <JsonLdBreadcrumb
         items={[

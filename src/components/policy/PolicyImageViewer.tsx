@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PolicyImageViewerProps {
@@ -14,6 +14,17 @@ const PolicyImageViewer = ({ images, title }: PolicyImageViewerProps) => {
     const [current, setCurrent] = useState(0);
     const total = images.length;
 
+    // Switching language keeps this instance mounted (PolicyPage keys it by slug
+    // only) but the image count can differ between locales, so a `current` from a
+    // longer set would point past the shorter set → blank <img>/"page N/M" N>M.
+    // Reset to the first page whenever the page count changes.
+    useEffect(() => {
+        setCurrent(0);
+    }, [total]);
+    // Guard the in-render read in case `total` shrank this same render, before
+    // the effect above fires.
+    const safeCurrent = current < total ? current : 0;
+
     const prev = useCallback(() => setCurrent((c) => (c > 0 ? c - 1 : total - 1)), [total]);
     const next = useCallback(() => setCurrent((c) => (c < total - 1 ? c + 1 : 0)), [total]);
 
@@ -24,9 +35,9 @@ const PolicyImageViewer = ({ images, title }: PolicyImageViewerProps) => {
             {/* ── Image Container ── */}
             <div className="relative group rounded-2xl overflow-hidden bg-white border border-[var(--pricing-border)] shadow-sm">
                 <img
-                    key={current}
-                    src={images[current]}
-                    alt={`${title} — trang ${current + 1}/${total}`}
+                    key={safeCurrent}
+                    src={images[safeCurrent]}
+                    alt={`${title} — trang ${safeCurrent + 1}/${total}`}
                     className="w-full h-auto block"
                     loading="lazy"
                     draggable={false}
@@ -54,7 +65,7 @@ const PolicyImageViewer = ({ images, title }: PolicyImageViewerProps) => {
 
                 {/* Page counter badge */}
                 <div className="absolute bottom-3 right-3 bg-black/50 text-white text-[11px] font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
-                    {current + 1} / {total}
+                    {safeCurrent + 1} / {total}
                 </div>
             </div>
 

@@ -196,7 +196,20 @@ export const cmsSiteSettingsSchema = z.object({
   default_og_image_id: z.number().nullable(),
   about_video_url: z.string().nullable(),
   remote_area_links: z.array(cmsRemoteAreaLinkSchema),
-  terminology: z.array(cmsTerminologyGroupSchema),
+  // Fail-soft: the backend's parseTerminology only guarantees the OUTER value
+  // is an array — it does NOT validate inner items. A single malformed group
+  // used to fail the whole site-settings parse, taking down analytics/contact/
+  // terminology site-wide. Drop bad groups instead so one bad row only loses
+  // itself from the glossary. Output type stays CmsTerminologyGroup[].
+  terminology: z
+    .array(z.unknown())
+    .catch([])
+    .transform((arr) =>
+      arr.filter(
+        (item): item is CmsTerminologyGroup =>
+          cmsTerminologyGroupSchema.safeParse(item).success,
+      ),
+    ),
 });
 export type CmsSiteSettings = z.infer<typeof cmsSiteSettingsSchema>;
 
