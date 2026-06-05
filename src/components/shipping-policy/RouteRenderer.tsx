@@ -139,7 +139,10 @@ export function RouteRenderer({ slug }: Props) {
 
       {/* Each ## section as a collapsible accordion (first one open). */}
       {parsed.sections.map((sec, i) => (
-        <Sec key={i} icon={sec.icon} title={sec.title} defaultOpen={i === 0}>
+        // Key on the section title, not the array index: Sec holds its own
+        // open/closed state, so an index key would leak that state onto the
+        // wrong section when CMS body_md is edited to reorder/insert sections.
+        <Sec key={sec.title || `sec-${i}`} icon={sec.icon} title={sec.title} defaultOpen={i === 0}>
           {renderLines(sec.lines, `sec-${i}`)}
         </Sec>
       ))}

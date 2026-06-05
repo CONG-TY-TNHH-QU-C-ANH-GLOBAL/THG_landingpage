@@ -39,7 +39,10 @@ const ALLOWED_TAGS = [
   "ul",
 ];
 
-const ALLOWED_ATTR = ["href", "target", "rel", "src", "alt", "title", "class", "className", "style"];
+// `style` deliberately excluded: CMS/translated HTML is rendered through this,
+// and arbitrary inline CSS allows full-page `position:fixed` overlays and
+// `background:url()` exfil. The emitted markup styles via `class` only.
+const ALLOWED_ATTR = ["href", "target", "rel", "src", "alt", "title", "class", "className"];
 
 export function sanitizeHtml(input: string): string {
   return DOMPurify.sanitize(input, {

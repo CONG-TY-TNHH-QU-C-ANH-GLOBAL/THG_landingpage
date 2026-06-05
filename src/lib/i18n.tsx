@@ -292,6 +292,8 @@ export const translations: Translations = {
   // Shipping Policy page
   "spolicy.title": { en: "Shipping Policy", vi: "Chính Sách Vận Chuyển", zh: "运输政策" },
   "spolicy.subtitle": { en: "Organized by shipping route — select a route below to view its terms", vi: "Phân loại theo tuyến vận chuyển — chọn tuyến bên dưới để xem điều khoản", zh: "按运输路线分类 — 选择下方路线查看条款" },
+  "spolicy.loading": { en: "Loading shipping routes…", vi: "Đang tải tuyến vận chuyển…", zh: "正在加载运输路线…" },
+  "spolicy.empty": { en: "No shipping routes available yet.", vi: "Chưa có tuyến vận chuyển nào.", zh: "暂无运输路线。" },
 
   // Blog page
   "blog.title": { en: "News & Insights", vi: "Tin tức & Kiến thức", zh: "新闻与见解" },

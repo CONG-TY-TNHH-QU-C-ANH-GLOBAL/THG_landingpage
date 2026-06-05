@@ -81,9 +81,14 @@ const LangLayout = () => {
 
   if (!isValid) {
     // Legacy URL (e.g., /thg-fulfill, /blog/my-post) or unknown lang code —
-    // redirect to /vi + full original path so old links keep working.
-    // Nginx try_files serves index.html for all paths, so React handles this.
-    return <Navigate to={`/vi${location.pathname}`} replace />;
+    // redirect to /vi so old links keep working (nginx try_files serves
+    // index.html for all paths, so React handles this).
+    // If the first segment looks like a WRONG 2-letter locale (e.g. /fr/policy),
+    // strip it so we land on /vi/policy — keeping it would produce /vi/fr/policy,
+    // which matches no route and 404s. Real legacy slugs (not 2-letter) are kept.
+    const looksLikeLocale = !!lang && /^[a-z]{2}$/i.test(lang);
+    const rest = looksLikeLocale ? location.pathname.slice(lang!.length + 1) : location.pathname;
+    return <Navigate to={`/vi${rest}`} replace />;
   }
 
   return <Outlet />;
