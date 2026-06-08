@@ -400,23 +400,26 @@ const DomesticPricingContent = () => {
     );
 };
 
-const DomesticPricingPage = () => (
-    <div className="min-h-screen bg-background">
-        <SeoHead
-            title="US Domestic Shipping Pricing — THG Fulfill"
-            description="US domestic shipping rates by zone (1-9) for THG Warehouse customers. UPS Ground, USPS, FedEx options. Updated weekly."
-            path="/domestic-pricing"
-        />
-        <JsonLdBreadcrumb
-            items={[
-                { name: "Home", url: "https://thgfulfill.com/" },
-                { name: "Domestic Pricing", url: "https://thgfulfill.com/domestic-pricing" },
-            ]}
-        />
-        <Navbar />
-        <DomesticPricingContent />
+const DomesticPricingPage = () => {
+    const { t } = useI18n();
+    return (
+        <div className="min-h-screen bg-background">
+            <SeoHead
+                title={t("seo.domestic_pricing_title")}
+                description={t("seo.domestic_pricing_desc")}
+                path="/domestic-pricing"
+            />
+            <JsonLdBreadcrumb
+                items={[
+                    { name: "Home", url: "https://thgfulfill.com/" },
+                    { name: "Domestic Pricing", url: "https://thgfulfill.com/domestic-pricing" },
+                ]}
+            />
+            <Navbar />
+            <DomesticPricingContent />
 
-    </div>
-);
+        </div>
+    );
+};
 
 export default DomesticPricingPage;

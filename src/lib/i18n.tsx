@@ -585,7 +585,7 @@ export const translations: Translations = {
 
   // ── THG Fulfill Page: Ecount Guide ──
   "fulfill_ecount.section_title": { en: "System Usage Guide", vi: "Hướng dẫn sử dụng hệ thống", zh: "系统使用指南" },
-  "fulfill_ecount.video_title": { en: "I. Video guide on how to place orders on Ecount", vi: "I. Video hướng dẫn cách lên đơn trên Ecount", zh: "I. Ecount下单视频教程" },
+  "fulfill_ecount.video_title": { en: "I. Order placement guide on HUB System Seller Portal", vi: "I. Hướng dẫn lên đơn trên HUB System Seller Portal", zh: "I. HUB System Seller Portal 下单指南" },
   "fulfill_ecount.video_desc": { en: "Watch the detailed video guide on placing orders on the THG Ecount ERP system. Note: select the correct SBSL (Ship By Seller) / SBTT (Ship By TikTok) when choosing SKU.", vi: "Xem video hướng dẫn chi tiết cách lên đơn hàng trên hệ thống Ecount ERP của THG. Lưu ý chọn đúng loại SBSL (Ship By Seller) / SBTT (Ship By TikTok) khi chọn SKU.", zh: "观看THG Ecount ERP系统下单的详细视频教程。注意：选择SKU时请正确选择SBSL（卖家发货）/ SBTT（TikTok发货）。" },
   "fulfill_ecount.sku_link": { en: "📋 Link SKU for THG FULFILL", vi: "📋 Link SKU cho THG FULFILL", zh: "📋 THG FULFILL SKU链接" },
   "fulfill_ecount.single_title": { en: "II. Place a single order on THG's ERP system", vi: "II. Lên đơn lẻ trên hệ thống ERP của THG", zh: "II. 在THG ERP系统上创建单个订单" },
@@ -1260,6 +1260,73 @@ export const translations: Translations = {
     zh: "一个团队贯穿整个旅程——从第一单到全球规模。",
   },
   "ecosystem.step3_cta": { en: "Explore Fulfill", vi: "Xem THG Fulfill", zh: "了解 Fulfill" },
+
+  // ── Per-page SEO titles & meta descriptions (audit Track A). Keyword-rich,
+  //    per-locale so vi/zh users see localized titles in SERP & social shares. ──
+  "seo.fulfill_title": { en: "POD & Dropship Fulfillment from Vietnam | THG Fulfill", vi: "Fulfillment POD & Dropship từ Việt Nam | THG Fulfill", zh: "越南POD与代发履约 | THG Fulfill" },
+  "seo.fulfill_desc": { en: "Print-on-demand & dropship fulfillment from Vietnam & China to the US, EU & UK. Competitive base cost, fast linehaul, US domestic fulfill from $1.2.", vi: "Fulfillment POD & dropship từ Việt Nam và Trung Quốc đi Mỹ, EU, UK. Chi phí gốc cạnh tranh, vận chuyển nhanh, fulfill nội địa Mỹ từ $1.2.", zh: "从越南和中国到美国、欧盟、英国的POD与代发履约。基础成本有竞争力，干线运输快，美国本土履约低至$1.2。" },
+  "seo.express_title": { en: "Cross-Border Express Shipping Vietnam & China to US | THG Express", vi: "Vận chuyển quốc tế Việt Nam & Trung Quốc đi Mỹ | THG Express", zh: "越南和中国到美国的跨境快递 | THG Express" },
+  "seo.express_desc": { en: "Fast cross-border express shipping from Vietnam & China to the US, UK & EU. Transparent per-kg rates, customs handling, tracking on every parcel.", vi: "Vận chuyển quốc tế nhanh từ Việt Nam và Trung Quốc đi Mỹ, UK, EU. Cước theo kg minh bạch, xử lý hải quan, theo dõi từng đơn.", zh: "从越南和中国到美国、英国、欧盟的快速跨境快递。每公斤费率透明，清关处理，每件包裹可追踪。" },
+  "seo.warehouse_title": { en: "US Warehouse & 3PL Fulfillment (PA & NC) | THG Warehouse", vi: "Kho Mỹ & Fulfillment 3PL (PA & NC) | THG Warehouse", zh: "美国仓储与3PL履约（宾州和北卡） | THG Warehouse" },
+  "seo.warehouse_desc": { en: "US-based 3PL warehousing in Pennsylvania & North Carolina. 2–5 day domestic delivery, transparent storage & pick-pack fees, real-time inventory.", vi: "Kho 3PL tại Mỹ ở Pennsylvania và North Carolina. Giao nội địa 2–5 ngày, phí lưu kho & pick-pack minh bạch, tồn kho theo thời gian thực.", zh: "位于宾州和北卡的美国3PL仓储。本土2–5天交付，仓储与拣货打包费用透明，实时库存。" },
+  "seo.order_title": { en: "Taobao & 1688 Dropshipping to the USA | THG Dropship", vi: "Đặt hàng Taobao & 1688 giao thẳng Mỹ | THG Dropship", zh: "淘宝与1688代发直邮美国 | THG Dropship" },
+  "seo.order_desc": { en: "Source and dropship products from Taobao & 1688 straight to your US customers. One partner for purchasing, QC, consolidation and shipping.", vi: "Mua và dropship sản phẩm từ Taobao & 1688 giao thẳng tới khách Mỹ. Một đối tác lo mua hàng, kiểm hàng, gom và vận chuyển.", zh: "从淘宝和1688采购并代发产品直达美国客户。采购、质检、集运与运输一站式合作伙伴。" },
+  "seo.catalog_title": { en: "POD Product Catalog — Apparel & Accessories | THG Fulfill", vi: "Catalog Sản Phẩm POD — Áo & Phụ Kiện | THG Fulfill", zh: "POD产品目录——服装与配件 | THG Fulfill" },
+  "seo.catalog_desc": { en: "Browse THG's print-on-demand catalog: t-shirts, hoodies, apparel and accessories ready for custom printing and global fulfillment.", vi: "Khám phá catalog POD của THG: áo thun, hoodie, trang phục và phụ kiện sẵn sàng in theo yêu cầu và fulfill toàn cầu.", zh: "浏览THG的按需印刷目录：T恤、卫衣、服装与配件，可定制印刷并全球履约。" },
+  "seo.careers_title": { en: "Careers at THG Fulfill — Join Our Team", vi: "Tuyển dụng tại THG Fulfill — Gia nhập đội ngũ", zh: "THG Fulfill 招聘——加入我们" },
+  "seo.careers_desc": { en: "Explore open roles at THG Fulfill across operations, sales, finance and AI/R&D. Help build the cross-border fulfillment network powering global sellers.", vi: "Khám phá vị trí đang tuyển tại THG Fulfill: vận hành, sales, kế toán và AI/R&D. Cùng xây mạng lưới fulfillment xuyên biên giới cho seller toàn cầu.", zh: "探索THG Fulfill在运营、销售、财务和AI/研发的职位空缺。共建赋能全球卖家的跨境履约网络。" },
+  "seo.intl_pricing_title": { en: "International Shipping Rates VN/CN → US/EU/UK | THG Fulfill", vi: "Bảng giá vận chuyển quốc tế VN/CN → US/EU/UK | THG Fulfill", zh: "国际运费 VN/CN → US/EU/UK | THG Fulfill" },
+  "seo.intl_pricing_desc": { en: "Transparent international shipping rates from Vietnam & China to the US, EU and UK. Compare ePacket, express and bulk by weight and destination.", vi: "Bảng giá vận chuyển quốc tế minh bạch từ VN & TQ đi Mỹ, EU, UK. So sánh ePacket, express và hàng lô theo cân nặng và điểm đến.", zh: "从越南和中国到美国、欧盟、英国的透明国际运费。按重量和目的地比较ePacket、快递与大宗。" },
+  "seo.domestic_pricing_title": { en: "US Domestic Shipping Rates by Zone | THG Fulfill", vi: "Bảng giá vận chuyển nội địa Mỹ theo vùng | THG Fulfill", zh: "美国国内分区运费 | THG Fulfill" },
+  "seo.domestic_pricing_desc": { en: "US domestic shipping rates by zone (1–9) for THG Warehouse customers. UPS Ground, USPS and FedEx options, updated weekly.", vi: "Bảng giá vận chuyển nội địa Mỹ theo vùng (1–9) cho khách THG Warehouse. UPS Ground, USPS, FedEx, cập nhật hằng tuần.", zh: "面向THG Warehouse客户的美国国内分区运费（1–9区）。UPS Ground、USPS与FedEx，每周更新。" },
+  "seo.policy_title": { en: "Policies — Shipping, Returns & Compensation | THG Fulfill", vi: "Chính sách — Vận chuyển, Đổi trả & Bồi thường | THG Fulfill", zh: "政策——运输、退换与赔偿 | THG Fulfill" },
+  "seo.policy_desc": { en: "THG Fulfill operational policies: shipping terms, returns, cargo insurance and compensation for lost or damaged items.", vi: "Chính sách vận hành THG Fulfill: điều khoản vận chuyển, đổi trả, bảo hiểm hàng hóa và bồi thường khi mất/hư hỏng.", zh: "THG Fulfill运营政策：运输条款、退换、货物保险及丢失或损坏赔偿。" },
+  "seo.shipping_policy_title": { en: "Shipping Policy & Delivery Times by Route | THG Fulfill", vi: "Chính sách vận chuyển & thời gian giao theo tuyến | THG Fulfill", zh: "各线路运输政策与时效 | THG Fulfill" },
+  "seo.shipping_policy_desc": { en: "Detailed shipping policy by route: delivery times, restrictions, customs and surcharges for VN/CN to US, EU and UK lanes.", vi: "Chính sách vận chuyển chi tiết theo tuyến: thời gian giao, hạn chế, hải quan và phụ phí cho tuyến VN/CN đi Mỹ, EU, UK.", zh: "按线路的详细运输政策：VN/CN到美国、欧盟、英国线路的时效、限制、清关与附加费。" },
+  "seo.tracking_title": { en: "Track Your Order | THG Fulfill", vi: "Theo dõi đơn hàng | THG Fulfill", zh: "订单追踪 | THG Fulfill" },
+  "seo.tracking_desc": { en: "Track your THG Fulfill shipment in real time. Enter your order ID to see the latest status and delivery updates.", vi: "Theo dõi đơn hàng THG Fulfill theo thời gian thực. Nhập mã đơn để xem trạng thái và cập nhật giao hàng mới nhất.", zh: "实时追踪您的THG Fulfill货件。输入订单号查看最新状态与配送更新。" },
+  "seo.notfound_title": { en: "Page Not Found (404) | THG Fulfill", vi: "Không tìm thấy trang (404) | THG Fulfill", zh: "页面未找到 (404) | THG Fulfill" },
+  "seo.notfound_desc": { en: "The page you're looking for doesn't exist. Return to the THG Fulfill homepage.", vi: "Trang bạn tìm không tồn tại. Quay lại trang chủ THG Fulfill.", zh: "您要找的页面不存在。返回THG Fulfill首页。" },
+
+  // ── THG Fulfill Page: HUB System Guide (Section II) — localized so EN/ZH
+  //    visitors no longer see the previously-hardcoded Vietnamese content. ──
+  "hub.eyebrow": { en: "System Usage Guide", vi: "Hướng dẫn sử dụng hệ thống", zh: "系统使用指南" },
+  "hub.heading": { en: "Hub System User Guide", vi: "Hướng dẫn sử dụng Hub System", zh: "Hub System 使用指南" },
+  "hub.subtitle_before": { en: "A detailed guide to every feature on the management system ", vi: "Hướng dẫn chi tiết từng tính năng trên hệ thống quản lý ", zh: "管理系统每项功能的详细指南 " },
+  "hub.toc": { en: "Contents", vi: "Mục lục", zh: "目录" },
+
+  "hub.s1_title": { en: "1. Login & Dashboard", vi: "1. Đăng nhập & Bảng điều khiển", zh: "1. 登录与仪表盘" },
+  "hub.s1_p1a": { en: "The management system is accessed at ", vi: "Hệ thống quản lý được truy cập thông qua địa chỉ ", zh: "管理系统通过以下地址访问：" },
+  "hub.s1_p1b": { en: ". After logging in with your assigned account, you'll reach the central Dashboard, where the core operational metrics are shown at a glance:", vi: ". Sau khi đăng nhập bằng tài khoản được cấp, người dùng sẽ tiếp cận Bảng điều khiển trung tâm (Dashboard). Tại đây, các chỉ số vận hành cốt lõi được hiển thị trực quan:", zh: "。使用所分配的账户登录后，您将进入中央仪表盘（Dashboard），核心运营指标一目了然：" },
+  "hub.s1_wallet_desc": { en: "Your currently available wallet balance.", vi: "Số dư hiện khả dụng trong ví.", zh: "钱包当前可用余额。" },
+  "hub.s1_orders_desc": { en: "Total number of orders created.", vi: "Tổng lượng đơn hàng đã khởi tạo.", zh: "已创建的订单总数。" },
+  "hub.s1_inprocess_desc": { en: "Number of orders currently being processed.", vi: "Số lượng đơn hàng đang trong giai đoạn xử lý.", zh: "正在处理中的订单数量。" },
+  "hub.s1_revenue_desc": { en: "Total revenue achieved.", vi: "Tổng doanh thu đạt được.", zh: "已实现的总收入。" },
+  "hub.s1_p2": { en: "The lower part of the page gives a quick overview of recent orders and top-up history.", vi: "Phần dưới của trang cung cấp cái nhìn nhanh về danh sách đơn hàng và lịch sử nạp tiền gần nhất.", zh: "页面下方提供最近订单列表与充值记录的快速概览。" },
+
+  "hub.s2_title": { en: "2. Order Management", vi: "2. Quản lý Đơn hàng", zh: "2. 订单管理" },
+  "hub.s2_p1": { en: "The Order section is the central hub for all operations. Users can:", vi: "Mục Order là trung tâm điều phối mọi hoạt động vận hành. Người dùng có thể:", zh: "Order（订单）模块是所有运营活动的协调中心。用户可以：" },
+  "hub.s2_li1": { en: "Track the detailed status of each order and its tracking number.", vi: "Theo dõi trạng thái chi tiết của từng đơn hàng và mã vận đơn (tracking number).", zh: "追踪每个订单的详细状态及运单号（tracking number）。" },
+  "hub.s2_li2": { en: "Create orders in bulk: use the Upload Orders feature with a CSV file to save data-entry time instead of creating each order manually.", vi: "Khởi tạo đơn hàng hàng loạt: Sử dụng tính năng Upload Orders thông qua file CSV để tối ưu hóa thời gian nhập liệu thay vì tạo thủ công từng đơn.", zh: "批量创建订单：使用 Upload Orders 功能通过 CSV 文件批量导入，免去逐单手动创建，节省录入时间。" },
+
+  "hub.s3_title": { en: "3. Product Catalog", vi: "3. Danh mục Sản phẩm", zh: "3. 产品目录" },
+  "hub.s3_p1": { en: "The Catalog section provides the product inventory supported by THG Fulfillment. Users can look up technical specs, costs and product availability. It's the database sellers use to pick items to sell and sync them into their own sales systems.", vi: "Mục Catalog cung cấp hệ thống kho hàng hóa được THG Fulfillment hỗ trợ. Người dùng có thể truy xuất các thông tin kỹ thuật, giá thành và tính sẵn có của sản phẩm. Đây là cơ sở dữ liệu để người bán lựa chọn mặt hàng kinh doanh và đồng bộ hóa vào hệ thống bán hàng của mình.", zh: "Catalog（目录）模块提供 THG Fulfillment 支持的商品库。用户可查询产品的技术参数、成本与可用性。这是卖家选品并同步至自有销售系统的数据库。" },
+
+  "hub.s4_title": { en: "4. Billing & Finance", vi: "4. Quản lý Tài chính", zh: "4. 财务管理" },
+  "hub.s4_p1": { en: "The system runs on a prepaid model. The Finance function is split into three main parts:", vi: "Hệ thống vận hành theo mô hình trả trước (Prepaid). Chức năng Tài chính được chia làm ba phần chính:", zh: "系统采用预付费（Prepaid）模式运营。财务功能分为三个主要部分：" },
+  "hub.s4_wallet_desc": { en: "Track real-time balance changes.", vi: "Theo dõi biến động số dư thực tế.", zh: "跟踪实际余额变动。" },
+  "hub.s4_topup_desc": { en: "A top-up gateway with a variety of payment methods.", vi: "Cổng nạp tiền với nhiều phương thức thanh toán đa dạng.", zh: "支持多种支付方式的充值入口。" },
+  "hub.s4_transaction_desc": { en: "Stores detailed transaction history for periodic reconciliation.", vi: "Lưu trữ chi tiết lịch sử giao dịch, phục vụ công tác đối soát định kỳ.", zh: "保存详细的交易记录，便于定期对账。" },
+
+  "hub.s5_title": { en: "5. Support & Complaints", vi: "5. Hỗ trợ & Xử lý Khiếu nại", zh: "5. 支持与投诉处理" },
+  "hub.s5_p1": { en: "To keep operations running smoothly, the system provides two direct interaction channels:", vi: "Để đảm bảo luồng vận hành xuyên suốt, hệ thống cung cấp hai kênh tương tác trực tiếp:", zh: "为保障运营顺畅，系统提供两个直接互动渠道：" },
+  "hub.s5_request_desc": { en: "Submit specific requests about products or order adjustments.", vi: "Gửi các yêu cầu đặc thù về sản phẩm hoặc điều chỉnh đơn hàng.", zh: "提交关于产品或订单调整的特定请求。" },
+  "hub.s5_trouble_desc": { en: "Report incidents (wrong items, shipping errors) for the technical team to handle urgently.", vi: "Báo cáo các sự cố phát sinh (sai hàng, lỗi vận chuyển) để đội ngũ kỹ thuật xử lý khẩn cấp.", zh: "上报突发问题（发错货、运输错误），由技术团队紧急处理。" },
+
+  "hub.s6_title": { en: "6. Account & Permissions", vi: "6. Thiết lập Tài khoản & Phân quyền", zh: "6. 账户设置与权限" },
+  "hub.s6_p1": { en: "The system lets you personalize your experience and manage your team:", vi: "Hệ thống cho phép cá nhân hóa trải nghiệm và quản lý đội nhóm:", zh: "系统允许个性化体验并管理团队：" },
+  "hub.s6_account_desc": { en: "Update security details and personal profile.", vi: "Cập nhật thông tin bảo mật và hồ sơ cá nhân.", zh: "更新安全信息与个人资料。" },
+  "hub.s6_team_desc": { en: "Permission controls let you add multiple members to co-manage the account — ideal for professional team-based businesses.", vi: "Tính năng phân quyền cho phép thêm nhiều thành viên cùng quản lý tài khoản, phù hợp với mô hình kinh doanh theo đội nhóm chuyên nghiệp.", zh: "权限功能允许添加多名成员共同管理账户，适合专业的团队化经营模式。" },
 };
 
 

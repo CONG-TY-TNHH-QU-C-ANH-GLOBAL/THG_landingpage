@@ -15,6 +15,8 @@ interface Props {
   path: string;
   /** Optional override og:image absolute URL. Defaults to /og-default.jpg */
   ogImage?: string;
+  /** Alt text for og:image / twitter:image (accessibility + SEO). */
+  ogImageAlt?: string;
   /** Defaults to "website". Use "article" for blog posts. */
   ogType?: "website" | "article";
   /** Article-specific (when ogType="article") */
@@ -23,11 +25,14 @@ interface Props {
   noindex?: boolean;
 }
 
+const TWITTER_HANDLE = "@THGFulfill";
+
 export function SeoHead({
   title,
   description,
   path,
   ogImage = DEFAULT_OG_IMAGE,
+  ogImageAlt,
   ogType = "website",
   publishedTime,
   noindex,
@@ -54,20 +59,25 @@ export function SeoHead({
 
       {/* OpenGraph */}
       <meta property="og:type" content={ogType} />
+      <meta property="og:site_name" content="THG Fulfill" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
+      {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
       <meta property="og:locale" content={language === "vi" ? "vi_VN" : language === "zh" ? "zh_CN" : "en_US"} />
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content={TWITTER_HANDLE} />
+      <meta name="twitter:creator" content={TWITTER_HANDLE} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
+      {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
       {/* Robots */}
       {noindex ? (

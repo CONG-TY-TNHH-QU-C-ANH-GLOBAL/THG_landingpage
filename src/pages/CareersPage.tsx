@@ -62,8 +62,8 @@ const CareersPage = () => {
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
-                title="Careers — THG Fulfill"
-                description={t("careers.hero_subtitle")}
+                title={t("seo.careers_title")}
+                description={t("seo.careers_desc")}
                 path="/careers"
             />
             <JsonLdBreadcrumb

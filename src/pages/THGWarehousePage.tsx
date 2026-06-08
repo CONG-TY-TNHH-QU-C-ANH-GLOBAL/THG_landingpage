@@ -86,8 +86,8 @@ const THGWarehousePage = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SeoHead
-        title="THG Warehouse US — Last-Mile Fulfillment Pennsylvania & North Carolina"
-        description={t("warehouse_page.hero_subtitle")}
+        title={t("seo.warehouse_title")}
+        description={t("seo.warehouse_desc")}
         path="/thg-warehouse"
         ogImage={WAREHOUSE_PACKAGING_URL}
       />

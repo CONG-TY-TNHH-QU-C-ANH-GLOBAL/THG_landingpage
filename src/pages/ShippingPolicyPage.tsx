@@ -28,8 +28,8 @@ const ShippingPolicyPage = () => {
   return (
     <div className="min-h-screen bg-[#f5f0e8]">
       <SeoHead
-        title={`${t("spolicy.title")} — THG Fulfill`}
-        description={t("spolicy.subtitle")}
+        title={t("seo.shipping_policy_title")}
+        description={t("seo.shipping_policy_desc")}
         path="/shipping-policy"
       />
       <JsonLdBreadcrumb

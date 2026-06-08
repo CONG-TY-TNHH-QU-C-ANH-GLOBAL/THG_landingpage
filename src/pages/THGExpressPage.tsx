@@ -65,8 +65,8 @@ const THGExpressPage = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SeoHead
-        title="THG Express — International Shipping Sea/Air/Express VN-CN to US"
-        description={t("express_page.hero_subtitle")}
+        title={t("seo.express_title")}
+        description={t("seo.express_desc")}
         path="/thg-express"
         ogImage={EXPRESS_HERO_URL}
       />

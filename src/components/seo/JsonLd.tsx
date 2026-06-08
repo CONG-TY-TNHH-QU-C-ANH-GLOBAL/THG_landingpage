@@ -2,7 +2,21 @@
 
 import { Helmet } from "react-helmet-async";
 
+import { useI18n } from "@/lib/i18n";
+
 const SITE_BASE = "https://thgfulfill.com";
+
+// Rewrite an absolute thgfulfill URL to include the active language segment so
+// breadcrumb items match the lang-prefixed canonical/hreflang URLs. Idempotent:
+// strips any existing lang segment first to avoid /vi/vi/... duplication.
+function withLang(url: string, language: string): string {
+  if (!url.startsWith(SITE_BASE)) return url;
+  const path = url.slice(SITE_BASE.length).replace(/^\/(en|vi|zh)(?=\/|$)/, "");
+  if (path === "" || path === "/") return `${SITE_BASE}/${language}`;
+  return `${SITE_BASE}/${language}${path}`;
+}
+
+const ISO_DATE_PREFIX = /^\d{4}-\d{2}-\d{2}/;
 
 interface OrganizationProps {
   name?: string;
@@ -20,6 +34,7 @@ export function JsonLdOrganization({ name = "THG Fulfill", url = SITE_BASE, logo
     sameAs: [
       "https://www.facebook.com/THGFulfill",
       "https://www.youtube.com/@thgfulfillment",
+      "https://www.tiktok.com/@thgfulfillment",
     ],
     address: {
       "@type": "PostalAddress",
@@ -169,6 +184,9 @@ interface BreadcrumbItem {
 }
 
 export function JsonLdBreadcrumb({ items }: { items: BreadcrumbItem[] }) {
+  // Read the active language so breadcrumb URLs match the lang-prefixed
+  // canonical/hreflang (call sites still pass plain absolute URLs).
+  const { language } = useI18n();
   const data = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -176,9 +194,46 @@ export function JsonLdBreadcrumb({ items }: { items: BreadcrumbItem[] }) {
       "@type": "ListItem",
       position: idx + 1,
       name: item.name,
-      item: item.url,
+      item: withLang(item.url, language),
     })),
   };
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(data)}</script>
+    </Helmet>
+  );
+}
+
+interface ArticleProps {
+  headline: string;
+  description?: string;
+  /** Absolute image URL (og image / first slide). */
+  image?: string;
+  /** Publish date — emitted only when it looks like an ISO date (YYYY-MM-DD…). */
+  datePublished?: string;
+  /** Canonical, lang-prefixed page URL. */
+  url: string;
+}
+
+/** schema.org/Article for blog posts — enables article rich results. Publisher
+ *  and author default to the THG Fulfill Organization. */
+export function JsonLdArticle({ headline, description, image, datePublished, url }: ArticleProps) {
+  const data: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    author: { "@type": "Organization", name: "THG Fulfill", url: SITE_BASE },
+    publisher: {
+      "@type": "Organization",
+      name: "THG Fulfill",
+      logo: { "@type": "ImageObject", url: `${SITE_BASE}/logo.png` },
+    },
+  };
+  if (description) data.description = description;
+  if (image) data.image = image;
+  if (datePublished && ISO_DATE_PREFIX.test(datePublished)) data.datePublished = datePublished;
+
   return (
     <Helmet>
       <script type="application/ld+json">{JSON.stringify(data)}</script>
