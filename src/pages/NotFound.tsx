@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useI18n } from "@/lib/i18n";
+import { SeoHead } from "@/components/seo/SeoHead";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,6 +13,12 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted">
+      <SeoHead
+        title={t("seo.notfound_title")}
+        description={t("seo.notfound_desc")}
+        path={location.pathname}
+        noindex
+      />
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">404</h1>
         <p className="mb-4 text-xl text-muted-foreground">{t("notfound.message")}</p>

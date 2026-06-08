@@ -53,8 +53,8 @@ const PolicyPage = () => {
   return (
     <div className="min-h-screen bg-[#f5f0e8]">
       <SeoHead
-        title={`${t("policy.title")} — THG Fulfill`}
-        description={t("policy.subtitle")}
+        title={t("seo.policy_title")}
+        description={t("seo.policy_desc")}
         path="/policy"
       />
       <JsonLdBreadcrumb

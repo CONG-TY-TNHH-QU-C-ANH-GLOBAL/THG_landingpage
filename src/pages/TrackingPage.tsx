@@ -105,8 +105,8 @@ const TrackingPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={`${t("tracking.title")} | THG Fulfill`}
-        description={t("tracking.subtitle")}
+        title={t("seo.tracking_title")}
+        description={t("seo.tracking_desc")}
         path="/tracking"
       />
       <JsonLdBreadcrumb

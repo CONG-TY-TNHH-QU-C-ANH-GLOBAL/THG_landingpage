@@ -265,8 +265,8 @@ const InternationalPricingContent = () => {
   return (
     <div className="min-h-screen bg-background pb-12 sm:pb-20">
       <SeoHead
-        title="International Shipping Pricing — VN/CN to USA | THG Fulfill"
-        description="Transparent international shipping rates from Vietnam and China to USA. UPS, Air & Sea routes. Updated weekly with real-time tracking and delivery estimates."
+        title={t("seo.intl_pricing_title")}
+        description={t("seo.intl_pricing_desc")}
         path="/international-pricing"
       />
       <JsonLdBreadcrumb

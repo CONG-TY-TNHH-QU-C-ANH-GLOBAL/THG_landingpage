@@ -51,8 +51,8 @@ const THGFulfillPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title="THG Fulfill — POD & Dropship Fulfillment for US Sellers"
-        description={t("fulfill_page.hero_subtitle")}
+        title={t("seo.fulfill_title")}
+        description={t("seo.fulfill_desc")}
         path="/thg-fulfill"
         ogImage={thgHeroImage}
       />
@@ -460,26 +460,32 @@ const THGFulfillPage = () => {
    HUB System Guide — Section II
    Sidebar nav + 6 content sections
 ───────────────────────────────────────────── */
-const HUB_SECTIONS = [
+type Translate = (key: string) => string;
+
+// Built per-render with the i18n `t` so the guide localizes to vi/en/zh.
+// Product feature labels (Wallet Balance, Order, Upload Orders…) stay literal
+// because they appear in English inside the actual Hub product UI.
+function buildHubSections(t: Translate) {
+  return [
   {
     id: "dashboard",
     icon: "LayoutDashboard",
-    title: "1. Đăng nhập & Bảng điều khiển",
+    title: t("hub.s1_title"),
     content: (
       <>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Hệ thống quản lý được truy cập thông qua địa chỉ{" "}
-          <a href="https://khub.thgfulfillment.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
-            khub.thgfulfillment.com
+          {t("hub.s1_p1a")}
+          <a href="https://hub.thgfulfill.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
+            hub.thgfulfill.com
           </a>
-          . Sau khi đăng nhập bằng tài khoản được cấp, người dùng sẽ tiếp cận <strong>Bảng điều khiển trung tâm (Dashboard)</strong>. Tại đây, các chỉ số vận hành cốt lõi được hiển thị trực quan:
+          {t("hub.s1_p1b")}
         </p>
         <ul className="space-y-2 mb-4">
           {[
-            { label: "Wallet Balance", desc: "Số dư hiện khả dụng trong ví." },
-            { label: "Total Orders", desc: "Tổng lượng đơn hàng đã khởi tạo." },
-            { label: "In Process", desc: "Số lượng đơn hàng đang trong giai đoạn xử lý." },
-            { label: "Revenue", desc: "Tổng doanh thu đạt được." },
+            { label: "Wallet Balance", desc: t("hub.s1_wallet_desc") },
+            { label: "Total Orders", desc: t("hub.s1_orders_desc") },
+            { label: "In Process", desc: t("hub.s1_inprocess_desc") },
+            { label: "Revenue", desc: t("hub.s1_revenue_desc") },
           ].map((item) => (
             <li key={item.label} className="flex gap-2 text-sm">
               <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
@@ -488,7 +494,7 @@ const HUB_SECTIONS = [
           ))}
         </ul>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Phần dưới của trang cung cấp cái nhìn nhanh về danh sách đơn hàng và lịch sử nạp tiền gần nhất.
+          {t("hub.s1_p2")}
         </p>
       </>
     ),
@@ -496,22 +502,20 @@ const HUB_SECTIONS = [
   {
     id: "orders",
     icon: "PackageCheck",
-    title: "2. Quản lý Đơn hàng",
+    title: t("hub.s2_title"),
     content: (
       <>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Mục <strong>Order</strong> là trung tâm điều phối mọi hoạt động vận hành. Người dùng có thể:
+          {t("hub.s2_p1")}
         </p>
         <ul className="space-y-3">
           <li className="flex gap-3 text-sm">
             <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-            <span className="text-muted-foreground">Theo dõi trạng thái chi tiết của từng đơn hàng và mã vận đơn (tracking number).</span>
+            <span className="text-muted-foreground">{t("hub.s2_li1")}</span>
           </li>
           <li className="flex gap-3 text-sm">
             <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-            <span className="text-muted-foreground">
-              Khởi tạo đơn hàng hàng loạt: Sử dụng tính năng <strong className="text-navy">Upload Orders</strong> thông qua file CSV để tối ưu hóa thời gian nhập liệu thay vì tạo thủ công từng đơn.
-            </span>
+            <span className="text-muted-foreground">{t("hub.s2_li2")}</span>
           </li>
         </ul>
       </>
@@ -520,27 +524,27 @@ const HUB_SECTIONS = [
   {
     id: "catalog",
     icon: "BookOpen",
-    title: "3. Danh mục Sản phẩm",
+    title: t("hub.s3_title"),
     content: (
       <p className="text-muted-foreground leading-relaxed">
-        Mục <strong>Catalog</strong> cung cấp hệ thống kho hàng hóa được THG Fulfillment hỗ trợ. Người dùng có thể truy xuất các thông tin kỹ thuật, giá thành và tính sẵn có của sản phẩm. Đây là cơ sở dữ liệu để người bán lựa chọn mặt hàng kinh doanh và đồng bộ hóa vào hệ thống bán hàng của mình.
+        {t("hub.s3_p1")}
       </p>
     ),
   },
   {
     id: "billing",
     icon: "Wallet",
-    title: "4. Quản lý Tài chính",
+    title: t("hub.s4_title"),
     content: (
       <>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Hệ thống vận hành theo mô hình <strong>trả trước (Prepaid)</strong>. Chức năng Tài chính được chia làm ba phần chính:
+          {t("hub.s4_p1")}
         </p>
         <ul className="space-y-2">
           {[
-            { label: "Wallet", desc: "Theo dõi biến động số dư thực tế." },
-            { label: "Top-up", desc: "Cổng nạp tiền với nhiều phương thức thanh toán đa dạng." },
-            { label: "Transaction", desc: "Lưu trữ chi tiết lịch sử giao dịch, phục vụ công tác đối soát định kỳ." },
+            { label: "Wallet", desc: t("hub.s4_wallet_desc") },
+            { label: "Top-up", desc: t("hub.s4_topup_desc") },
+            { label: "Transaction", desc: t("hub.s4_transaction_desc") },
           ].map((item) => (
             <li key={item.label} className="flex gap-2 text-sm">
               <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
@@ -554,16 +558,16 @@ const HUB_SECTIONS = [
   {
     id: "support",
     icon: "HeadphonesIcon",
-    title: "5. Hỗ trợ & Xử lý Khiếu nại",
+    title: t("hub.s5_title"),
     content: (
       <>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Để đảm bảo luồng vận hành xuyên suốt, hệ thống cung cấp hai kênh tương tác trực tiếp:
+          {t("hub.s5_p1")}
         </p>
         <ul className="space-y-2">
           {[
-            { label: "Request", desc: "Gửi các yêu cầu đặc thù về sản phẩm hoặc điều chỉnh đơn hàng." },
-            { label: "Trouble", desc: "Báo cáo các sự cố phát sinh (sai hàng, lỗi vận chuyển) để đội ngũ kỹ thuật xử lý khẩn cấp." },
+            { label: "Request", desc: t("hub.s5_request_desc") },
+            { label: "Trouble", desc: t("hub.s5_trouble_desc") },
           ].map((item) => (
             <li key={item.label} className="flex gap-2 text-sm">
               <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
@@ -577,16 +581,16 @@ const HUB_SECTIONS = [
   {
     id: "account",
     icon: "UserCog",
-    title: "6. Thiết lập Tài khoản & Phân quyền",
+    title: t("hub.s6_title"),
     content: (
       <>
         <p className="text-muted-foreground leading-relaxed mb-4">
-          Hệ thống cho phép cá nhân hóa trải nghiệm và quản lý đội nhóm:
+          {t("hub.s6_p1")}
         </p>
         <ul className="space-y-2">
           {[
-            { label: "Account Setting", desc: "Cập nhật thông tin bảo mật và hồ sơ cá nhân." },
-            { label: "Team Member", desc: "Tính năng phân quyền cho phép thêm nhiều thành viên cùng quản lý tài khoản, phù hợp với mô hình kinh doanh theo đội nhóm chuyên nghiệp." },
+            { label: "Account Setting", desc: t("hub.s6_account_desc") },
+            { label: "Team Member", desc: t("hub.s6_team_desc") },
           ].map((item) => (
             <li key={item.label} className="flex gap-2 text-sm">
               <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
@@ -597,7 +601,8 @@ const HUB_SECTIONS = [
       </>
     ),
   },
-];
+  ];
+}
 
 import { LayoutDashboard, PackageCheck, BookOpen, Wallet, Headphones, UserCog, Menu, X as XIcon } from "lucide-react";
 
@@ -611,6 +616,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 function HubSystemGuide() {
+  const { t } = useI18n();
+  const sections = buildHubSections(t);
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState("dashboard");
 
@@ -627,14 +634,14 @@ function HubSystemGuide() {
         {/* Section header */}
         <ScrollReveal>
           <div className="text-center mb-12">
-            <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">Hướng dẫn sử dụng hệ thống</p>
+            <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">{t("hub.eyebrow")}</p>
             <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">
-              II. <span className="text-gradient-gold">Hướng dẫn sử dụng Hub System</span>
+              II. <span className="text-gradient-gold">{t("hub.heading")}</span>
             </h2>
             <p className="text-muted-foreground mt-4 max-w-2xl mx-auto text-sm leading-relaxed">
-              Hướng dẫn chi tiết từng tính năng trên hệ thống quản lý{" "}
-              <a href="https://khub.thgfulfillment.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
-                khub.thgfulfillment.com
+              {t("hub.subtitle_before")}
+              <a href="https://hub.thgfulfill.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
+                hub.thgfulfill.com
               </a>
             </p>
           </div>
@@ -644,8 +651,8 @@ function HubSystemGuide() {
           {/* ── Sidebar (desktop) ── */}
           <aside className="hidden lg:block w-56 flex-shrink-0 sticky top-24">
             <nav className="bg-background rounded-2xl border border-border/50 shadow-sm overflow-hidden">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">Mục lục</p>
-              {HUB_SECTIONS.map((s) => {
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">{t("hub.toc")}</p>
+              {sections.map((s) => {
                 const Icon = ICON_MAP[s.icon];
                 return (
                   <button
@@ -672,11 +679,11 @@ function HubSystemGuide() {
               className="flex items-center gap-2 px-4 py-2.5 bg-background border border-border/50 rounded-xl text-sm font-medium text-foreground shadow-sm w-full"
             >
               {open ? <XIcon className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              Mục lục — {HUB_SECTIONS.find((s) => s.id === active)?.title.replace(/^\d+\.\s/, "")}
+              {t("hub.toc")} — {sections.find((s) => s.id === active)?.title.replace(/^\d+\.\s/, "")}
             </button>
             {open && (
               <nav className="mt-2 bg-background border border-border/50 rounded-xl shadow-lg overflow-hidden">
-                {HUB_SECTIONS.map((s) => {
+                {sections.map((s) => {
                   const Icon = ICON_MAP[s.icon];
                   return (
                     <button
@@ -697,7 +704,7 @@ function HubSystemGuide() {
 
           {/* ── Main content ── */}
           <main className="flex-1 min-w-0 space-y-6">
-            {HUB_SECTIONS.map((s, i) => {
+            {sections.map((s, i) => {
               const Icon = ICON_MAP[s.icon];
               return (
                 <ScrollReveal key={s.id} delay={i * 60}>

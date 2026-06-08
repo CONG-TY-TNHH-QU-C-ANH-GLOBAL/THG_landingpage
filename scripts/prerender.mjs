@@ -37,9 +37,9 @@ function pickPort() {
 const PORT = Number(process.env.PRERENDER_PORT) || (await pickPort());
 const BASE = `http://127.0.0.1:${PORT}`;
 
-// Static routes. Blog detail stays CSR-only, but job detail pages (/careers/:slug)
-// ARE prerendered — recruiting links are shared externally (Google for Jobs,
-// LinkedIn, Zalo) and need real meta + JobPosting JSON-LD in the initial HTML.
+// Static routes. Job detail (/careers/:slug) AND blog detail (/blog/:slug) are
+// prerendered — both are shared externally (Google for Jobs, LinkedIn, Facebook,
+// Zalo) and need real meta + JSON-LD (JobPosting / Article) in the initial HTML.
 // Base routes (without lang prefix). These are expanded × 3 langs below.
 const BASE_ROUTES = [
   "/",
@@ -85,7 +85,28 @@ async function fetchJobRoutes() {
   }
 }
 
-const ROUTES = [...STATIC_ROUTES, ...(await fetchJobRoutes())];
+/** Fetch blog slugs so each /blog/:slug gets a prerendered shell — blog posts
+ *  are shared on social (LinkedIn / Facebook / Twitter) and need real OG meta +
+ *  Article JSON-LD in the initial HTML. Uses the same CMS /sitemap endpoint the
+ *  sitemap generator consumes. Best-effort — skipped if the CMS is unreachable. */
+async function fetchBlogRoutes() {
+  try {
+    const res = await fetch(`${CMS_API}/sitemap`);
+    if (!res.ok) {
+      console.warn(`⚠ sitemap fetch ${res.status} — skipping blog-detail prerender`);
+      return [];
+    }
+    const data = await res.json();
+    const slugs = [...new Set((data.blog ?? []).map((b) => b.slug))];
+    console.log(`✓ ${slugs.length} blog posts → /blog/:slug prerender`);
+    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/blog/${s}`));
+  } catch (err) {
+    console.warn(`⚠ blog fetch failed (${err.message}) — skipping blog-detail prerender`);
+    return [];
+  }
+}
+
+const ROUTES = [...STATIC_ROUTES, ...(await fetchJobRoutes()), ...(await fetchBlogRoutes())];
 
 if (!existsSync(DIST)) {
   console.error("✗ dist/ missing — run `bun run build` first.");

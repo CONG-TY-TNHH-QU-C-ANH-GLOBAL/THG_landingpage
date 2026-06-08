@@ -208,8 +208,8 @@ const CatalogPage = () => {
   return (
     <div className="min-h-screen bg-cream">
       <SeoHead
-        title={`${t("catalog_page.title")} — THG Fulfill`}
-        description={t("catalog_page.subtitle")}
+        title={t("seo.catalog_title")}
+        description={t("seo.catalog_desc")}
         path="/catalog"
       />
       <JsonLdBreadcrumb

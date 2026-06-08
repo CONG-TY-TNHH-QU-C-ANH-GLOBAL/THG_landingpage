@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
-import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
+import { JsonLdBreadcrumb, JsonLdArticle } from "@/components/seo/JsonLd";
 
 import { useCmsBlogPost } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
@@ -102,6 +102,13 @@ const BlogDetailPage = () => {
                     { name: t("blog.title"), url: "https://thgfulfill.com/blog" },
                     { name: title, url: `https://thgfulfill.com/blog/${article.slug}` },
                 ]}
+            />
+            <JsonLdArticle
+                headline={title}
+                description={description}
+                image={article.slides?.[0]?.src}
+                datePublished={article.date}
+                url={`https://thgfulfill.com/${lang}/blog/${article.slug}`}
             />
             <Navbar />
             <div className="pt-24 pb-20">

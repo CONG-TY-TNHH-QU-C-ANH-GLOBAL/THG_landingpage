@@ -32,8 +32,8 @@ const THGOrderPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title="THG Order — Buy from Taobao & 1688 Direct to USA"
-        description={t("op.hero_desc")}
+        title={t("seo.order_title")}
+        description={t("seo.order_desc")}
         path="/thg-order"
       />
       <JsonLdService
