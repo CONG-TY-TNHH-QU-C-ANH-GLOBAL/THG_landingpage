@@ -296,6 +296,11 @@ export const pricingTableResponseSchema = z.object({
 
 /* ---------- Blog ---------- */
 
+export const blogCategoriesResponseSchema = z.object({
+  locale: localeSchema,
+  categories: z.array(z.string()),
+});
+
 const blogPostSummarySchema = z.object({
   slug: z.string(),
   title: z.string(),

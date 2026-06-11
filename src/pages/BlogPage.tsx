@@ -4,7 +4,7 @@ import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
-import { useCmsBlogList } from "@/hooks/useCmsContent";
+import { useCmsBlogCategories, useCmsBlogList } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -24,7 +24,8 @@ const BlogPage = () => {
   const { t, language } = useI18n();
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const categoryKeys = ["All", "Báo cáo"];
+  const cmsCategories = useCmsBlogCategories(language);
+  const categoryKeys = ["All", ...(cmsCategories.data?.categories ?? [])];
 
   const cmsList = useCmsBlogList(language);
 
@@ -85,7 +86,7 @@ const BlogPage = () => {
               {categoryKeys.map((c) => (
                 <button key={c} onClick={() => setActiveCategory(c)}
                   className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === c ? "bg-primary text-primary-foreground shadow-lg" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}>
-                  {c === "All" ? t("blog.cat_all") : c === "Báo cáo" ? t("blog.cat_report") : c}
+                  {c === "All" ? t("blog.cat_all") : c}
                 </button>
               ))}
             </div>
@@ -93,7 +94,7 @@ const BlogPage = () => {
 
           {featured && (
             <ScrollReveal delay={150}>
-              <Link to={`/blog/${featured.slug}`} className="glass-card rounded-3xl overflow-hidden mb-10 group cursor-pointer hover-lift block">
+              <Link to={`/${language}/blog/${featured.slug}`} className="glass-card rounded-3xl overflow-hidden mb-10 group cursor-pointer hover-lift block">
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="bg-secondary/10 min-h-[280px] flex items-center justify-center overflow-hidden">
                     {featured.thumbnail && <img src={featured.thumbnail} alt={featured.title} className="w-full h-full object-cover max-h-[400px] group-hover:scale-105 transition-transform duration-500" loading="lazy" />}
@@ -116,7 +117,7 @@ const BlogPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rest.map((post, i) => (
               <ScrollReveal key={post.slug} delay={i * 80}>
-                <Link to={`/blog/${post.slug}`} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
+                <Link to={`/${language}/blog/${post.slug}`} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
                   <div className="bg-secondary/10 h-56 flex items-center justify-center overflow-hidden">
                     {post.thumbnail && <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" loading="lazy" />}
                   </div>

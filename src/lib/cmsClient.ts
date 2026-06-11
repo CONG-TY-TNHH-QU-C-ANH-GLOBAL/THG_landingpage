@@ -11,6 +11,7 @@ import type { z } from "zod";
 
 import {
   applicantCvUploadResponseSchema,
+  blogCategoriesResponseSchema,
   blogListResponseSchema,
   blogPostResponseSchema,
   cmsLeadInputSchema,
@@ -153,6 +154,10 @@ export const cmsClient = {
 
   getPricingTable(slug: string) {
     return fetchJson(`/pricing/${encodeURIComponent(slug)}`, pricingTableResponseSchema);
+  },
+
+  getBlogCategories(locale: Locale) {
+    return fetchJson(`/blog/categories?lang=${locale}`, blogCategoriesResponseSchema);
   },
 
   getBlogList(locale: Locale, category?: string) {
