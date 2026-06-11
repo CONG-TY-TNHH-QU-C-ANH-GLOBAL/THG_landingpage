@@ -1,5 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useMemo, useState, useCallback } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb, JsonLdArticle } from "@/components/seo/JsonLd";
@@ -14,6 +16,7 @@ interface DisplayArticle {
     date: string;
     title: string;
     excerpt: string;
+    body_md: string | null;
     slides: { src: string; alt_text: string }[];
 }
 
@@ -33,6 +36,7 @@ const BlogDetailPage = () => {
             date: p.published_date ?? new Date(p.updated_at * 1000).toISOString().slice(0, 10),
             title: p.title,
             excerpt: p.excerpt ?? "",
+            body_md: p.body_md ?? null,
             slides: p.slides,
         };
     }, [cms.data, slug]);
@@ -178,6 +182,24 @@ const BlogDetailPage = () => {
                     )}
                 </div>
             </div>
+
+            {/* Article body content */}
+            {(article.excerpt || article.body_md) && (
+                <div className="max-w-[900px] mx-auto px-4 sm:px-6 mt-8">
+                    {article.excerpt && (
+                        <p className="text-base text-muted-foreground italic leading-relaxed border-l-4 border-primary/30 pl-4 mb-6">
+                            {article.excerpt}
+                        </p>
+                    )}
+                    {article.body_md && (
+                        <div className="prose prose-neutral max-w-none prose-headings:text-navy prose-headings:font-bold prose-h2:text-xl prose-h3:text-lg prose-p:text-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-navy prose-ul:text-foreground prose-ol:text-foreground prose-li:my-0.5 prose-img:rounded-xl prose-img:shadow-md prose-table:text-sm">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {article.body_md}
+                            </ReactMarkdown>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {lightbox && article.slides.length > 0 && (
                 <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightbox(false)}>
