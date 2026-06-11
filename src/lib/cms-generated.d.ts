@@ -417,6 +417,7 @@ export interface paths {
                                 published_date: string | null;
                                 seo_title: string | null;
                                 seo_description: string | null;
+                                body_md: string | null;
                                 updated_at: number;
                                 slides: {
                                     src: string;
