@@ -146,6 +146,15 @@ export function useCmsPricingTable(slug: string) {
   });
 }
 
+export function useCmsBlogCategories(locale: Locale) {
+  return useQuery({
+    queryKey: ["cms", "blog", "categories", locale],
+    queryFn: () => cmsClient.getBlogCategories(locale),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
 export function useCmsBlogList(locale: Locale, category?: string) {
   return useQuery({
     queryKey: ["cms", "blog", "list", locale, category ?? "all"],
