@@ -195,6 +195,7 @@ export const cmsSiteSettingsSchema = z.object({
   logo_media_id: z.number().nullable(),
   default_og_image_id: z.number().nullable(),
   about_video_url: z.string().nullable(),
+  og_image_url: z.string().nullable(),
   remote_area_links: z.array(cmsRemoteAreaLinkSchema),
   // Fail-soft: the backend's parseTerminology only guarantees the OUTER value
   // is an array — it does NOT validate inner items. A single malformed group
