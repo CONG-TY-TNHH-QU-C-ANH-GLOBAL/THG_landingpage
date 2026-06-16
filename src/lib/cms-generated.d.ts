@@ -871,6 +871,7 @@ export interface paths {
                                 logo_media_id: number | null;
                                 default_og_image_id: number | null;
                                 about_video_url: string | null;
+                                og_image_url: string | null;
                                 remote_area_links: {
                                     label: string;
                                     icon?: string;
