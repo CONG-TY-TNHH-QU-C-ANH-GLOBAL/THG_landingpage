@@ -102,6 +102,19 @@ jobs:
           fi
           bun run build
 
+      - name: Inject OG image URL from CMS into dist/index.html
+        env:
+          VITE_CMS_API_URL: ${{ secrets.VITE_CMS_API_URL }}
+        run: |
+          OG_URL=$(curl -sf "${VITE_CMS_API_URL}/site-settings" | jq -r '.settings.og_image_url // empty' 2>/dev/null || true)
+          if [ -n "$OG_URL" ]; then
+            echo "Injecting OG image URL: $OG_URL"
+            sed -i "s|<meta property=\"og:image\" content=\"[^\"]*\"|<meta property=\"og:image\" content=\"$OG_URL\"|g" dist/index.html
+            sed -i "s|<meta name=\"twitter:image\" content=\"[^\"]*\"|<meta name=\"twitter:image\" content=\"$OG_URL\"|g" dist/index.html
+          else
+            echo "No og_image_url set in CMS — keeping default from index.html"
+          fi
+
       - name: Deploy to server via SSH
         uses: appleboy/scp-action@v0.1.7
         with:
