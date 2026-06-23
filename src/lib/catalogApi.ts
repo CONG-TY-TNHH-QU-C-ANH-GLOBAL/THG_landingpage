@@ -32,6 +32,7 @@ export interface CatalogProduct {
   priceTo: number | null;
   currency: string;
   thgSku: string | null;
+  collections?: CatalogCollection[];
   createdAt: string;
   updatedAt: string;
   variants?: {
@@ -50,11 +51,21 @@ export interface CatalogProduct {
   }[];
 }
 
+export interface CatalogCollection {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string | null;
+  color: string | null;
+  count?: number;
+}
+
 export interface CatalogResponse {
   data: CatalogProduct[];
   pagination: { page: number; limit: number; total: number; pages: number };
   categoryCounts: Record<string, number>;
   originCounts: Record<string, number>;
+  collections?: CatalogCollection[];
 }
 
 export interface CatalogParams {
@@ -65,6 +76,7 @@ export interface CatalogParams {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  collection?: string[];
 }
 
 export async function fetchCatalog(params: CatalogParams = {}): Promise<CatalogResponse> {
@@ -76,6 +88,7 @@ export async function fetchCatalog(params: CatalogParams = {}): Promise<CatalogR
   if (params.search) sp.set("search", params.search);
   if (params.sortBy) sp.set("sortBy", params.sortBy);
   if (params.sortOrder) sp.set("sortOrder", params.sortOrder);
+  if (params.collection && params.collection.length) sp.set("collection", params.collection.join(","));
 
   const res = await fetch(`${API_BASE}?${sp.toString()}`);
   if (!res.ok) throw new Error(`Catalog API error: ${res.status}`);

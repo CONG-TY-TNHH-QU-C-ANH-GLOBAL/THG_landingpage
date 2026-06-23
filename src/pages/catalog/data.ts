@@ -84,12 +84,8 @@ export const categoryMeta: Record<string, CategoryDescription> = {
   },
 };
 
-/** Two-letter ISO origin → flag emoji. Catalog API returns "VN" / "US" / "CN". */
-export const originFlags: Record<string, string> = {
-  VN: "\u{1F1FB}\u{1F1F3}",
-  US: "\u{1F1FA}\u{1F1F8}",
-  CN: "\u{1F1E8}\u{1F1F3}",
-};
+/* THG-CAT-005: originFlags (hardcode 3 nước) đã bỏ — thay bằng resolver động
+   @/lib/country-flags (countryFlag/countryName) auto theo ISO cho mọi nước. */
 
 /** Lucide icon component to render next to each category label in the filter
  *  chips. Missing entries fall back to a generic Package icon at the call site. */

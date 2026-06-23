@@ -5,7 +5,8 @@ import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
-import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse } from "@/lib/catalogApi";
+import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse, type CatalogCollection } from "@/lib/catalogApi";
+import { countryFlag, countryName } from "@/lib/country-flags";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
@@ -14,21 +15,23 @@ import {
   MessageCircle, Share2, Check, Package,
 } from "lucide-react";
 
-import { CATEGORIES, NO_SERIES_KEY, categoryIcons, categoryMeta, originFlags } from "@/pages/catalog/data";
+import { CATEGORIES, NO_SERIES_KEY, categoryIcons, categoryMeta } from "@/pages/catalog/data";
 import { DELAYS, LIMITS } from "@/lib/constants";
 
 const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
 
 const CatalogPage = () => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 0 });
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [originCounts, setOriginCounts] = useState<Record<string, number>>({});
+  const [collections, setCollections] = useState<CatalogCollection[]>([]);
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [activeOrigin, setActiveOrigin] = useState<string>("");
+  const [activeCollections, setActiveCollections] = useState<string[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -170,17 +173,19 @@ const CatalogPage = () => {
         category: activeCategory || undefined,
         origin: activeOrigin || undefined,
         search: search || undefined,
+        collection: activeCollections.length ? activeCollections : undefined,
       });
       setProducts(res.data);
       setPagination(res.pagination);
       setCategoryCounts(res.categoryCounts);
       setOriginCounts(res.originCounts);
+      if (res.collections) setCollections(res.collections);
     } catch {
       // API not available yet — keep empty state
     } finally {
       setLoading(false);
     }
-  }, [page, activeCategory, activeOrigin, search]);
+  }, [page, activeCategory, activeOrigin, search, activeCollections]);
 
   useEffect(() => { loadProducts(); }, [loadProducts]);
 
@@ -200,6 +205,13 @@ const CatalogPage = () => {
 
   const handleOrigin = (origin: string) => {
     setActiveOrigin(activeOrigin === origin ? "" : origin);
+    setPage(1);
+  };
+
+  const handleCollection = (slug: string) => {
+    setActiveCollections((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
+    );
     setPage(1);
   };
 
@@ -277,26 +289,50 @@ const CatalogPage = () => {
               );
             })}
 
-            {/* Origin filter */}
+            {/* Origin filter — THG-CAT-005: render ĐỘNG từ originCounts, auto mọi
+                nước (UK/TH/JP/AU…) với cờ + tên theo ISO, KHÔNG hardcode. */}
             <div className="pt-4 border-t border-border/30">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.origin_label")}</p>
-              {(["VN", "US", "CN"] as const).map((o) => {
-                const count = originCounts[o] || 0;
-                if (count === 0) return null;
-                return (
+              {Object.keys(originCounts)
+                .filter((o) => o && o !== "Unknown" && (originCounts[o] || 0) > 0)
+                .sort((a, b) => (originCounts[b] || 0) - (originCounts[a] || 0))
+                .map((o) => (
                   <button
                     key={o}
                     onClick={() => handleOrigin(o)}
                     className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-all ${activeOrigin === o ? "bg-primary/10 text-primary font-semibold" : "text-foreground/70 hover:bg-secondary"
                       }`}
                   >
-                    <span className="text-base">{originFlags[o]}</span>
-                    <span>{o === "VN" ? t("catalog.origin_vn") : o === "US" ? t("catalog.origin_us") : t("catalog.origin_cn")}</span>
-                    <span className="ml-auto text-xs opacity-70">{count}</span>
+                    <span className="text-base">{countryFlag(o)}</span>
+                    <span className="truncate">{countryName(o, language)}</span>
+                    <span className="ml-auto text-xs opacity-70">{originCounts[o]}</span>
                   </button>
-                );
-              })}
+                ))}
             </div>
+
+            {/* Tags / Campaign filter — THG-CAT-005: đồng bộ collections từ Hub, multi-select. */}
+            {collections.length > 0 && (
+              <div className="pt-4 border-t border-border/30">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.tags_label")}</p>
+                <div className="flex flex-wrap gap-1.5 px-3">
+                  {collections.map((c) => {
+                    const on = activeCollections.includes(c.slug);
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => handleCollection(c.slug)}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${on ? "text-white border-transparent" : "text-foreground/70 border-border hover:bg-secondary"}`}
+                        style={on ? { backgroundColor: c.color || "#1e293b" } : undefined}
+                      >
+                        {c.icon && <span>{c.icon}</span>}
+                        <span>{c.name}</span>
+                        {typeof c.count === "number" && <span className="opacity-70">{c.count}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </aside>
 
@@ -342,7 +378,7 @@ const CatalogPage = () => {
               )}
               {activeOrigin && (
                 <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-xs font-medium">
-                  {originFlags[activeOrigin]} {activeOrigin}
+                  {countryFlag(activeOrigin)} {countryName(activeOrigin, language)}
                   <X className="w-3 h-3 cursor-pointer" onClick={() => { setActiveOrigin(""); setPage(1); }} />
                 </span>
               )}
@@ -411,7 +447,7 @@ const CatalogPage = () => {
                       )}
                       {item.origin && (
                         <span className="absolute top-2 right-2 text-lg" title={item.origin}>
-                          {originFlags[item.origin] || ""}
+                          {countryFlag(item.origin)}
                         </span>
                       )}
                     </div>
@@ -838,7 +874,7 @@ const CatalogPage = () => {
                           <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
                             <span className="text-muted-foreground font-medium flex items-center gap-1.5">🌍 Fulfillment location</span>
                             <span className="text-foreground font-semibold">
-                              {selectedProduct.origin ? `${originFlags[selectedProduct.origin] || "🏳️"} ${selectedProduct.origin}` : "—"}
+                              {selectedProduct.origin ? `${countryFlag(selectedProduct.origin)} ${countryName(selectedProduct.origin, language)}` : "—"}
                             </span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-2.5 text-sm">

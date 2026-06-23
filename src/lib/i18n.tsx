@@ -931,6 +931,7 @@ export const translations: Translations = {
   "catalog.products_count": { en: "products", vi: "sản phẩm", zh: "个产品" },
   "catalog.product_count": { en: "product", vi: "sản phẩm", zh: "个产品" },
   "catalog.origin_label": { en: "Origin", vi: "Xuất xứ", zh: "产地" },
+  "catalog.tags_label": { en: "Tags / Campaign", vi: "Thẻ / Chiến dịch", zh: "标签 / 活动" },
   "catalog.origin_vn": { en: "Vietnam", vi: "Việt Nam", zh: "越南" },
   "catalog.origin_us": { en: "USA", vi: "Mỹ", zh: "美国" },
   "catalog.origin_cn": { en: "China", vi: "Trung Quốc", zh: "中国" },
