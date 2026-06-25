@@ -18,6 +18,7 @@ export interface CatalogProduct {
   sizes: string[];
   colors: string[];
   images: string[];
+  videos?: string[]; // THG-CAT-006: link YouTube/Shorts giới thiệu (slot #1 slider)
   description: {
     material?: string[];
     features?: string[];

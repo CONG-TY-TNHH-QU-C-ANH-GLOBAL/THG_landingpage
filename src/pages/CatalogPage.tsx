@@ -7,6 +7,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse, type CatalogCollection } from "@/lib/catalogApi";
 import { countryFlag, countryName } from "@/lib/country-flags";
+import { parseYouTubeId, youtubeThumb, youtubeEmbedUrl } from "@/lib/youtube";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
@@ -38,6 +39,7 @@ const CatalogPage = () => {
 
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [activeImage, setActiveImage] = useState(0);
+  const [videoPlaying, setVideoPlaying] = useState(false); // THG-CAT-006
   const [shareCopied, setShareCopied] = useState(false);
   // THG-TASK-019: track image URLs that failed to load so subsequent
   // re-renders fall back to the Package placeholder instead of the
@@ -88,6 +90,7 @@ const CatalogPage = () => {
     latestProductIdRef.current = product.id;
     setSelectedProduct(product);
     setActiveImage(0);
+    setVideoPlaying(false); // THG-CAT-006
     setShareCopied(false);
     setShipping("lbl");
     // Reset selection — it'll be populated by initializeSelection once the
@@ -150,6 +153,7 @@ const CatalogPage = () => {
         if (latestProductIdRef.current === pid) {
           setSelectedProduct(p);
           setActiveImage(0);
+          setVideoPlaying(false); // THG-CAT-006
           setShipping("lbl");
           initializeSelection(p);
         }
@@ -650,48 +654,77 @@ const CatalogPage = () => {
 
                   {/* ════ LEFT: image (fixed on desktop, top on mobile) ════ */}
                   <div className="bg-gray-50/70 border-r border-border/30 flex flex-col overflow-hidden">
-                    <div className="relative flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/50 to-gray-50/50 min-h-[240px]">
-                      {/* THG-TASK-019: same brokenImages guard as list card. */}
-                      {selectedProduct.images?.[activeImage] &&
-                       !brokenImages.has(selectedProduct.images[activeImage]) ? (
-                        <img
-                          src={selectedProduct.images[activeImage]}
-                          alt={selectedProduct.name}
-                          onError={() => markBroken(selectedProduct.images[activeImage])}
-                          className="max-w-full max-h-[240px] object-contain"
-                        />
-                      ) : (
-                        <Package className="w-20 h-20 text-muted-foreground/30" />
-                      )}
-                    </div>
-                    {/* Hide strip if fewer than 2 non-broken thumbs remain —
-                        avoids the empty bar when all images failed to load. */}
-                    {selectedProduct.images.filter((img) => !brokenImages.has(img)).length > 1 && (
-                      <div className="flex gap-2 overflow-x-auto p-3 border-t border-border/30 bg-white">
-                        {selectedProduct.images.map((img, i) => {
-                          // Skip thumbnails for URLs known-broken so the strip
-                          // doesn't show empty boxes. Keep the index alignment
-                          // with images[] so click → activeImage stays correct.
-                          if (brokenImages.has(img)) return null;
-                          return (
-                            <button
-                              key={i}
-                              onClick={() => setActiveImage(i)}
-                              className={`w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-blue-600" : "border-border/30 opacity-60 hover:opacity-100"
-                                }`}
-                            >
+                    {/* THG-CAT-006: media slider = video YouTube (slot đầu, click-to-play) + ảnh tĩnh. */}
+                    {(() => {
+                      const validVideos = (selectedProduct.videos ?? []).filter((v) => parseYouTubeId(v));
+                      const imageList = selectedProduct.images.filter((img) => !brokenImages.has(img));
+                      const media: Array<{ kind: "video" | "image"; url: string }> = [
+                        ...validVideos.map((url) => ({ kind: "video" as const, url })),
+                        ...imageList.map((url) => ({ kind: "image" as const, url })),
+                      ];
+                      const cur = media[activeImage] ?? media[0];
+                      return (
+                        <>
+                          <div className="relative flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/50 to-gray-50/50 min-h-[240px]">
+                            {cur?.kind === "video" ? (
+                              videoPlaying ? (
+                                <iframe
+                                  src={youtubeEmbedUrl(cur.url, true) ?? ""}
+                                  title={`${selectedProduct.name} — video`}
+                                  className="w-full max-w-full aspect-video rounded-lg"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              ) : (
+                                <button
+                                  onClick={() => setVideoPlaying(true)}
+                                  className="relative flex items-center justify-center w-full h-full"
+                                  aria-label="Play video"
+                                >
+                                  <img src={youtubeThumb(cur.url) ?? ""} alt={`${selectedProduct.name} — video`} className="max-w-full max-h-[240px] object-contain rounded-lg" />
+                                  <span className="absolute inset-0 flex items-center justify-center">
+                                    <span className="w-16 h-16 rounded-full bg-black/55 flex items-center justify-center text-white text-2xl pl-1 hover:bg-black/70 transition-colors">▶</span>
+                                  </span>
+                                </button>
+                              )
+                            ) : cur && !brokenImages.has(cur.url) ? (
                               <img
-                                loading="lazy"
-                                src={img}
-                                alt={`${selectedProduct.name} — image ${i + 1}`}
-                                onError={() => markBroken(img)}
-                                className="w-full h-full object-contain p-0.5"
+                                src={cur.url}
+                                alt={selectedProduct.name}
+                                onError={() => markBroken(cur.url)}
+                                className="max-w-full max-h-[240px] object-contain"
                               />
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
+                            ) : (
+                              <Package className="w-20 h-20 text-muted-foreground/30" />
+                            )}
+                          </div>
+                          {media.length > 1 && (
+                            <div className="flex gap-2 overflow-x-auto p-3 border-t border-border/30 bg-white">
+                              {media.map((m, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => { setActiveImage(i); setVideoPlaying(false); }}
+                                  className={`relative w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-blue-600" : "border-border/30 opacity-60 hover:opacity-100"}`}
+                                >
+                                  <img
+                                    loading="lazy"
+                                    src={(m.kind === "video" ? youtubeThumb(m.url) : m.url) ?? ""}
+                                    alt={`${selectedProduct.name} — ${m.kind} ${i + 1}`}
+                                    onError={() => { if (m.kind === "image") markBroken(m.url); }}
+                                    className="w-full h-full object-contain p-0.5"
+                                  />
+                                  {m.kind === "video" && (
+                                    <span className="absolute inset-0 flex items-center justify-center">
+                                      <span className="w-6 h-6 rounded-full bg-black/55 flex items-center justify-center text-white text-[10px] pl-0.5">▶</span>
+                                    </span>
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
 
                   {/* ════ RIGHT: detail (scroll) ════ */}
