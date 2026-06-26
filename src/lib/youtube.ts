@@ -31,6 +31,17 @@ export function youtubeThumb(idOrUrl: string | null | undefined): string | null 
   return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
 }
 
+/** THG-CAT-006: link Shorts (video DỌC 9:16) → UI render khung dọc, tránh dải đen. */
+export function isYouTubeShort(url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    const u = new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`);
+    return u.pathname.toLowerCase().includes("/shorts/");
+  } catch {
+    return false;
+  }
+}
+
 export function youtubeEmbedUrl(idOrUrl: string | null | undefined, autoplay = false): string | null {
   const id = /^[A-Za-z0-9_-]{11}$/.test(idOrUrl ?? "") ? (idOrUrl as string) : parseYouTubeId(idOrUrl);
   if (!id) return null;

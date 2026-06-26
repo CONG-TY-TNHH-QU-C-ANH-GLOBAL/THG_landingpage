@@ -7,7 +7,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse, type CatalogCollection } from "@/lib/catalogApi";
 import { countryFlag, countryName } from "@/lib/country-flags";
-import { parseYouTubeId, youtubeThumb, youtubeEmbedUrl } from "@/lib/youtube";
+import { parseYouTubeId, youtubeThumb, youtubeEmbedUrl, isYouTubeShort } from "@/lib/youtube";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
@@ -650,7 +650,7 @@ const CatalogPage = () => {
                 </DialogHeader>
 
                 {/* Body — 2 col grid on md+, stacked on mobile */}
-                <div className="flex-1 min-h-0 grid md:grid-cols-[320px_1fr] overflow-hidden">
+                <div className="flex-1 min-h-0 grid md:grid-cols-[380px_1fr] overflow-hidden">
 
                   {/* ════ LEFT: image (fixed on desktop, top on mobile) ════ */}
                   <div className="bg-gray-50/70 border-r border-border/30 flex flex-col overflow-hidden">
@@ -666,28 +666,36 @@ const CatalogPage = () => {
                       return (
                         <>
                           <div className="relative flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/50 to-gray-50/50 min-h-[240px]">
-                            {cur?.kind === "video" ? (
-                              videoPlaying ? (
-                                <iframe
-                                  src={youtubeEmbedUrl(cur.url, true) ?? ""}
-                                  title={`${selectedProduct.name} — video`}
-                                  className="w-full max-w-full aspect-video rounded-lg"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
-                                />
+                            {cur?.kind === "video" ? (() => {
+                              const short = isYouTubeShort(cur.url);
+                              // Shorts (dọc): khung 9:16 LẤP ĐẦY chiều rộng cột trái (width 100%),
+                              // cao theo tỷ lệ (~600px), KHÔNG dải đen; max-h-[80vh] cap màn thấp.
+                              const frameCls = short
+                                ? "aspect-[9/16] w-full max-h-[80vh] mx-auto"
+                                : "aspect-video w-full max-w-full";
+                              return videoPlaying ? (
+                                <div className={`${frameCls} rounded-lg overflow-hidden`}>
+                                  <iframe
+                                    src={youtubeEmbedUrl(cur.url, true) ?? ""}
+                                    title={`${selectedProduct.name} — video`}
+                                    className="w-full h-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  />
+                                </div>
                               ) : (
                                 <button
                                   onClick={() => setVideoPlaying(true)}
-                                  className="relative flex items-center justify-center w-full h-full"
+                                  className={`relative ${frameCls} rounded-lg overflow-hidden`}
                                   aria-label="Play video"
                                 >
-                                  <img src={youtubeThumb(cur.url) ?? ""} alt={`${selectedProduct.name} — video`} className="max-w-full max-h-[240px] object-contain rounded-lg" />
+                                  <img src={youtubeThumb(cur.url) ?? ""} alt={`${selectedProduct.name} — video`} className="w-full h-full object-cover" />
                                   <span className="absolute inset-0 flex items-center justify-center">
                                     <span className="w-16 h-16 rounded-full bg-black/55 flex items-center justify-center text-white text-2xl pl-1 hover:bg-black/70 transition-colors">▶</span>
                                   </span>
                                 </button>
-                              )
-                            ) : cur && !brokenImages.has(cur.url) ? (
+                              );
+                            })() : cur && !brokenImages.has(cur.url) ? (
                               <img
                                 src={cur.url}
                                 alt={selectedProduct.name}
