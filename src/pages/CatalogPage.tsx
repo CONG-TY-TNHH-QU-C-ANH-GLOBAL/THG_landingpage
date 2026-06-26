@@ -668,10 +668,10 @@ const CatalogPage = () => {
                           <div className="relative flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/50 to-gray-50/50 min-h-[240px]">
                             {cur?.kind === "video" ? (() => {
                               const short = isYouTubeShort(cur.url);
-                              // Shorts (dọc): khung 9:16 LẤP ĐẦY chiều rộng cột trái (width 100%),
-                              // cao theo tỷ lệ (~600px), KHÔNG dải đen; max-h-[80vh] cap màn thấp.
+                              // Shorts (dọc): khung 9:16 cao cố định ~520px (cap 68vh màn thấp),
+                              // w-auto → căn giữa cột, chừa hở trên/dưới (không dính thumbnail).
                               const frameCls = short
-                                ? "aspect-[9/16] w-full max-h-[80vh] mx-auto"
+                                ? "aspect-[9/16] h-[520px] max-h-[68vh] w-auto mx-auto"
                                 : "aspect-video w-full max-w-full";
                               return videoPlaying ? (
                                 <div className={`${frameCls} rounded-lg overflow-hidden`}>
