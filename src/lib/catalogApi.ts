@@ -67,6 +67,9 @@ export interface CatalogResponse {
   categoryCounts: Record<string, number>;
   originCounts: Record<string, number>;
   collections?: CatalogCollection[];
+  // THG-CAT: taxonomy động từ hub (product_categories, order theo sortOrder) —
+  // sidebar/pill render theo list này thay vì mảng CATEGORIES hardcode.
+  categories?: { name: string; slug: string }[];
 }
 
 export interface CatalogParams {

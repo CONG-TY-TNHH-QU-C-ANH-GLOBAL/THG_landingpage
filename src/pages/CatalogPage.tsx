@@ -29,6 +29,8 @@ const CatalogPage = () => {
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [originCounts, setOriginCounts] = useState<Record<string, number>>({});
   const [collections, setCollections] = useState<CatalogCollection[]>([]);
+  // THG-CAT: danh mục render động từ hub (product_categories). CATEGORIES giữ làm fallback.
+  const [categories, setCategories] = useState<string[]>(CATEGORIES);
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [activeOrigin, setActiveOrigin] = useState<string>("");
@@ -184,6 +186,7 @@ const CatalogPage = () => {
       setCategoryCounts(res.categoryCounts);
       setOriginCounts(res.originCounts);
       if (res.collections) setCollections(res.collections);
+      if (res.categories?.length) setCategories(res.categories.map((c) => c.name));
     } catch {
       // API not available yet — keep empty state
     } finally {
@@ -275,7 +278,7 @@ const CatalogPage = () => {
               <span className="ml-auto text-xs opacity-70">{totalAll}</span>
             </button>
 
-            {CATEGORIES.map((cat) => {
+            {categories.map((cat) => {
               const Icon = categoryIcons[cat] || Package;
               const count = categoryCounts[cat] || 0;
               if (count === 0) return null;
@@ -354,7 +357,7 @@ const CatalogPage = () => {
               >
                 {t("catalog.all")}
               </button>
-              {CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 if (!(categoryCounts[cat] > 0)) return null;
                 return (
                   <button

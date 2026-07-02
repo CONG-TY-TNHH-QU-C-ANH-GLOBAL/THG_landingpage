@@ -3,7 +3,7 @@
 // — these tables are pure data and only change when product editorial copy
 // or category taxonomy changes.
 
-import { Car, Coffee, Crown, Frame, Gem, Home, Package, Phone, Shirt } from "lucide-react";
+import { Car, Coffee, Crown, Frame, Gem, Home, Package, Phone, Shirt, PawPrint, Snowflake, GraduationCap, Sticker, Zap } from "lucide-react";
 
 export interface CategoryDescription {
   material: string[];
@@ -99,9 +99,18 @@ export const categoryIcons: Record<string, typeof Shirt> = {
   "Wall Art": Frame,
   Accessories: Package,
   "Cap & Hat": Crown,
+  "Pet Supplies": PawPrint,
+  Seasonal: Snowflake,
+  "Back to School": GraduationCap,
+  Sticker: Sticker,
+  Decal: Sticker,
+  "Drop - Fashion": Shirt,
+  "Drop - Electronics": Zap,
+  "Drop - Home": Home,
 };
 
-/** Display order for the category filter chips at the top of the catalog. */
+/** THG-CAT: fallback order khi hub API chưa trả `categories`. Nguồn chính là
+ *  res.categories (product_categories, order theo sortOrder). */
 export const CATEGORIES = [
   "Apparel",
   "Phone Cases",
