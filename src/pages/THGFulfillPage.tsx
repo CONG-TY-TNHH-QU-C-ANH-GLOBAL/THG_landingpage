@@ -13,7 +13,7 @@ import { Package, ArrowRight, Zap, Palette, Shirt, Printer } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { SectionHeader } from "@/components/sections/SectionHeader";
-import { HubSystemGuide } from "@/components/service-pages/HubSystemGuide";
+import { FulfillHubSystemGuide } from "@/components/service-pages/FulfillHubSystemGuide";
 import { ServiceProcessSteps } from "@/components/service-pages/ServiceProcessSteps";
 import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
@@ -366,7 +366,7 @@ const THGFulfillPage = () => {
       </section>
 
       {/* HUB System Guide - II */}
-      <HubSystemGuide />
+      <FulfillHubSystemGuide />
 
       {/* Policy CTA */}
       <section className="py-20 bg-background">
