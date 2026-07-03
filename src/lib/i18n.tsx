@@ -992,6 +992,10 @@ export const translations: Translations = {
   "community.form_err_captcha": tr("Please complete the captcha", "Vui lòng hoàn thành captcha", "请完成验证码"),
   "community.form_err_generic": tr("Something went wrong. Please try again.", "Có lỗi xảy ra. Vui lòng thử lại.", "出现错误，请重试。"),
   "community.form_close": tr("Close", "Đóng", "关闭"),
+  "community.withdraw_hint": tr("You can withdraw this question later from this browser.", "Bạn có thể rút câu hỏi này sau từ trình duyệt hiện tại.", "您之后可以从此浏览器撤回该问题。"),
+  "community.withdraw": tr("Withdraw question", "Rút câu hỏi", "撤回问题"),
+  "community.withdraw_confirm": tr("Withdraw this question? This can't be undone.", "Rút câu hỏi này? Hành động không thể hoàn tác.", "撤回此问题？此操作无法撤销。"),
+  "community.withdraw_done": tr("Your question has been withdrawn.", "Câu hỏi của bạn đã được rút.", "您的问题已撤回。"),
 
   // ── NotFound Page ──
   "notfound.message": { en: "Oops! Page not found", vi: "Rất tiếc! Không tìm thấy trang", zh: "抱歉！页面未找到" },

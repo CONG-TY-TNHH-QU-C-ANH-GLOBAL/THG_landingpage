@@ -599,12 +599,22 @@ export const communityQuestionResponseSchema = z.object({
   question: communityQuestionDetailSchema,
 });
 
-/** Successful POST /community/questions — always lands as pending moderation. */
+/** Successful POST /community/questions — always lands as pending moderation.
+ *  `owner_token` is returned ONCE here; the browser stores it (keyed by slug)
+ *  so the submitter can later withdraw their own question. Never present in
+ *  list/detail responses. */
 export const communityQuestionSubmitResponseSchema = z.object({
   ok: z.literal(true),
   id: z.number(),
   slug: z.string(),
   status: z.literal("pending"),
+  owner_token: z.string(),
+});
+
+/** Successful POST /community/questions/{slug}/withdraw. */
+export const communityWithdrawResponseSchema = z.object({
+  ok: z.literal(true),
+  withdrawn: z.literal(true),
 });
 
 /** Successful POST /community/questions/{slug}/same-issue. `deduped` is true
