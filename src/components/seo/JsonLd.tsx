@@ -178,6 +178,65 @@ export function JsonLdJobPosting({
   );
 }
 
+interface QaPageProps {
+  /** The question title (schema.org Question.name). */
+  question: string;
+  /** The question body text. */
+  text: string;
+  /** Canonical, lang-prefixed page URL. */
+  url: string;
+  /** Display name of the asker. */
+  authorName?: string;
+  /** THG expert answer text — the acceptedAnswer. Required for QA rich results. */
+  expertAnswer: string;
+  /** Unix seconds the question was published (emitted as ISO when present). */
+  publishedAt?: number | null;
+  /** "Same issue" count — mapped to Question.upvoteCount. */
+  upvoteCount?: number;
+}
+
+/** schema.org/QAPage for community questions (SEO Loop, Business Plan §2).
+ *  Only render when an expert answer exists — Google requires at least one
+ *  answer for QAPage rich results, and the moderation rules only allow
+ *  indexing answered/verified content anyway. */
+export function JsonLdQaPage({
+  question,
+  text,
+  url,
+  authorName,
+  expertAnswer,
+  publishedAt,
+  upvoteCount,
+}: Readonly<QaPageProps>) {
+  if (!expertAnswer.trim()) return null;
+  const mainEntity: Record<string, unknown> = {
+    "@type": "Question",
+    name: question,
+    text,
+    answerCount: 1,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: expertAnswer,
+      url,
+      author: { "@type": "Organization", name: "THG Fulfill", url: SITE_BASE },
+    },
+  };
+  if (authorName) mainEntity.author = { "@type": "Person", name: authorName };
+  if (publishedAt) mainEntity.datePublished = new Date(publishedAt * 1000).toISOString();
+  if (upvoteCount !== undefined) mainEntity.upvoteCount = upvoteCount;
+
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "QAPage",
+    mainEntity,
+  };
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(data)}</script>
+    </Helmet>
+  );
+}
+
 interface BreadcrumbItem {
   name: string;
   url: string;

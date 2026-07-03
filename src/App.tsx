@@ -41,6 +41,8 @@ const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
 const CareersPage = lazy(() => import("./pages/CareersPage"));
 const JobDetailPage = lazy(() => import("./pages/JobDetailPage"));
 const TrackingPage = lazy(() => import("./pages/TrackingPage"));
+const CommunityPage = lazy(() => import("./pages/community/CommunityPage"));
+const CommunityQuestionPage = lazy(() => import("./pages/community/CommunityQuestionPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
@@ -126,6 +128,8 @@ const AppRoutes = () => {
               <Route path="tracking" element={<TrackingPage />} />
               <Route path="careers" element={<CareersPage />} />
               <Route path="careers/:slug" element={<JobDetailPage />} />
+              <Route path="community" element={<CommunityPage />} />
+              <Route path="community/:slug" element={<CommunityQuestionPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

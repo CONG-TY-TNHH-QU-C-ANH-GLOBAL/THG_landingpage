@@ -235,6 +235,37 @@ export function useCmsBlogPost(slug: string, locale: Locale) {
   });
 }
 
+// Community Hub content is NOT localized in MVP (VI-canonical UGC), so these
+// keys carry no locale segment — the same payload serves all three langs.
+export function useCommunityQuestions(category?: string) {
+  return useQuery({
+    queryKey: ["cms", "community", "questions", category ?? "all"],
+    queryFn: () => cmsClient.getCommunityQuestions(category),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
+export function useCommunityQuestion(slug: string) {
+  return useQuery({
+    queryKey: ["cms", "community", "question", slug],
+    queryFn: () => cmsClient.getCommunityQuestion(slug),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+    enabled: !!slug,
+    retry: false,
+  });
+}
+
+export function useCommunityCategories() {
+  return useQuery({
+    queryKey: ["cms", "community", "categories"],
+    queryFn: () => cmsClient.getCommunityCategories(),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
 /**
  * Aggregator: fetches the full list of pricing tables, then in parallel pulls each
  * table's data and exposes it as a flat map { slug: dataArray }.

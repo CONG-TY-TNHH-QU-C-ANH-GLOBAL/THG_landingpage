@@ -535,3 +535,95 @@ export const cmsLeadInputSchema = z.object({
   turnstile_token: z.string(),
 });
 export type CmsLeadInput = z.infer<typeof cmsLeadInputSchema>;
+
+/* ---------- Community Hub (Q&A) ---------- */
+
+// Wire shapes mirror cmsthgfulfill src/features/community/community.schemas.ts.
+// Privacy: author_email/ip/utm never appear on the public wire — only
+// author_name does. `indexable` is computed by the CMS (published AND verified
+// AND non-empty expert answer); the detail page derives noindex from it.
+
+const cmsCommunityCategoryRefSchema = z
+  .object({
+    slug: z.string(),
+    name: z.string(),
+  })
+  .nullable();
+
+export const communityCategoriesResponseSchema = z.object({
+  categories: z.array(
+    z.object({
+      slug: z.string(),
+      name: z.string(),
+      position: z.number(),
+    }),
+  ),
+});
+export type CmsCommunityCategory = z.infer<
+  typeof communityCategoriesResponseSchema
+>["categories"][number];
+
+const communityQuestionSummarySchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  excerpt: z.string(),
+  category: cmsCommunityCategoryRefSchema,
+  has_expert_answer: z.boolean(),
+  verified: z.boolean(),
+  indexable: z.boolean(),
+  same_issue_count: z.number(),
+  published_at: z.number().nullable(),
+});
+export type CmsCommunityQuestionSummary = z.infer<typeof communityQuestionSummarySchema>;
+
+export const communityQuestionsResponseSchema = z.object({
+  questions: z.array(communityQuestionSummarySchema),
+});
+
+const communityQuestionDetailSchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  body: z.string(),
+  category: cmsCommunityCategoryRefSchema,
+  author_name: z.string(),
+  expert_answer: z.string().nullable(),
+  expert_answer_updated_at: z.number().nullable(),
+  verified: z.boolean(),
+  indexable: z.boolean(),
+  same_issue_count: z.number(),
+  published_at: z.number().nullable(),
+});
+export type CmsCommunityQuestionDetail = z.infer<typeof communityQuestionDetailSchema>;
+
+export const communityQuestionResponseSchema = z.object({
+  question: communityQuestionDetailSchema,
+});
+
+/** Successful POST /community/questions — always lands as pending moderation. */
+export const communityQuestionSubmitResponseSchema = z.object({
+  ok: z.literal(true),
+  id: z.number(),
+  slug: z.string(),
+  status: z.literal("pending"),
+});
+
+/** Successful POST /community/questions/{slug}/same-issue. `deduped` is true
+ *  when this visitor already reacted (server dedupes by hashed IP). */
+export const communitySameIssueResponseSchema = z.object({
+  ok: z.literal(true),
+  same_issue_count: z.number(),
+  deduped: z.boolean(),
+});
+
+/** Request body for POST /community/questions (validated before sending). */
+export const cmsCommunityQuestionInputSchema = z.object({
+  title: z.string().min(8).max(200),
+  body: z.string().min(20).max(5000),
+  category_slug: z.string().optional(),
+  author_name: z.string().min(1).max(80),
+  author_email: z.string().email(),
+  locale: localeSchema,
+  utm: z.record(z.string(), z.string()).optional(),
+  turnstile_token: z.string(),
+});
+export type CmsCommunityQuestionInput = z.infer<typeof cmsCommunityQuestionInputSchema>;

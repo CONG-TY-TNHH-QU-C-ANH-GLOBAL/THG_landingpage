@@ -1166,6 +1166,176 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/community/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List published community questions
+         * @description Published questions only — pending/rejected never leave the CMS. `indexable` is computed server-side (published AND verified AND has expert answer — see community.policy.ts); landing derives its noindex rule from it. Optional `category` filters by category slug.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    category?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Published question summary list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            questions: {
+                                slug: string;
+                                title: string;
+                                excerpt: string;
+                                category: {
+                                    slug: string;
+                                    name: string;
+                                } | null;
+                                has_expert_answer: boolean;
+                                verified: boolean;
+                                indexable: boolean;
+                                same_issue_count: number;
+                                published_at: number | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/questions/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one published community question by slug
+         * @description 404 unless the question status is `published`. Includes the THG expert answer (nullable) and the computed `indexable` flag.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Published question detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            question: {
+                                slug: string;
+                                title: string;
+                                body: string;
+                                category: {
+                                    slug: string;
+                                    name: string;
+                                } | null;
+                                author_name: string;
+                                expert_answer: string | null;
+                                expert_answer_updated_at: number | null;
+                                verified: boolean;
+                                indexable: boolean;
+                                same_issue_count: number;
+                                published_at: number | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Question not found or not published */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List community categories
+         * @description Ordered category list used for filtering and the ask-question form.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Category list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            categories: {
+                                slug: string;
+                                name: string;
+                                position: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

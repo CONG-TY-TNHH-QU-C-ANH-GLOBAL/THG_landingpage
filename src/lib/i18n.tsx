@@ -6,6 +6,11 @@ export type Language = "en" | "vi" | "zh";
 
 type Translations = Record<string, Record<Language, string>>;
 
+// Compact constructor for a single locale triple — keeps large blocks of
+// entries from tripping the copy-paste detector on the repeated
+// `{ en, vi, zh }` object skeleton.
+const tr = (en: string, vi: string, zh: string): Record<Language, string> => ({ en, vi, zh });
+
 // Exported so a one-shot CMS import script can read this dictionary and
 // generate a migration that seeds D1 `translations` with the same values.
 // Operator can then override per-key via /admin/content/translations and
@@ -948,6 +953,45 @@ export const translations: Translations = {
   "blog.slide_label": { en: "Slide", vi: "Slide", zh: "幻灯片" },
   "blog.zoom_hint": { en: "Click to zoom", vi: "Nhấn để phóng to", zh: "点击放大" },
   "blog.not_found": { en: "Article not found", vi: "Không tìm thấy bài viết", zh: "未找到文章" },
+
+  // ── Community Hub (Q&A) ──
+  "community.eyebrow": tr("THG Community", "Cộng đồng THG", "THG社区"),
+  "community.title": tr("Seller Q&A Hub", "Hỏi đáp dành cho Seller", "卖家问答中心"),
+  "community.subtitle": tr("Real questions from POD & Dropship sellers, answered by THG experts", "Câu hỏi thực tế từ seller POD & Dropship, được chuyên gia THG giải đáp", "POD和Dropship卖家的真实问题，由THG专家解答"),
+  "community.cat_all": tr("All", "Tất cả", "全部"),
+  "community.ask_button": tr("Ask a question", "Đặt câu hỏi", "提问"),
+  "community.empty": tr("No questions yet. Be the first to ask!", "Chưa có câu hỏi nào. Hãy là người đầu tiên đặt câu hỏi!", "还没有问题。成为第一个提问的人！"),
+  "community.loading": tr("Loading questions…", "Đang tải câu hỏi…", "正在加载问题…"),
+  "community.not_found": tr("Question not found or not published yet.", "Không tìm thấy câu hỏi hoặc câu hỏi chưa được duyệt.", "未找到问题或问题尚未发布。"),
+  "community.expert_badge": tr("THG Expert Answer", "Chuyên gia THG trả lời", "THG专家解答"),
+  "community.verified_badge": tr("Verified by THG", "THG xác thực", "THG认证"),
+  "community.awaiting_answer": tr("Our experts are reviewing this question.", "Chuyên gia THG đang xem xét câu hỏi này.", "THG专家正在审阅此问题。"),
+  "community.asked_by": tr("Asked by", "Người hỏi:", "提问者："),
+  "community.same_issue": tr("Same issue", "Tôi cũng gặp vấn đề này", "我也遇到这个问题"),
+  "community.same_issue_done": tr("Recorded — you're not alone", "Đã ghi nhận — bạn không đơn độc", "已记录——你并不孤单"),
+  "community.share": tr("Share", "Chia sẻ", "分享"),
+  "community.share_copied": tr("Link copied to clipboard", "Đã sao chép liên kết", "链接已复制"),
+  "community.back": tr("Back to Community", "Quay lại Cộng đồng", "返回社区"),
+  "community.form_title": tr("Ask the THG experts", "Đặt câu hỏi cho chuyên gia THG", "向THG专家提问"),
+  "community.form_desc": tr("Your question is reviewed by our team before it appears publicly.", "Câu hỏi của bạn sẽ được đội ngũ THG kiểm duyệt trước khi hiển thị công khai.", "您的问题将由THG团队审核后公开显示。"),
+  "community.form_name": tr("Your name", "Tên của bạn", "您的姓名"),
+  "community.form_email": tr("Email", "Email", "电子邮件"),
+  "community.form_email_hint": tr("Never shown publicly", "Không hiển thị công khai", "不会公开显示"),
+  "community.form_category": tr("Topic", "Chủ đề", "主题"),
+  "community.form_category_none": tr("Other", "Khác", "其他"),
+  "community.form_question_title": tr("Question title", "Tiêu đề câu hỏi", "问题标题"),
+  "community.form_question_title_ph": tr("e.g. How long does VN → US shipping really take?", "VD: Ship VN → US thực tế mất bao lâu?", "例如：越南到美国的运输实际需要多长时间？"),
+  "community.form_question_body": tr("Details", "Nội dung chi tiết", "详细内容"),
+  "community.form_question_body_ph": tr("Describe your situation — product type, destination, what you've tried…", "Mô tả tình huống của bạn — loại sản phẩm, thị trường, những gì đã thử…", "描述您的情况——产品类型、目的地、已尝试的方法…"),
+  "community.form_submit": tr("Submit question", "Gửi câu hỏi", "提交问题"),
+  "community.form_submitting": tr("Submitting…", "Đang gửi…", "提交中…"),
+  "community.form_success_title": tr("Question received!", "Đã nhận câu hỏi!", "已收到问题！"),
+  "community.form_success_desc": tr("It's now pending review. Once approved (and answered by a THG expert), it will appear in the community hub.", "Câu hỏi đang chờ kiểm duyệt. Sau khi được duyệt (và chuyên gia THG trả lời), câu hỏi sẽ xuất hiện trên trang cộng đồng.", "问题正在等待审核。审核通过（并由THG专家解答）后将显示在社区页面。"),
+  "community.form_err_required": tr("Please fill in all required fields", "Vui lòng điền đầy đủ các trường bắt buộc", "请填写所有必填字段"),
+  "community.form_err_short": tr("Title needs ≥8 characters, details ≥20 characters", "Tiêu đề tối thiểu 8 ký tự, nội dung tối thiểu 20 ký tự", "标题至少8个字符，内容至少20个字符"),
+  "community.form_err_captcha": tr("Please complete the captcha", "Vui lòng hoàn thành captcha", "请完成验证码"),
+  "community.form_err_generic": tr("Something went wrong. Please try again.", "Có lỗi xảy ra. Vui lòng thử lại.", "出现错误，请重试。"),
+  "community.form_close": tr("Close", "Đóng", "关闭"),
 
   // ── NotFound Page ──
   "notfound.message": { en: "Oops! Page not found", vi: "Rất tiếc! Không tìm thấy trang", zh: "抱歉！页面未找到" },

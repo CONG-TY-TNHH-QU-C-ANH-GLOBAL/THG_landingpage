@@ -49,6 +49,7 @@ const BASE_ROUTES = [
   "/thg-order",
   "/catalog",
   "/careers",
+  "/community",
   "/blog",
   "/policy",
   "/shipping-policy",
@@ -106,7 +107,33 @@ async function fetchBlogRoutes() {
   }
 }
 
-const ROUTES = [...STATIC_ROUTES, ...(await fetchJobRoutes()), ...(await fetchBlogRoutes())];
+/** Fetch indexable community-question slugs so each /community/:slug gets a
+ *  prerendered shell with QAPage JSON-LD + real meta. ONLY indexable questions
+ *  (published + verified + non-empty expert answer) — everything else is
+ *  CSR-only and carries noindex, per the moderation/SEO rules. Best-effort. */
+async function fetchCommunityRoutes() {
+  try {
+    const res = await fetch(`${CMS_API}/community/questions`);
+    if (!res.ok) {
+      console.warn(`⚠ community fetch ${res.status} — skipping community-detail prerender`);
+      return [];
+    }
+    const data = await res.json();
+    const slugs = (data.questions ?? []).filter((q) => q.indexable).map((q) => q.slug);
+    console.log(`✓ ${slugs.length} indexable community questions → /community/:slug prerender`);
+    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/community/${s}`));
+  } catch (err) {
+    console.warn(`⚠ community fetch failed (${err.message}) — skipping community-detail prerender`);
+    return [];
+  }
+}
+
+const ROUTES = [
+  ...STATIC_ROUTES,
+  ...(await fetchJobRoutes()),
+  ...(await fetchBlogRoutes()),
+  ...(await fetchCommunityRoutes()),
+];
 
 if (!existsSync(DIST)) {
   console.error("✗ dist/ missing — run `bun run build` first.");
@@ -134,8 +161,17 @@ async function waitForReady(url) {
   throw new Error(`Preview server never became ready at ${url}`);
 }
 
-const previewArgs = ["x", "vite", "preview", "--port", String(PORT), "--host", "127.0.0.1", "--strictPort"];
-const preview = spawn("bun", previewArgs, {
+// Run the local Vite CLI via the current runtime's absolute binary
+// (process.execPath) instead of resolving "bun" through PATH — avoids the
+// unsafe-PATH-search class (Sonar S4036) while keeping the same external
+// preview process.
+const viteCli = resolve(ROOT, "node_modules", "vite", "bin", "vite.js");
+if (!existsSync(viteCli)) {
+  console.error(`✗ Vite CLI not found at ${viteCli} — run \`bun install\` first.`);
+  process.exit(1);
+}
+const previewArgs = [viteCli, "preview", "--port", String(PORT), "--host", "127.0.0.1", "--strictPort"];
+const preview = spawn(process.execPath, previewArgs, {
   cwd: ROOT,
   stdio: ["ignore", "pipe", "pipe"],
 });
@@ -207,7 +243,8 @@ try {
   }
 
   await context.close();
-  console.log(`\n✓ Prerendered ${successCount}/${ROUTES.length} routes${failures.length ? ` (${failures.length} skipped)` : ""}`);
+  const skippedNote = failures.length ? ` (${failures.length} skipped)` : "";
+  console.log(`\n✓ Prerendered ${successCount}/${ROUTES.length} routes${skippedNote}`);
 } catch (err) {
   console.error("✗ Prerender setup failed:", err);
   failures.push({ route: "<setup>", msg: err instanceof Error ? err.message : String(err) });
