@@ -3,7 +3,6 @@ import ContactSection from "@/components/ContactSection";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import ScrollReveal from "@/components/ScrollReveal";
-import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
 import ImageMarquee from "@/components/ImageMarquee";
 import { useI18n } from "@/lib/i18n";
@@ -12,7 +11,9 @@ import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 import { SectionHeader } from "@/components/sections/SectionHeader";
-import { ServiceProcessSteps } from "@/components/sections/ServiceProcessSteps";
+import { ServiceFeatureCard } from "@/components/service-pages/ServiceFeatureCard";
+import { ServiceProcessSteps } from "@/components/service-pages/ServiceProcessSteps";
+import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { WAREHOUSE_PACKAGING_URL } from "@/config/cmsAssets";
 
 const sliderImages = [
@@ -135,14 +136,8 @@ const THGWarehousePage = () => {
           {/* Hero videos */}
           <ScrollReveal delay={300}>
             <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6 lg:gap-8 mb-8">
-              <div className="rounded-2xl flex overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform aspect-video bg-black relative group">
-                <YouTubeEmbed videoId="KPhQYnkYA68" className="w-full h-full" />
-                <div className="absolute inset-0 pointer-events-none border border-white/10 rounded-2xl"></div>
-              </div>
-              <div className="rounded-2xl flex overflow-hidden shadow-2xl border border-border/40 hover:-translate-y-1 transition-transform aspect-video bg-black relative group">
-                <YouTubeEmbed videoId="blS1dmH_xb8" className="w-full h-full" />
-                <div className="absolute inset-0 pointer-events-none border border-white/10 rounded-2xl"></div>
-              </div>
+              <ServiceVideoCard videoId="KPhQYnkYA68" title="THG Warehouse Tour 1" className="hover:-translate-y-1 transition-transform" />
+              <ServiceVideoCard videoId="blS1dmH_xb8" title="THG Warehouse Tour 2" className="hover:-translate-y-1 transition-transform" />
             </div>
           </ScrollReveal>
           <ScrollReveal delay={400}>
@@ -185,13 +180,9 @@ const THGWarehousePage = () => {
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {features.map((f, i) => (
               <ScrollReveal key={f.titleKey} delay={i * 100}>
-                <div className="glass-card rounded-2xl p-8 text-center hover-lift h-full">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
-                    <f.icon className="w-8 h-8 text-primary" strokeWidth={1.75} />
-                  </div>
-                  <h3 className="text-xl font-bold text-navy mb-3">{t(f.titleKey)}</h3>
-                  <SafeHtml as="p" className="text-base text-navy/70 leading-relaxed" html={t(f.descKey)} />
-                </div>
+                <ServiceFeatureCard icon={f.icon} title={t(f.titleKey)}>
+                  <SafeHtml as="p" html={t(f.descKey)} />
+                </ServiceFeatureCard>
               </ScrollReveal>
             ))}
           </div>
@@ -202,9 +193,7 @@ const THGWarehousePage = () => {
       <section className="py-24 bg-card relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.strengths_title")}</h2>
-            </div>
+            <SectionHeader title={t("warehouse_page.strengths_title")} />
           </ScrollReveal>
 
           <div className="max-w-5xl mx-auto space-y-16">
@@ -233,9 +222,11 @@ const THGWarehousePage = () => {
                   <h3 className="text-2xl font-bold text-navy mb-4">{t("warehouse_page.str1_title")}</h3>
                   <p className="text-navy/70 leading-relaxed mb-6">{t("warehouse_page.str1_desc")}</p>
                 </div>
-                <div className="order-1 lg:order-2 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1 bg-black aspect-video">
-                  <YouTubeEmbed videoId="eJF-6mn2APQ" className="w-full h-full" />
-                </div>
+                <ServiceVideoCard
+                  videoId="eJF-6mn2APQ"
+                  title="THG Warehouse Cost"
+                  className="order-1 lg:order-2 hover:shadow-2xl transition-all hover:-translate-y-1"
+                />
               </div>
             </ScrollReveal>
           </div>
@@ -245,23 +236,12 @@ const THGWarehousePage = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16 max-w-3xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.str5_title")}</h2>
-              <p className="text-navy/70 mt-4 leading-relaxed text-lg">{t("warehouse_page.str5_desc")}</p>
-            </div>
+            <SectionHeader title={t("warehouse_page.str5_title")} description={t("warehouse_page.str5_desc")} />
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {["wcJ_iwwDcBM", "Gi_zlY_Hmw4", "qeADCwk23JU"].map((videoId, i) => (
-              <ScrollReveal key={i} delay={i * 100}>
-                <div className="glass-card rounded-2xl overflow-hidden hover-lift h-full shadow-lg border border-border/40">
-                  <div className="bg-black relative">
-                    <YouTubeEmbed
-                      videoId={videoId}
-                      aspectRatio="9/16"
-                      className="rounded-2xl"
-                    />
-                  </div>
-                </div>
+              <ScrollReveal key={videoId} delay={i * 100}>
+                <ServiceVideoCard videoId={videoId} title={`THG Warehouse packing ${i + 1}`} aspectRatio="9/16" />
               </ScrollReveal>
             ))}
           </div>
@@ -320,7 +300,7 @@ const THGWarehousePage = () => {
               </div>
             </ScrollReveal>
             <ScrollReveal delay={200} direction="right">
-              <YouTubeEmbed videoId="o46X3StSbnY" title="THG Warehouse OMS" />
+              <ServiceVideoCard videoId="o46X3StSbnY" title="THG Warehouse OMS" />
             </ScrollReveal>
           </div>
         </div>
@@ -330,9 +310,7 @@ const THGWarehousePage = () => {
       <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.process_title")}</h2>
-            </div>
+            <SectionHeader title={t("warehouse_page.process_title")} />
           </ScrollReveal>
           <div className="max-w-3xl mx-auto">
             <ServiceProcessSteps steps={processSteps} numPrefix={t("wh_faq.step_prefix")} />

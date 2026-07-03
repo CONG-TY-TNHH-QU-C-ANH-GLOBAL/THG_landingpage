@@ -4,8 +4,10 @@ import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
-import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
+import { SectionHeader } from "@/components/sections/SectionHeader";
+import { ServiceFeatureCard } from "@/components/service-pages/ServiceFeatureCard";
+import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { useI18n } from "@/lib/i18n";
 import { Truck, Plane, Shield, MapPin, Globe, CheckCircle2, Lock, Users, Headphones, CircleDollarSign, Rocket, Warehouse, UsersRound, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -140,14 +142,10 @@ const THGExpressPage = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, idx) => (
-              <ScrollReveal key={idx} delay={idx * 100} direction="up" className="h-full">
-                <div className="bg-white p-8 rounded-[20px] h-full shadow-[0_4px_24px_rgba(0,0,0,0.03)] flex flex-col items-center text-center group hover:-translate-y-2 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all duration-300 border border-gray-100">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <feature.icon className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold mb-3 uppercase text-navy">{t(feature.titleKey)}</h3>
-                  <p className="text-gray-500 text-sm font-medium leading-relaxed">{t(feature.descKey)}</p>
-                </div>
+              <ScrollReveal key={feature.titleKey} delay={idx * 100} direction="up" className="h-full">
+                <ServiceFeatureCard icon={feature.icon} title={t(feature.titleKey)}>
+                  {t(feature.descKey)}
+                </ServiceFeatureCard>
               </ScrollReveal>
             ))}
           </div>
@@ -157,25 +155,16 @@ const THGExpressPage = () => {
       {/* 3. VIDEO LOGISTICS PARTNERSHIP */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 max-w-5xl mx-auto">
-            <ScrollReveal delay={100} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
-                <YouTubeEmbed videoId="BJmuA108gok" title="Bảng Giá THG Line Tiktok" aspectRatio="auto" />
-                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={300} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
-                <YouTubeEmbed videoId="fIg0fhQlVXg" title="Ship Hàng Đi Mỹ" aspectRatio="auto" />
-                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={400} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-video relative group">
-                <YouTubeEmbed videoId="MXpMVfLgKTw" title="Thủ Tục Hải Quan Global" aspectRatio="auto" />
-                <div className="absolute inset-0 pointer-events-none border border-black/5 rounded-2xl"></div>
-              </div>
-            </ScrollReveal>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              { id: "BJmuA108gok", title: "Bảng Giá THG Line Tiktok" },
+              { id: "fIg0fhQlVXg", title: "Ship Hàng Đi Mỹ" },
+              { id: "MXpMVfLgKTw", title: "Thủ Tục Hải Quan Global" },
+            ].map((v, i) => (
+              <ScrollReveal key={v.id} delay={(i + 1) * 100} direction="up">
+                <ServiceVideoCard videoId={v.id} title={v.title} />
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
@@ -306,11 +295,7 @@ const THGExpressPage = () => {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight uppercase">
-                {t("express_page.trust_title")}
-              </h2>
-            </div>
+            <SectionHeader title={<span className="uppercase">{t("express_page.trust_title")}</span>} />
           </ScrollReveal>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
@@ -325,20 +310,22 @@ const THGExpressPage = () => {
             </ScrollReveal>
 
             <ScrollReveal direction="right">
-              <div className="grid sm:grid-cols-2 gap-8">
+              <div className="grid sm:grid-cols-2 gap-6">
                 {[
                   { icon: Globe, title: "trust_feat1", desc: "trust_feat1_desc" },
                   { icon: Lock, title: "trust_feat2", desc: "trust_feat2_desc" },
                   { icon: Shield, title: "trust_feat3", desc: "trust_feat3_desc" },
                   { icon: Headphones, title: "trust_feat4", desc: "trust_feat4_desc" }
-                ].map((f, i) => (
-                  <div key={i} className="flex flex-col items-start bg-card p-6 rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="w-12 h-12 bg-navy/5 text-[hsl(var(--gold))] rounded-full flex items-center justify-center mb-4">
-                      <f.icon className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-bold text-navy mb-2">{t(`express_page.${f.title}`)}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{t(`express_page.${f.desc}`)}</p>
-                  </div>
+                ].map((f) => (
+                  <ServiceFeatureCard
+                    key={f.title}
+                    icon={f.icon}
+                    title={t(`express_page.${f.title}`)}
+                    align="left"
+                    className="p-6"
+                  >
+                    {t(`express_page.${f.desc}`)}
+                  </ServiceFeatureCard>
                 ))}
               </div>
             </ScrollReveal>
@@ -350,11 +337,7 @@ const THGExpressPage = () => {
       <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight uppercase">
-                {t("express_page.process_title")}
-              </h2>
-            </div>
+            <SectionHeader title={<span className="uppercase">{t("express_page.process_title")}</span>} />
           </ScrollReveal>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
@@ -573,10 +556,7 @@ const THGExpressPage = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4 max-w-4xl">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4 tracking-tight">{t("express_page.faq_title")}</h2>
-              <p className="text-muted-foreground">{t("express_page.faq_eyebrow")}</p>
-            </div>
+            <SectionHeader title={t("express_page.faq_title")} description={t("express_page.faq_eyebrow")} />
           </ScrollReveal>
           <ScrollReveal delay={100} direction="up">
             <div className="glass-card bg-white/50 border border-border/50 rounded-2xl p-6 md:p-10">
