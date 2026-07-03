@@ -142,51 +142,57 @@ function ContactCtaCard() {
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Facebook */}
-        <a
-          href="https://www.facebook.com/THGFulfill"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 w-full px-5 py-3.5 rounded-full font-semibold text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-          style={{ background: "#1877F2" }}
-        >
-          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-          </svg>
-          <span>Liên hệ qua Facebook</span>
-        </a>
-
-        {/* YouTube */}
-        <a
-          href="https://www.youtube.com/@thgfulfillment"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 w-full px-5 py-3.5 rounded-full font-semibold text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-          style={{ background: "#FF0000" }}
-        >
-          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
-            <polygon fill="white" points="9.545 15.568 15.818 12 9.545 8.432" />
-          </svg>
-          <span>Liên hệ qua YouTube</span>
-        </a>
-
-        {/* TikTok */}
-        <a
-          href="https://www.tiktok.com/@thgfulfillment"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 w-full px-5 py-3.5 rounded-full font-semibold text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-          style={{ background: "#010101" }}
-        >
-          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.74a4.85 4.85 0 0 1-1.01-.05z" />
-          </svg>
-          <span>Liên hệ qua TikTok</span>
-        </a>
+        {SOCIAL_LINKS.map((s) => (
+          <a
+            key={s.href}
+            href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 w-full px-5 py-3.5 rounded-full font-semibold text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{ background: s.background }}
+          >
+            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              {s.icon}
+            </svg>
+            <span>{s.label}</span>
+          </a>
+        ))}
       </div>
     </>
   );
 }
+
+// Brand icons stay inline SVG paths (no icon-library equivalents shipped for
+// these marks). Labels are the existing literal copy; localizing them needs
+// new i18n keys and is deferred to a copy pass.
+const SOCIAL_LINKS = [
+  {
+    label: "Liên hệ qua Facebook",
+    href: "https://www.facebook.com/THGFulfill",
+    background: "#1877F2",
+    icon: (
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+    ),
+  },
+  {
+    label: "Liên hệ qua YouTube",
+    href: "https://www.youtube.com/@thgfulfillment",
+    background: "#FF0000",
+    icon: (
+      <>
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
+        <polygon fill="white" points="9.545 15.568 15.818 12 9.545 8.432" />
+      </>
+    ),
+  },
+  {
+    label: "Liên hệ qua TikTok",
+    href: "https://www.tiktok.com/@thgfulfillment",
+    background: "#010101",
+    icon: (
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.74a4.85 4.85 0 0 1-1.01-.05z" />
+    ),
+  },
+];
 
 export default ContactSection;
