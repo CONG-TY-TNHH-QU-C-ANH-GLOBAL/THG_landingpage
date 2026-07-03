@@ -234,7 +234,8 @@ try {
   }
 
   await context.close();
-  console.log(`\n✓ Prerendered ${successCount}/${ROUTES.length} routes${failures.length ? ` (${failures.length} skipped)` : ""}`);
+  const skippedNote = failures.length ? ` (${failures.length} skipped)` : "";
+  console.log(`\n✓ Prerendered ${successCount}/${ROUTES.length} routes${skippedNote}`);
 } catch (err) {
   console.error("✗ Prerender setup failed:", err);
   failures.push({ route: "<setup>", msg: err instanceof Error ? err.message : String(err) });
