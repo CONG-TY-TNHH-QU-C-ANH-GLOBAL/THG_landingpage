@@ -64,7 +64,55 @@ function MobileNavItem({ item, onClick }: Readonly<{ item: NavMenuItem; onClick:
   );
 }
 
-const Navbar = () => {
+type NavbarVariant = "default" | "darkHero";
+
+interface NavbarProps {
+  /**
+   * "darkHero" makes the pre-scroll (transparent) navbar readable over pages
+   * whose hero is dark (e.g. /catalog's navy gradient). Pages that own a dark
+   * hero pass it explicitly; the scrolled state is identical for both variants.
+   */
+  variant?: NavbarVariant;
+}
+
+/** Tone class sets for the transparent (pre-scroll) navbar state. */
+interface NavbarTone {
+  navItem: string;
+  mutedLink: string;
+  brandText: string;
+  brandSub: string;
+  logoBox: string;
+  toggleBg: string;
+  toggleIcon: string;
+}
+
+const DEFAULT_TONE: NavbarTone = {
+  navItem: "text-foreground/80 hover:text-foreground hover:bg-secondary/50",
+  mutedLink: "text-muted-foreground hover:text-foreground",
+  brandText: "text-navy",
+  brandSub: "text-muted-foreground",
+  logoBox: "bg-navy",
+  toggleBg: "bg-secondary/30 hover:bg-secondary/60",
+  toggleIcon: "text-navy",
+};
+
+const DARK_HERO_TONE: NavbarTone = {
+  navItem: "text-white/85 hover:text-white hover:bg-white/10",
+  mutedLink: "text-white/70 hover:text-white",
+  brandText: "text-white",
+  brandSub: "text-white/60",
+  logoBox: "bg-white/15 backdrop-blur-sm",
+  toggleBg: "bg-white/10 hover:bg-white/20",
+  toggleIcon: "text-white",
+};
+
+// Once scrolled, the navbar gets its opaque light background and the default
+// tones apply for both variants.
+function getNavbarTone(variant: NavbarVariant, scrolled: boolean): NavbarTone {
+  return variant === "darkHero" && !scrolled ? DARK_HERO_TONE : DEFAULT_TONE;
+}
+
+const Navbar = ({ variant = "default" }: NavbarProps) => {
   const { t, language } = useI18n();
   /** Prefix any absolute path with the current language. */
   const lp = (path: string) => `/${language}${path}`;
@@ -113,6 +161,8 @@ const Navbar = () => {
     { label: t("nav.careers"), href: "/careers" },
   ];
 
+  const tone = getNavbarTone(variant, scrolled);
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
       ? "bg-background/90 backdrop-blur-2xl shadow-[0_4px_30px_hsl(36_45%_42%/0.08)] border-b border-border/40"
@@ -120,12 +170,12 @@ const Navbar = () => {
       }`}>
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
         <Link to={`/${language}`} className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5 ${tone.logoBox}`}>
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
-            <span className="text-base font-bold text-navy leading-tight tracking-tight block">THG Fulfill</span>
-            <span className="text-[9px] tracking-[0.15em] text-muted-foreground uppercase block">Transport Happiness Group</span>
+            <span className={`text-base font-bold leading-tight tracking-tight block ${tone.brandText}`}>THG Fulfill</span>
+            <span className={`text-[9px] tracking-[0.15em] uppercase block ${tone.brandSub}`}>Transport Happiness Group</span>
           </div>
         </Link>
 
@@ -138,7 +188,7 @@ const Navbar = () => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50">
+            <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
               <span translate="no">{t("nav.services")}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showServices ? "rotate-180" : ""}`} />
             </button>
@@ -162,7 +212,7 @@ const Navbar = () => {
             onMouseEnter={handlePricingEnter}
             onMouseLeave={handlePricingLeave}
           >
-            <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors rounded-lg hover:bg-secondary/50">
+            <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
               <span translate="no">{t("nav.pricing")}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showPricing ? "rotate-180" : ""}`} />
             </button>
@@ -184,7 +234,7 @@ const Navbar = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-secondary/50 text-foreground/80 hover:text-foreground cursor-pointer`}
+                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg cursor-pointer ${tone.navItem}`}
                 onClick={(e) => {
                   e.preventDefault();
                   const hash = item.href.split("#")[1];
@@ -201,7 +251,7 @@ const Navbar = () => {
               <Link
                 key={item.label}
                 to={lp(item.href)}
-                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg hover:bg-secondary/50 ${location.pathname === lp(item.href) ? "text-primary" : "text-foreground/80 hover:text-foreground"
+                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${location.pathname === lp(item.href) ? "text-primary" : tone.navItem
                   }`}
               >
                 <span translate="no">{item.label}</span>
@@ -216,7 +266,7 @@ const Navbar = () => {
             href="https://hub.thgfulfill.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className={`text-sm font-medium transition-colors ${tone.mutedLink}`}
           >
             Hub System
           </a>
@@ -233,12 +283,12 @@ const Navbar = () => {
         {/* Mobile toggle */}
         <div className="flex lg:hidden items-center gap-2">
           <button
-            className="p-3 bg-secondary/30 hover:bg-secondary/60 rounded-xl transition-colors"
+            className={`p-3 rounded-xl transition-colors ${tone.toggleBg}`}
             onClick={() => setIsOpen(!isOpen)}
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
           >
-            {isOpen ? <X size={22} className="text-navy" /> : <Menu size={22} className="text-navy" />}
+            {isOpen ? <X size={22} className={tone.toggleIcon} /> : <Menu size={22} className={tone.toggleIcon} />}
           </button>
         </div>
       </div>
