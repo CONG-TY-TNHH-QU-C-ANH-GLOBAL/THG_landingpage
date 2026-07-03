@@ -141,7 +141,7 @@ async function main() {
   }
 
   // 4. Community questions from CMS (best-effort). ONLY indexable entries —
-  //    the CMS computes indexable = published AND (verified OR expert answer),
+  //    the CMS computes indexable = published AND verified AND non-empty expert answer,
   //    which is the Business Plan §4 rule for what Google may index. Everything
   //    else stays out of the sitemap AND carries noindex meta on the page.
   try {

@@ -1,5 +1,5 @@
 // Community question detail — SEO-governed per Business Plan §4:
-//   * noindex unless the CMS says `indexable` (published AND verified-or-answered)
+//   * noindex unless the CMS says `indexable` (published AND verified AND non-empty expert answer)
 //   * QAPage JSON-LD only when an expert answer exists
 //   * UGC body/answer rendered through SafeHtml with the UGC link policy
 //     (rel="ugc nofollow noopener noreferrer")

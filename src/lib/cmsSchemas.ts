@@ -540,8 +540,8 @@ export type CmsLeadInput = z.infer<typeof cmsLeadInputSchema>;
 
 // Wire shapes mirror cmsthgfulfill src/features/community/community.schemas.ts.
 // Privacy: author_email/ip/utm never appear on the public wire — only
-// author_name does. `indexable` is computed by the CMS (published AND
-// (verified OR expert answer)); the detail page derives noindex from it.
+// author_name does. `indexable` is computed by the CMS (published AND verified
+// AND non-empty expert answer); the detail page derives noindex from it.
 
 const cmsCommunityCategoryRefSchema = z
   .object({

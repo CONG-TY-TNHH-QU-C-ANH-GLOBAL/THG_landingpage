@@ -109,8 +109,8 @@ async function fetchBlogRoutes() {
 
 /** Fetch indexable community-question slugs so each /community/:slug gets a
  *  prerendered shell with QAPage JSON-LD + real meta. ONLY indexable questions
- *  (published + verified-or-answered) — everything else is CSR-only and
- *  carries noindex, per the moderation/SEO rules. Best-effort like the rest. */
+ *  (published + verified + non-empty expert answer) — everything else is
+ *  CSR-only and carries noindex, per the moderation/SEO rules. Best-effort. */
 async function fetchCommunityRoutes() {
   try {
     const res = await fetch(`${CMS_API}/community/questions`);
