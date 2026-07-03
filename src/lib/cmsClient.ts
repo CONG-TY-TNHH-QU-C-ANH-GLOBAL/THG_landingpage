@@ -13,10 +13,14 @@ import {
   applicantCvUploadResponseSchema,
   blogCategoriesResponseSchema,
   cmsCommunityQuestionInputSchema,
+  cmsCommunityReviewInputSchema,
   communityCategoriesResponseSchema,
   communityQuestionResponseSchema,
   communityQuestionSubmitResponseSchema,
   communityQuestionsResponseSchema,
+  communityReviewResponseSchema,
+  communityReviewsResponseSchema,
+  communityReviewSubmitResponseSchema,
   communitySameIssueResponseSchema,
   communityWithdrawResponseSchema,
   blogListResponseSchema,
@@ -291,6 +295,43 @@ export const cmsClient = {
   postCommunityWithdraw(slug: string, ownerToken: string) {
     return fetchJson(
       `/community/questions/${encodeURIComponent(slug)}/withdraw`,
+      communityWithdrawResponseSchema,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownerToken }),
+      },
+    );
+  },
+
+  /** Published + verified community reviews only (CMS filters server-side). */
+  getCommunityReviews(category?: string) {
+    const qs = category ? `?category=${encodeURIComponent(category)}` : "";
+    return fetchJson(`/community/reviews${qs}`, communityReviewsResponseSchema);
+  },
+
+  getCommunityReview(slug: string) {
+    return fetchJson(
+      `/community/reviews/${encodeURIComponent(slug)}`,
+      communityReviewResponseSchema,
+    );
+  },
+
+  /** Submit a seller review — lands as pending moderation, never public until
+   *  an operator publishes AND verifies it in the CMS. */
+  postCommunityReview(input: z.infer<typeof cmsCommunityReviewInputSchema>) {
+    const parsed = cmsCommunityReviewInputSchema.parse(input);
+    return fetchJson("/community/reviews", communityReviewSubmitResponseSchema, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed),
+    });
+  },
+
+  /** Withdraw a review the current browser owns (one-time token from submit). */
+  postCommunityReviewWithdraw(slug: string, ownerToken: string) {
+    return fetchJson(
+      `/community/reviews/${encodeURIComponent(slug)}/withdraw`,
       communityWithdrawResponseSchema,
       {
         method: "POST",

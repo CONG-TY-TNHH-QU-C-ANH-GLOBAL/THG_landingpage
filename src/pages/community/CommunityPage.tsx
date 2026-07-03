@@ -8,6 +8,8 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
 import { AskQuestionDialog } from "@/components/community/AskQuestionDialog";
+import { CommunityTabs } from "@/components/community/CommunityTabs";
+import { CommunityCategoryFilters } from "@/components/community/communityPageBits";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
@@ -60,24 +62,14 @@ const CommunityPage = () => {
             </div>
           </ScrollReveal>
 
+          <CommunityTabs active="qa" />
+
           <ScrollReveal delay={100}>
-            <div className="flex flex-wrap gap-2 mb-10 justify-center">
-              <button
-                onClick={() => setActiveCategory(undefined)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory ? "bg-secondary text-foreground/70 hover:bg-secondary/80" : "bg-primary text-primary-foreground shadow-lg"}`}
-              >
-                {t("community.cat_all")}
-              </button>
-              {(categories.data?.categories ?? []).map((c) => (
-                <button
-                  key={c.slug}
-                  onClick={() => setActiveCategory(c.slug)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === c.slug ? "bg-primary text-primary-foreground shadow-lg" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
+            <CommunityCategoryFilters
+              categories={categories.data?.categories ?? []}
+              active={activeCategory}
+              onSelect={setActiveCategory}
+            />
           </ScrollReveal>
 
           {list.isLoading && (
