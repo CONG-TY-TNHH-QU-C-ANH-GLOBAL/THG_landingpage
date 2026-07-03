@@ -37,9 +37,18 @@ running CMS (deployed URL works: `https://cms.thgfulfill.com/api/v1`).
   `components/ui/` is the shadcn-style primitive kit.
 - `src/hooks/` — client mechanics as hooks (`useCmsContent`, `useFormFields`).
 - `src/lib/` — non-React client mechanics (i18n, sanitize, storage, clients).
-- `src/lib/i18n.tsx` holds the locale dictionary via the `tr(en, vi, zh)`
-  helper; it is large (1300+ lines) and stays one file until a repo-wide
-  split pattern exists — do not ad-hoc split it.
+- i18n lives in `src/lib/i18n/`: `index.tsx` (React provider/hook — keep it
+  small), `types.ts` (`Language`, `TranslationDict`), `helpers.ts`
+  (`tr(en, vi, zh)` — every entry uses it; never hand-write `{en, vi, zh}`
+  skeletons, they trip Sonar CPD), and `translations/<domain>.ts` (one file
+  per page/domain, composed in `translations/index.ts`). New keys go in the
+  matching domain file, keyed `<prefix>.<name>` with EN/VI/ZH together; new
+  prefixes get registered in the matching (or a new) domain file and spread
+  into the composed dict. Public import path stays `@/lib/i18n`; the CMS
+  seed script reads the composed `translations` export. No hardcoded
+  user-facing copy in components — everything goes through `t()`/`tVi()`.
+  Any refactor here must prove key parity (same keys, same locales,
+  byte-identical values) against the previous dictionary before merging.
 
 ## SEO / prerender conventions
 
