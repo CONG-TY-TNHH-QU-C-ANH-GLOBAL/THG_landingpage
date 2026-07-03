@@ -189,7 +189,7 @@ const DomesticPricingContent = () => {
                                 </div>
                             </div>
                             <div className="flex-shrink-0">
-                                <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-secondary hover:bg-primary/20 rounded text-primary transition-colors" title="Export Excel">
+                                <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-secondary hover:bg-primary/20 rounded text-primary transition-colors" title={t("pt.export_excel")} aria-label={t("pt.export_excel")}>
                                     <FileSpreadsheet size={14} />
                                 </button>
                             </div>

@@ -21,4 +21,6 @@ export const catalogTranslations: TranslationDict = {
   "catalog.size_label": tr("Size:", "Kích cỡ:", "尺寸:"),
   "catalog.all": tr("All", "Tất cả", "全部"),
   "catalog.contact_quote_hint": tr("Contact us for pricing", "Liên hệ để nhận báo giá", "联系我们获取报价"),
+  "catalog.empty_title": tr("No products found", "Không tìm thấy sản phẩm", "未找到产品"),
+  "catalog.empty_hint": tr("Try adjusting your search or filter", "Hãy thử điều chỉnh từ khóa hoặc bộ lọc", "请尝试调整搜索或筛选条件"),
 };

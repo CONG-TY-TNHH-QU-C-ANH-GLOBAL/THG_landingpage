@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen, Package, Ship } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
@@ -340,9 +340,9 @@ const InternationalPricingContent = () => {
         </div>
         <div className="flex sm:flex-row gap-2 sm:gap-3 mb-5 sm:mb-8 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 -mx-2 px-2 sm:mx-0 sm:px-0">
           {([
-            { id: "epacket" as ServiceTab, icon: "📦", name: tVi("pricing.svc_epa"), desc: tVi("pricing.tab_epa_desc") },
-            { id: "express" as ServiceTab, icon: "🚢✈️", name: tVi("pricing.svc_exp"), desc: tVi("pricing.tab_exp_desc") },
-            { id: "terms" as ServiceTab, icon: "📚", name: tVi("pricing.svc_terms"), desc: tVi("pricing.tab_terms_desc") }
+            { id: "epacket" as ServiceTab, icon: Package, name: tVi("pricing.svc_epa"), desc: tVi("pricing.tab_epa_desc") },
+            { id: "express" as ServiceTab, icon: Ship, name: tVi("pricing.svc_exp"), desc: tVi("pricing.tab_exp_desc") },
+            { id: "terms" as ServiceTab, icon: BookOpen, name: tVi("pricing.svc_terms"), desc: tVi("pricing.tab_terms_desc") }
           ]).map(tab => (
             <button
               key={tab.id}
@@ -354,7 +354,10 @@ const InternationalPricingContent = () => {
             >
               {service === tab.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] sm:h-[3px] bg-primary" />}
               <div className="flex items-center gap-1.5 sm:flex-col sm:items-start sm:gap-0">
-                <div className="text-base sm:text-xl">{tab.icon}</div>
+                <tab.icon
+                  className={`w-4 h-4 sm:w-5 sm:h-5 sm:mb-1.5 ${service === tab.id ? "text-primary" : "text-navy/60"}`}
+                  aria-hidden="true"
+                />
                 <div className={`font-bold text-[13px] sm:text-[15px] whitespace-nowrap ${service === tab.id ? "text-primary" : "text-navy"}`}>{tab.name}</div>
               </div>
               <div className="text-[12px] sm:text-[13px] text-muted-foreground mt-1 hidden sm:block">{tab.desc}</div>

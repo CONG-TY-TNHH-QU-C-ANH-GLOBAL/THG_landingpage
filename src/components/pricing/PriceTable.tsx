@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useCallback, useId } from "react";
-import { ChevronDown, ChevronUp, FileSpreadsheet, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronUp, ClipboardList, FileSpreadsheet, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import type { PricingRow } from "@/components/pricing/types";
 
@@ -117,15 +117,18 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
         <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden shadow-sm">
             <div className="bg-navy px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-white font-bold text-[13px]">📋 {title}</span>
+                    <span className="inline-flex items-center gap-1.5 text-white font-bold text-[13px]">
+                        <ClipboardList className="w-3.5 h-3.5 text-white/80" aria-hidden="true" />
+                        {title}
+                    </span>
                     {badge && <span className="bg-[rgba(184,146,42,0.25)] text-[#D4A843] text-[12px] font-bold px-2 py-0.5 rounded-full">{badge}</span>}
                 </div>
                 <div className="flex items-center gap-2 ml-auto">
                     {note && <span className="text-[#9CA3AF] text-[12px] mr-2">{note}</span>}
-                    <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title={t("pt.export_excel")}>
+                    <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title={t("pt.export_excel")} aria-label={t("pt.export_excel")}>
                         <FileSpreadsheet size={14} />
                     </button>
-                    <button onClick={handleExportPdf} disabled={pdfBusy} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors disabled:opacity-50" title={t("pt.export_pdf")}>
+                    <button onClick={handleExportPdf} disabled={pdfBusy} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors disabled:opacity-50" title={t("pt.export_pdf")} aria-label={t("pt.export_pdf")}>
                         <FileText size={14} />
                     </button>
                 </div>
