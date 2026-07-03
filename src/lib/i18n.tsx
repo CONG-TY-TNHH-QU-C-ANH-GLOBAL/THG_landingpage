@@ -71,6 +71,9 @@ export const translations: Translations = {
   "hero.delivery_days": { en: "delivery days", vi: "ngày giao hàng", zh: "交货天数" },
   "hero.warehouses": { en: "warehouses in 3 countries", vi: "kho ở cả 3 quốc gia", zh: "3个国家的仓库" },
   "hero.us_fulfill": { en: "US domestic fulfill", vi: "Fulfill nội địa Mỹ", zh: "美国国内履约" },
+  "hero.from_price": tr("from", "từ", "低至"),
+  "services.loading": tr("Loading services...", "Đang tải dịch vụ...", "正在加载服务…"),
+  "services.empty": tr("No services available yet.", "Chưa có dịch vụ nào.", "暂无服务。"),
 
   // Tracking Page
   "tracking.title": { en: "Track Your Shipment", vi: "Theo Dõi Đơn Hàng", zh: "追踪您的包裹" },
@@ -171,6 +174,11 @@ export const translations: Translations = {
   "contact.offices_title": { en: "Offices & Warehouses", vi: "Văn phòng & Kho hàng", zh: "办公室和仓库" },
   "contact.cta_title": { en: "Ready to scale?", vi: "Sẵn sàng scale?", zh: "准备扩展？" },
   "contact.cta_desc": { en: "15% OFF for first 50 orders. Support team will contact you within 24h.", vi: "Ưu đãi 15% cho 50 đơn hàng đầu tiên. Đội ngũ support sẽ liên hệ bạn trong 24h.", zh: "前50单享85折。支持团队将在24小时内联系您。" },
+  "contact.leave_info": tr("Leave your contact details", "Để lại thông tin liên hệ", "留下您的联系方式"),
+  "contact.or_via": tr("or reach us via", "hoặc liên hệ qua", "或通过以下方式联系"),
+  "contact.via_facebook": tr("Contact us on Facebook", "Liên hệ qua Facebook", "通过 Facebook 联系"),
+  "contact.via_youtube": tr("Contact us on YouTube", "Liên hệ qua YouTube", "通过 YouTube 联系"),
+  "contact.via_tiktok": tr("Contact us on TikTok", "Liên hệ qua TikTok", "通过 TikTok 联系"),
 
   // ── Careers Page ──
   "careers.hero_subtitle": { en: "At THG Fulfill, we don't just look for employees, we look for partners who share the same vision to conquer global eCommerce.", vi: "Tại THG Fulfill, chúng tôi không chỉ tìm người làm việc, mà tìm những đối tác đồng hành chia sẻ tầm nhìn chinh phục eCommerce toàn cầu.", zh: "在 THG Fulfill，我们不只是寻找员工，更寻找志同道合、共同征服全球电子商务的合作伙伴。" },
