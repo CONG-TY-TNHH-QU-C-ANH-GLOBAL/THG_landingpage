@@ -1336,6 +1336,129 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/community/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List published community reviews
+         * @description Published reviews only — pending/rejected/withdrawn never leave the CMS. `indexable` is computed server-side (published AND verified AND non-thin body — see community.policy.ts); landing derives its noindex rule from it. Optional `category` filters by category slug.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    category?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Published review summary list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            reviews: {
+                                slug: string;
+                                title: string;
+                                excerpt: string;
+                                category: {
+                                    slug: string;
+                                    name: string;
+                                } | null;
+                                rating: number | null;
+                                verified: boolean;
+                                indexable: boolean;
+                                published_at: number | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/reviews/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one published community review by slug
+         * @description 404 unless the review status is `published` and not withdrawn. Includes the optional operator `public_summary`, `rating` and the computed `indexable` flag.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Published review detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            review: {
+                                slug: string;
+                                title: string;
+                                body: string;
+                                category: {
+                                    slug: string;
+                                    name: string;
+                                } | null;
+                                reviewer_name: string;
+                                rating: number | null;
+                                public_summary: string | null;
+                                verified: boolean;
+                                indexable: boolean;
+                                published_at: number | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Review not found or not published */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
