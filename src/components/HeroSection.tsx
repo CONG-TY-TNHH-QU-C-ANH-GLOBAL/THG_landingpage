@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, MapPin, Package, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useNavigate } from "react-router-dom";
@@ -153,28 +153,30 @@ const HeroSection = () => {
               <div className="globe-orbit globe-orbit-2" />
 
               <div className="airplane-orbit">
-                <div className="airplane airplane-1">✈️</div>
+                <div className="airplane airplane-1"><Plane className="w-5 h-5 text-navy fill-navy/20" aria-hidden="true" /></div>
               </div>
               <div className="airplane-orbit airplane-orbit-reverse">
-                <div className="airplane airplane-2">✈️</div>
+                <div className="airplane airplane-2"><Plane className="w-5 h-5 text-navy fill-navy/20" aria-hidden="true" /></div>
               </div>
 
               <div className="package-orbit">
-                <div className="package-item">📦</div>
+                <div className="package-item"><Package className="w-4 h-4 text-primary" aria-hidden="true" /></div>
               </div>
               <div className="package-orbit package-orbit-2">
-                <div className="package-item package-item-2">📦</div>
+                <div className="package-item package-item-2"><Package className="w-4 h-4 text-primary" aria-hidden="true" /></div>
               </div>
             </div>
 
             <div className="absolute top-10 left-0 sm:-left-8 md:-left-12 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
-              <div className="flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground mb-1">🇪🇺 EU</div>
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground mb-1">
+                <MapPin className="w-3 h-3 text-primary" aria-hidden="true" /> EU
+              </div>
               <p className="text-xl sm:text-2xl md:text-3xl font-bold text-navy tracking-tight">5-8</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground" >{tVi("hero.delivery_days")}</p>
             </div>
 
             <div className="absolute top-24 right-6 sm:right-2 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
-              <span>🇺🇸</span>
+              <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
               <span className="text-xs font-semibold">USA</span>
             </div>
 
@@ -184,18 +186,18 @@ const HeroSection = () => {
             </div>
 
             <div className="absolute bottom-36 right-2 md:right-4 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
-              <span>🇨🇳</span>
+              <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
               <span className="text-xs font-semibold">China</span>
             </div>
 
             <div className="absolute bottom-24 right-0 md:-right-4 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
-              <span>🇻🇳</span>
+              <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
               <span className="text-xs font-semibold">Vietnam</span>
             </div>
 
             <div className="absolute bottom-8 left-2 sm:-left-4 md:-left-8 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-navy tracking-tight">
-                từ <span className="text-gradient-gold">1.2$</span>
+                {tVi("hero.from_price")} <span className="text-gradient-gold">1.2$</span>
               </p>
               <p className="text-[10px] sm:text-xs text-muted-foreground" >{tVi("hero.us_fulfill")}</p>
             </div>

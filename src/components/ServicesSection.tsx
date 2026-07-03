@@ -115,7 +115,7 @@ const ServicesSection = () => {
     return (
       <section id="services" className="py-28 bg-card relative overflow-hidden">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          {cmsServices.isLoading ? "Đang tải dịch vụ..." : "Chưa có dịch vụ nào."}
+          {cmsServices.isLoading ? t("services.loading") : t("services.empty")}
         </div>
       </section>
     );

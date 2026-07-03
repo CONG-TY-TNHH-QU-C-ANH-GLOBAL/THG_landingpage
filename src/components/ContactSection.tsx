@@ -41,6 +41,19 @@ const ContactSection = () => {
             </div>
           </ScrollReveal>
         </div>
+
+        {/* Footer bar — existing brand info and links only, no invented legal copy. */}
+        <div className="mt-20 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} THG Fulfill · Transport Happiness Group</p>
+          <a
+            href="https://hub.thgfulfill.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-foreground transition-colors"
+          >
+            Hub System
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -130,7 +143,7 @@ function ContactCtaCard() {
               size="lg"
               className="w-full rounded-full font-semibold gap-2 text-sm"
             >
-              Để lại thông tin liên hệ
+              {t("contact.leave_info")}
               <ArrowRight className="w-4 h-4" />
             </Button>
           }
@@ -138,7 +151,7 @@ function ContactCtaCard() {
 
         <div className="relative flex items-center gap-3 my-1">
           <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground">hoặc liên hệ qua</span>
+          <span className="text-xs text-muted-foreground">{t("contact.or_via")}</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
@@ -154,7 +167,7 @@ function ContactCtaCard() {
             <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
               {s.icon}
             </svg>
-            <span>{s.label}</span>
+            <span>{t(s.labelKey)}</span>
           </a>
         ))}
       </div>
@@ -163,11 +176,10 @@ function ContactCtaCard() {
 }
 
 // Brand icons stay inline SVG paths (no icon-library equivalents shipped for
-// these marks). Labels are the existing literal copy; localizing them needs
-// new i18n keys and is deferred to a copy pass.
+// these marks). Labels resolve through i18n so EN/ZH visitors see their locale.
 const SOCIAL_LINKS = [
   {
-    label: "Liên hệ qua Facebook",
+    labelKey: "contact.via_facebook",
     href: "https://www.facebook.com/THGFulfill",
     background: "#1877F2",
     icon: (
@@ -175,7 +187,7 @@ const SOCIAL_LINKS = [
     ),
   },
   {
-    label: "Liên hệ qua YouTube",
+    labelKey: "contact.via_youtube",
     href: "https://www.youtube.com/@thgfulfillment",
     background: "#FF0000",
     icon: (
@@ -186,7 +198,7 @@ const SOCIAL_LINKS = [
     ),
   },
   {
-    label: "Liên hệ qua TikTok",
+    labelKey: "contact.via_tiktok",
     href: "https://www.tiktok.com/@thgfulfillment",
     background: "#010101",
     icon: (
