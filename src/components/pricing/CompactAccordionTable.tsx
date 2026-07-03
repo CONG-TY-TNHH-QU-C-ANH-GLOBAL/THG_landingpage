@@ -27,7 +27,7 @@ const CompactAccordionTable = ({ headers, data, renderRow, title = "Data Table",
     return (
         <div className="relative">
             <div className="absolute top-[-36px] right-0 flex items-center gap-1">
-                <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Xuất Excel">
+                <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title={tVi("pt.export_excel")}>
                     <FileSpreadsheet size={13} />
                 </button>
             </div>

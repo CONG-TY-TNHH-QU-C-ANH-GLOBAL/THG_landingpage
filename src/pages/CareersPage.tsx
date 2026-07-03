@@ -150,11 +150,11 @@ const CareersPage = () => {
 
                     {/* Job cards grid — CMS data only. Empty state when CMS unseeded. */}
                     {cmsJobs.isLoading && (
-                        <div className="text-center text-muted-foreground py-12">Đang tải tin tuyển dụng...</div>
+                        <div className="text-center text-muted-foreground py-12">{t("careers.list_loading")}</div>
                     )}
                     {!cmsJobs.isLoading && allJobs.length === 0 && (
                         <div className="text-center text-muted-foreground py-12">
-                            Hiện chưa có vị trí tuyển dụng nào. Vui lòng quay lại sau.
+                            {t("careers.list_empty")}
                         </div>
                     )}
                     <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))' }}>
@@ -169,7 +169,7 @@ const CareersPage = () => {
                                         <div className="absolute top-0 left-0 right-0 h-[3px] opacity-70 group-hover:opacity-100 group-hover:h-1 transition-all" style={{ background: accentColor }} />
                                         {expired ? (
                                             <div className="absolute top-[18px] right-[18px] bg-red-100 text-red-700 border border-red-200 px-2.5 py-1 text-[10px] font-extrabold tracking-[0.1em] uppercase rounded-md z-10">
-                                                {t("careers.expired_badge") || "Đã hết hạn"}
+                                                {t("careers.expired_badge")}
                                             </div>
                                         ) : job.hot && (
                                             <div className="absolute top-[18px] -right-[32px] text-white px-9 py-1 text-[10px] font-extrabold tracking-[0.12em] rotate-[35deg] z-10 whitespace-nowrap"

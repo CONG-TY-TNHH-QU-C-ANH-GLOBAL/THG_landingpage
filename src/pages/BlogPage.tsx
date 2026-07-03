@@ -73,11 +73,11 @@ const BlogPage = () => {
           </ScrollReveal>
 
           {cmsList.isLoading && (
-            <div className="text-center text-muted-foreground py-12">Đang tải bài viết...</div>
+            <div className="text-center text-muted-foreground py-12">{t("blog.list_loading")}</div>
           )}
           {!cmsList.isLoading && posts.length === 0 && (
             <div className="text-center text-muted-foreground py-12">
-              Chưa có bài viết nào. Vui lòng quay lại sau.
+              {t("blog.list_empty")}
             </div>
           )}
 

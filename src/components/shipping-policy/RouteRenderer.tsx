@@ -103,7 +103,7 @@ function renderLines(lines: string[], keyBase: string) {
 }
 
 export function RouteRenderer({ slug }: Props) {
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const { data, isLoading, error } = useCmsShippingRoute(slug, language);
 
   const route = data?.route;
@@ -114,14 +114,14 @@ export function RouteRenderer({ slug }: Props) {
 
   if (isLoading) {
     return (
-      <div className="py-8 text-center text-muted-foreground text-sm">Đang tải nội dung...</div>
+      <div className="py-8 text-center text-muted-foreground text-sm">{t("spolicy.loading_content")}</div>
     );
   }
 
   if (error || !route) {
     return (
       <div className="py-8 text-center text-muted-foreground text-sm">
-        Tuyến vận chuyển này chưa có dữ liệu. Vận hành cập nhật trong CMS.
+        {t("spolicy.no_data")}
       </div>
     );
   }
@@ -149,7 +149,7 @@ export function RouteRenderer({ slug }: Props) {
 
       {/* Structured tables from CMS (shipping_route_tables), if any. */}
       {route.tables.map((table, tIdx) => (
-        <Sec key={`t-${tIdx}`} icon="⚖" title={table.caption ?? `Bảng ${tIdx + 1}`}>
+        <Sec key={`t-${tIdx}`} icon="⚖" title={table.caption ?? `${t("spolicy.table_label")} ${tIdx + 1}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -179,7 +179,7 @@ export function RouteRenderer({ slug }: Props) {
 
       {/* Operator notes (shipping_routes.notes_json), if any. */}
       {route.notes.length > 0 && (
-        <Sec icon="⚠" title="Lưu ý">
+        <Sec icon="⚠" title={t("spolicy.notes")}>
           <ul className="space-y-1.5 text-sm pl-4 list-disc">
             {route.notes.map((note, i) => (
               <li key={i} className="leading-relaxed">{note}</li>
@@ -190,7 +190,7 @@ export function RouteRenderer({ slug }: Props) {
 
       {!hasBody && route.tables.length === 0 && route.notes.length === 0 ? (
         <div className="py-8 text-center text-muted-foreground text-sm">
-          Tuyến này chưa có nội dung chi tiết.
+          {t("spolicy.no_detail")}
         </div>
       ) : null}
     </div>

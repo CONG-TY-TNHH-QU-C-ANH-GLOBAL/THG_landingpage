@@ -806,8 +806,8 @@ const CatalogPage = () => {
                           </>
                         ) : (
                           <>
-                            <span className="text-[26px] leading-none font-bold text-foreground">Liên hệ báo giá</span>
-                            <p className="text-xs text-muted-foreground">Contact us for pricing</p>
+                            <span className="text-[26px] leading-none font-bold text-foreground">{t("catalog.contact_price")}</span>
+                            <p className="text-xs text-muted-foreground">{t("catalog.contact_quote_hint")}</p>
                           </>
                         )}
                       </div>

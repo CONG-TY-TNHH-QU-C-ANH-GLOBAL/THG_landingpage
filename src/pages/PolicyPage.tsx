@@ -92,10 +92,10 @@ const PolicyPage = () => {
 
         {/* Loading / empty states */}
         {cmsList.isLoading && (
-          <div className="text-center text-muted-foreground py-12 text-sm">Đang tải chính sách...</div>
+          <div className="text-center text-muted-foreground py-12 text-sm">{t("policy.loading")}</div>
         )}
         {!cmsList.isLoading && sections.length === 0 && (
-          <div className="text-center text-muted-foreground py-12 text-sm">Chưa có chính sách nào.</div>
+          <div className="text-center text-muted-foreground py-12 text-sm">{t("policy.empty")}</div>
         )}
 
         {/* ── Content: Dual-mode rendering ── */}

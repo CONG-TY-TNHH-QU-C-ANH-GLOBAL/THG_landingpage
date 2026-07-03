@@ -105,4 +105,5 @@ export const pricingTranslations: TranslationDict = {
   "pt.export_excel": tr("Export to Excel", "Xuất Excel", "导出Excel"),
   "pt.swipe_hint": tr("👉 Swipe to see more", "👉 Vuốt ngang để xem thêm", "👉 滑动查看更多"),
   "pt.export_pdf": tr("Export to PDF", "Xuất PDF", "导出PDF"),
+  "domestic.free_storage_promo": tr("✨ Free 90-day storage for first-time warehouse customers / 1 CBM", "✨ Miễn phí lưu kho 90 ngày cho khách hàng sử dụng kho lần đầu tiên / 1 CBM", "✨ 首次使用仓库的客户享90天免费仓储 / 1 CBM"),
 };

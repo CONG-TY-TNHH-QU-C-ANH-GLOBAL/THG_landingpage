@@ -81,7 +81,7 @@ const JobDetailPage = () => {
       return (
         <div className="min-h-screen bg-background">
           <Navbar />
-          <div className="pt-28 pb-20 text-center text-muted-foreground">Đang tải...</div>
+          <div className="pt-28 pb-20 text-center text-muted-foreground">{t("common.loading")}</div>
         </div>
       );
     }
@@ -90,9 +90,9 @@ const JobDetailPage = () => {
         <SeoHead title="Not found — THG Fulfill" description="" path={`/careers/${slug ?? ""}`} noindex />
         <Navbar />
         <div className="pt-28 pb-20 text-center">
-          <p className="text-xl text-muted-foreground">Vị trí này không còn tồn tại hoặc đã đóng.</p>
+          <p className="text-xl text-muted-foreground">{t("careers.job_not_found")}</p>
           <Link to={`/${language}/careers`} className="text-primary font-semibold mt-4 inline-block hover:underline">
-            ← Xem tất cả vị trí
+            ← {t("careers.all_positions")}
           </Link>
         </div>
       </div>
@@ -106,7 +106,7 @@ const JobDetailPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={`${job.title} — Tuyển dụng THG Fulfill`}
+        title={`${job.title} — ${t("careers.seo_title_suffix")}`}
         description={description}
         path={`/careers/${job.id}`}
         ogType="article"
@@ -132,7 +132,7 @@ const JobDetailPage = () => {
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 mb-5">
           <Link to={`/${language}/careers`} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            Tất cả vị trí
+            {t("careers.all_positions")}
           </Link>
         </div>
         <div className="max-w-[900px] mx-auto px-4 sm:px-6">
