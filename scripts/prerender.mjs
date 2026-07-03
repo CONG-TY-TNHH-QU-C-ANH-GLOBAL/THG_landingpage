@@ -161,8 +161,17 @@ async function waitForReady(url) {
   throw new Error(`Preview server never became ready at ${url}`);
 }
 
-const previewArgs = ["x", "vite", "preview", "--port", String(PORT), "--host", "127.0.0.1", "--strictPort"];
-const preview = spawn("bun", previewArgs, {
+// Run the local Vite CLI via the current runtime's absolute binary
+// (process.execPath) instead of resolving "bun" through PATH — avoids the
+// unsafe-PATH-search class (Sonar S4036) while keeping the same external
+// preview process.
+const viteCli = resolve(ROOT, "node_modules", "vite", "bin", "vite.js");
+if (!existsSync(viteCli)) {
+  console.error(`✗ Vite CLI not found at ${viteCli} — run \`bun install\` first.`);
+  process.exit(1);
+}
+const previewArgs = [viteCli, "preview", "--port", String(PORT), "--host", "127.0.0.1", "--strictPort"];
+const preview = spawn(process.execPath, previewArgs, {
   cwd: ROOT,
   stdio: ["ignore", "pipe", "pipe"],
 });
