@@ -8,6 +8,7 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, BadgeCheck, Link2, Tag, Trash2, Users } from "lucide-react";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import Navbar from "@/components/Navbar";
@@ -52,6 +53,7 @@ function rememberReacted(slug: string): void {
 const CommunityQuestionPage = () => {
   const { t, language } = useI18n();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { slug = "" } = useParams<{ slug: string }>();
   const query = useCommunityQuestion(slug);
   const [reacted, setReacted] = useState(() => hasReacted(slug));
@@ -88,6 +90,8 @@ const CommunityQuestionPage = () => {
       await cmsClient.postCommunityWithdraw(slug, token);
       forgetOwnerToken(slug);
       setOwned(false);
+      // Drop the now-withdrawn question from every cached category list.
+      await queryClient.invalidateQueries({ queryKey: ["cms", "community", "questions"] });
       toast.success(t("community.withdraw_done"));
       navigate(`/${language}/community`);
     } catch (err) {

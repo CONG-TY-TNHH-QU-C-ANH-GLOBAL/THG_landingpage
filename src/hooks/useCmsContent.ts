@@ -9,6 +9,10 @@ import { cmsClient, type Locale } from "@/lib/cmsClient";
 
 const STALE_MS = 5 * 60 * 1000; // 5 minutes — matches CMS edge cache TTL
 const GC_MS = 30 * 60 * 1000;   // 30 minutes
+// Community list is keyed per category, so a tab opened before a question is
+// published would otherwise cache an empty result for 5 min and look like a
+// broken filter. Keep it near-fresh so switching tabs revalidates fast.
+const COMMUNITY_LIST_STALE_MS = 15 * 1000; // 15 seconds
 
 export function useCmsTranslations(locale: Locale) {
   return useQuery({
@@ -241,7 +245,7 @@ export function useCommunityQuestions(category?: string) {
   return useQuery({
     queryKey: ["cms", "community", "questions", category ?? "all"],
     queryFn: () => cmsClient.getCommunityQuestions(category),
-    staleTime: STALE_MS,
+    staleTime: COMMUNITY_LIST_STALE_MS,
     gcTime: GC_MS,
   });
 }
