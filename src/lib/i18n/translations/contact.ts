@@ -25,7 +25,7 @@ export const contactTranslations: TranslationDict = {
   "lead_form.title": tr("Talk to us", "Liên hệ tư vấn", "联系咨询"),
   "lead_form.desc": tr("Leave your details and the THG team will get back within 24h. For urgent questions you can also chat with us on Facebook.", "Để lại thông tin, đội THG sẽ phản hồi trong 24h. Bạn cũng có thể chat trực tiếp qua Facebook nếu cần gấp.", "请留下您的信息，THG团队将在24小时内回复。紧急情况可通过Facebook直接联系。"),
   "lead_form.name_label": tr("Full name", "Họ tên", "姓名"),
-  "lead_form.name_placeholder": tr("John Doe", "Nguyễn Văn A", "张三"),
+  "lead_form.name_placeholder": tr("Your name", "Tên của bạn", "您的姓名"),
   "lead_form.email_label": tr("Email", "Email", "电子邮箱"),
   "lead_form.email_placeholder": tr("you@example.com", "ban@example.com", "you@example.com"),
   "lead_form.phone_label": tr("Phone (optional)", "Điện thoại (tuỳ chọn)", "电话（可选）"),

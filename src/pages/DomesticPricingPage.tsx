@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
@@ -41,35 +42,12 @@ const DomesticPricingContent = () => {
     const { t, language } = useI18n();
     const lark = useLarkPricingContext();
     const [showAll, setShowAll] = useState(false);
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(false);
+    const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useScrollAffordance(150);
 
     // Always re-fetch fresh data when navigating to this page
     useEffect(() => {
         lark.refetch();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const checkScroll = useCallback(() => {
-        const el = scrollRef.current;
-        if (!el) return;
-        setCanScrollLeft(el.scrollLeft > 2);
-        setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
-    }, []);
-
-    useEffect(() => {
-        const el = scrollRef.current;
-        if (!el) return;
-        checkScroll();
-        el.addEventListener("scroll", checkScroll, { passive: true });
-        const ro = new ResizeObserver(checkScroll);
-        ro.observe(el);
-        return () => { el.removeEventListener("scroll", checkScroll); ro.disconnect(); };
-    }, [checkScroll]);
-
-    const scrollBy = (dir: number) => {
-        scrollRef.current?.scrollBy({ left: dir * 150, behavior: "smooth" });
-    };
 
     // Read from CMS overlay (slug `usDomestic`) populated by useCmsPricingOverlay.
     const domesticPricingRows = useMemo<DomesticPricingRow[]>(() => {

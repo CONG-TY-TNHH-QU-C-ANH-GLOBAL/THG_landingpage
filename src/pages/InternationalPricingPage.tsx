@@ -304,7 +304,7 @@ const InternationalPricingContent = () => {
         <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3 mt-2 sm:mt-4">
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
           <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">
-            {lang === 'zh' ? "第 1 步 — 选择发货国" : lang === 'en' ? "Step 1 — Choose Origin Country" : "Bước 1 — Chọn Quốc Gia Gửi Hàng"}
+            {t("pricing.step1_origin")}
           </p>
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
         </div>
@@ -334,7 +334,7 @@ const InternationalPricingContent = () => {
         <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
           <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">
-            {lang === 'zh' ? "第 2 步 — 选择服务类型" : lang === 'en' ? "Step 2 — Choose Service Type" : "Bước 2 — Chọn Loại Dịch Vụ"}
+            {t("pricing.step2_service")}
           </p>
           <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
         </div>
