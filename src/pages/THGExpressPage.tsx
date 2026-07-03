@@ -83,8 +83,6 @@ const THGExpressPage = () => {
       />
       <Navbar />
 
-
-
       {/* 1. HERO & TRACKING */}
       <section className="pt-32 pb-24 bg-gradient-hero relative overflow-hidden flex flex-col items-center justify-center min-h-[60vh]">
         <div className="absolute inset-0 opacity-[0.02]" style={{
@@ -99,12 +97,18 @@ const THGExpressPage = () => {
             <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-4">
               {t("express_page.hero_subtitle")}
             </h2>
-            <p className="text-base text-primary font-semibold tracking-wide uppercase mb-12 drop-shadow-sm">
+            <p className="text-base text-primary font-semibold tracking-wide uppercase mb-10 drop-shadow-sm">
               {t("express_page.hero_tagline")}
             </p>
+            <LeadFormDialog
+              sourcePage="/thg-express#hero"
+              trigger={
+                <Button className="bg-primary hover:bg-gold-dark text-white px-10 py-6 rounded-full text-lg font-bold shadow-lg transition-transform hover:-translate-y-1">
+                  {t("express_page.get_quote_cta")}
+                </Button>
+              }
+            />
           </ScrollReveal>
-
-
         </div>
       </section>
 

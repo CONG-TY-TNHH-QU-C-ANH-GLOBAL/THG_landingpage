@@ -11,10 +11,11 @@ import FAQAccordion from "@/components/FAQAccordion";
 import thgHeroImage from "@/assets/THG.jpg";
 import { useI18n } from "@/lib/i18n";
 import { useCmsServices } from "@/hooks/useCmsContent";
-import { Package, ArrowRight, Zap, Palette } from "lucide-react";
+import { Package, ArrowRight, Zap, Palette, Shirt, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { SectionHeader } from "@/components/sections/SectionHeader";
+import { ServiceProcessSteps } from "@/components/sections/ServiceProcessSteps";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const painPoints = [
@@ -125,12 +126,12 @@ const THGFulfillPage = () => {
                   <div className="flex items-center gap-6">
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-28 h-32 bg-white rounded-xl border-2 border-dashed border-border flex items-center justify-center shadow-inner">
-                        <span className="text-5xl">👕</span>
+                        <Shirt className="w-14 h-14 text-muted-foreground/50" strokeWidth={1.5} />
                       </div>
                       <span className="text-xs text-muted-foreground font-medium">{t("fulfill_page.blank_tshirt")}</span>
                     </div>
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-3xl animate-pulse">🖨️</span>
+                      <Printer className="w-8 h-8 text-primary animate-pulse" strokeWidth={1.5} />
                       <div className="flex items-center">
                         <div className="w-10 h-px bg-primary/40" />
                         <ArrowRight className="w-4 h-4 text-primary" />
@@ -139,7 +140,7 @@ const THGFulfillPage = () => {
                     </div>
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-28 h-32 bg-gradient-to-br from-primary/15 to-accent/15 rounded-xl border-2 border-primary/30 flex items-center justify-center relative shadow-lg">
-                        <span className="text-5xl">👕</span>
+                        <Shirt className="w-14 h-14 text-primary" strokeWidth={1.5} />
                         <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[7px] font-bold px-2 py-1 rounded">
                           {t("fulfill_page.your_brand")}
                         </div>
@@ -333,24 +334,7 @@ const THGFulfillPage = () => {
               </div>
             </ScrollReveal>
             {/* Right: Steps */}
-            <div className="space-y-4">
-              {processSteps.map((s, i) => (
-                <ScrollReveal key={s.num} delay={i * 100}>
-                  <div className="flex gap-5 glass-card rounded-2xl p-5 hover-lift">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
-                      <s.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="text-xs font-bold text-primary/40">{s.num}</span>
-                        <h3 className="text-base font-bold text-navy tracking-tight">{t(s.titleKey)}</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{t(s.descKey)}</p>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
+            <ServiceProcessSteps steps={processSteps} />
           </div>
         </div>
       </section>
