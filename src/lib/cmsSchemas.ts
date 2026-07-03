@@ -608,7 +608,9 @@ export const communityQuestionSubmitResponseSchema = z.object({
   id: z.number(),
   slug: z.string(),
   status: z.literal("pending"),
-  owner_token: z.string(),
+  // Optional so a submit still parses if the landing is deployed ahead of the
+  // CMS that adds this field; withdrawal is simply not offered until present.
+  owner_token: z.string().optional(),
 });
 
 /** Successful POST /community/questions/{slug}/withdraw. */

@@ -90,8 +90,9 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
         utm: Object.keys(utm).length > 0 ? utm : undefined,
         turnstile_token: token,
       });
-      // Remember the one-time owner token so this browser can withdraw later.
-      rememberOwnerToken(res.slug, res.owner_token);
+      // Remember the one-time owner token so this browser can withdraw later
+      // (absent only if the CMS predates the ownership feature).
+      if (res.owner_token) rememberOwnerToken(res.slug, res.owner_token);
       setDone(true);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("community.form_err_generic"));
