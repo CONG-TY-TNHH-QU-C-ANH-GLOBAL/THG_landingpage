@@ -2,12 +2,13 @@
 // verified reviews only; the CMS never exposes pending/rejected/withdrawn).
 
 import { Link } from "react-router-dom";
-import { BadgeCheck, Star, Tag } from "lucide-react";
+import { BadgeCheck, Star } from "lucide-react";
 import { useState } from "react";
 
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
 import { CommunityTabs } from "@/components/community/CommunityTabs";
+import { CommunityCategoryFilters, CommunityReviewBadges } from "@/components/community/communityPageBits";
 import { SubmitReviewDialog } from "@/components/community/SubmitReviewDialog";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
@@ -65,23 +66,11 @@ const CommunityReviewsPage = () => {
           <CommunityTabs active="reviews" />
 
           <ScrollReveal delay={100}>
-            <div className="flex flex-wrap gap-2 mb-10 justify-center">
-              <button
-                onClick={() => setActiveCategory(undefined)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory ? "bg-secondary text-foreground/70 hover:bg-secondary/80" : "bg-primary text-primary-foreground shadow-lg"}`}
-              >
-                {t("community.cat_all")}
-              </button>
-              {(categories.data?.categories ?? []).map((c) => (
-                <button
-                  key={c.slug}
-                  onClick={() => setActiveCategory(c.slug)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === c.slug ? "bg-primary text-primary-foreground shadow-lg" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
+            <CommunityCategoryFilters
+              categories={categories.data?.categories ?? []}
+              active={activeCategory}
+              onSelect={setActiveCategory}
+            />
           </ScrollReveal>
 
           {list.isLoading && (
@@ -104,29 +93,7 @@ const CommunityReviewsPage = () => {
                   to={`/${language}/community/reviews/${r.slug}`}
                   className="glass-card rounded-2xl p-6 block group cursor-pointer hover-lift"
                 >
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    {r.category && (
-                      <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
-                        <Tag className="w-3 h-3" aria-hidden="true" /> {r.category.name}
-                      </span>
-                    )}
-                    {r.verified && (
-                      <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
-                        <BadgeCheck className="w-3 h-3" aria-hidden="true" /> {t("community.verified_badge")}
-                      </span>
-                    )}
-                    {r.rating != null && (
-                      <span className="inline-flex items-center gap-0.5 text-amber-500" aria-label={`${r.rating}/5`}>
-                        {Array.from({ length: 5 }, (_, s) => (
-                          <Star
-                            key={s}
-                            className={`w-3.5 h-3.5 ${s < r.rating! ? "fill-amber-400" : "fill-none text-muted-foreground/40"}`}
-                            aria-hidden="true"
-                          />
-                        ))}
-                      </span>
-                    )}
-                  </div>
+                  <CommunityReviewBadges category={r.category} verified={r.verified} rating={r.rating} />
                   <h2 className="text-lg font-bold text-navy tracking-tight group-hover:text-primary transition-colors">
                     {r.title}
                   </h2>

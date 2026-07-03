@@ -6,12 +6,13 @@
 //     (rel="ugc nofollow noopener noreferrer")
 
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, BadgeCheck, Star, Tag, Trash2 } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import Navbar from "@/components/Navbar";
+import { CommunityReviewBadges } from "@/components/community/communityPageBits";
 import { JsonLdBreadcrumb, JsonLdReview } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
@@ -100,29 +101,13 @@ const CommunityReviewPage = () => {
 
           {r && (
             <article>
-              <div className="flex items-center gap-2 flex-wrap mb-3">
-                {r.category && (
-                  <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">
-                    <Tag className="w-3 h-3" aria-hidden="true" /> {r.category.name}
-                  </span>
-                )}
-                {r.verified && (
-                  <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
-                    <BadgeCheck className="w-3 h-3" aria-hidden="true" /> {t("community.verified_badge")}
-                  </span>
-                )}
-                {r.rating != null && (
-                  <span className="inline-flex items-center gap-0.5 text-amber-500" aria-label={`${r.rating}/5`}>
-                    {Array.from({ length: 5 }, (_, s) => (
-                      <Star
-                        key={s}
-                        className={`w-4 h-4 ${s < r.rating! ? "fill-amber-400" : "fill-none text-muted-foreground/40"}`}
-                        aria-hidden="true"
-                      />
-                    ))}
-                  </span>
-                )}
-              </div>
+              <CommunityReviewBadges
+                category={r.category}
+                verified={r.verified}
+                rating={r.rating}
+                className="flex items-center gap-2 flex-wrap mb-3"
+                starClassName="w-4 h-4"
+              />
 
               <h1 className="text-3xl md:text-4xl font-bold text-navy tracking-tight mb-2">
                 {r.title}
