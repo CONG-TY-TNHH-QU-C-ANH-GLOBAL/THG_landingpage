@@ -26,7 +26,7 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>("vi");
+  const [language, setLanguage] = useState<Language>("vi");
 
   // Fetch translations from CMS API. Hardcoded `translations` object stays as
   // fallback for offline / initial load before CMS responds. When CMS data
@@ -49,20 +49,15 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     document.documentElement.lang = language === "zh" ? "zh-CN" : language;
   }, [language]);
 
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-  };
+  // Stable context value: only changes when the language or the effective
+  // lookup map changes (setLanguage from useState is referentially stable).
+  const value = useMemo<I18nContextType>(() => {
+    const t = (key: string): string => effectiveMap[key] ?? key;
+    const tVi = (key: string): string => effectiveMap[key] ?? key;
+    return { language, effectiveLanguage: language, setLanguage, t, tVi };
+  }, [language, effectiveMap]);
 
-  const t = (key: string): string => effectiveMap[key] ?? key;
-  const tVi = (key: string): string => effectiveMap[key] ?? key;
-
-  const effectiveLanguage: Language = language;
-
-  return (
-    <I18nContext.Provider value={{ language, effectiveLanguage, setLanguage, t, tVi }}>
-      {children}
-    </I18nContext.Provider>
-  );
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 };
 
 export const useI18n = () => {
