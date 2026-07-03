@@ -64,7 +64,7 @@ const CommunityPage = () => {
             <div className="flex flex-wrap gap-2 mb-10 justify-center">
               <button
                 onClick={() => setActiveCategory(undefined)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${!activeCategory ? "bg-primary text-primary-foreground shadow-lg" : "bg-secondary text-foreground/70 hover:bg-secondary/80"}`}
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory ? "bg-secondary text-foreground/70 hover:bg-secondary/80" : "bg-primary text-primary-foreground shadow-lg"}`}
               >
                 {t("community.cat_all")}
               </button>

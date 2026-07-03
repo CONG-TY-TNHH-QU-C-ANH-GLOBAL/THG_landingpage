@@ -172,9 +172,11 @@ async function main() {
     entries.push(...langEntries(path, today, path === "/" ? "weekly" : "monthly", path === "/" ? 1 : 0.8));
   }
 
-  entries.push(...(await fetchBlogEntries()));
-  entries.push(...(await fetchJobEntries(today)));
-  entries.push(...(await fetchCommunityEntries(today)));
+  entries.push(
+    ...(await fetchBlogEntries()),
+    ...(await fetchJobEntries(today)),
+    ...(await fetchCommunityEntries(today)),
+  );
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
