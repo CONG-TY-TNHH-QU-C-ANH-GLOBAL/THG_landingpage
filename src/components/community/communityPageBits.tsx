@@ -3,8 +3,9 @@
 // bar and the two review pages don't duplicate the badge row. Data fetching,
 // SEO and navigation stay in the pages.
 
-import { BadgeCheck, Star, Tag } from "lucide-react";
+import { BadgeCheck, Star, Tag, Trash2 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 
 type CategoryRef = { slug: string; name: string };
@@ -79,5 +80,28 @@ export function CommunityReviewBadges({
         </span>
       )}
     </div>
+  );
+}
+
+/** Owner-only withdraw button shared by the Q&A and review detail pages.
+ *  State/flow comes from useCommunityWithdraw (communityWithdraw.ts). */
+export function CommunityWithdrawButton({
+  label,
+  pending,
+  onWithdraw,
+}: Readonly<{
+  label: string;
+  pending: boolean;
+  onWithdraw: () => void;
+}>) {
+  return (
+    <Button
+      variant="ghost"
+      onClick={onWithdraw}
+      disabled={pending}
+      className="gap-2 text-destructive hover:text-destructive"
+    >
+      <Trash2 className="w-4 h-4" aria-hidden="true" /> {label}
+    </Button>
   );
 }

@@ -31,7 +31,8 @@ It computes no moderation, verification, or indexability state — ever.
 6. **Owner tokens stay in localStorage** (`thg_community_owner_v1`; review
    slugs namespaced via `reviewOwnerKey` → `review:{slug}`). The raw token is
    shown once by the CMS and never sent anywhere except the matching
-   withdraw endpoint.
+   withdraw endpoint. It is **browser ownership, not authentication** — it
+   must never gate anything beyond withdrawing that one item.
 
 ## Reusable mechanics (reuse these for future community UI)
 
@@ -45,7 +46,7 @@ It computes no moderation, verification, or indexability state — ever.
 | Submit orchestration (validate → Turnstile → POST → done) | `useCommunitySubmitDialog` in `src/components/community/communitySubmit.ts` |
 | Form field state | `src/hooks/useFormFields.ts` |
 | Owner-token storage (namespaced) | `src/lib/communityOwner.ts` |
-| Withdraw button pattern | show iff `getOwnerToken(...)`; on success `forgetOwnerToken` + invalidate list query |
+| Withdraw mechanics + button | `useCommunityWithdraw` (`src/components/community/communityWithdraw.ts`) + `CommunityWithdrawButton` (`communityPageBits.tsx`) — pages own the endpoint, copy, query key, redirect |
 | Public data hooks (lists 15s staleTime, details 5m) | `useCommunity*` in `src/hooks/useCmsContent.ts` |
 | SEO utilities | `SeoHead` noindex + `JsonLdQaPage`/`JsonLdReview`/`JsonLdBreadcrumb` in `src/components/seo/JsonLd.tsx` |
 | i18n | `tr` + `useI18n` in `src/lib/i18n.tsx` |

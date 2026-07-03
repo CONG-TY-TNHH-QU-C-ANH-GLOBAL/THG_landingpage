@@ -5,19 +5,19 @@
 //     (rel="ugc nofollow noopener noreferrer")
 //   * Share button copies a UTM-tagged link (Share Loop)
 
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, BadgeCheck, Link2, Tag, Trash2, Users } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, BadgeCheck, Link2, Tag, Users } from "lucide-react";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import Navbar from "@/components/Navbar";
+import { CommunityWithdrawButton } from "@/components/community/communityPageBits";
+import { useCommunityWithdraw } from "@/components/community/communityWithdraw";
 import { JsonLdBreadcrumb, JsonLdQaPage } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { useCommunityQuestion } from "@/hooks/useCmsContent";
 import { cmsClient } from "@/lib/cmsClient";
-import { forgetOwnerToken, getOwnerToken } from "@/lib/communityOwner";
 import { useI18n } from "@/lib/i18n";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 
@@ -52,16 +52,20 @@ function rememberReacted(slug: string): void {
 
 const CommunityQuestionPage = () => {
   const { t, language } = useI18n();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { slug = "" } = useParams<{ slug: string }>();
   const query = useCommunityQuestion(slug);
   const [reacted, setReacted] = useState(() => hasReacted(slug));
   const [count, setCount] = useState<number | null>(null);
   const [reactPending, setReactPending] = useState(false);
-  // Only the browser that submitted this question holds its owner token.
-  const [owned, setOwned] = useState(() => Boolean(getOwnerToken(slug)));
-  const [withdrawPending, setWithdrawPending] = useState(false);
+  const withdraw = useCommunityWithdraw({
+    ownerKey: slug,
+    withdraw: (token) => cmsClient.postCommunityWithdraw(slug, token),
+    confirmText: t("community.withdraw_confirm"),
+    doneText: t("community.withdraw_done"),
+    errorText: t("community.form_err_generic"),
+    listQueryKey: ["cms", "community", "questions"],
+    redirectTo: `/${language}/community`,
+  });
 
   const q = query.data?.question;
   const sameIssueCount = count ?? q?.same_issue_count ?? 0;
@@ -78,26 +82,6 @@ const CommunityQuestionPage = () => {
       toast.error(err instanceof Error ? err.message : t("community.form_err_generic"));
     } finally {
       setReactPending(false);
-    }
-  }
-
-  async function onWithdraw() {
-    const token = getOwnerToken(slug);
-    if (!token) return;
-    if (!globalThis.confirm(t("community.withdraw_confirm"))) return;
-    setWithdrawPending(true);
-    try {
-      await cmsClient.postCommunityWithdraw(slug, token);
-      forgetOwnerToken(slug);
-      setOwned(false);
-      // Drop the now-withdrawn question from every cached category list.
-      await queryClient.invalidateQueries({ queryKey: ["cms", "community", "questions"] });
-      toast.success(t("community.withdraw_done"));
-      navigate(`/${language}/community`);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("community.form_err_generic"));
-    } finally {
-      setWithdrawPending(false);
     }
   }
 
@@ -218,15 +202,12 @@ const CommunityQuestionPage = () => {
                 <Button variant="outline" onClick={onShare} className="gap-2">
                   <Link2 className="w-4 h-4" aria-hidden="true" /> {t("community.share")}
                 </Button>
-                {owned && (
-                  <Button
-                    variant="ghost"
-                    onClick={onWithdraw}
-                    disabled={withdrawPending}
-                    className="gap-2 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" aria-hidden="true" /> {t("community.withdraw")}
-                  </Button>
+                {withdraw.owned && (
+                  <CommunityWithdrawButton
+                    label={t("community.withdraw")}
+                    pending={withdraw.pending}
+                    onWithdraw={withdraw.onWithdraw}
+                  />
                 )}
               </div>
             </article>
