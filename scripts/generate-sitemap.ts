@@ -20,6 +20,7 @@ const STATIC_ROUTES = [
   "/policy",
   "/shipping-policy",
   "/careers",
+  "/community",
   "/international-pricing",
   "/domestic-pricing",
 ];
@@ -137,6 +138,41 @@ async function main() {
     }
   } catch (err) {
     console.warn(`⚠ Cannot reach CMS jobs API — sitemap will omit job URLs:`, (err as Error).message);
+  }
+
+  // 4. Community questions from CMS (best-effort). ONLY indexable entries —
+  //    the CMS computes indexable = published AND (verified OR expert answer),
+  //    which is the Business Plan §4 rule for what Google may index. Everything
+  //    else stays out of the sitemap AND carries noindex meta on the page.
+  try {
+    const res = await fetch(`${CMS_API}/community/questions`);
+    if (res.ok) {
+      const data = (await res.json()) as {
+        questions: Array<{ slug: string; indexable: boolean; published_at: number | null }>;
+      };
+      const indexable = (data.questions ?? []).filter((q) => q.indexable);
+      for (const q of indexable) {
+        const basePath = `/community/${q.slug}`;
+        const lastmod = q.published_at
+          ? new Date(q.published_at * 1000).toISOString().slice(0, 10)
+          : today;
+        for (const lang of LANGS) {
+          const langPath = `/${lang}${basePath}`;
+          entries.push({
+            loc: `${SITE}${langPath}`,
+            lastmod,
+            changefreq: "weekly",
+            priority: 0.6,
+            alternates: buildAlternates(langPath),
+          });
+        }
+      }
+      console.log(`✓ Added ${indexable.length} indexable community questions from CMS`);
+    } else {
+      console.warn(`⚠ CMS community endpoint returned ${res.status} — skipping community URLs`);
+    }
+  } catch (err) {
+    console.warn(`⚠ Cannot reach CMS community API — sitemap will omit community URLs:`, (err as Error).message);
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

@@ -49,6 +49,7 @@ const BASE_ROUTES = [
   "/thg-order",
   "/catalog",
   "/careers",
+  "/community",
   "/blog",
   "/policy",
   "/shipping-policy",
@@ -106,7 +107,33 @@ async function fetchBlogRoutes() {
   }
 }
 
-const ROUTES = [...STATIC_ROUTES, ...(await fetchJobRoutes()), ...(await fetchBlogRoutes())];
+/** Fetch indexable community-question slugs so each /community/:slug gets a
+ *  prerendered shell with QAPage JSON-LD + real meta. ONLY indexable questions
+ *  (published + verified-or-answered) — everything else is CSR-only and
+ *  carries noindex, per the moderation/SEO rules. Best-effort like the rest. */
+async function fetchCommunityRoutes() {
+  try {
+    const res = await fetch(`${CMS_API}/community/questions`);
+    if (!res.ok) {
+      console.warn(`⚠ community fetch ${res.status} — skipping community-detail prerender`);
+      return [];
+    }
+    const data = await res.json();
+    const slugs = (data.questions ?? []).filter((q) => q.indexable).map((q) => q.slug);
+    console.log(`✓ ${slugs.length} indexable community questions → /community/:slug prerender`);
+    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/community/${s}`));
+  } catch (err) {
+    console.warn(`⚠ community fetch failed (${err.message}) — skipping community-detail prerender`);
+    return [];
+  }
+}
+
+const ROUTES = [
+  ...STATIC_ROUTES,
+  ...(await fetchJobRoutes()),
+  ...(await fetchBlogRoutes()),
+  ...(await fetchCommunityRoutes()),
+];
 
 if (!existsSync(DIST)) {
   console.error("✗ dist/ missing — run `bun run build` first.");

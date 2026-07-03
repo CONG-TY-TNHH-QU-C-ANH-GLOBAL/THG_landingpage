@@ -12,6 +12,12 @@ import type { z } from "zod";
 import {
   applicantCvUploadResponseSchema,
   blogCategoriesResponseSchema,
+  cmsCommunityQuestionInputSchema,
+  communityCategoriesResponseSchema,
+  communityQuestionResponseSchema,
+  communityQuestionSubmitResponseSchema,
+  communityQuestionsResponseSchema,
+  communitySameIssueResponseSchema,
   blogListResponseSchema,
   blogPostResponseSchema,
   cmsLeadInputSchema,
@@ -39,6 +45,10 @@ import {
 // Re-export every consumer-facing type so existing imports
 // (`import type { CmsService } from "@/lib/cmsClient"`) keep working.
 export type {
+  CmsCommunityCategory,
+  CmsCommunityQuestionDetail,
+  CmsCommunityQuestionInput,
+  CmsCommunityQuestionSummary,
   CmsContactLocation,
   CmsFaq,
   CmsHomepageBlock,
@@ -236,6 +246,43 @@ export const cmsClient = {
 
   getPolicy(slug: string, locale: Locale) {
     return fetchJson(`/policies/${encodeURIComponent(slug)}?lang=${locale}`, policyResponseSchema);
+  },
+
+  /** Published community questions only (CMS filters server-side). */
+  getCommunityQuestions(category?: string) {
+    const qs = category ? `?category=${encodeURIComponent(category)}` : "";
+    return fetchJson(`/community/questions${qs}`, communityQuestionsResponseSchema);
+  },
+
+  getCommunityQuestion(slug: string) {
+    return fetchJson(
+      `/community/questions/${encodeURIComponent(slug)}`,
+      communityQuestionResponseSchema,
+    );
+  },
+
+  getCommunityCategories() {
+    return fetchJson("/community/categories", communityCategoriesResponseSchema);
+  },
+
+  /** Submit a seller question — lands as pending moderation, never public
+   *  until an operator publishes it in the CMS. */
+  postCommunityQuestion(input: z.infer<typeof cmsCommunityQuestionInputSchema>) {
+    const parsed = cmsCommunityQuestionInputSchema.parse(input);
+    return fetchJson("/community/questions", communityQuestionSubmitResponseSchema, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed),
+    });
+  },
+
+  /** "Same issue" reaction — server dedupes per visitor (hashed IP). */
+  postCommunitySameIssue(slug: string) {
+    return fetchJson(
+      `/community/questions/${encodeURIComponent(slug)}/same-issue`,
+      communitySameIssueResponseSchema,
+      { method: "POST" },
+    );
   },
 
   postLead(input: z.infer<typeof cmsLeadInputSchema>) {
