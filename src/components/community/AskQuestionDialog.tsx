@@ -2,16 +2,15 @@
 // Turnstile-gated POST to CMS /api/v1/community/questions. Submissions always
 // land as pending moderation; the success state says so explicitly.
 
-import { useState, type ComponentProps, type FormEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { Turnstile } from "@marsidev/react-turnstile";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { SubmitSuccess, TextField, TurnstileField } from "@/components/community/communityFormBits";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
 import { rememberOwnerToken } from "@/lib/communityOwner";
@@ -26,27 +25,6 @@ const BODY_MIN = 20;
 
 interface Props {
   trigger: ReactNode;
-}
-
-// Local label+input field — collapses the repeated `<div><Label/><Input/></div>`
-// markup shared by the name/email/title fields into one call. All extra input
-// attributes (type, required, minLength, placeholder, disabled…) pass through.
-type TextFieldProps = {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  hint?: string;
-} & Omit<ComponentProps<typeof Input>, "id" | "value" | "onChange">;
-
-function TextField({ id, label, value, onChange, hint, ...input }: Readonly<TextFieldProps>) {
-  return (
-    <div>
-      <Label htmlFor={id}>{label}</Label>
-      <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} {...input} />
-      {hint && <p className="text-[10px] text-muted-foreground mt-1">{hint}</p>}
-    </div>
-  );
 }
 
 export function AskQuestionDialog({ trigger }: Readonly<Props>) {
@@ -124,15 +102,13 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
         </DialogHeader>
 
         {done ? (
-          <div className="py-6 text-center space-y-3">
-            <div className="text-3xl">✅</div>
-            <div className="font-semibold text-base">{t("community.form_success_title")}</div>
-            <p className="text-sm text-muted-foreground">{t("community.form_success_desc")}</p>
-            <p className="text-xs text-muted-foreground">{t("community.withdraw_hint")}</p>
-            <Button onClick={() => setOpen(false)} className="mt-2 w-full">
-              {t("community.form_close")}
-            </Button>
-          </div>
+          <SubmitSuccess
+            title={t("community.form_success_title")}
+            desc={t("community.form_success_desc")}
+            hint={t("community.withdraw_hint")}
+            closeLabel={t("community.form_close")}
+            onClose={() => setOpen(false)}
+          />
         ) : (
           <form onSubmit={onSubmit} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
@@ -196,18 +172,7 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
               />
             </div>
 
-            {captcha.enabled && (
-              <div className="flex justify-center" data-testid="ask-turnstile">
-                <Turnstile
-                  ref={captcha.widgetRef}
-                  siteKey={captcha.siteKey}
-                  onSuccess={captcha.onSuccess}
-                  onError={captcha.onError}
-                  onExpire={captcha.onExpire}
-                  options={{ theme: "light", size: "normal" }}
-                />
-              </div>
-            )}
+            <TurnstileField captcha={captcha} testId="ask-turnstile" />
 
             <Button type="submit" disabled={pending} className="w-full">
               {pending ? (

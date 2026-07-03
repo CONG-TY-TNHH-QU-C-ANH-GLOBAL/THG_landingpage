@@ -43,6 +43,8 @@ const JobDetailPage = lazy(() => import("./pages/JobDetailPage"));
 const TrackingPage = lazy(() => import("./pages/TrackingPage"));
 const CommunityPage = lazy(() => import("./pages/community/CommunityPage"));
 const CommunityQuestionPage = lazy(() => import("./pages/community/CommunityQuestionPage"));
+const CommunityReviewsPage = lazy(() => import("./pages/community/CommunityReviewsPage"));
+const CommunityReviewPage = lazy(() => import("./pages/community/CommunityReviewPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
@@ -129,6 +131,9 @@ const AppRoutes = () => {
               <Route path="careers" element={<CareersPage />} />
               <Route path="careers/:slug" element={<JobDetailPage />} />
               <Route path="community" element={<CommunityPage />} />
+              {/* Static "reviews" segment outranks the dynamic :slug in v6. */}
+              <Route path="community/reviews" element={<CommunityReviewsPage />} />
+              <Route path="community/reviews/:slug" element={<CommunityReviewPage />} />
               <Route path="community/:slug" element={<CommunityQuestionPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />

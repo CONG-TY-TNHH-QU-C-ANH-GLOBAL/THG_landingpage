@@ -50,6 +50,7 @@ const BASE_ROUTES = [
   "/catalog",
   "/careers",
   "/community",
+  "/community/reviews",
   "/blog",
   "/policy",
   "/shipping-policy",
@@ -128,11 +129,33 @@ async function fetchCommunityRoutes() {
   }
 }
 
+/** Fetch indexable community-review slugs so each /community/reviews/:slug gets
+ *  a prerendered shell with Review JSON-LD + real meta. ONLY indexable reviews
+ *  (published + verified + non-thin body) — everything else is CSR-only and
+ *  carries noindex, per the moderation/SEO rules. Best-effort. */
+async function fetchCommunityReviewRoutes() {
+  try {
+    const res = await fetch(`${CMS_API}/community/reviews`);
+    if (!res.ok) {
+      console.warn(`⚠ reviews fetch ${res.status} — skipping review-detail prerender`);
+      return [];
+    }
+    const data = await res.json();
+    const slugs = (data.reviews ?? []).filter((r) => r.indexable).map((r) => r.slug);
+    console.log(`✓ ${slugs.length} indexable community reviews → /community/reviews/:slug prerender`);
+    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/community/reviews/${s}`));
+  } catch (err) {
+    console.warn(`⚠ reviews fetch failed (${err.message}) — skipping review-detail prerender`);
+    return [];
+  }
+}
+
 const ROUTES = [
   ...STATIC_ROUTES,
   ...(await fetchJobRoutes()),
   ...(await fetchBlogRoutes()),
   ...(await fetchCommunityRoutes()),
+  ...(await fetchCommunityReviewRoutes()),
 ];
 
 if (!existsSync(DIST)) {

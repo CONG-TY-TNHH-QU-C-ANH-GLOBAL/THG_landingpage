@@ -237,6 +237,54 @@ export function JsonLdQaPage({
   );
 }
 
+interface ReviewProps {
+  /** Review title (schema.org Review.name). */
+  name: string;
+  /** Review body text. */
+  body: string;
+  /** Canonical, lang-prefixed page URL. */
+  url: string;
+  /** Reviewer display name. */
+  authorName: string;
+  /** Star rating 1–5. Required — Review markup is only emitted when present so
+   *  reviewRating is always valid (a Review without a rating is incomplete). */
+  rating: number;
+  /** Unix seconds the review was published (emitted as ISO when present). */
+  publishedAt?: number | null;
+}
+
+/** schema.org/Review of the THG Fulfill service. Only rendered for verified,
+ *  indexable reviews that carry a numeric rating, so the emitted markup is
+ *  always complete and valid (itemReviewed + reviewRating + author + body).
+ *  Reviews without a rating fall back to no markup rather than invalid JSON-LD. */
+export function JsonLdReview({ name, body, url, authorName, rating, publishedAt }: Readonly<ReviewProps>) {
+  const data: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    name,
+    reviewBody: body,
+    url,
+    author: { "@type": "Person", name: authorName },
+    itemReviewed: {
+      "@type": "Organization",
+      name: "THG Fulfill",
+      url: SITE_BASE,
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: rating,
+      bestRating: 5,
+      worstRating: 1,
+    },
+  };
+  if (publishedAt) data.datePublished = new Date(publishedAt * 1000).toISOString();
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(data)}</script>
+    </Helmet>
+  );
+}
+
 interface BreadcrumbItem {
   name: string;
   url: string;

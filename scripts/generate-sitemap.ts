@@ -22,6 +22,7 @@ const STATIC_ROUTES = [
   "/shipping-policy",
   "/careers",
   "/community",
+  "/community/reviews",
   "/international-pricing",
   "/domestic-pricing",
 ];
@@ -163,6 +164,35 @@ async function fetchCommunityEntries(today: string): Promise<SitemapEntry[]> {
   return entries;
 }
 
+// 5. Community verified reviews from CMS (best-effort). ONLY indexable entries
+//    — the CMS computes indexable = published AND verified AND non-thin body.
+//    Pending/unverified/withdrawn reviews stay out of the sitemap AND carry
+//    noindex on the page.
+async function fetchCommunityReviewEntries(today: string): Promise<SitemapEntry[]> {
+  const entries: SitemapEntry[] = [];
+  try {
+    const res = await fetch(`${CMS_API}/community/reviews`);
+    if (!res.ok) {
+      console.warn(`⚠ CMS reviews endpoint returned ${res.status} — skipping review URLs`);
+      return entries;
+    }
+    const data = (await res.json()) as {
+      reviews: Array<{ slug: string; indexable: boolean; published_at: number | null }>;
+    };
+    const indexable = (data.reviews ?? []).filter((r) => r.indexable);
+    for (const r of indexable) {
+      const lastmod = r.published_at
+        ? new Date(r.published_at * 1000).toISOString().slice(0, 10)
+        : today;
+      entries.push(...langEntries(`/community/reviews/${r.slug}`, lastmod, "weekly", 0.6));
+    }
+    console.log(`✓ Added ${indexable.length} indexable community reviews from CMS`);
+  } catch (err) {
+    console.warn(`⚠ Cannot reach CMS reviews API — sitemap will omit review URLs:`, (err as Error).message);
+  }
+  return entries;
+}
+
 async function main() {
   const today = new Date().toISOString().slice(0, 10);
   const entries: SitemapEntry[] = [];
@@ -176,6 +206,7 @@ async function main() {
     ...(await fetchBlogEntries()),
     ...(await fetchJobEntries(today)),
     ...(await fetchCommunityEntries(today)),
+    ...(await fetchCommunityReviewEntries(today)),
   );
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

@@ -270,6 +270,28 @@ export function useCommunityCategories() {
   });
 }
 
+// Verified reviews — same freshness policy as Q&A: short stale on the list so
+// a newly-published review shows up quickly, longer on the detail.
+export function useCommunityReviews(category?: string) {
+  return useQuery({
+    queryKey: ["cms", "community", "reviews", category ?? "all"],
+    queryFn: () => cmsClient.getCommunityReviews(category),
+    staleTime: COMMUNITY_LIST_STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
+export function useCommunityReview(slug: string) {
+  return useQuery({
+    queryKey: ["cms", "community", "review", slug],
+    queryFn: () => cmsClient.getCommunityReview(slug),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+    enabled: !!slug,
+    retry: false,
+  });
+}
+
 /**
  * Aggregator: fetches the full list of pricing tables, then in parallel pulls each
  * table's data and exposes it as a flat map { slug: dataArray }.

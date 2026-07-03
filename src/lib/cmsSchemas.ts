@@ -639,3 +639,71 @@ export const cmsCommunityQuestionInputSchema = z.object({
   turnstile_token: z.string(),
 });
 export type CmsCommunityQuestionInput = z.infer<typeof cmsCommunityQuestionInputSchema>;
+
+// ─── Verified Reviews (Sprint 4) ───────────────────────────────────────────
+// Hand-written mirror of the CMS public review wire shapes. Self-contained so
+// the landing parses reviews even when deployed ahead of the CMS that ships
+// them (defensive: an empty list simply renders the empty state). Private
+// fields (reviewer_email, ip, evidence, order ref, owner_token_hash) are never
+// part of these shapes — the CMS never sends them.
+
+const communityReviewSummarySchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  excerpt: z.string(),
+  category: cmsCommunityCategoryRefSchema,
+  rating: z.number().nullable(),
+  verified: z.boolean(),
+  indexable: z.boolean(),
+  published_at: z.number().nullable(),
+});
+export type CmsCommunityReviewSummary = z.infer<typeof communityReviewSummarySchema>;
+
+export const communityReviewsResponseSchema = z.object({
+  reviews: z.array(communityReviewSummarySchema),
+});
+
+const communityReviewDetailSchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  body: z.string(),
+  category: cmsCommunityCategoryRefSchema,
+  reviewer_name: z.string(),
+  rating: z.number().nullable(),
+  public_summary: z.string().nullable(),
+  verified: z.boolean(),
+  indexable: z.boolean(),
+  published_at: z.number().nullable(),
+});
+export type CmsCommunityReviewDetail = z.infer<typeof communityReviewDetailSchema>;
+
+export const communityReviewResponseSchema = z.object({
+  review: communityReviewDetailSchema,
+});
+
+/** Successful POST /community/reviews — always lands as pending moderation.
+ *  `owner_token` is returned ONCE; the browser stores it (keyed by review slug)
+ *  so the submitter can later withdraw. Never present in list/detail. */
+export const communityReviewSubmitResponseSchema = z.object({
+  ok: z.literal(true),
+  id: z.number(),
+  slug: z.string(),
+  status: z.literal("pending"),
+  owner_token: z.string().optional(),
+});
+
+/** Request body for POST /community/reviews (validated before sending). */
+export const cmsCommunityReviewInputSchema = z.object({
+  title: z.string().min(8).max(200),
+  body: z.string().min(20).max(5000),
+  category_slug: z.string().optional(),
+  reviewer_name: z.string().min(1).max(80),
+  reviewer_email: z.string().email(),
+  rating: z.number().int().min(1).max(5).optional(),
+  locale: localeSchema,
+  private_evidence_note: z.string().max(2000).optional(),
+  private_order_reference: z.string().max(200).optional(),
+  utm: z.record(z.string(), z.string()).optional(),
+  turnstile_token: z.string(),
+});
+export type CmsCommunityReviewInput = z.infer<typeof cmsCommunityReviewInputSchema>;

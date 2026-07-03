@@ -36,3 +36,8 @@ export function forgetOwnerToken(slug: string): void {
   delete store[slug];
   write(store);
 }
+
+/** Namespaces a review slug in the shared owner-token store so a review and a
+ *  question that happen to share a slug string never collide. Pass the result
+ *  to remember/get/forgetOwnerToken. */
+export const reviewOwnerKey = (slug: string): string => `review:${slug}`;
