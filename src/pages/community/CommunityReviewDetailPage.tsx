@@ -5,20 +5,20 @@
 //   * review body rendered through SafeHtml with the UGC link policy
 //     (rel="ugc nofollow noopener noreferrer")
 
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, BadgeCheck, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { Link, useParams } from "react-router-dom";
+import { ArrowLeft, BadgeCheck } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
-import { CommunityReviewBadges } from "@/components/community/communityPageBits";
+import {
+  CommunityReviewBadges,
+  CommunityWithdrawButton,
+} from "@/components/community/communityPageBits";
+import { useCommunityWithdraw } from "@/components/community/communityWithdraw";
 import { JsonLdBreadcrumb, JsonLdReview } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
-import { Button } from "@/components/ui/button";
 import { useCommunityReview } from "@/hooks/useCmsContent";
 import { cmsClient } from "@/lib/cmsClient";
-import { forgetOwnerToken, getOwnerToken, reviewOwnerKey } from "@/lib/communityOwner";
+import { reviewOwnerKey } from "@/lib/communityOwner";
 import { useI18n } from "@/lib/i18n";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 
@@ -26,34 +26,19 @@ const DATE_LOCALES: Record<string, string> = { vi: "vi-VN", en: "en-US", zh: "zh
 
 const CommunityReviewDetailPage = () => {
   const { t, language } = useI18n();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { slug = "" } = useParams<{ slug: string }>();
   const query = useCommunityReview(slug);
-  // Only the browser that submitted this review holds its (namespaced) token.
-  const [owned, setOwned] = useState(() => Boolean(getOwnerToken(reviewOwnerKey(slug))));
-  const [withdrawPending, setWithdrawPending] = useState(false);
+  const withdraw = useCommunityWithdraw({
+    ownerKey: reviewOwnerKey(slug),
+    withdraw: (token) => cmsClient.postCommunityReviewWithdraw(slug, token),
+    confirmText: t("reviews.withdraw_confirm"),
+    doneText: t("reviews.withdraw_done"),
+    errorText: t("community.form_err_generic"),
+    listQueryKey: ["cms", "community", "reviews"],
+    redirectTo: `/${language}/community/reviews`,
+  });
 
   const r = query.data?.review;
-
-  async function onWithdraw() {
-    const token = getOwnerToken(reviewOwnerKey(slug));
-    if (!token) return;
-    if (!globalThis.confirm(t("reviews.withdraw_confirm"))) return;
-    setWithdrawPending(true);
-    try {
-      await cmsClient.postCommunityReviewWithdraw(slug, token);
-      forgetOwnerToken(reviewOwnerKey(slug));
-      setOwned(false);
-      await queryClient.invalidateQueries({ queryKey: ["cms", "community", "reviews"] });
-      toast.success(t("reviews.withdraw_done"));
-      navigate(`/${language}/community/reviews`);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("community.form_err_generic"));
-    } finally {
-      setWithdrawPending(false);
-    }
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -132,16 +117,13 @@ const CommunityReviewDetailPage = () => {
                 className="text-foreground/90 leading-relaxed whitespace-pre-wrap mb-8"
               />
 
-              {owned && (
+              {withdraw.owned && (
                 <div className="flex items-center gap-3 flex-wrap">
-                  <Button
-                    variant="ghost"
-                    onClick={onWithdraw}
-                    disabled={withdrawPending}
-                    className="gap-2 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" aria-hidden="true" /> {t("reviews.withdraw")}
-                  </Button>
+                  <CommunityWithdrawButton
+                    label={t("reviews.withdraw")}
+                    pending={withdraw.pending}
+                    onWithdraw={withdraw.onWithdraw}
+                  />
                 </div>
               )}
             </article>
