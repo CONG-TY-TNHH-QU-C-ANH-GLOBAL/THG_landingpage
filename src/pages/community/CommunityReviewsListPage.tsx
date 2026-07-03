@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useCommunityCategories, useCommunityReviews } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 
-const CommunityReviewsPage = () => {
+const CommunityReviewsListPage = () => {
   const { t, language } = useI18n();
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined);
 
@@ -110,4 +110,4 @@ const CommunityReviewsPage = () => {
   );
 };
 
-export default CommunityReviewsPage;
+export default CommunityReviewsListPage;

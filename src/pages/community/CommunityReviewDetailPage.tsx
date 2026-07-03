@@ -24,7 +24,7 @@ import { SafeHtml } from "@/lib/sanitizeHtml";
 
 const DATE_LOCALES: Record<string, string> = { vi: "vi-VN", en: "en-US", zh: "zh-CN" };
 
-const CommunityReviewPage = () => {
+const CommunityReviewDetailPage = () => {
   const { t, language } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -152,4 +152,4 @@ const CommunityReviewPage = () => {
   );
 };
 
-export default CommunityReviewPage;
+export default CommunityReviewDetailPage;
