@@ -1,11 +1,9 @@
-import React from "react";
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
-import YouTubeEmbed from "@/components/YouTubeEmbed";
 import ImageMarquee from "@/components/ImageMarquee";
 import FAQAccordion from "@/components/FAQAccordion";
 import thgHeroImage from "@/assets/THG.jpg";
@@ -15,7 +13,9 @@ import { Package, ArrowRight, Zap, Palette, Shirt, Printer } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { SectionHeader } from "@/components/sections/SectionHeader";
-import { ServiceProcessSteps } from "@/components/sections/ServiceProcessSteps";
+import { HubSystemGuide } from "@/components/service-pages/HubSystemGuide";
+import { ServiceProcessSteps } from "@/components/service-pages/ServiceProcessSteps";
+import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const painPoints = [
@@ -58,7 +58,7 @@ const THGFulfillPage = () => {
         ogImage={thgHeroImage}
       />
       <JsonLdService
-        name="THG Fulfill — POD & Dropship Fulfillment"
+        name="THG Fulfill â€” POD & Dropship Fulfillment"
         description="End-to-end Print-on-Demand and Dropship fulfillment from Vietnam, China and USA warehouses. Optimized basecost, multi-route shipping, transparent pricing."
         url="https://thgfulfill.com/thg-fulfill"
       />
@@ -160,14 +160,10 @@ const THGFulfillPage = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-center gap-6 flex-wrap">
             <ScrollReveal delay={100}>
-              <div className="w-[280px] md:w-[300px] rounded-2xl overflow-hidden border-4 border-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                <YouTubeEmbed videoId="AveVks7bdMM" title="THG Fulfill Short 1" aspectRatio="315/560" />
-              </div>
+              <ServiceVideoCard videoId="AveVks7bdMM" title="THG Fulfill Short 1" aspectRatio="315/560" className="w-[280px] md:w-[300px] hover:shadow-2xl transition-all hover:-translate-y-2" />
             </ScrollReveal>
             <ScrollReveal delay={200}>
-              <div className="w-[280px] md:w-[300px] rounded-2xl overflow-hidden border-4 border-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-2">
-                <YouTubeEmbed videoId="UrnZpvRVb0U" title="THG Fulfill Short 2" aspectRatio="315/560" />
-              </div>
+              <ServiceVideoCard videoId="UrnZpvRVb0U" title="THG Fulfill Short 2" aspectRatio="315/560" className="w-[280px] md:w-[300px] hover:shadow-2xl transition-all hover:-translate-y-2" />
             </ScrollReveal>
           </div>
         </div>
@@ -178,21 +174,15 @@ const THGFulfillPage = () => {
         <div className="container mx-auto px-4 text-center">
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <ScrollReveal delay={100} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
-                <YouTubeEmbed videoId="UwaZw5Eh-Yg" title="THG Fulfill Overview 1" aspectRatio="auto" />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={200} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
-                <YouTubeEmbed videoId="ZA37yjN-_x8" title="THG Fulfill Overview 2" aspectRatio="auto" />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal delay={300} direction="up">
-              <div className="rounded-2xl flex border-4 border-white shadow-xl overflow-hidden aspect-[9/16]">
-                <YouTubeEmbed videoId="6GkUcZhun90" title="THG Fulfill Overview 3" aspectRatio="auto" />
-              </div>
-            </ScrollReveal>
+            {[
+              { id: "UwaZw5Eh-Yg", title: "THG Fulfill Overview 1" },
+              { id: "ZA37yjN-_x8", title: "THG Fulfill Overview 2" },
+              { id: "6GkUcZhun90", title: "THG Fulfill Overview 3" },
+            ].map((v, i) => (
+              <ScrollReveal key={v.id} delay={(i + 1) * 100} direction="up">
+                <ServiceVideoCard videoId={v.id} title={v.title} aspectRatio="9/16" />
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
@@ -223,7 +213,7 @@ const THGFulfillPage = () => {
           <ScrollReveal>
             <SectionHeader
               eyebrow={t("fulfill_page.solution_subtitle")}
-              title="THG Fulfill –"
+              title="THG Fulfill â€“"
               titleHighlight={t("fulfill_page.solution_highlight")}
               description={t("fulfill_page.solution_desc")}
             />
@@ -250,9 +240,11 @@ const THGFulfillPage = () => {
 
             <ScrollReveal delay={100}>
               <div className="grid lg:grid-cols-2 gap-8 items-center">
-                <div className="order-2 lg:order-1 rounded-2xl overflow-hidden shadow-lg border border-border/40 hover:shadow-xl transition-all hover:-translate-y-1 bg-black aspect-video flex">
-                  <YouTubeEmbed videoId="2VEEFotO42I" title="THG Fulfill Introduction" aspectRatio="16/9" />
-                </div>
+                <ServiceVideoCard
+                  videoId="2VEEFotO42I"
+                  title="THG Fulfill Introduction"
+                  className="order-2 lg:order-1 hover:shadow-2xl transition-all hover:-translate-y-1"
+                />
                 <div className="order-1 lg:order-2">
                   <h3 className="text-2xl font-bold text-navy mb-4 tracking-tight">{t("fulfill_page.adv3_title")}</h3>
                   <p className="text-muted-foreground leading-relaxed">{t("fulfill_page.adv3_desc")}</p>
@@ -317,9 +309,7 @@ const THGFulfillPage = () => {
       <section className="py-24 bg-card">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("fulfill_page.process_title")}</h2>
-            </div>
+            <SectionHeader title={t("fulfill_page.process_title")} />
           </ScrollReveal>
           <div className="grid lg:grid-cols-2 gap-10 max-w-5xl mx-auto items-center">
             {/* Left: Image */}
@@ -339,7 +329,7 @@ const THGFulfillPage = () => {
         </div>
       </section>
 
-      {/* Ecount Guide - I: Video hướng dẫn */}
+      {/* Ecount Guide - I: Video hÆ°á»›ng dáº«n */}
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4 max-w-5xl">
           <ScrollReveal>
@@ -353,9 +343,11 @@ const THGFulfillPage = () => {
           </ScrollReveal>
 
           <ScrollReveal delay={100}>
-            <div className="rounded-2xl overflow-hidden shadow-xl border border-border/40 max-w-3xl mx-auto">
-              <YouTubeEmbed videoId="AzlW2irPANQ" title="THG - Hướng dẫn cách lên đơn trên Ecount ERP" aspectRatio="16/9" />
-            </div>
+            <ServiceVideoCard
+              videoId="AzlW2irPANQ"
+              title="THG - HÆ°á»›ng dáº«n cÃ¡ch lÃªn Ä‘Æ¡n trÃªn Ecount ERP"
+              className="max-w-3xl mx-auto"
+            />
           </ScrollReveal>
 
           <ScrollReveal delay={200}>
@@ -405,11 +397,9 @@ const THGFulfillPage = () => {
 
       {/* Logistics Gallery */}
       <section className="py-20 bg-card overflow-hidden">
-        <div className="container mx-auto px-4 mb-12">
+        <div className="container mx-auto px-4">
           <ScrollReveal>
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-navy tracking-tight">{t("fulfill_page.gallery_title")}</h2>
-            </div>
+            <SectionHeader className="mb-12" title={t("fulfill_page.gallery_title")} />
           </ScrollReveal>
         </div>
         <ImageMarquee images={sliderImages} />
@@ -440,278 +430,5 @@ const THGFulfillPage = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   HUB System Guide — Section II
-   Sidebar nav + 6 content sections
-───────────────────────────────────────────── */
-type Translate = (key: string) => string;
-
-// Built per-render with the i18n `t` so the guide localizes to vi/en/zh.
-// Product feature labels (Wallet Balance, Order, Upload Orders…) stay literal
-// because they appear in English inside the actual Hub product UI.
-function buildHubSections(t: Translate) {
-  return [
-  {
-    id: "dashboard",
-    icon: "LayoutDashboard",
-    title: t("hub.s1_title"),
-    content: (
-      <>
-        <p className="text-muted-foreground leading-relaxed mb-4">
-          {t("hub.s1_p1a")}
-          <a href="https://hub.thgfulfill.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
-            hub.thgfulfill.com
-          </a>
-          {t("hub.s1_p1b")}
-        </p>
-        <ul className="space-y-2 mb-4">
-          {[
-            { label: "Wallet Balance", desc: t("hub.s1_wallet_desc") },
-            { label: "Total Orders", desc: t("hub.s1_orders_desc") },
-            { label: "In Process", desc: t("hub.s1_inprocess_desc") },
-            { label: "Revenue", desc: t("hub.s1_revenue_desc") },
-          ].map((item) => (
-            <li key={item.label} className="flex gap-2 text-sm">
-              <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
-              <span className="text-muted-foreground">{item.desc}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {t("hub.s1_p2")}
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "orders",
-    icon: "PackageCheck",
-    title: t("hub.s2_title"),
-    content: (
-      <>
-        <p className="text-muted-foreground leading-relaxed mb-4">
-          {t("hub.s2_p1")}
-        </p>
-        <ul className="space-y-3">
-          <li className="flex gap-3 text-sm">
-            <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-            <span className="text-muted-foreground">{t("hub.s2_li1")}</span>
-          </li>
-          <li className="flex gap-3 text-sm">
-            <span className="mt-1 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-            <span className="text-muted-foreground">{t("hub.s2_li2")}</span>
-          </li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "catalog",
-    icon: "BookOpen",
-    title: t("hub.s3_title"),
-    content: (
-      <p className="text-muted-foreground leading-relaxed">
-        {t("hub.s3_p1")}
-      </p>
-    ),
-  },
-  {
-    id: "billing",
-    icon: "Wallet",
-    title: t("hub.s4_title"),
-    content: (
-      <>
-        <p className="text-muted-foreground leading-relaxed mb-4">
-          {t("hub.s4_p1")}
-        </p>
-        <ul className="space-y-2">
-          {[
-            { label: "Wallet", desc: t("hub.s4_wallet_desc") },
-            { label: "Top-up", desc: t("hub.s4_topup_desc") },
-            { label: "Transaction", desc: t("hub.s4_transaction_desc") },
-          ].map((item) => (
-            <li key={item.label} className="flex gap-2 text-sm">
-              <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
-              <span className="text-muted-foreground">{item.desc}</span>
-            </li>
-          ))}
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "support",
-    icon: "HeadphonesIcon",
-    title: t("hub.s5_title"),
-    content: (
-      <>
-        <p className="text-muted-foreground leading-relaxed mb-4">
-          {t("hub.s5_p1")}
-        </p>
-        <ul className="space-y-2">
-          {[
-            { label: "Request", desc: t("hub.s5_request_desc") },
-            { label: "Trouble", desc: t("hub.s5_trouble_desc") },
-          ].map((item) => (
-            <li key={item.label} className="flex gap-2 text-sm">
-              <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
-              <span className="text-muted-foreground">{item.desc}</span>
-            </li>
-          ))}
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "account",
-    icon: "UserCog",
-    title: t("hub.s6_title"),
-    content: (
-      <>
-        <p className="text-muted-foreground leading-relaxed mb-4">
-          {t("hub.s6_p1")}
-        </p>
-        <ul className="space-y-2">
-          {[
-            { label: "Account Setting", desc: t("hub.s6_account_desc") },
-            { label: "Team Member", desc: t("hub.s6_team_desc") },
-          ].map((item) => (
-            <li key={item.label} className="flex gap-2 text-sm">
-              <span className="font-semibold text-navy whitespace-nowrap">{item.label}:</span>
-              <span className="text-muted-foreground">{item.desc}</span>
-            </li>
-          ))}
-        </ul>
-      </>
-    ),
-  },
-  ];
-}
-
-import { LayoutDashboard, PackageCheck, BookOpen, Wallet, Headphones, UserCog, Menu, X as XIcon } from "lucide-react";
-
-const ICON_MAP: Record<string, React.ElementType> = {
-  LayoutDashboard,
-  PackageCheck,
-  BookOpen,
-  Wallet,
-  HeadphonesIcon: Headphones,
-  UserCog,
-};
-
-function HubSystemGuide() {
-  const { t } = useI18n();
-  const sections = buildHubSections(t);
-  const [open, setOpen] = React.useState(false);
-  const [active, setActive] = React.useState("dashboard");
-
-  const handleNav = (id: string) => {
-    setActive(id);
-    setOpen(false);
-    const el = document.getElementById(`hub-${id}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  return (
-    <section className="py-24 bg-card border-t border-border/50">
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Section header */}
-        <ScrollReveal>
-          <div className="text-center mb-12">
-            <p className="text-sm font-semibold uppercase tracking-widest text-accent mb-3">{t("hub.eyebrow")}</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">
-              II. <span className="text-gradient-gold">{t("hub.heading")}</span>
-            </h2>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto text-sm leading-relaxed">
-              {t("hub.subtitle_before")}
-              <a href="https://hub.thgfulfill.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
-                hub.thgfulfill.com
-              </a>
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="flex gap-8 items-start">
-          {/* ── Sidebar (desktop) ── */}
-          <aside className="hidden lg:block w-56 flex-shrink-0 sticky top-24">
-            <nav className="bg-background rounded-2xl border border-border/50 shadow-sm overflow-hidden">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-4 pt-4 pb-2">{t("hub.toc")}</p>
-              {sections.map((s) => {
-                const Icon = ICON_MAP[s.icon];
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => handleNav(s.id)}
-                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left text-sm transition-colors ${
-                      active === s.id
-                        ? "bg-primary/10 text-primary font-semibold border-l-2 border-primary"
-                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                    }`}
-                  >
-                    {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
-                    <span className="leading-tight">{s.title.replace(/^\d+\.\s/, "")}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </aside>
-
-          {/* ── Mobile hamburger ── */}
-          <div className="lg:hidden w-full mb-4">
-            <button
-              onClick={() => setOpen(!open)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-background border border-border/50 rounded-xl text-sm font-medium text-foreground shadow-sm w-full"
-            >
-              {open ? <XIcon className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              {t("hub.toc")} — {sections.find((s) => s.id === active)?.title.replace(/^\d+\.\s/, "")}
-            </button>
-            {open && (
-              <nav className="mt-2 bg-background border border-border/50 rounded-xl shadow-lg overflow-hidden">
-                {sections.map((s) => {
-                  const Icon = ICON_MAP[s.icon];
-                  return (
-                    <button
-                      key={s.id}
-                      onClick={() => handleNav(s.id)}
-                      className={`w-full flex items-center gap-2.5 px-4 py-3 text-left text-sm transition-colors ${
-                        active === s.id ? "bg-primary/10 text-primary font-semibold" : "text-muted-foreground hover:bg-secondary/60"
-                      }`}
-                    >
-                      {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
-                      {s.title}
-                    </button>
-                  );
-                })}
-              </nav>
-            )}
-          </div>
-
-          {/* ── Main content ── */}
-          <main className="flex-1 min-w-0 space-y-6">
-            {sections.map((s, i) => {
-              const Icon = ICON_MAP[s.icon];
-              return (
-                <ScrollReveal key={s.id} delay={i * 60}>
-                  <div
-                    id={`hub-${s.id}`}
-                    className="bg-background rounded-2xl border border-border/40 shadow-sm p-6 md:p-8 scroll-mt-28"
-                  >
-                    <div className="flex items-center gap-3 mb-5">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        {Icon && <Icon className="w-5 h-5 text-primary" />}
-                      </div>
-                      <h3 className="text-lg font-bold text-navy">{s.title}</h3>
-                    </div>
-                    {s.content}
-                  </div>
-                </ScrollReveal>
-              );
-            })}
-          </main>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 export default THGFulfillPage;
