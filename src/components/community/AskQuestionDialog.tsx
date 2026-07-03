@@ -2,7 +2,7 @@
 // Turnstile-gated POST to CMS /api/v1/community/questions. Submissions always
 // land as pending moderation; the success state says so explicitly.
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, type ComponentProps, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -25,6 +25,27 @@ const BODY_MIN = 20;
 
 interface Props {
   trigger: ReactNode;
+}
+
+// Local label+input field — collapses the repeated `<div><Label/><Input/></div>`
+// markup shared by the name/email/title fields into one call. All extra input
+// attributes (type, required, minLength, placeholder, disabled…) pass through.
+type TextFieldProps = {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  hint?: string;
+} & Omit<ComponentProps<typeof Input>, "id" | "value" | "onChange">;
+
+function TextField({ id, label, value, onChange, hint, ...input }: Readonly<TextFieldProps>) {
+  return (
+    <div>
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} {...input} />
+      {hint && <p className="text-[10px] text-muted-foreground mt-1">{hint}</p>}
+    </div>
+  );
 }
 
 export function AskQuestionDialog({ trigger }: Readonly<Props>) {
@@ -110,28 +131,24 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
         ) : (
           <form onSubmit={onSubmit} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="ask-name">{t("community.form_name")} *</Label>
-                <Input
-                  id="ask-name"
-                  required
-                  value={form.name}
-                  onChange={(e) => set("name", e.target.value)}
-                  disabled={pending}
-                />
-              </div>
-              <div>
-                <Label htmlFor="ask-email">{t("community.form_email")} *</Label>
-                <Input
-                  id="ask-email"
-                  type="email"
-                  required
-                  value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
-                  disabled={pending}
-                />
-                <p className="text-[10px] text-muted-foreground mt-1">{t("community.form_email_hint")}</p>
-              </div>
+              <TextField
+                id="ask-name"
+                label={`${t("community.form_name")} *`}
+                required
+                value={form.name}
+                onChange={(v) => set("name", v)}
+                disabled={pending}
+              />
+              <TextField
+                id="ask-email"
+                type="email"
+                label={`${t("community.form_email")} *`}
+                required
+                value={form.email}
+                onChange={(v) => set("email", v)}
+                disabled={pending}
+                hint={t("community.form_email_hint")}
+              />
             </div>
             <div>
               <Label htmlFor="ask-category">{t("community.form_category")}</Label>
@@ -148,19 +165,17 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
                 ))}
               </select>
             </div>
-            <div>
-              <Label htmlFor="ask-title">{t("community.form_question_title")} *</Label>
-              <Input
-                id="ask-title"
-                required
-                minLength={TITLE_MIN}
-                maxLength={200}
-                value={form.title}
-                onChange={(e) => set("title", e.target.value)}
-                placeholder={t("community.form_question_title_ph")}
-                disabled={pending}
-              />
-            </div>
+            <TextField
+              id="ask-title"
+              label={`${t("community.form_question_title")} *`}
+              required
+              minLength={TITLE_MIN}
+              maxLength={200}
+              value={form.title}
+              onChange={(v) => set("title", v)}
+              placeholder={t("community.form_question_title_ph")}
+              disabled={pending}
+            />
             <div>
               <Label htmlFor="ask-body">{t("community.form_question_body")} *</Label>
               <Textarea
