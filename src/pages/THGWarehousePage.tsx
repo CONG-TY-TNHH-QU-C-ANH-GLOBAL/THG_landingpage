@@ -7,10 +7,12 @@ import YouTubeEmbed from "@/components/YouTubeEmbed";
 import FAQAccordion from "@/components/FAQAccordion";
 import ImageMarquee from "@/components/ImageMarquee";
 import { useI18n } from "@/lib/i18n";
-import { Warehouse, ArrowRight, CheckCircle2, Monitor, Package, Truck } from "lucide-react";
+import { Warehouse, ArrowRight, CheckCircle2, Monitor, Package, Truck, Tag } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 import { SectionHeader } from "@/components/sections/SectionHeader";
+import { ServiceProcessSteps } from "@/components/sections/ServiceProcessSteps";
 import { WAREHOUSE_PACKAGING_URL } from "@/config/cmsAssets";
 
 const sliderImages = [
@@ -45,10 +47,10 @@ const THGWarehousePage = () => {
     { question: t("wh_faq.q13"), answer: t("wh_faq.a13") },
   ];
 
-  const features = [
-    { icon: "🏷️", titleKey: "warehouse_page.feat1_title", descKey: "warehouse_page.feat1_desc" },
-    { icon: "📦", titleKey: "warehouse_page.feat2_title", descKey: "warehouse_page.feat2_desc" },
-    { icon: "🚚", titleKey: "warehouse_page.feat3_title", descKey: "warehouse_page.feat3_desc" },
+  const features: { icon: LucideIcon; titleKey: string; descKey: string }[] = [
+    { icon: Tag, titleKey: "warehouse_page.feat1_title", descKey: "warehouse_page.feat1_desc" },
+    { icon: Package, titleKey: "warehouse_page.feat2_title", descKey: "warehouse_page.feat2_desc" },
+    { icon: Truck, titleKey: "warehouse_page.feat3_title", descKey: "warehouse_page.feat3_desc" },
   ];
 
   const processSteps = [
@@ -118,7 +120,7 @@ const THGWarehousePage = () => {
             </div>
           </ScrollReveal>
           <ScrollReveal delay={100}>
-            <h1 className="text-4xl md:text-5xl lg:text-5xl font-bold text-navy tracking-tight mb-6 leading-tight uppercase" >
+            <h1 className="text-4xl md:text-5xl font-bold text-navy tracking-tight mb-6 leading-tight uppercase">
               {t("warehouse_page.hero_title")} <br />
               <span className="text-gradient-gold text-2xl md:text-3xl lg:text-4xl normal-case mt-3 inline-block">{t("warehouse_page.hero_subtitle")}</span>
             </h1>
@@ -182,9 +184,11 @@ const THGWarehousePage = () => {
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {features.map((f, i) => (
-              <ScrollReveal key={i} delay={i * 100}>
+              <ScrollReveal key={f.titleKey} delay={i * 100}>
                 <div className="glass-card rounded-2xl p-8 text-center hover-lift h-full">
-                  <span className="text-4xl block mb-4">{f.icon}</span>
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
+                    <f.icon className="w-8 h-8 text-primary" strokeWidth={1.75} />
+                  </div>
                   <h3 className="text-xl font-bold text-navy mb-3">{t(f.titleKey)}</h3>
                   <SafeHtml as="p" className="text-base text-navy/70 leading-relaxed" html={t(f.descKey)} />
                 </div>
@@ -330,23 +334,8 @@ const THGWarehousePage = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-navy tracking-tight">{t("warehouse_page.process_title")}</h2>
             </div>
           </ScrollReveal>
-          <div className="max-w-3xl mx-auto space-y-4">
-            {processSteps.map((s, i) => (
-              <ScrollReveal key={s.num} delay={i * 80}>
-                <div className="flex gap-6 glass-card rounded-2xl p-6 hover-lift">
-                  <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
-                    <s.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <span className="text-xs font-bold text-primary/40">{t("wh_faq.step_prefix")} {s.num}</span>
-                      <h3 className="text-base font-bold text-navy tracking-tight">{t(s.titleKey)}</h3>
-                    </div>
-                    <p className="text-sm text-navy/70 leading-relaxed">{t(s.descKey)}</p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
+          <div className="max-w-3xl mx-auto">
+            <ServiceProcessSteps steps={processSteps} numPrefix={t("wh_faq.step_prefix")} />
           </div>
         </div>
       </section>
