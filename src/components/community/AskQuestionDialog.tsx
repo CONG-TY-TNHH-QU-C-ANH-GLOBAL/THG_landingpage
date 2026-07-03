@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/lib/i18n";
 import { cmsClient } from "@/lib/cmsClient";
+import { rememberOwnerToken } from "@/lib/communityOwner";
 import { useCommunityCategories } from "@/hooks/useCmsContent";
 import { useTurnstile } from "@/lib/useTurnstile";
 import { getUtmPayload } from "@/lib/utm";
@@ -79,7 +80,7 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
     setPending(true);
     try {
       const utm = getUtmPayload();
-      await cmsClient.postCommunityQuestion({
+      const res = await cmsClient.postCommunityQuestion({
         title: form.title.trim(),
         body: form.body.trim(),
         category_slug: form.category || undefined,
@@ -89,6 +90,9 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
         utm: Object.keys(utm).length > 0 ? utm : undefined,
         turnstile_token: token,
       });
+      // Remember the one-time owner token so this browser can withdraw later
+      // (absent only if the CMS predates the ownership feature).
+      if (res.owner_token) rememberOwnerToken(res.slug, res.owner_token);
       setDone(true);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("community.form_err_generic"));
@@ -124,6 +128,7 @@ export function AskQuestionDialog({ trigger }: Readonly<Props>) {
             <div className="text-3xl">✅</div>
             <div className="font-semibold text-base">{t("community.form_success_title")}</div>
             <p className="text-sm text-muted-foreground">{t("community.form_success_desc")}</p>
+            <p className="text-xs text-muted-foreground">{t("community.withdraw_hint")}</p>
             <Button onClick={() => setOpen(false)} className="mt-2 w-full">
               {t("community.form_close")}
             </Button>

@@ -18,6 +18,7 @@ import {
   communityQuestionSubmitResponseSchema,
   communityQuestionsResponseSchema,
   communitySameIssueResponseSchema,
+  communityWithdrawResponseSchema,
   blogListResponseSchema,
   blogPostResponseSchema,
   cmsLeadInputSchema,
@@ -282,6 +283,20 @@ export const cmsClient = {
       `/community/questions/${encodeURIComponent(slug)}/same-issue`,
       communitySameIssueResponseSchema,
       { method: "POST" },
+    );
+  },
+
+  /** Withdraw a question the current browser owns (proves ownership via the
+   *  one-time token returned at submit). Server soft-deletes on match. */
+  postCommunityWithdraw(slug: string, ownerToken: string) {
+    return fetchJson(
+      `/community/questions/${encodeURIComponent(slug)}/withdraw`,
+      communityWithdrawResponseSchema,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownerToken }),
+      },
     );
   },
 
