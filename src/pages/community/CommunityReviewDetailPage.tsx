@@ -11,6 +11,7 @@ import { ArrowLeft, BadgeCheck } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import {
   CommunityReviewBadges,
+  CommunityStateNotice,
   CommunityWithdrawButton,
 } from "@/components/community/communityPageBits";
 import { useCommunityWithdraw } from "@/components/community/communityWithdraw";
@@ -77,12 +78,8 @@ const CommunityReviewDetailPage = () => {
             <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t("reviews.back")}
           </Link>
 
-          {query.isLoading && (
-            <div className="text-center text-muted-foreground py-12">{t("reviews.loading")}</div>
-          )}
-          {query.isError && (
-            <div className="text-center text-muted-foreground py-12">{t("reviews.not_found")}</div>
-          )}
+          {query.isLoading && <CommunityStateNotice>{t("reviews.loading")}</CommunityStateNotice>}
+          {query.isError && <CommunityStateNotice>{t("reviews.not_found")}</CommunityStateNotice>}
 
           {r && (
             <article>

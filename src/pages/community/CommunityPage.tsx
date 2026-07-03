@@ -9,7 +9,12 @@ import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
 import { AskQuestionDialog } from "@/components/community/AskQuestionDialog";
 import { CommunityTabs } from "@/components/community/CommunityTabs";
-import { CommunityCategoryFilters } from "@/components/community/communityPageBits";
+import {
+  CommunityCategoryFilters,
+  CommunityEmptyState,
+  CommunityPageHeader,
+  CommunityStateNotice,
+} from "@/components/community/communityPageBits";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
@@ -40,27 +45,21 @@ const CommunityPage = () => {
       <Navbar />
       <div className="pt-28 pb-20">
         <div className="container mx-auto px-4">
-          <ScrollReveal>
-            <div className="text-center mb-10">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">
-                {t("community.eyebrow")}
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">
-                {t("community.title")}
-              </h1>
-              <p className="text-muted-foreground mt-3">{t("community.subtitle")}</p>
-              <div className="mt-6">
-                <AskQuestionDialog
-                  trigger={
-                    <Button size="lg" className="gap-2">
-                      <MessageCircleQuestion className="w-5 h-5" aria-hidden="true" />
-                      {t("community.ask_button")}
-                    </Button>
-                  }
-                />
-              </div>
-            </div>
-          </ScrollReveal>
+          <CommunityPageHeader
+            eyebrow={t("community.eyebrow")}
+            title={t("community.title")}
+            subtitle={t("community.subtitle")}
+            action={
+              <AskQuestionDialog
+                trigger={
+                  <Button size="lg" className="gap-2">
+                    <MessageCircleQuestion className="w-5 h-5" aria-hidden="true" />
+                    {t("community.ask_button")}
+                  </Button>
+                }
+              />
+            }
+          />
 
           <CommunityTabs active="qa" />
 
@@ -72,11 +71,9 @@ const CommunityPage = () => {
             />
           </ScrollReveal>
 
-          {list.isLoading && (
-            <div className="text-center text-muted-foreground py-12">{t("community.loading")}</div>
-          )}
+          {list.isLoading && <CommunityStateNotice>{t("community.loading")}</CommunityStateNotice>}
           {!list.isLoading && questions.length === 0 && (
-            <div className="text-center text-muted-foreground py-12">{t("community.empty")}</div>
+            <CommunityEmptyState icon={MessageCircleQuestion} title={t("community.empty")} />
           )}
 
           <div className="max-w-3xl mx-auto space-y-4">

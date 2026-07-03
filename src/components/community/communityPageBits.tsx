@@ -1,14 +1,67 @@
 // Shared presentational bits for the community list/detail pages (Q&A +
-// Reviews). Extracted so the two list pages don't duplicate the category chip
-// bar and the two review pages don't duplicate the badge row. Data fetching,
-// SEO and navigation stay in the pages.
+// Reviews): category chip bar, badge row, page hero header, and the
+// loading/error/empty state shells. Data fetching, SEO and navigation stay
+// in the pages.
 
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { BadgeCheck, Star, Tag, Trash2 } from "lucide-react";
 
+import ScrollReveal from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 
 type CategoryRef = { slug: string; name: string };
+
+/** Centered hero (eyebrow + h1 + subtitle + action) shared by the community list pages. */
+export function CommunityPageHeader({
+  eyebrow,
+  title,
+  subtitle,
+  action,
+}: Readonly<{
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  action?: ReactNode;
+}>) {
+  return (
+    <ScrollReveal>
+      <div className="text-center mb-10">
+        <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">{eyebrow}</p>
+        <h1 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">{title}</h1>
+        <p className="text-muted-foreground mt-3">{subtitle}</p>
+        {action && <div className="mt-6">{action}</div>}
+      </div>
+    </ScrollReveal>
+  );
+}
+
+/** Muted centered notice for loading/error states on community pages. */
+export function CommunityStateNotice({ children }: Readonly<{ children: ReactNode }>) {
+  return <div className="text-center text-muted-foreground py-12">{children}</div>;
+}
+
+/** Icon-chip empty state shared by the community list pages. */
+export function CommunityEmptyState({
+  icon: Icon,
+  title,
+  description,
+}: Readonly<{
+  icon: LucideIcon;
+  title: string;
+  description?: string;
+}>) {
+  return (
+    <div className="max-w-xl mx-auto text-center py-12">
+      <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 grid place-items-center mb-4">
+        <Icon className="w-7 h-7 text-primary" aria-hidden="true" />
+      </div>
+      <p className="text-lg font-semibold text-navy">{title}</p>
+      {description && <p className="text-muted-foreground mt-2">{description}</p>}
+    </div>
+  );
+}
 
 /** "All" + per-category chip bar shared by the Q&A and Reviews list pages. */
 export function CommunityCategoryFilters({

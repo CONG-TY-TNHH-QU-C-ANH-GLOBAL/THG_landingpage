@@ -8,7 +8,13 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
 import { CommunityTabs } from "@/components/community/CommunityTabs";
-import { CommunityCategoryFilters, CommunityReviewBadges } from "@/components/community/communityPageBits";
+import {
+  CommunityCategoryFilters,
+  CommunityEmptyState,
+  CommunityPageHeader,
+  CommunityReviewBadges,
+  CommunityStateNotice,
+} from "@/components/community/communityPageBits";
 import { SubmitReviewDialog } from "@/components/community/SubmitReviewDialog";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
@@ -41,27 +47,21 @@ const CommunityReviewsListPage = () => {
       <Navbar />
       <div className="pt-28 pb-20">
         <div className="container mx-auto px-4">
-          <ScrollReveal>
-            <div className="text-center mb-10">
-              <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">
-                {t("community.eyebrow")}
-              </p>
-              <h1 className="text-4xl md:text-5xl font-bold text-navy tracking-tight">
-                {t("reviews.title")}
-              </h1>
-              <p className="text-muted-foreground mt-3">{t("reviews.subtitle")}</p>
-              <div className="mt-6">
-                <SubmitReviewDialog
-                  trigger={
-                    <Button size="lg" className="gap-2">
-                      <Star className="w-5 h-5" aria-hidden="true" />
-                      {t("reviews.share_button")}
-                    </Button>
-                  }
-                />
-              </div>
-            </div>
-          </ScrollReveal>
+          <CommunityPageHeader
+            eyebrow={t("community.eyebrow")}
+            title={t("reviews.title")}
+            subtitle={t("reviews.subtitle")}
+            action={
+              <SubmitReviewDialog
+                trigger={
+                  <Button size="lg" className="gap-2">
+                    <Star className="w-5 h-5" aria-hidden="true" />
+                    {t("reviews.share_button")}
+                  </Button>
+                }
+              />
+            }
+          />
 
           <CommunityTabs active="reviews" />
 
@@ -73,17 +73,13 @@ const CommunityReviewsListPage = () => {
             />
           </ScrollReveal>
 
-          {list.isLoading && (
-            <div className="text-center text-muted-foreground py-12">{t("reviews.loading")}</div>
-          )}
+          {list.isLoading && <CommunityStateNotice>{t("reviews.loading")}</CommunityStateNotice>}
           {!list.isLoading && reviews.length === 0 && (
-            <div className="max-w-xl mx-auto text-center py-12">
-              <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 grid place-items-center mb-4">
-                <BadgeCheck className="w-7 h-7 text-primary" aria-hidden="true" />
-              </div>
-              <p className="text-lg font-semibold text-navy">{t("reviews.empty_title")}</p>
-              <p className="text-muted-foreground mt-2">{t("reviews.empty_desc")}</p>
-            </div>
+            <CommunityEmptyState
+              icon={BadgeCheck}
+              title={t("reviews.empty_title")}
+              description={t("reviews.empty_desc")}
+            />
           )}
 
           <div className="max-w-3xl mx-auto space-y-4">
