@@ -11,6 +11,8 @@ import { parseYouTubeId, youtubeThumb, youtubeEmbedUrl, isYouTubeShort } from "@
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import {
   Search, Tag, Filter, ChevronLeft, ChevronRight, X,
   MessageCircle, Share2, Check, Package,
@@ -257,6 +259,16 @@ const CatalogPage = () => {
             <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
               {t("catalog_page.subtitle")}
             </p>
+            <div className="mt-7">
+              <LeadFormDialog
+                sourcePage="/catalog#hero"
+                trigger={
+                  <Button className="bg-primary hover:bg-gold-dark text-white rounded-full px-8 py-6 text-base font-bold shadow-lg transition-transform hover:-translate-y-1">
+                    {t("catalog.contact_price")}
+                  </Button>
+                }
+              />
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -497,8 +509,8 @@ const CatalogPage = () => {
           {!loading && products.length === 0 && (
             <div className="text-center py-20">
               <Tag className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground text-lg">No products found</p>
-              <p className="text-muted-foreground/60 text-sm mt-1">Try adjusting your search or filter</p>
+              <p className="text-muted-foreground text-lg">{t("catalog.empty_title")}</p>
+              <p className="text-muted-foreground/60 text-sm mt-1">{t("catalog.empty_hint")}</p>
             </div>
           )}
 
