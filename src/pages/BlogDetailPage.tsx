@@ -61,7 +61,7 @@ const BlogDetailPage = () => {
             return (
                 <div className="min-h-screen bg-background">
                     <Navbar />
-                    <div className="pt-28 pb-20 text-center text-muted-foreground">Đang tải...</div>
+                    <div className="pt-28 pb-20 text-center text-muted-foreground">{t("common.loading")}</div>
                 </div>
             );
         }

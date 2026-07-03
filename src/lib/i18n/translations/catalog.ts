@@ -20,4 +20,5 @@ export const catalogTranslations: TranslationDict = {
   "catalog.contact_price": tr("Contact for pricing", "Liên hệ báo giá", "联系报价"),
   "catalog.size_label": tr("Size:", "Kích cỡ:", "尺寸:"),
   "catalog.all": tr("All", "Tất cả", "全部"),
+  "catalog.contact_quote_hint": tr("Contact us for pricing", "Liên hệ để nhận báo giá", "联系我们获取报价"),
 };

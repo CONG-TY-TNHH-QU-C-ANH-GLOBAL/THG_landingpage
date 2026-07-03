@@ -16,4 +16,6 @@ export const blogTranslations: TranslationDict = {
   "blog.slide_label": tr("Slide", "Slide", "幻灯片"),
   "blog.zoom_hint": tr("Click to zoom", "Nhấn để phóng to", "点击放大"),
   "blog.not_found": tr("Article not found", "Không tìm thấy bài viết", "未找到文章"),
+  "blog.list_loading": tr("Loading articles...", "Đang tải bài viết...", "正在加载文章…"),
+  "blog.list_empty": tr("No articles yet. Please check back later.", "Chưa có bài viết nào. Vui lòng quay lại sau.", "暂无文章，请稍后再来。"),
 };

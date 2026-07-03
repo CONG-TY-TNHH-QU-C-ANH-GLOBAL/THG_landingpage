@@ -356,7 +356,7 @@ const DomesticPricingContent = () => {
                                     })}
                                     <tr className="bg-amber-50/80 dark:bg-amber-900/20">
                                         <td colSpan={4} className="px-4 py-3 text-amber-800 dark:text-amber-400 text-[11px] md:text-[12px] font-bold italic text-center border-t border-amber-200/50 shadow-inner">
-                                            ✨ Miễn phí lưu kho 90 ngày cho khách hàng sử dụng kho lần đầu tiên / 1 CBM
+                                            {t("domestic.free_storage_promo")}
                                         </td>
                                     </tr>
                                 </tbody>

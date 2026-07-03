@@ -101,4 +101,9 @@ export const careersTranslations: TranslationDict = {
   "careers.stat3_label": tr("Service Sectors", "Mảng dịch vụ", "服务领域"),
   "careers.stat4_label": tr("Deadline", "Hạn nộp", "截止日期"),
   "careers.form_err_captcha": tr("Please complete the captcha challenge before submitting.", "Vui lòng hoàn thành xác thực captcha trước khi gửi.", "请先完成验证码再提交。"),
+  "careers.list_loading": tr("Loading job openings...", "Đang tải tin tuyển dụng...", "正在加载职位信息…"),
+  "careers.list_empty": tr("No open positions right now. Please check back later.", "Hiện chưa có vị trí tuyển dụng nào. Vui lòng quay lại sau.", "目前暂无职位空缺，请稍后再来。"),
+  "careers.job_not_found": tr("This position no longer exists or has been closed.", "Vị trí này không còn tồn tại hoặc đã đóng.", "该职位已不存在或已关闭。"),
+  "careers.all_positions": tr("All positions", "Tất cả vị trí", "全部职位"),
+  "careers.seo_title_suffix": tr("Careers at THG Fulfill", "Tuyển dụng THG Fulfill", "THG Fulfill 招聘"),
 };
