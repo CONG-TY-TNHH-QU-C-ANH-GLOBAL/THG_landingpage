@@ -11,7 +11,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import Navbar from "@/components/Navbar";
-import { CommunityWithdrawButton } from "@/components/community/communityPageBits";
+import { CommunityStateNotice, CommunityWithdrawButton } from "@/components/community/communityPageBits";
 import { useCommunityWithdraw } from "@/components/community/communityWithdraw";
 import { JsonLdBreadcrumb, JsonLdQaPage } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
@@ -135,12 +135,8 @@ const CommunityQuestionPage = () => {
             <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t("community.back")}
           </Link>
 
-          {query.isLoading && (
-            <div className="text-center text-muted-foreground py-12">{t("community.loading")}</div>
-          )}
-          {query.isError && (
-            <div className="text-center text-muted-foreground py-12">{t("community.not_found")}</div>
-          )}
+          {query.isLoading && <CommunityStateNotice>{t("community.loading")}</CommunityStateNotice>}
+          {query.isError && <CommunityStateNotice>{t("community.not_found")}</CommunityStateNotice>}
 
           {q && (
             <article>

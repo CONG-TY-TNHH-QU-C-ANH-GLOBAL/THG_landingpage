@@ -63,8 +63,14 @@ language:
 - Icons come from lucide-react (the installed family) — no emoji glyphs as
   icons.
 - Sections use `SectionHeader` (`src/components/sections/`) and shared
-  service-page pieces (e.g. `ServiceProcessSteps`) where pages repeat a
+  service-page pieces (`ServiceProcessSteps`, `ServiceFeatureCard`,
+  `ServiceVideoCard` in `src/components/service-pages/`) where pages repeat a
   pattern; do not build a generic ServicePageBuilder.
+- Community pages share their presentational shells via
+  `src/components/community/communityPageBits.tsx`: `CommunityPageHeader`
+  (hero), `CommunityStateNotice` (loading/error), `CommunityEmptyState`
+  (icon-chip empty), plus the existing filters/badges/withdraw button. New
+  community surfaces reuse these instead of hand-rolling state divs.
 - Every page: hero with a visible CTA above the fold, `ScrollReveal` entry
   animation, `ContactSection` footer CTA, FAQ via `FAQAccordion`.
 - All copy through `useI18n()` keys — no hardcoded user-facing strings
