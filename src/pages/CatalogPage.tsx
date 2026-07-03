@@ -237,7 +237,7 @@ const CatalogPage = () => {
           { name: t("catalog_page.title"), url: "https://thgfulfill.com/catalog" },
         ]}
       />
-      <Navbar />
+      <Navbar variant="darkHero" />
 
       {/* Hero */}
       <section className="pt-28 pb-10 md:pt-36 md:pb-14 bg-gradient-to-b from-navy via-navy/95 to-navy/85 relative overflow-hidden">
