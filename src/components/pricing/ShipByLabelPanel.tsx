@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Info } from "lucide-react";
 import PriceTable from "./PriceTable";
 import { useI18n } from "@/lib/i18n";
 import { useLarkPricingContext } from "@/components/pricing/LarkPricingProvider";
@@ -25,7 +26,7 @@ const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: 
 
             {/* Transit time + Fee banners */}
             <div className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
-                <span>ℹ️</span>
+                <Info className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                 <div>
                     <strong>{t("sbl.transit_time")}</strong> {t("sbl.transit_desc")}
                 </div>

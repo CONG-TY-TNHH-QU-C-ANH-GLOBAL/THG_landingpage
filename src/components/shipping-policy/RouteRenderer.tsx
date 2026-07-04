@@ -5,6 +5,21 @@
 // instead of one long wall of text.
 
 import { useMemo } from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  ClipboardList,
+  DollarSign,
+  Globe,
+  MapPin,
+  Package,
+  Percent,
+  Ruler,
+  Scale,
+  ShieldCheck,
+  TriangleAlert,
+  Undo2,
+} from "lucide-react";
+
 import { useCmsShippingRoute } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { Sec, Warn, Note, Danger, SubTitle } from "./PolicyUI";
@@ -17,24 +32,26 @@ interface Props {
 // ── markdown → sections ─────────────────────────────────────────────────────
 interface Section {
   title: string;
-  icon: string;
+  icon: LucideIcon;
   lines: string[];
 }
 
-// Pick a topic icon from the heading text (best-effort, falls back to 📋).
-function iconForHeading(h: string): string {
+/** Small icon chip element for a Sec header (decorative). */
+const secIcon = (Icon: LucideIcon) => <Icon className="w-3.5 h-3.5" aria-hidden="true" />;
+
+// Pick a topic icon from the heading text (best-effort, falls back to a list icon).
+function iconForHeading(h: string): LucideIcon {
   const t = h.toLowerCase();
-  if (/vat|ioss|tax|thuế|税/.test(t)) return "%";
-  if (/weight|cân nặng|trọng lượng|重量|chargeable/.test(t)) return "⚖";
-  if (/size|dimension|kích thước|尺寸/.test(t)) return "📏";
-  if (/countr|quốc gia|国家|service|restrict|hạn chế/.test(t)) return "🌍";
-  if (/declared|value|giá trị|khai báo|申报/.test(t)) return "$";
-  if (/goods|hàng hóa|properties|货物|battery|pin|电池/.test(t)) return "📦";
-  if (/address|địa chỉ|地址|delivery|giao hàng/.test(t)) return "📍";
-  if (/return|trả hàng|re-delivery|giao lại|退/.test(t)) return "↩";
-  if (/compensation|bồi thường|claim|khiếu nại|赔偿/.test(t)) return "🛡";
-  if (/alert|pre-alert|order|đặt hàng|下单/.test(t)) return "📋";
-  return "📋";
+  if (/vat|ioss|tax|thuế|税/.test(t)) return Percent;
+  if (/weight|cân nặng|trọng lượng|重量|chargeable/.test(t)) return Scale;
+  if (/size|dimension|kích thước|尺寸/.test(t)) return Ruler;
+  if (/countr|quốc gia|国家|service|restrict|hạn chế/.test(t)) return Globe;
+  if (/declared|value|giá trị|khai báo|申报/.test(t)) return DollarSign;
+  if (/goods|hàng hóa|properties|货物|battery|pin|电池/.test(t)) return Package;
+  if (/address|địa chỉ|地址|delivery|giao hàng/.test(t)) return MapPin;
+  if (/return|trả hàng|re-delivery|giao lại|退/.test(t)) return Undo2;
+  if (/compensation|bồi thường|claim|khiếu nại|赔偿/.test(t)) return ShieldCheck;
+  return ClipboardList;
 }
 
 function parseSections(md: string): { intro: string[]; sections: Section[] } {
@@ -142,14 +159,20 @@ export function RouteRenderer({ slug }: Props) {
         // Key on the section title, not the array index: Sec holds its own
         // open/closed state, so an index key would leak that state onto the
         // wrong section when CMS body_md is edited to reorder/insert sections.
-        <Sec key={sec.title || `sec-${i}`} icon={sec.icon} title={sec.title} defaultOpen={i === 0}>
+        <Sec key={sec.title || `sec-${i}`} icon={secIcon(sec.icon)} title={sec.title} defaultOpen={i === 0}>
           {renderLines(sec.lines, `sec-${i}`)}
         </Sec>
       ))}
 
-      {/* Structured tables from CMS (shipping_route_tables), if any. */}
+      {/* Structured tables from CMS (shipping_route_tables), if any. Keyed on
+          caption + column signature (not index) so a Sec's open state stays
+          with its table when the CMS reorders or inserts tables. */}
       {route.tables.map((table, tIdx) => (
-        <Sec key={`t-${tIdx}`} icon="⚖" title={table.caption ?? `${t("spolicy.table_label")} ${tIdx + 1}`}>
+        <Sec
+          key={`${table.caption ?? ""}|${table.columns.map((c) => c.key).join(",")}`}
+          icon={secIcon(Scale)}
+          title={table.caption ?? `${t("spolicy.table_label")} ${tIdx + 1}`}
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
@@ -179,7 +202,7 @@ export function RouteRenderer({ slug }: Props) {
 
       {/* Operator notes (shipping_routes.notes_json), if any. */}
       {route.notes.length > 0 && (
-        <Sec icon="⚠" title={t("spolicy.notes")}>
+        <Sec icon={secIcon(TriangleAlert)} title={t("spolicy.notes")}>
           <ul className="space-y-1.5 text-sm pl-4 list-disc">
             {route.notes.map((note, i) => (
               <li key={i} className="leading-relaxed">{note}</li>

@@ -106,4 +106,7 @@ export const pricingTranslations: TranslationDict = {
   "pt.swipe_hint": tr("👉 Swipe to see more", "👉 Vuốt ngang để xem thêm", "👉 滑动查看更多"),
   "pt.export_pdf": tr("Export to PDF", "Xuất PDF", "导出PDF"),
   "domestic.free_storage_promo": tr("✨ Free 90-day storage for first-time warehouse customers / 1 CBM", "✨ Miễn phí lưu kho 90 ngày cho khách hàng sử dụng kho lần đầu tiên / 1 CBM", "✨ 首次使用仓库的客户享90天免费仓储 / 1 CBM"),
+  "pricing.step1_origin": tr("Step 1 — Choose Origin Country", "Bước 1 — Chọn Quốc Gia Gửi Hàng", "第 1 步 — 选择发货国"),
+  "pricing.step2_service": tr("Step 2 — Choose Service Type", "Bước 2 — Chọn Loại Dịch Vụ", "第 2 步 — 选择服务类型"),
+  "pricing.step4_cargo": tr("Step 4 — Choose Cargo Type", "Bước 4 — Chọn Loại Hàng", "第 4 步 — 选择货物类型"),
 };

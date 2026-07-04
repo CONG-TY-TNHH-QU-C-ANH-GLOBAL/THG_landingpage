@@ -4,14 +4,15 @@ import { SafeHtml } from "@/lib/sanitizeHtml";
 
 /* ═══ Collapsible Section ═══ */
 export const Sec = ({ icon, title, children, defaultOpen = false }: {
-    icon: string; title: string; children: React.ReactNode; defaultOpen?: boolean;
+    /** Emoji string or a small lucide icon element (RouteRenderer passes lucide). */
+    icon: React.ReactNode; title: string; children: React.ReactNode; defaultOpen?: boolean;
 }) => {
     const [open, setOpen] = useState(defaultOpen);
     return (
         <div className="bg-white border border-[var(--pricing-border)] rounded-[10px] mb-2 overflow-hidden">
             <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#fdf9f2] transition-colors cursor-pointer">
                 <span className="flex items-center gap-2 text-[13px] font-semibold text-navy">
-                    <span className="w-[22px] h-[22px] rounded-md flex items-center justify-center text-[12px] shrink-0">{icon}</span>
+                    <span className="w-[22px] h-[22px] rounded-md bg-primary/10 text-primary flex items-center justify-center text-[12px] shrink-0">{icon}</span>
                     {title}
                 </span>
                 <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />

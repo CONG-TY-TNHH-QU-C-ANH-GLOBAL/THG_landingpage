@@ -1,6 +1,7 @@
-import { useState, useMemo, useRef, useEffect, useCallback, useId } from "react";
+import { useState, useMemo, useRef, useCallback, useId } from "react";
 import { ChevronDown, ChevronUp, ClipboardList, FileSpreadsheet, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import type { PricingRow } from "@/components/pricing/types";
 
 // xlsx + jspdf + html2canvas weigh ~600KB combined; lazy-load only on export.
@@ -26,32 +27,9 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
     // Math.random which produced different IDs on server vs client and tripped
     // React hydration warnings once we started prerendering.
     const tableId = `table-price-${useId()}`;
-    const scrollRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<HTMLTableElement>(null);
     const [pdfBusy, setPdfBusy] = useState(false);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(false);
-
-    const checkScroll = useCallback(() => {
-        const el = scrollRef.current;
-        if (!el) return;
-        setCanScrollLeft(el.scrollLeft > 2);
-        setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
-    }, []);
-
-    useEffect(() => {
-        const el = scrollRef.current;
-        if (!el) return;
-        checkScroll();
-        el.addEventListener("scroll", checkScroll, { passive: true });
-        const ro = new ResizeObserver(checkScroll);
-        ro.observe(el);
-        return () => { el.removeEventListener("scroll", checkScroll); ro.disconnect(); };
-    }, [checkScroll, data, columns]);
-
-    const scrollBy = (dir: number) => {
-        scrollRef.current?.scrollBy({ left: dir * 120, behavior: "smooth" });
-    };
+    const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useScrollAffordance(120, [data, columns]);
 
     // CMS may serialize numeric cells as strings (e.g. "147758"). Coerce defensively.
     const toNumeric = (v: unknown): number | null => {

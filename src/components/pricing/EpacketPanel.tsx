@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { BatteryCharging, Info } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Link } from "react-router-dom";
 import { EpacketRoute, CargoType, ROUTES, CARGO_LABELS, CARGO_ICONS, OriginCountry, type PricingRow } from "@/components/pricing/types";
@@ -156,7 +157,7 @@ const EpacketPanel = ({
                             <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
                                 <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
                                 <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground whitespace-nowrap">
-                                    {lang === 'zh' ? "第 4 步 — 选择货物类型" : lang === 'en' ? "Step 4 — Choose Cargo Type" : "Bước 4 — Chọn Loại Hàng"}
+                                    {t("pricing.step4_cargo")}
                                 </p>
                                 <div className="flex-1 h-[1px] bg-[var(--pricing-border)]"></div>
                             </div>
@@ -192,7 +193,7 @@ const EpacketPanel = ({
                     {/* Battery notice for VN routes */}
                     {route.startsWith("std-vn") && (
                         <div className="bg-[#FFF7ED] border border-orange-200 rounded-[10px] p-3 text-[12px] text-orange-800 mb-4 flex gap-2">
-                            <span>🔋</span>
+                            <BatteryCharging className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                             <div>
                                 <strong>{t("ep.battery_label")}</strong>{" "}
                                 {t("ep.battery_note")}
@@ -202,7 +203,7 @@ const EpacketPanel = ({
 
                     {/* ──── ANNOTATION ──── */}
                     <div key={`anno-${route}`} className="bg-[#FFFBEE] border-[1.5px] border-dashed border-[#D4A843] rounded-[10px] p-3 text-[12px] text-[#92670A] mb-4 flex gap-2">
-                        <span>ℹ️</span>
+                        <Info className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
                         <div>
                             <strong>{t("ep.showing")}</strong> {(route === "pri-vn-us" || route === "pri-cn-us")
                                 ? <>Priority · {getRouteName(routeConfig)} — {t("ep.pri_desc")}</>
