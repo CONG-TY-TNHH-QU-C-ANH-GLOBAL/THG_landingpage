@@ -164,9 +164,15 @@ export function RouteRenderer({ slug }: Props) {
         </Sec>
       ))}
 
-      {/* Structured tables from CMS (shipping_route_tables), if any. */}
+      {/* Structured tables from CMS (shipping_route_tables), if any. Keyed on
+          caption + column signature (not index) so a Sec's open state stays
+          with its table when the CMS reorders or inserts tables. */}
       {route.tables.map((table, tIdx) => (
-        <Sec key={`t-${tIdx}`} icon={secIcon(Scale)} title={table.caption ?? `${t("spolicy.table_label")} ${tIdx + 1}`}>
+        <Sec
+          key={`${table.caption ?? ""}|${table.columns.map((c) => c.key).join(",")}`}
+          icon={secIcon(Scale)}
+          title={table.caption ?? `${t("spolicy.table_label")} ${tIdx + 1}`}
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
