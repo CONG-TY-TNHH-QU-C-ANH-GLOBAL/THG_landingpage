@@ -156,7 +156,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
     if (location.pathname === `/${language}`) {
       document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = `/${language}/#faq`;
+      globalThis.location.href = `/${language}/#faq`;
     }
   };
 
@@ -325,7 +325,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
               if (location.pathname === `/${language}`) {
                 setTimeout(() => document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" }), DELAYS.NAVBAR_MOBILE_SCROLL_DELAY_MS);
               } else {
-                window.location.href = `/${language}/#faq`;
+                globalThis.location.href = `/${language}/#faq`;
               }
             }}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors text-left"
