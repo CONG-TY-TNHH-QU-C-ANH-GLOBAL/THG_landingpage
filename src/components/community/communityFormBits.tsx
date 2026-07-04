@@ -73,7 +73,7 @@ export function CommunityNameEmailFields({
 }>) {
   const { t } = useI18n();
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <TextField
         id={`${idPrefix}-name`}
         label={`${t("community.form_name")} *`}
@@ -177,7 +177,10 @@ export function CommunitySubmitDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      {/* Viewport-safe sizing: the review form is taller than small screens, so
+          the dialog caps its height and scrolls internally instead of clipping
+          the header/submit button, and keeps side margins on mobile. */}
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-lg max-h-[calc(100svh-2rem)] overflow-y-auto rounded-lg">
         <DialogHeader>
           <DialogTitle>{c("form_title")}</DialogTitle>
           <DialogDescription>{c("form_desc")}</DialogDescription>
@@ -191,7 +194,7 @@ export function CommunitySubmitDialog({
             onClose={onSuccessClose}
           />
         ) : (
-          <form onSubmit={onSubmit} className="space-y-3">
+          <form onSubmit={onSubmit} className="space-y-4 pb-1">
             {children}
           </form>
         )}

@@ -78,7 +78,7 @@ export function SubmitReviewDialog({ trigger }: Readonly<Props>) {
         onName={(v) => set("name", v)}
         onEmail={(v) => set("email", v)}
       />
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <CommunityCategorySelect
           id="review-category"
           value={form.category}
