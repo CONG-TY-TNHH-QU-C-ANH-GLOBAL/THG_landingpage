@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type { LucideIcon } from "lucide-react";
-import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, MapPin, Tag } from "lucide-react";
+import { Menu, X, ChevronDown, Package, Truck, Warehouse, ShoppingCart, Globe, MapPin, Tag, MessagesSquare, BadgeCheck, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";
@@ -27,6 +27,11 @@ const pricingItems: NavMenuItem[] = [
   { icon: Globe, titleKey: "nav.intl_pricing", descKey: "nav.intl_pricing_desc", href: "/international-pricing" },
   { icon: MapPin, titleKey: "nav.domestic_pricing", descKey: "nav.domestic_pricing_desc", href: "/domestic-pricing" },
   { icon: Tag, titleKey: "nav.catalog", descKey: "nav.catalog_desc", href: "/catalog" },
+];
+
+const communityItems: NavMenuItem[] = [
+  { icon: MessagesSquare, titleKey: "nav.community_qa", descKey: "nav.community_qa_desc", href: "/community" },
+  { icon: BadgeCheck, titleKey: "nav.verified_reviews", descKey: "nav.verified_reviews_desc", href: "/community/reviews" },
 ];
 
 /** Rich dropdown row (icon box + title + description) used by both desktop dropdown panels. */
@@ -117,14 +122,11 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
   /** Prefix any absolute path with the current language. */
   const lp = (path: string) => `/${language}${path}`;
   const [isOpen, setIsOpen] = useState(false);
-  const [showServices, setShowServices] = useState(false);
-  const [showPricing, setShowPricing] = useState(false);
+  // One open dropdown at a time (hover-driven), shared close timeout.
+  const [openMenu, setOpenMenu] = useState<"services" | "pricing" | "community" | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const pricingDropdownRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const pricingTimeoutRef = useRef<NodeJS.Timeout>();
+  const menuTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > SCROLL.NAVBAR_OPAQUE_THRESHOLD_PX);
@@ -134,30 +136,33 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
 
 
   useEffect(() => {
-    setShowServices(false);
-    setShowPricing(false);
+    setOpenMenu(null);
     setIsOpen(false);
   }, [location.pathname]);
 
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setShowServices(true);
+  const menuEnter = (menu: "services" | "pricing" | "community") => {
+    if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current);
+    setOpenMenu(menu);
   };
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setShowServices(false), DELAYS.NAVBAR_DROPDOWN_CLOSE_MS);
+  const menuLeave = () => {
+    menuTimeoutRef.current = setTimeout(() => setOpenMenu(null), DELAYS.NAVBAR_DROPDOWN_CLOSE_MS);
   };
-  const handlePricingEnter = () => {
-    if (pricingTimeoutRef.current) clearTimeout(pricingTimeoutRef.current);
-    setShowPricing(true);
-  };
-  const handlePricingLeave = () => {
-    pricingTimeoutRef.current = setTimeout(() => setShowPricing(false), DELAYS.NAVBAR_DROPDOWN_CLOSE_MS);
+
+  // The static FAQ lives on the homepage as an anchor section; smooth-scroll
+  // when already there, otherwise navigate to the homepage hash.
+  const goToFaq = () => {
+    setOpenMenu(null);
+    setIsOpen(false);
+    if (location.pathname === `/${language}`) {
+      document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      globalThis.location.href = `/${language}/#faq`;
+    }
   };
 
   const navItems = [
     { label: t("nav.policy"), href: "/policy" },
     { label: t("nav.news"), href: "/blog" },
-    { label: t("nav.faq"), href: "/#faq" },
     { label: t("nav.careers"), href: "/careers" },
   ];
 
@@ -182,82 +187,83 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-1">
           {/* Services Dropdown */}
-          <div
-            ref={dropdownRef}
-            className="relative"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
+          <div className="relative" onMouseEnter={() => menuEnter("services")} onMouseLeave={menuLeave}>
             <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
               <span translate="no">{t("nav.services")}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showServices ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "services" ? "rotate-180" : ""}`} />
             </button>
 
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${showServices ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${openMenu === "services" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
               }`}
               style={{ transitionTimingFunction: "var(--motion-spring)" }}
             >
               <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-5 w-[480px] grid grid-cols-2 gap-2">
                 {serviceItems.map((item) => (
-                  <DesktopDropdownItem key={item.titleKey} item={item} onClick={() => setShowServices(false)} />
+                  <DesktopDropdownItem key={item.titleKey} item={item} onClick={() => setOpenMenu(null)} />
                 ))}
               </div>
             </div>
           </div>
 
           {/* Pricing Dropdown */}
-          <div
-            ref={pricingDropdownRef}
-            className="relative"
-            onMouseEnter={handlePricingEnter}
-            onMouseLeave={handlePricingLeave}
-          >
+          <div className="relative" onMouseEnter={() => menuEnter("pricing")} onMouseLeave={menuLeave}>
             <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
               <span translate="no">{t("nav.pricing")}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${showPricing ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "pricing" ? "rotate-180" : ""}`} />
             </button>
 
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${showPricing ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${openMenu === "pricing" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
               }`}
               style={{ transitionTimingFunction: "var(--motion-spring)" }}
             >
               <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 w-[320px] space-y-1">
                 {pricingItems.map((item) => (
-                  <DesktopDropdownItem key={item.titleKey} item={item} onClick={() => setShowPricing(false)} />
+                  <DesktopDropdownItem key={item.titleKey} item={item} onClick={() => setOpenMenu(null)} />
                 ))}
               </div>
             </div>
           </div>
 
-          {navItems.map((item) =>
-            item.href.includes("#") ? (
-              <a
-                key={item.label}
-                href={item.href}
-                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg cursor-pointer ${tone.navItem}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const hash = item.href.split("#")[1];
-                  if (location.pathname === `/${language}`) {
-                    document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" });
-                  } else {
-                    window.location.href = `/${language}/#${hash}`;
-                  }
-                }}
-              >
-                <span translate="no">{item.label}</span>
-              </a>
-            ) : (
-              <Link
-                key={item.label}
-                to={lp(item.href)}
-                className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${location.pathname === lp(item.href) ? "text-primary" : tone.navItem
-                  }`}
-              >
-                <span translate="no">{item.label}</span>
-              </Link>
-            )
-          )}
+          {/* Community Dropdown — interactive hub (Q&A + verified reviews) plus
+              a link to the static homepage FAQ, kept clearly separate. */}
+          <div className="relative" onMouseEnter={() => menuEnter("community")} onMouseLeave={menuLeave}>
+            <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
+              <span translate="no">{t("nav.community")}</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "community" ? "rotate-180" : ""}`} />
+            </button>
+
+            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${openMenu === "community" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
+              }`}
+              style={{ transitionTimingFunction: "var(--motion-spring)" }}
+            >
+              <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 w-[340px] space-y-1">
+                {communityItems.map((item) => (
+                  <DesktopDropdownItem key={item.titleKey} item={item} onClick={() => setOpenMenu(null)} />
+                ))}
+                <button
+                  onClick={goToFaq}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 border-t border-border/40 mt-1 pt-3 text-left"
+                >
+                  <HelpCircle className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+                  <span>
+                    <span className="text-sm font-semibold text-foreground block">{t("nav.faq")}</span>
+                    <span className="text-xs text-muted-foreground">{t("nav.faq_desc")}</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              to={lp(item.href)}
+              className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${location.pathname === lp(item.href) ? "text-primary" : tone.navItem
+                }`}
+            >
+              <span translate="no">{item.label}</span>
+            </Link>
+          ))}
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
@@ -309,36 +315,35 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
             <MobileNavItem key={item.titleKey} item={item} onClick={() => setIsOpen(false)} />
           ))}
           <div className="border-t border-border/50 my-3" />
-          {navItems.map((item) =>
-            item.href.includes("#") ? (
-              <a
-                key={item.label}
-                href={item.href}
-                className="block px-3 py-2.5 text-sm font-medium text-foreground/80 hover:text-foreground rounded-xl hover:bg-secondary/50 cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpen(false);
-                  const hash = item.href.split("#")[1];
-                  if (location.pathname === `/${language}`) {
-                    setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" }), DELAYS.NAVBAR_MOBILE_SCROLL_DELAY_MS);
-                  } else {
-                    window.location.href = `/${language}/#${hash}`;
-                  }
-                }}
-              >
-                <span translate="no">{item.label}</span>
-              </a>
-            ) : (
-              <Link
-                key={item.label}
-                to={lp(item.href)}
-                className="block px-3 py-2.5 text-sm font-medium text-foreground/80 hover:text-foreground rounded-xl hover:bg-secondary/50"
-                onClick={() => setIsOpen(false)}
-              >
-                <span translate="no">{item.label}</span>
-              </Link>
-            )
-          )}
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{t("nav.community")}</span></p>
+          {communityItems.map((item) => (
+            <MobileNavItem key={item.titleKey} item={item} onClick={() => setIsOpen(false)} />
+          ))}
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              if (location.pathname === `/${language}`) {
+                setTimeout(() => document.getElementById("faq")?.scrollIntoView({ behavior: "smooth" }), DELAYS.NAVBAR_MOBILE_SCROLL_DELAY_MS);
+              } else {
+                globalThis.location.href = `/${language}/#faq`;
+              }
+            }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors text-left"
+          >
+            <HelpCircle className="w-4 h-4 text-primary" aria-hidden="true" />
+            <span className="text-sm font-medium" translate="no">{t("nav.faq")}</span>
+          </button>
+          <div className="border-t border-border/50 my-3" />
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              to={lp(item.href)}
+              className="block px-3 py-2.5 text-sm font-medium text-foreground/80 hover:text-foreground rounded-xl hover:bg-secondary/50"
+              onClick={() => setIsOpen(false)}
+            >
+              <span translate="no">{item.label}</span>
+            </Link>
+          ))}
           <div className="pt-3">
             <LeadFormDialog
               sourcePage="navbar-mobile"
