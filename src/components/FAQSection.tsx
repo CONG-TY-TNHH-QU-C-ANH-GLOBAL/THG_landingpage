@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import { ArrowRight, MessagesSquare } from "lucide-react";
+
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
@@ -9,7 +12,7 @@ import {
 } from "@/components/ui/accordion";
 
 const FAQSection = () => {
-  const { tVi } = useI18n();
+  const { tVi, language } = useI18n();
 
   const faqs = [
     { q: tVi("faq.q1"), a: tVi("faq.a1") },
@@ -26,7 +29,7 @@ const FAQSection = () => {
 
       <div className="container mx-auto px-4 max-w-3xl relative z-10">
         <ScrollReveal>
-          <SectionHeader size="lg" eyebrow={tVi("faq.subtitle")} title="Q&A" />
+          <SectionHeader size="lg" eyebrow={tVi("faq.subtitle")} title={tVi("nav.faq")} />
         </ScrollReveal>
 
         <ScrollReveal delay={200}>
@@ -47,6 +50,21 @@ const FAQSection = () => {
               </AccordionItem>
             ))}
           </Accordion>
+        </ScrollReveal>
+
+        {/* These FAQs are curated and read-only; new questions go to the
+            interactive Community hub. */}
+        <ScrollReveal delay={300}>
+          <div className="mt-8 text-center">
+            <Link
+              to={`/${language}/community`}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-gold-dark transition-colors"
+            >
+              <MessagesSquare className="w-4 h-4" aria-hidden="true" />
+              {tVi("faq.ask_community")}
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          </div>
         </ScrollReveal>
       </div>
     </section>

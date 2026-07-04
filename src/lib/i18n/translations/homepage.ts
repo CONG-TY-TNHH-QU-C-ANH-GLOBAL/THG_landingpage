@@ -145,4 +145,5 @@ export const homepageTranslations: TranslationDict = {
   "ecosystem.step3_desc": tr("Print on demand, source from VN/CN and run full fulfillment under one roof — built for sellers scaling globally.", "In theo yêu cầu, sourcing từ VN/CN và vận hành fulfillment trọn gói — dành cho seller mở rộng toàn cầu.", "按需印刷、从越南/中国采购并提供一站式履约——为全球扩张的卖家打造。"),
   "ecosystem.step3_when": tr("One team across the whole journey — from first order to global scale.", "Một đội ngũ xuyên suốt hành trình — từ đơn đầu tiên đến quy mô toàn cầu.", "一个团队贯穿整个旅程——从第一单到全球规模。"),
   "ecosystem.step3_cta": tr("Explore Fulfill", "Xem THG Fulfill", "了解 Fulfill"),
+  "faq.ask_community": tr("Have a new question? Ask the THG community", "Có câu hỏi mới? Hỏi cộng đồng THG", "有新问题？向THG社区提问"),
 };

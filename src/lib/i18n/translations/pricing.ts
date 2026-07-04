@@ -50,6 +50,7 @@ export const pricingTranslations: TranslationDict = {
   "domestic.cta_desc": tr("Contact the THG team for a personalized quote based on your volume and needs.", "Liên hệ với đội ngũ THG để nhận bảng giá cá nhân hóa dựa trên sản lượng và nhu cầu của bạn.", "联系THG团队，根据您的销量和需求获取个性化报价。"),
   "domestic.cta_btn": tr("Get Free Quote", "Nhận Báo Giá Miễn Phí", "获取免费报价"),
   "intl_pricing.video_heading": tr("🎬 Overview of Shipping Price List", "🎬 Giới thiệu tổng quan Bảng giá vận chuyển", "🎬 运费价格表总览"),
+  "intl_pricing.video_title": tr("THG shipping price list overview video", "Video giới thiệu tổng quan Bảng giá vận chuyển THG", "THG运费价格表总览视频"),
   "intl_pricing.vn_us_ups": tr("🇻🇳 VN → US (UPS)", "🇻🇳 VN → US (UPS)", "🇻🇳 越南 → 美国 (UPS)"),
   "intl_pricing.cn_us_air_sea": tr("🇨🇳 CN → US (Air & Sea)", "🇨🇳 CN → US (Air & Sea)", "🇨🇳 中国 → 美国 (空运&海运)"),
   "intl_pricing.vn_us_time": tr("⏱ 3–7 BSD", "⏱ 3–7 ngày", "⏱ 3-7个工作日"),
