@@ -715,7 +715,7 @@ const CatalogPage = () => {
                                 src={cur.url}
                                 alt={selectedProduct.name}
                                 onError={() => markBroken(cur.url)}
-                                className="max-w-full max-h-[240px] object-contain"
+                                className="max-w-full max-h-[68vh] object-contain"
                               />
                             ) : (
                               <Package className="w-20 h-20 text-muted-foreground/30" />
