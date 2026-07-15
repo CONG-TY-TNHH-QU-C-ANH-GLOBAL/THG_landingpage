@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "localeName": "English",
+    "htmlLang": "en"
+  },
+  "foundation": {
+    "title": "THG foundation — locale routing",
+    "description": "Locale routing runtime proof (FND-002). Non-production.",
+    "localeLabel": "Current locale: English"
+  }
+}

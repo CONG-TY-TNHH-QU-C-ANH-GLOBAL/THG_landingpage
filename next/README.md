@@ -57,7 +57,36 @@ a missing static asset 404. Developer docs live only at `next/README.md`, outsid
 `GET /api/health` → `200 {"status":"ok","service":"thg-public-web","runtime":"next"}`,
 `Cache-Control: no-store`. No timestamps, no infra details, no secrets.
 
-## Scope (FND-001)
+## Locale routing (FND-002)
 
-Foundation only. **Not** included: locale routes, `proxy.ts`, CMS/catalog fetching, homepage
-parity, community, Ask THG, tracking, production deployment, AI. Those arrive in later specs.
+Supported locales: **`vi` (default), `en`, `zh`**. `src/proxy.ts` (Next 16 proxy) does URL
+mechanics only; server `[lang]` routes load local dictionaries and set `<html lang>`.
+
+Run the Next candidate (does not affect the Vite dev server):
+
+```
+cd THG_landingpage/next && bun run dev
+```
+
+Expected local routes / behavior:
+
+| URL | Behavior |
+|---|---|
+| `http://localhost:3000/` | **308** → `/vi` (query preserved) |
+| `http://localhost:3000/vi` | 200, `<html lang="vi">` |
+| `http://localhost:3000/en` | 200, `<html lang="en">` |
+| `http://localhost:3000/zh` | 200, `<html lang="zh-CN">` |
+| `http://localhost:3000/fr` (unsupported 2-letter) | **308** → `/vi` (`/fr/x` → `/vi/x`) |
+| `http://localhost:3000/vi/anything` (unknown) | real **404** (localized) |
+| `http://localhost:3000/anything` (unknown, non-locale) | real **404** (root) |
+| `http://localhost:3000/api/health` | 200 (proxy bypass) |
+
+The proxy never fetches CMS/dictionaries/network and sets no cookies; it bypasses `/api/*`,
+`/_next/*`, `favicon.ico`, `/foundation-probe.txt` and any path with a file extension.
+The Vite dev server (`cd THG_landingpage && bun run dev`) is unchanged.
+
+## Scope
+
+FND-001 (foundation) + FND-002 (locale gateway: proxy + `[lang]` routes + local dictionaries).
+**Not** included: CMS/catalog fetching, translation overlay, homepage/product parity,
+community, Ask THG, tracking, production deployment, AI. Those arrive in later specs.

@@ -58,7 +58,7 @@ jobs:
         run: bun run build
       - name: Package self-contained standalone artifact
         run: bun run package:standalone
-      - name: Standalone artifact validation
+      - name: Standalone locale routing matrix + artifact probes
         run: |
           set -euo pipefail
           PORT=3000 HOSTNAME=127.0.0.1 node .next/standalone/server.js &
@@ -67,25 +67,12 @@ jobs:
           for _ in $(seq 1 30); do
             curl -sf http://127.0.0.1:3000/api/health >/dev/null 2>&1 && break || sleep 1
           done
-          code() { curl -s -o /dev/null -w '%{http_code}' "$1"; }
-          # 1. foundation HTML 200
-          test "$(code http://127.0.0.1:3000/)" = "200"
-          # 2. /api/health exact approved contract
-          BODY="$(curl -s http://127.0.0.1:3000/api/health)"
-          echo "health: ${BODY}"
-          test "${BODY}" = '{"status":"ok","service":"thg-public-web","runtime":"next"}'
-          # 3. dedicated public probe asset 200 + exact body
-          test "$(code http://127.0.0.1:3000/foundation-probe.txt)" = "200"
-          PROBE="$(curl -s http://127.0.0.1:3000/foundation-probe.txt)"
-          echo "probe body: ${PROBE}"
-          test "${PROBE}" = "thg-public-web foundation probe ok"
-          # 4. developer README is NOT publicly served
-          test "$(code http://127.0.0.1:3000/README.md)" = "404"
-          # 5. a generated Next static JS/CSS asset 200 (discovered from the packaged artifact)
+          # Full locale routing matrix (redirects + query preservation, locales + document
+          # lang, real 404s, api/probe/README/static bypass) against the packaged artifact.
+          BASE_URL=http://127.0.0.1:3000 bash scripts/validation/locale-routing-matrix.sh
+          # Public probe exact body + a real generated static asset 200.
+          test "$(curl -s http://127.0.0.1:3000/foundation-probe.txt)" = "thg-public-web foundation probe ok"
           ASSET="$(cd .next/standalone/.next/static && find . -type f \( -name '*.js' -o -name '*.css' \) | head -1 | sed 's#^\./#/_next/static/#')"
-          echo "static asset: ${ASSET}"
           test -n "${ASSET}"
-          test "$(code "http://127.0.0.1:3000${ASSET}")" = "200"
-          # 6. a missing static asset 404
-          test "$(code http://127.0.0.1:3000/_next/static/chunks/does-not-exist-xyz.js)" = "404"
-          echo "standalone artifact validation OK"
+          test "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000${ASSET}")" = "200"
+          echo "standalone locale + artifact validation OK"

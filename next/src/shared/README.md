@@ -8,7 +8,7 @@ Cross-cutting primitives owned centrally. **shared may not import `app`, `featur
 |---|---|---|
 | `config/` | typed env validation (server vs public split) | **implemented** (`env.server.ts`, `env.public.ts`) |
 | `errors/` | public-safe error surface + redaction | **implemented** (`index.ts`) |
-| `i18n/` | locale dictionaries, `getDictionary` (server), client provider | reserved — FND-002 |
+| `i18n/` | canonical locale model/config, `vi/en/zh` dictionaries + schema, server `getDictionary`, pure routing primitive | **implemented** — FND-002 |
 | `seo/` | metadata builders, JSON-LD | reserved — FND-003 |
 | `analytics/` | consent store, `trackEvent` fan-out, UTM | reserved — FND-007 |
 | `security/` | headers, CSP/HSTS runtime | reserved — FND-009 |

@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "localeName": "中文",
+    "htmlLang": "zh-CN"
+  },
+  "foundation": {
+    "title": "THG 基础 — 语言路由",
+    "description": "语言路由运行验证 (FND-002)。非生产环境。",
+    "localeLabel": "当前语言：中文"
+  }
+}
