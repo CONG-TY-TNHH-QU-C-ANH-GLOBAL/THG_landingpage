@@ -20,6 +20,11 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Safety guard (ADR-001 Option A): deployment runs ONLY for the main branch.
+    # A manual workflow_dispatch from any other ref (e.g. migration/next-main) is a no-op.
+    # Preserves push:[main] auto-deploy and the CMS repository_dispatch redeploy, whose
+    # ref is the default branch (refs/heads/main). No build logic/secrets/artifacts change.
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repository
