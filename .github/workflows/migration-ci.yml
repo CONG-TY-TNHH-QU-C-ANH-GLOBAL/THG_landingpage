@@ -1,0 +1,91 @@
+name: Migration CI (next-main)
+
+# Validation for the long-lived Next.js migration integration branch (ADR-001 Option A).
+# NON-DEPLOYING by design: it runs the root Vite regression and the nested next/ foundation
+# checks, and NEVER deploys. The Vite staging/production deploy (deploy.yml) triggers only on
+# push:[main]; migration/next-main must never trigger production deployment or change traffic.
+on:
+  pull_request:
+    branches: [migration/next-main]
+  push:
+    branches: [migration/next-main]
+
+concurrency:
+  group: migration-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  vite-regression:
+    name: Root Vite regression (no deploy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.13
+      - name: Install (frozen)
+        run: bun install --frozen-lockfile
+      - name: Typecheck
+        run: bunx tsc --noEmit -p tsconfig.app.json
+      - name: Unit tests
+        run: bun run test
+      - name: Build (core; deploy-only prebuild/postbuild + secrets excluded)
+        run: bunx vite build
+
+  next-foundation:
+    name: Nested Next foundation (next/)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: next
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.13
+      - name: Install (frozen, next/)
+        run: bun install --frozen-lockfile
+      - name: Lint
+        run: bun run lint
+      - name: Typecheck
+        run: bun run typecheck
+      - name: Architecture + smoke tests
+        run: bun run test
+      - name: Production build (standalone)
+        run: bun run build
+      - name: Package self-contained standalone artifact
+        run: bun run package:standalone
+      - name: Standalone artifact validation
+        run: |
+          set -euo pipefail
+          PORT=3000 HOSTNAME=127.0.0.1 node .next/standalone/server.js &
+          SRV=$!
+          trap 'kill "${SRV}" 2>/dev/null || true' EXIT
+          for _ in $(seq 1 30); do
+            curl -sf http://127.0.0.1:3000/api/health >/dev/null 2>&1 && break || sleep 1
+          done
+          code() { curl -s -o /dev/null -w '%{http_code}' "$1"; }
+          # 1. foundation HTML 200
+          test "$(code http://127.0.0.1:3000/)" = "200"
+          # 2. /api/health exact approved contract
+          BODY="$(curl -s http://127.0.0.1:3000/api/health)"
+          echo "health: ${BODY}"
+          test "${BODY}" = '{"status":"ok","service":"thg-public-web","runtime":"next"}'
+          # 3. dedicated public probe asset 200 + exact body
+          test "$(code http://127.0.0.1:3000/foundation-probe.txt)" = "200"
+          PROBE="$(curl -s http://127.0.0.1:3000/foundation-probe.txt)"
+          echo "probe body: ${PROBE}"
+          test "${PROBE}" = "thg-public-web foundation probe ok"
+          # 4. developer README is NOT publicly served
+          test "$(code http://127.0.0.1:3000/README.md)" = "404"
+          # 5. a generated Next static JS/CSS asset 200 (discovered from the packaged artifact)
+          ASSET="$(cd .next/standalone/.next/static && find . -type f \( -name '*.js' -o -name '*.css' \) | head -1 | sed 's#^\./#/_next/static/#')"
+          echo "static asset: ${ASSET}"
+          test -n "${ASSET}"
+          test "$(code "http://127.0.0.1:3000${ASSET}")" = "200"
+          # 6. a missing static asset 404
+          test "$(code http://127.0.0.1:3000/_next/static/chunks/does-not-exist-xyz.js)" = "404"
+          echo "standalone artifact validation OK"

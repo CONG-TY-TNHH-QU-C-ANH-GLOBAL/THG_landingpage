@@ -1,0 +1,43 @@
+# CANDIDATE nginx reverse proxy — NOT installed in FND-001. Owned by FND-010 / MIG-010.
+# Cutover (M10) = enabling a proxy config like this in place of the static Vite config.
+# Production security headers depend on the real baseline (OQ-P-004) — not asserted here.
+
+# Rate-limit zone (candidate location; tune in FND-009/FND-010).
+limit_req_zone $binary_remote_addr zone=thg_next:10m rate=20r/s;
+
+upstream thg_next_upstream {
+    server 127.0.0.1:3000;
+    keepalive 32;
+}
+
+server {
+    listen 80;
+    server_name _; # placeholder; real vhost is production config (untouched in M1)
+
+    # Request/body limits
+    client_max_body_size 2m;
+    client_body_timeout 15s;
+
+    # Immutable caching for content-hashed static assets
+    location /_next/static/ {
+        proxy_pass http://thg_next_upstream;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # Health check (uncached)
+    location = /api/health {
+        proxy_pass http://thg_next_upstream;
+        add_header Cache-Control "no-store";
+    }
+
+    location / {
+        limit_req zone=thg_next burst=40 nodelay;
+        proxy_pass http://thg_next_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+    }
+}

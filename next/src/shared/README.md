@@ -1,0 +1,19 @@
+# shared/
+
+Cross-cutting primitives owned centrally. **shared may not import `app`, `features` or
+`integrations`** (enforced by ESLint + `tests/architecture`). No generic dumping grounds
+(`utils`, `helpers`, `common`, `misc`, ambiguous `lib`, generic root components).
+
+| Module | Owner / purpose | Status in FND-001 |
+|---|---|---|
+| `config/` | typed env validation (server vs public split) | **implemented** (`env.server.ts`, `env.public.ts`) |
+| `errors/` | public-safe error surface + redaction | **implemented** (`index.ts`) |
+| `i18n/` | locale dictionaries, `getDictionary` (server), client provider | reserved — FND-002 |
+| `seo/` | metadata builders, JSON-LD | reserved — FND-003 |
+| `analytics/` | consent store, `trackEvent` fan-out, UTM | reserved — FND-007 |
+| `security/` | headers, CSP/HSTS runtime | reserved — FND-009 |
+| `ui/` | ported shadcn primitives (client leaf islands) | reserved — WEB-001 |
+| `testing/` | shared test helpers/fixtures | reserved — first real consumer |
+
+Reserved modules are documented here and are **not** pre-generated as empty directories
+(GOV-008: no speculative scaffolding). They are created by their owning spec on first use.
