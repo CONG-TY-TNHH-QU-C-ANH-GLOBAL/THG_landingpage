@@ -1,0 +1,14 @@
+# dependencies (the application lockfile bun.lock IS committed)
+/node_modules
+
+# next build output
+/.next
+/out
+
+# generated / build artifacts
+next-env.d.ts
+*.tsbuildinfo
+
+# test/perf output
+/coverage
+/tests/performance/*.json
