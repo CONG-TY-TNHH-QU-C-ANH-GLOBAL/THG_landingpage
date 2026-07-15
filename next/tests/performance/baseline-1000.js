@@ -23,7 +23,7 @@ export const options = {
   },
 };
 
-export default function () {
+export default function runBaselineScenario() {
   const health = http.get(`${BASE}/api/health`, { tags: { route: "health" } });
   check(health, {
     "health 200": (r) => r.status === 200,

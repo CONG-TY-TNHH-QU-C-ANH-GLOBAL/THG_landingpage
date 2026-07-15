@@ -14,7 +14,7 @@ export const options = {
   },
 };
 
-export default function () {
+export default function runFoundationSmokeScenario() {
   const health = http.get(`${BASE}/api/health`);
   check(health, {
     "health 200": (r) => r.status === 200,
