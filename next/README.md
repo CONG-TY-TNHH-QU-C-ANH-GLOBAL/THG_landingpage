@@ -47,9 +47,10 @@ The foundation ships a **self-contained** standalone artifact. `next build`
 So the single artifact serves HTML, `/api/health`, hashed `/_next/static/*` assets and
 `public/*` with no external CDN/nginx asset owner required. (A future CDN/nginx ownership
 model may front `/_next/static` for caching — that is FND-009/FND-010's decision; the
-foundation defaults to self-contained.) The CI job `next-foundation` validates all five:
-HTML 200, exact health contract, a static JS/CSS asset 200, a public asset 200, missing
-static asset 404.
+foundation defaults to self-contained.) The CI job `next-foundation` validates: HTML 200,
+exact health contract, the `/foundation-probe.txt` public asset 200 with an exact body
+(developer `/README.md` is **404** — never publicly served), a static JS/CSS asset 200, and
+a missing static asset 404. Developer docs live only at `next/README.md`, outside `public/`.
 
 ## Health contract
 
