@@ -27,11 +27,29 @@ bun install --frozen-lockfile
 bun run lint
 bun run typecheck
 bun run test            # vitest: architecture + smoke
-bun run build           # produces .next/standalone
+bun run build               # produces .next/standalone
+bun run package:standalone  # self-contained: copies .next/static + public/ into it
 node .next/standalone/server.js   # standalone runtime proof
 curl -s http://127.0.0.1:3000/api/health
 # performance (k6 binary, not npm): see tests/performance/README.md
 ```
+
+## Standalone artifact strategy
+
+The foundation ships a **self-contained** standalone artifact. `next build`
+(`output: "standalone"`) emits `.next/standalone/server.js` but, by Next's design, does
+**not** bundle static/public assets. `bun run package:standalone`
+(`scripts/package-standalone.mjs`) copies them in:
+
+- `.next/static` → `.next/standalone/.next/static` (served at `/_next/static/*`)
+- `public/` → `.next/standalone/public` (served at `/*`)
+
+So the single artifact serves HTML, `/api/health`, hashed `/_next/static/*` assets and
+`public/*` with no external CDN/nginx asset owner required. (A future CDN/nginx ownership
+model may front `/_next/static` for caching — that is FND-009/FND-010's decision; the
+foundation defaults to self-contained.) The CI job `next-foundation` validates all five:
+HTML 200, exact health contract, a static JS/CSS asset 200, a public asset 200, missing
+static asset 404.
 
 ## Health contract
 
