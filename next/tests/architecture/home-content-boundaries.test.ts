@@ -76,6 +76,19 @@ describe("home content boundaries (FND-005)", () => {
     expect(violations).toEqual([]);
   });
 
+  it("homepage UI consumes landing models only — never schemas or the server loaders (WEB-001)", () => {
+    const violations: string[] = [];
+    for (const file of sourceFiles(join(HOME, "ui"))) {
+      for (const raw of allSpecifiers(readFileSync(file, "utf8"))) {
+        const spec = canonicalizeImport(file, SRC, raw);
+        if (/\/schemas(\/|$)/.test(spec) || /\/server(\/|$)/.test(spec) || /^@\/shared\/cms(\/|$)/.test(spec)) {
+          violations.push(`${norm(file)} imports "${raw}"`);
+        }
+      }
+    }
+    expect(violations).toEqual([]);
+  });
+
   it("mappers import only their feature's schemas/models (pure DTO→model bridges)", () => {
     const violations: string[] = [];
     for (const file of sourceFiles(join(HOME, "mappers"))) {

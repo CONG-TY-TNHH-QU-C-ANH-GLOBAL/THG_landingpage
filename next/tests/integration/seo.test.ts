@@ -3,7 +3,6 @@ import { describe, it, expect } from "vitest";
 import { generateMetadata } from "../../src/app/[lang]/page";
 import robots from "../../src/app/robots";
 import sitemap from "../../src/app/sitemap";
-import { getDictionary } from "../../src/shared/i18n/server/get-dictionary";
 import { SUPPORTED_LOCALES } from "../../src/shared/i18n";
 
 // FND-003 integration matrix (TEST_PLAN T-03): the [lang] route emits the full metadata set
@@ -16,12 +15,16 @@ const ORIGIN = "https://thgfulfill.com";
 const metadataFor = (lang: string) => generateMetadata({ params: Promise.resolve({ lang }) });
 
 describe("[lang] route metadata (vi/en/zh)", () => {
-  it("emits locale-aware title/description from the dictionary", async () => {
+  it("emits the per-locale home title/description (parity: Index.tsx:33-46)", async () => {
+    expect((await metadataFor("vi")).title).toBe(
+      "THG Fulfill — Giải pháp fulfillment toàn cầu cho seller TMĐT",
+    );
+    expect((await metadataFor("en")).title).toBe(
+      "THG Fulfill — Global fulfillment for eCommerce sellers",
+    );
+    expect((await metadataFor("zh")).title).toBe("THG Fulfill — 面向电商卖家的全球履约方案");
     for (const lang of SUPPORTED_LOCALES) {
-      const m = await metadataFor(lang);
-      const dict = getDictionary(lang);
-      expect(m.title).toBe(dict.foundation.title);
-      expect(m.description).toBe(dict.foundation.description);
+      expect((await metadataFor(lang)).description).toBeTruthy();
     }
   });
 
@@ -38,9 +41,13 @@ describe("[lang] route metadata (vi/en/zh)", () => {
     }
   });
 
-  it("keeps the foundation placeholder noindex (flips only with the real WEB-001 homepage)", async () => {
+  it("the real homepage is indexable (WEB-001) with the hero og:image", async () => {
     for (const lang of SUPPORTED_LOCALES) {
-      expect((await metadataFor(lang)).robots).toEqual({ index: false, follow: false });
+      const m = await metadataFor(lang);
+      expect(m.robots).toEqual({ index: true, follow: true });
+      expect(m.openGraph?.images).toEqual([
+        { url: `${ORIGIN}/assets/THG.jpg`, width: 1200, height: 630 },
+      ]);
     }
   });
 
@@ -67,8 +74,26 @@ describe("robots.ts (public/robots.txt parity)", () => {
   });
 });
 
-describe("sitemap.ts (foundation state)", () => {
-  it("lists no URLs while every existing route is noindex (SPEC §17: no leaked noindex URLs)", () => {
-    expect(sitemap()).toEqual([]);
+describe("sitemap.ts (WEB-001: home is indexable)", () => {
+  it("lists exactly the home URL per locale with the full hreflang alternates", () => {
+    const entries = sitemap();
+    expect(entries.map((e) => e.url).sort()).toEqual([
+      `${ORIGIN}/en`,
+      `${ORIGIN}/vi`,
+      `${ORIGIN}/zh`,
+    ]);
+    for (const e of entries) {
+      expect(e.changeFrequency).toBe("weekly");
+      expect(e.priority).toBe(1.0);
+      expect(e.alternates?.languages).toEqual({
+        vi: `${ORIGIN}/vi`,
+        en: `${ORIGIN}/en`,
+        "zh-CN": `${ORIGIN}/zh`,
+        "x-default": `${ORIGIN}/vi`,
+      });
+    }
+    // No duplicates, no noindex/placeholder routes, no localhost.
+    expect(new Set(entries.map((e) => e.url)).size).toBe(entries.length);
+    expect(entries.every((e) => e.url.startsWith(ORIGIN))).toBe(true);
   });
 });

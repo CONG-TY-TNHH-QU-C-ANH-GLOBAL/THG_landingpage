@@ -40,9 +40,9 @@ const homepageFixture = {
 const servicesFixture = {
   locale: "vi",
   services: [
-    { id: "b", position: 2, icon: null, status: "live", name: "Warehouse", tagline: null, hero_title: "stripped" },
-    { id: "c", position: 3, icon: "truck", status: "draft", name: "Hidden", tagline: "x" },
-    { id: "a", position: 1, icon: "box", status: "live", name: "Fulfill", tagline: "Fast" },
+    { id: "b", position: 2, icon: null, status: "live", name: "Warehouse", tagline: null, hero_eyebrow: null, cta_text: null, cta_url: null, body_md: null, bullets: [], hero_title: "stripped" },
+    { id: "c", position: 3, icon: "truck", status: "draft", name: "Hidden", tagline: "x", hero_eyebrow: null, cta_text: null, cta_url: null, body_md: null, bullets: [] },
+    { id: "a", position: 1, icon: "box", status: "live", name: "Fulfill", tagline: "Fast", hero_eyebrow: "POD", cta_text: "Explore", cta_url: "/thg-fulfill", body_md: "Body", bullets: ["b1", "b2"] },
   ],
 };
 
@@ -66,8 +66,8 @@ describe("liveServicesFromDto", () => {
   it("filters to live, sorts by position, defaults nullable fields to empty strings", () => {
     const dto = servicesResponseSchema.parse(servicesFixture);
     expect(liveServicesFromDto(dto)).toEqual([
-      { id: "a", name: "Fulfill", tagline: "Fast", icon: "box" },
-      { id: "b", name: "Warehouse", tagline: "", icon: "" },
+      { id: "a", name: "Fulfill", tagline: "Fast", icon: "box", heroEyebrow: "POD", body: "Body", bullets: ["b1", "b2"], ctaText: "Explore", ctaUrl: "/thg-fulfill" },
+      { id: "b", name: "Warehouse", tagline: "", icon: "", heroEyebrow: "", body: "", bullets: [], ctaText: "", ctaUrl: null },
     ]);
   });
 
@@ -94,10 +94,10 @@ describe("list mappers keep position order and rename wire fields", () => {
     const rows = contactLocationsFromDto({
       locale: "vi",
       locations: [
-        { id: 1, position: 1, kind: "phone", label: "Hotline", address: null, phone: "0335", url: null },
+        { id: 1, position: 1, kind: "phone", label: "Hotline", address: null, phone: "0335", url: null, lang_class: "font-cn" },
       ],
     });
-    expect(rows[0]).toEqual({ id: 1, kind: "phone", label: "Hotline", address: null, phone: "0335", url: null });
+    expect(rows[0]).toEqual({ id: 1, kind: "phone", label: "Hotline", address: null, phone: "0335", url: null, langClass: "font-cn" });
   });
 
   it("integrations map color_class and sort", () => {
@@ -210,8 +210,8 @@ describe("home loaders", () => {
   it("maps a valid response end to end", async () => {
     mockFetch(async () => jsonResponse(servicesFixture));
     await expect(loadHomeServices("vi")).resolves.toEqual([
-      { id: "a", name: "Fulfill", tagline: "Fast", icon: "box" },
-      { id: "b", name: "Warehouse", tagline: "", icon: "" },
+      { id: "a", name: "Fulfill", tagline: "Fast", icon: "box", heroEyebrow: "POD", body: "Body", bullets: ["b1", "b2"], ctaText: "Explore", ctaUrl: "/thg-fulfill" },
+      { id: "b", name: "Warehouse", tagline: "", icon: "", heroEyebrow: "", body: "", bullets: [], ctaText: "", ctaUrl: null },
     ]);
   });
 

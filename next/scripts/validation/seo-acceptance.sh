@@ -31,15 +31,15 @@ ok() {
 
 has() { # has <url> <fixed-string> <label>
   local url="$1" needle="$2" label="$3"
-  if body "${url}" | grep -qF "${needle}"; then ok "${label}"; else fail "${label} — [${needle}] missing from ${url}"; fi
+  if body "${url}" | grep -cF "${needle}" >/dev/null; then ok "${label}"; else fail "${label} — [${needle}] missing from ${url}"; fi
 }
 hreflang() { # hreflang <url> <tag> <href> <label> — attribute-name case varies (React hrefLang)
   # Fixed-string matching only: URLs must never be interpolated into a regex.
   local url="$1" tag="$2" href="$3" label="$4"
   local html
   html="$(body "${url}")"
-  if printf '%s' "${html}" | grep -qF "hrefLang=\"${tag}\" href=\"${href}\"" \
-    || printf '%s' "${html}" | grep -qF "hreflang=\"${tag}\" href=\"${href}\""; then
+  if printf '%s' "${html}" | grep -cF "hrefLang=\"${tag}\" href=\"${href}\"" >/dev/null \
+    || printf '%s' "${html}" | grep -cF "hreflang=\"${tag}\" href=\"${href}\"" >/dev/null; then
     ok "${label}"
   else
     fail "${label} — hreflang ${tag} → ${href} missing from ${url}"
@@ -47,7 +47,7 @@ hreflang() { # hreflang <url> <tag> <href> <label> — attribute-name case varie
 }
 lacks() { # lacks <url> <fixed-string> <label>
   local url="$1" needle="$2" label="$3"
-  if body "${url}" | grep -qF "${needle}"; then fail "${label} — [${needle}] present in ${url}"; else ok "${label}"; fi
+  if body "${url}" | grep -cF "${needle}" >/dev/null; then fail "${label} — [${needle}] present in ${url}"; else ok "${label}"; fi
 }
 
 for lang in vi en zh; do
@@ -64,8 +64,14 @@ for lang in vi en zh; do
   # Exactly one canonical link.
   N=$(body "${URL}" | grep -oF 'rel="canonical"' | wc -l | tr -d ' ')
   [[ "${N}" == "1" ]] || fail "/${lang} duplicate canonical (${N})"
-  # Foundation placeholder stays noindex until WEB-001 ships the real homepage.
-  has "${URL}" "noindex" "/${lang} robots noindex (foundation state)"
+  # WEB-001: the real homepage is indexable and the placeholder copy is gone.
+  lacks "${URL}" "noindex" "/${lang} robots indexable (WEB-001)"
+  lacks "${URL}" "định tuyến ngôn ngữ" "/${lang} placeholder title absent"
+  lacks "${URL}" "Không phải môi trường production" "/${lang} placeholder body absent"
+  # Real homepage content markers: hero brand copy + shell landmarks.
+  has "${URL}" "id=\"faq\"" "/${lang} FAQ section present"
+  has "${URL}" "id=\"contact\"" "/${lang} footer contact section present"
+  has "${URL}" "application/ld+json" "/${lang} JSON-LD present"
   # No server-only config value may reach the HTML.
   lacks "${URL}" "CMS_API_URL" "/${lang} no server env leak"
 done
@@ -74,7 +80,7 @@ hasi() { # hasi <url> <fixed-string> <label> — robots.txt directives are case-
   local url="$1" raw_needle="$2" label="$3"
   local needle
   needle="$(printf '%s' "${raw_needle}" | tr '[:upper:]' '[:lower:]')"
-  if body "${url}" | tr '[:upper:]' '[:lower:]' | grep -qF "${needle}"; then ok "${label}"; else fail "${label} — [${raw_needle}] missing from ${url}"; fi
+  if body "${url}" | tr '[:upper:]' '[:lower:]' | grep -cF "${needle}" >/dev/null; then ok "${label}"; else fail "${label} — [${raw_needle}] missing from ${url}"; fi
 }
 
 [[ "$(st "${BASE}/robots.txt")" == "200" ]] || fail "/robots.txt status"
@@ -83,8 +89,10 @@ hasi "${BASE}/robots.txt" "User-agent: *" "robots.txt default rule"
 hasi "${BASE}/robots.txt" "User-agent: GPTBot" "robots.txt AI-bot rule"
 
 [[ "$(st "${BASE}/sitemap.xml")" == "200" ]] || fail "/sitemap.xml status"
-# Foundation state: no localhost URLs and no noindex route leaked into the sitemap.
+# WEB-001: exactly the home rows, on the canonical origin only.
 lacks "${BASE}/sitemap.xml" "localhost" "sitemap has no localhost URLs"
-lacks "${BASE}/sitemap.xml" "<loc>" "sitemap lists no URLs while all routes are noindex"
+has "${BASE}/sitemap.xml" "<loc>${SITE}/vi</loc>" "sitemap lists /vi"
+has "${BASE}/sitemap.xml" "<loc>${SITE}/en</loc>" "sitemap lists /en"
+has "${BASE}/sitemap.xml" "<loc>${SITE}/zh</loc>" "sitemap lists /zh"
 
 echo "SEO acceptance: all checks passed"
