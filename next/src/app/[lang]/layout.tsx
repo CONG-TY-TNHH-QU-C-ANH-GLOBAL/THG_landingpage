@@ -1,10 +1,18 @@
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import "../globals.css";
 import { SUPPORTED_LOCALES, HTML_LANG, isSupportedLocale } from "@/shared/i18n";
 
-// Owns `<html lang>` so the document language reflects the route locale. Server Component;
-// no "use client". `lang` is validated BEFORE any dictionary load; an unsupported locale is a
-// real 404 with no silent fallback.
+// The SUPPORTED dynamic-segment root layout: this is the topmost `layout.tsx` (there is no
+// `app/layout.tsx`), so it owns `<html>`/`<body>` and the document language reflects the
+// route locale. Server Component; no "use client". Non-production foundation → noindex.
+export const metadata: Metadata = {
+  title: "THG Public Web — foundation",
+  description: "Next.js locale routing foundation (FND-002, ADR-001 Option A). Non-production.",
+  robots: { index: false, follow: false },
+};
+
 export const dynamicParams = false; // unsupported locales are not rendered — they 404
 
 export function generateStaticParams() {

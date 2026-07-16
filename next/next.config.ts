@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: import.meta.dirname,
   turbopack: { root: import.meta.dirname },
+  // The root layout lives under the [lang] dynamic segment (per-locale <html lang>), so a
+  // standalone document renders global (non-localized) 404s via app/global-not-found.tsx.
+  experimental: { globalNotFound: true },
 };
 
 export default nextConfig;
