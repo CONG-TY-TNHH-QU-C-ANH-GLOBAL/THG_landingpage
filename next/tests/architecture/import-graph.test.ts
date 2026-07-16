@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { moduleSpecifiers, canonicalizeImport } from "./import-graph";
+import { moduleSpecifiers, dynamicImportSpecifiers, canonicalizeImport } from "./import-graph";
 import { fileURLToPath } from "node:url";
 import { join, dirname } from "node:path";
 
@@ -69,6 +69,20 @@ describe("moduleSpecifiers (TypeScript AST) — re-exports", () => {
   it("mixes imports and re-exports in source order", () => {
     const code = 'import a from "a";\nexport { b } from "b";\nimport c from "c";';
     expect(moduleSpecifiers(code)).toEqual(["a", "b", "c"]);
+  });
+});
+
+describe("dynamicImportSpecifiers", () => {
+  it("collects dynamic import(...) string literals anywhere in the module, in source order", () => {
+    const code =
+      'const m = import("a");\nasync function f() { return import("b"); }\nimport real from "static";';
+    expect(dynamicImportSpecifiers(code)).toEqual(["a", "b"]);
+  });
+
+  it("collects no-substitution template literals, ignores non-literal arguments and comments", () => {
+    const code =
+      "const t = import(`tpl`);\nconst v = import(someVariable);\n// import(\"in-comment\")";
+    expect(dynamicImportSpecifiers(code)).toEqual(["tpl"]);
   });
 });
 
