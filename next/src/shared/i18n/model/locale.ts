@@ -4,7 +4,11 @@ import type { Locale } from "../config/locales";
 // arrays are duplicated here — only the route-param shape consumers use.
 export type { Locale };
 
-/** Route params for the `[lang]` segment (validated before use). */
+/**
+ * RAW route params for the `[lang]` segment. `lang` is the unvalidated URL segment typed as
+ * `string` — it becomes a `Locale` only after `isSupportedLocale` narrows it. Do not model
+ * incoming route data as `Locale`.
+ */
 export interface LocaleRouteParams {
-  readonly lang: Locale;
+  readonly lang: string;
 }

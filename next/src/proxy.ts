@@ -21,7 +21,9 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 // Bypass: API routes, Next internals/static/image, favicon, the health/probe endpoints and
-// any path with a file extension (public assets). Everything else runs the locale proxy.
+// any path whose FINAL segment looks like a real file (a dot in the last segment, e.g.
+// `/README.md`, `/x.js`). A dot in a non-final segment (e.g. `/fr/legal.v2/terms`) is a route
+// and is still locale-normalized. Everything else runs the locale proxy. Direct static literal.
 export const config = {
-  matcher: ["/((?!api|_next|favicon.ico|foundation-probe.txt|.*[.].*).*)"],
+  matcher: ["/((?!api|_next|favicon.ico|foundation-probe.txt|.*[.][^/]*$).*)"],
 };

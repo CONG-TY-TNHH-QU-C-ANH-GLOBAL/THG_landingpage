@@ -22,11 +22,15 @@ export interface PublicErrorShape {
   message: string;
 }
 
-// Redact any unknown throwable to a safe shape. Unknown errors collapse to `internal`
-// with a generic message so no stack, SQL, token or upstream body can leak.
+// Redact any unknown throwable — and any `internal` PublicError — to a safe shape. Only
+// non-internal PublicError messages (deliberate, safe categories) pass through; everything
+// else collapses to the generic `internal` message so no stack, SQL, token, upstream body or
+// arbitrary internal detail can leak.
+const REDACTED_INTERNAL: PublicErrorShape = { category: "internal", message: "An unexpected error occurred." };
+
 export function toPublicError(err: unknown): PublicErrorShape {
-  if (err instanceof PublicError) {
+  if (err instanceof PublicError && err.category !== "internal") {
     return { category: err.category, message: err.message };
   }
-  return { category: "internal", message: "An unexpected error occurred." };
+  return { ...REDACTED_INTERNAL };
 }

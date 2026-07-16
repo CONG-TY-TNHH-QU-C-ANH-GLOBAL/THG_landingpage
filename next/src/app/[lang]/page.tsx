@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SUPPORTED_LOCALES, isSupportedLocale } from "@/shared/i18n";
+import { SUPPORTED_LOCALES, HTML_LANG, isSupportedLocale } from "@/shared/i18n";
 import { getDictionary } from "@/shared/i18n/server/get-dictionary";
 
 // Foundation locale page (NOT the migrated homepage). Fully static per locale; proves locale
@@ -29,7 +29,7 @@ export default async function LocaleFoundationPage({ params }: PageProps) {
       <p data-testid="active-locale">{lang}</p>
       <nav aria-label="locale switch">
         {SUPPORTED_LOCALES.map((locale) => (
-          <Link key={locale} href={`/${locale}`} hrefLang={locale} prefetch={false}>
+          <Link key={locale} href={`/${locale}`} hrefLang={HTML_LANG[locale]} prefetch={false}>
             {locale}
           </Link>
         ))}

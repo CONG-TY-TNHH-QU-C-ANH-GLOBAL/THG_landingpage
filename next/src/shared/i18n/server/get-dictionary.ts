@@ -9,12 +9,20 @@ import zh from "../dictionaries/zh.json";
 
 // Server-only. Local dictionaries only — no CMS, no network. Each file is validated ONCE at
 // module load (a malformed/incomplete locale file fails the build/tests, not a request), then
-// frozen. `getDictionary` is a pure map lookup — no per-render re-parse, no duplicate load.
+// deeply frozen. `getDictionary` is a pure map lookup — no per-render re-parse, no duplicate load.
 const RAW: Readonly<Record<Locale, unknown>> = { vi, en, zh };
+
+// Dictionary-specific deep freeze (not a broad generic helper): freezes the nested objects so
+// the shared cache cannot be mutated through `.meta` / `.foundation`.
+function freezeDictionary(dict: ReadonlyDictionary): ReadonlyDictionary {
+  Object.freeze(dict.meta);
+  Object.freeze(dict.foundation);
+  return Object.freeze(dict);
+}
 
 const DICTIONARIES: Readonly<Record<Locale, ReadonlyDictionary>> = Object.freeze(
   Object.fromEntries(
-    SUPPORTED_LOCALES.map((locale) => [locale, Object.freeze(dictionarySchema.parse(RAW[locale]))]),
+    SUPPORTED_LOCALES.map((locale) => [locale, freezeDictionary(dictionarySchema.parse(RAW[locale]))]),
   ) as Record<Locale, ReadonlyDictionary>,
 );
 

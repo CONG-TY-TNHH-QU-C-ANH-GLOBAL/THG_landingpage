@@ -1,7 +1,7 @@
 // Single source of truth for supported locales (FND-002). Everything — routing, dictionary
 // loading and static params — derives the canonical `Locale` type and checks from here.
 // Values are read-only; no mutable arrays are exposed.
-export const SUPPORTED_LOCALES = ["vi", "en", "zh"] as const;
+export const SUPPORTED_LOCALES = Object.freeze(["vi", "en", "zh"] as const);
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
