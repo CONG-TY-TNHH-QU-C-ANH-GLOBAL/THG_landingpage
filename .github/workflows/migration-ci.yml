@@ -82,6 +82,9 @@ jobs:
           # lang, dotted-route normalization, real 404s, api/probe/README/static bypass, hreflang)
           # against the packaged artifact.
           BASE_URL=http://127.0.0.1:3000 bash scripts/validation/locale-routing-matrix.sh
+          # SEO plane acceptance (FND-003): canonical/hreflang matrix, robots, sitemap,
+          # duplicate-canonical and env-leak checks against the packaged artifact.
+          BASE_URL=http://127.0.0.1:3000 bash scripts/validation/seo-acceptance.sh
           # Public probe exact body + a real generated static asset 200.
           test "$(curl -s --connect-timeout 3 --max-time 10 http://127.0.0.1:3000/foundation-probe.txt)" = "thg-public-web foundation probe ok"
           ASSET="$(cd .next/standalone/.next/static && find . -type f \( -name '*.js' -o -name '*.css' \) -print -quit | sed 's#^\./#/_next/static/#')"

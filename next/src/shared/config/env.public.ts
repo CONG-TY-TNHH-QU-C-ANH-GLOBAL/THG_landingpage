@@ -1,5 +1,6 @@
 // Client-safe environment. ONLY `NEXT_PUBLIC_*` values may appear here — never a secret.
-// FND-001 introduces no public env vars; `NEXT_PUBLIC_SITE_URL` arrives with FND-003.
+// `NEXT_PUBLIC_SITE_URL` (FND-003): canonical site origin override; unset → production
+// default in shared/seo/site.ts. Consumed only through `resolveSiteOrigin`.
 export const publicEnv = Object.freeze({
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? undefined,
 });
