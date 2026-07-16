@@ -7,6 +7,8 @@ export default defineConfig({
     alias: [
       // `server-only` throws outside a React Server Component; stub it for node unit tests.
       { find: /^server-only$/, replacement: fileURLToPath(new URL("./tests/stubs/server-only.ts", import.meta.url)) },
+      // Mirror the tsconfig `@/*` path so tests can import modules that use the app alias.
+      { find: /^@\//, replacement: fileURLToPath(new URL("./src/", import.meta.url)) },
     ],
   },
   test: {
