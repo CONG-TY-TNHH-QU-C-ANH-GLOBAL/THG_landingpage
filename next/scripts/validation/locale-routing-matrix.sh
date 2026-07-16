@@ -22,6 +22,21 @@ eq "/vi status" "$(st "${BASE}/vi")" "200"; eq "/vi lang" "$(lng "${BASE}/vi")" 
 eq "/en status" "$(st "${BASE}/en")" "200"; eq "/en lang" "$(lng "${BASE}/en")" '<html lang="en"'
 eq "/zh status" "$(st "${BASE}/zh")" "200"; eq "/zh lang" "$(lng "${BASE}/zh")" '<html lang="zh-CN"'
 
+# Edge cases: uppercase locale-like, malformed, trailing-slash canonicalization, query.
+eq "/VI status"                 "$(st "${BASE}/VI")"                     "308"
+eq "/VI location"               "$(loc "${BASE}/VI")"                    "${BASE}/vi"
+eq "/EN status"                 "$(st "${BASE}/EN")"                     "308"
+eq "/EN location"               "$(loc "${BASE}/EN")"                    "${BASE}/vi"
+eq "/en-US status"              "$(st "${BASE}/en-US")"                  "404"
+eq "/zh/ trailing status"       "$(st "${BASE}/zh/")"                    "308"
+eq "/zh/ trailing location"     "$(loc "${BASE}/zh/")"                   "${BASE}/zh"
+eq "/vi/?source=test status"    "$(st "${BASE}/vi/?source=test")"        "308"
+eq "/vi/?source=test location"  "$(loc "${BASE}/vi/?source=test")"       "${BASE}/vi?source=test"
+eq "/vi/nope?source=test 404"   "$(st "${BASE}/vi/nope?source=test")"    "404"
+
+# Legacy unprefixed route: intentional 404 in FND-002 (redirect owned by the migrating item).
+eq "/thg-fulfill legacy 404"    "$(st "${BASE}/thg-fulfill")"           "404"
+
 # Real 404s.
 eq "/vi/nope 404"  "$(st "${BASE}/vi/nope")"  "404"
 eq "/nope 404"     "$(st "${BASE}/nope")"     "404"

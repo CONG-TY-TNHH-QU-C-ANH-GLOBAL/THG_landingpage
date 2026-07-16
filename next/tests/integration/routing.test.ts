@@ -33,6 +33,24 @@ describe("decodeLocaleRoute", () => {
     }
   });
 
+  it("normalizes uppercase locale-like prefixes to the default (parity with current Vite)", () => {
+    expect(decodeLocaleRoute("/VI")).toEqual({ kind: "redirect", location: "/vi" });
+    expect(decodeLocaleRoute("/EN")).toEqual({ kind: "redirect", location: "/vi" });
+  });
+
+  it("passes malformed locale-like prefixes (→ real 404); not 2-letter", () => {
+    for (const p of ["/en-US", "/e1", "/1a", "/zzz"]) {
+      expect(decodeLocaleRoute(p)).toEqual({ kind: "pass" });
+    }
+  });
+
+  // Legacy unprefixed-route divergence (FND-002 foundation): a known Vite slug returns a real
+  // 404 here — its redirect to /vi/{path} is owned by the migrating WEB/COM/CONV item, NOT
+  // FND-002. This deterministic test records the intentional current behavior.
+  it("intentionally passes a legacy unprefixed route (→ 404 until its owner migrates it)", () => {
+    expect(decodeLocaleRoute("/thg-fulfill")).toEqual({ kind: "pass" });
+  });
+
   it("never produces a redirect loop (a redirect target itself passes)", () => {
     for (const p of ["/", "/fr", "/de/x", "/EN", "/zz/a/b"]) {
       const d = decodeLocaleRoute(p);
