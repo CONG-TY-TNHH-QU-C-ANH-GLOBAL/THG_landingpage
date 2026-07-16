@@ -29,7 +29,7 @@ hl() {
   local tag="$2"
   # Attribute name is case-insensitive in HTML (React renders the JSX `hrefLang` prop);
   # assert the exact tag VALUE regardless of the attribute-name casing.
-  if body "${url}" | grep -qE "href[Ll]ang=\"${tag}\""; then echo "${tag}"; fi
+  if body "${url}" | grep -E "href[Ll]ang=\"${tag}\"" >/dev/null; then echo "${tag}"; fi
 }
 eq() {
   local label="$1"

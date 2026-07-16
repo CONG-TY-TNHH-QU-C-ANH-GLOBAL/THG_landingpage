@@ -68,8 +68,15 @@ jobs:
           PORT=3000 HOSTNAME=127.0.0.1 node .next/standalone/server.js &
           SRV=$!
           trap 'kill "${SRV}" 2>/dev/null || true' EXIT
-          for _ in $(seq 1 30); do
-            curl -sf --connect-timeout 3 --max-time 10 http://127.0.0.1:3000/api/health >/dev/null 2>&1 && break || sleep 1
+          # Single bounded readiness poll with a short overall deadline; fail explicitly if
+          # the server never becomes ready (do not proceed against an unready server).
+          deadline=$((SECONDS + 30))
+          until curl -sf --connect-timeout 3 --max-time 5 http://127.0.0.1:3000/api/health >/dev/null 2>&1; do
+            if (( SECONDS >= deadline )); then
+              echo "standalone server did not become ready within 30s" >&2
+              exit 1
+            fi
+            sleep 1
           done
           # Full locale routing matrix (redirects + query preservation, locales + document
           # lang, dotted-route normalization, real 404s, api/probe/README/static bypass, hreflang)
