@@ -4,17 +4,32 @@
 set -euo pipefail
 BASE="${BASE_URL:-http://127.0.0.1:3000}"
 
+# Bounded curl for localhost CI: fail fast on connect, cap total time (deterministic values).
+CONNECT_TIMEOUT=3
+MAX_TIME=10
+
 st() {
   local url="$1"
-  curl -s -o /dev/null -w '%{http_code}' "${url}"
+  curl -s --connect-timeout "${CONNECT_TIMEOUT}" --max-time "${MAX_TIME}" -o /dev/null -w '%{http_code}' "${url}"
 }
 loc() {
   local url="$1"
-  curl -s -o /dev/null -w '%{redirect_url}' "${url}"
+  curl -s --connect-timeout "${CONNECT_TIMEOUT}" --max-time "${MAX_TIME}" -o /dev/null -w '%{redirect_url}' "${url}"
+}
+body() {
+  local url="$1"
+  curl -s --connect-timeout "${CONNECT_TIMEOUT}" --max-time "${MAX_TIME}" "${url}"
 }
 lng() {
   local url="$1"
-  curl -s "${url}" | grep -oE '<html lang="[^"]*"' | head -1
+  body "${url}" | grep -oE '<html lang="[^"]*"' | head -1
+}
+hl() {
+  local url="$1"
+  local tag="$2"
+  # Attribute name is case-insensitive in HTML (React renders the JSX `hrefLang` prop);
+  # assert the exact tag VALUE regardless of the attribute-name casing.
+  if body "${url}" | grep -qE "href[Ll]ang=\"${tag}\""; then echo "${tag}"; fi
 }
 eq() {
   local label="$1"
@@ -52,6 +67,15 @@ eq "/vi/?source=test status"    "$(st "${BASE}/vi/?source=test")"        "308"
 eq "/vi/?source=test location"  "$(loc "${BASE}/vi/?source=test")"       "${BASE}/vi?source=test"
 eq "/vi/nope?source=test 404"   "$(st "${BASE}/vi/nope?source=test")"    "404"
 
+# Dotted route: a dot in a NON-final segment is a route (locale-normalized), not an asset.
+eq "/fr/legal.v2/terms status"   "$(st "${BASE}/fr/legal.v2/terms")"     "308"
+eq "/fr/legal.v2/terms location" "$(loc "${BASE}/fr/legal.v2/terms")"    "${BASE}/vi/legal.v2/terms"
+eq "/fr/legal.v2/terms?src loc"  "$(loc "${BASE}/fr/legal.v2/terms?source=test")" "${BASE}/vi/legal.v2/terms?source=test"
+eq "/nope.js missing-file 404"   "$(st "${BASE}/nope.js")"               "404"
+
+# hreflang: the foundation page advertises zh via the approved zh-CN tag (HTML_LANG).
+eq "/vi advertises zh-CN hreflang" "$(hl "${BASE}/vi" "zh-CN")"          "zh-CN"
+
 # Legacy unprefixed route: intentional 404 in FND-002 (redirect owned by the migrating item).
 eq "/thg-fulfill legacy 404"    "$(st "${BASE}/thg-fulfill")"           "404"
 
@@ -61,7 +85,7 @@ eq "/nope 404"     "$(st "${BASE}/nope")"     "404"
 
 # Infra bypass (proxy does not touch these).
 eq "/api/health 200"           "$(st "${BASE}/api/health")"           "200"
-eq "/api/health body"          "$(curl -s "${BASE}/api/health")"      '{"status":"ok","service":"thg-public-web","runtime":"next"}'
+eq "/api/health body"          "$(body "${BASE}/api/health")"         '{"status":"ok","service":"thg-public-web","runtime":"next"}'
 eq "/foundation-probe.txt 200" "$(st "${BASE}/foundation-probe.txt")" "200"
 eq "/README.md 404"            "$(st "${BASE}/README.md")"            "404"
 eq "/_next missing 404"        "$(st "${BASE}/_next/static/chunks/nope.js")" "404"

@@ -6,6 +6,10 @@ After=network.target
 
 [Service]
 Type=simple
+# Run as a dedicated UNPRIVILEGED candidate account (never root). The account must exist and
+# the current/release directories must be readable by it (see next/ops/README.md).
+User=thg-next
+Group=thg-next
 # Placeholder paths — FND-010 fills exact release/symlink paths after human review.
 WorkingDirectory=/var/www/thgfulfill-next/current
 Environment=NODE_ENV=production
