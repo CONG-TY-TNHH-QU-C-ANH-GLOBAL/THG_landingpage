@@ -20,10 +20,12 @@ must be readable by it. FND-010 performs the real setup on the VPS with values i
 these commands are documentation only and **have not been run — production is unchanged**:
 
 ```bash
-# create the unprivileged service account (no login shell, no home)
-sudo useradd --system --no-create-home --shell /usr/sbin/nologin thg-next
-# make the release/current directories readable by it
-sudo chown -R thg-next:thg-next /var/www/thgfulfill-next
+# create the unprivileged service account + its own group (no login shell, no home)
+sudo useradd --system --user-group --no-create-home --shell /usr/sbin/nologin thg-next
+# Release/current artifacts stay owned by the DEPLOY user and immutable to the service.
+# Grant the service account read + directory-traverse only — do NOT chown artifacts to it,
+# and do NOT grant write:
+sudo chmod -R a+rX /var/www/thgfulfill-next
 ```
 
 Rollback (documented, not executed): re-enable the static Vite nginx config; the Vite
