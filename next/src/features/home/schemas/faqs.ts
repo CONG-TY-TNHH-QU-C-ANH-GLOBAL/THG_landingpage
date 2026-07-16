@@ -15,7 +15,9 @@ export type CmsFaq = z.infer<typeof cmsFaqSchema>;
 
 export const faqsResponseSchema = z.object({
   locale: localeSchema,
-  scope: z.string(),
+  // This feature only ever requests home-scope FAQs; a mismatched scope is a contract
+  // violation and must not become home JSON-LD.
+  scope: z.literal("home"),
   faqs: z.array(cmsFaqSchema),
 });
 export type CmsFaqsResponse = z.infer<typeof faqsResponseSchema>;

@@ -15,10 +15,21 @@ function normalizePhone(raw: string | null): string | null {
   return digits;
 }
 
-/** facebook.com/Page → m.me/Page so the button drops the user straight into Messenger. */
+/** facebook.com/Page → m.me/Page so the button drops the user straight into Messenger.
+ *  The hostname is validated (WEB-001 DATA_FLOW: contact links permit only approved
+ *  schemes/hosts) — a non-Facebook URL yields no button instead of a broken m.me link. */
 function messengerFromFacebook(fbUrl: string | null): string | null {
   if (!fbUrl) return null;
-  const m = /facebook\.com\/([^/?#]+)/i.exec(fbUrl);
+  let url: URL;
+  try {
+    url = new URL(fbUrl.includes("://") ? fbUrl : `https://${fbUrl}`);
+  } catch {
+    return null;
+  }
+  const host = url.hostname.toLowerCase();
+  const isFacebook = host === "facebook.com" || host.endsWith(".facebook.com");
+  if (!isFacebook || (url.protocol !== "https:" && url.protocol !== "http:")) return null;
+  const m = /^\/([^/?#]+)/.exec(url.pathname);
   return m ? `https://m.me/${m[1]}` : null;
 }
 

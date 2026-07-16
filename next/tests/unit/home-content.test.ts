@@ -151,6 +151,18 @@ describe("siteSettingsFromDto (FloatingContact derivations)", () => {
     });
     expect(m).toEqual({ telUrl: null, zaloUrl: null, messengerUrl: null, aboutVideoUrl: null });
   });
+
+  it("derives Messenger only from real Facebook hosts (no substring spoofing)", () => {
+    const messengerOf = (facebook_url: string) =>
+      siteSettingsFromDto({
+        settings: { contact_phone: null, facebook_url, about_video_url: null },
+      }).messengerUrl;
+    expect(messengerOf("https://notfacebook.com/Page")).toBeNull();
+    expect(messengerOf("https://evil.com/facebook.com/Page")).toBeNull();
+    expect(messengerOf("https://www.facebook.com/THGFulfill")).toBe("https://m.me/THGFulfill");
+    expect(messengerOf("facebook.com/THGFulfill")).toBe("https://m.me/THGFulfill");
+    expect(messengerOf("not a url at ://all")).toBeNull();
+  });
 });
 
 // ── Loaders: transport wiring, locale pass-through, per-section fallback ──
