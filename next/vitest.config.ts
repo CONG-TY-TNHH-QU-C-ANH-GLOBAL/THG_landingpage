@@ -14,6 +14,9 @@ export default defineConfig({
   test: {
     root: import.meta.dirname,
     environment: "node",
+    // SEO expectations assert the production-default origin; a developer/CI ambient
+    // NEXT_PUBLIC_SITE_URL must not leak into the suites (blank → default origin).
+    env: { NEXT_PUBLIC_SITE_URL: "" },
     include: ["tests/**/*.test.ts"],
     exclude: ["node_modules/**", ".next/**", "tests/performance/**", "tests/stubs/**"],
   },

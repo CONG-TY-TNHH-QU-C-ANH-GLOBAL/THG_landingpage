@@ -20,7 +20,15 @@ has() { # has <url> <fixed-string> <label>
   if body "$1" | grep -qF "$2"; then ok "$3"; else fail "$3 — [$2] missing from $1"; fi
 }
 hreflang() { # hreflang <url> <tag> <href> <label> — attribute-name case varies (React hrefLang)
-  if body "$1" | grep -qE "href[Ll]ang=\"$2\" href=\"$3\""; then ok "$4"; else fail "$4 — hreflang $2 → $3 missing from $1"; fi
+  # Fixed-string matching only: URLs must never be interpolated into a regex.
+  local html
+  html="$(body "$1")"
+  if printf '%s' "${html}" | grep -qF "hrefLang=\"$2\" href=\"$3\"" \
+    || printf '%s' "${html}" | grep -qF "hreflang=\"$2\" href=\"$3\""; then
+    ok "$4"
+  else
+    fail "$4 — hreflang $2 → $3 missing from $1"
+  fi
 }
 lacks() { # lacks <url> <fixed-string> <label>
   if body "$1" | grep -qF "$2"; then fail "$3 — [$2] present in $1"; else ok "$3"; fi

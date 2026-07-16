@@ -33,6 +33,11 @@ describe("resolveSiteOrigin", () => {
     expect(caught?.message).toMatch(/Invalid NEXT_PUBLIC_SITE_URL/);
     expect(caught?.message).not.toContain("not-a-valid-url");
   });
+
+  it("rejects non-HTTP(S) schemes (mailto: would yield origin 'null')", () => {
+    expect(() => resolveSiteOrigin("mailto:test@example.com")).toThrow(/http\(s\)/);
+    expect(() => resolveSiteOrigin("ftp://example.com")).toThrow(/http\(s\)/);
+  });
 });
 
 describe("localePath / localeUrl (safe route joining)", () => {

@@ -8,14 +8,20 @@ import type { Locale } from "@/shared/i18n";
 const DEFAULT_SITE_ORIGIN = "https://thgfulfill.com";
 
 /** Resolve and normalize the public site origin (`NEXT_PUBLIC_SITE_URL`, default production
- *  origin). A malformed configured value fails loud; the value is not echoed into the error. */
+ *  origin). A malformed or non-HTTP(S) configured value fails loud; the value is not echoed
+ *  into the error. */
 export function resolveSiteOrigin(raw: string | undefined = publicEnv.siteUrl): string {
   const origin = (raw && raw.trim()) || DEFAULT_SITE_ORIGIN;
+  let url: URL;
   try {
-    return new URL(origin).origin;
+    url = new URL(origin);
   } catch {
     throw new Error("Invalid NEXT_PUBLIC_SITE_URL: not a valid URL");
   }
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new Error("Invalid NEXT_PUBLIC_SITE_URL: must be an http(s) URL");
+  }
+  return url.origin;
 }
 
 /** Locale-prefixed path for a locale-less base path: ("vi", "/") → "/vi";

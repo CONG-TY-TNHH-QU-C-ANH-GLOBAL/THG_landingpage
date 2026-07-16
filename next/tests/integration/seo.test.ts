@@ -53,9 +53,15 @@ describe("[lang] route metadata (vi/en/zh)", () => {
 describe("robots.ts (public/robots.txt parity)", () => {
   it("allows the documented crawlers, defaults to allow-all, and points at the sitemap", () => {
     const out = robots();
-    const agents = out.rules instanceof Array ? out.rules.map((r) => r.userAgent) : [];
+    const rules = out.rules instanceof Array ? out.rules : [out.rules];
+    const agents = rules.map((r) => r.userAgent);
     for (const bot of ["Googlebot", "Bingbot", "GPTBot", "ClaudeBot", "PerplexityBot", "*"]) {
       expect(agents).toContain(bot);
+    }
+    // Every rule must be an effective allow-all: allow "/" and no disallow anywhere.
+    for (const rule of rules) {
+      expect(rule).toMatchObject({ allow: "/" });
+      expect(rule).not.toHaveProperty("disallow");
     }
     expect(out.sitemap).toBe(`${ORIGIN}/sitemap.xml`);
   });
