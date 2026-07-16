@@ -12,7 +12,7 @@ Cross-cutting primitives owned centrally. **shared may not import `app`, `featur
 | `seo/` | canonical site origin + safe joining, `buildPageMetadata`/`buildAlternates` (canonical + hreflang vi/en/zh-CN/x-default), safe JSON-LD serializer | **implemented** — FND-003 |
 | `analytics/` | consent store, `trackEvent` fan-out, UTM | reserved — FND-007 |
 | `security/` | headers, CSP/HSTS runtime | reserved — FND-009 |
-| `ui/` | ported shadcn primitives (client leaf islands) | reserved — WEB-001 |
+| `ui/` | ported shadcn primitives, site shell (navbar/footer/floating-contact), lead-form island, marketing-copy helpers | **implemented** — WEB-001 |
 | `testing/` | shared test helpers/fixtures | reserved — first real consumer |
 
 Reserved modules are documented here and are **not** pre-generated as empty directories

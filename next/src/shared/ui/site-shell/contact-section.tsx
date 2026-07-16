@@ -1,0 +1,211 @@
+// Parity source: src/components/ContactSection.tsx (the de-facto site footer). Server
+// Component — the only interactivity is the LeadFormDialog client island it renders.
+// The shell declares its own row shape (structurally identical to the FND-005
+// ContactLocation model): shared/ must not import features/, and the models graduate to
+// shared/cms/models in a dedicated PR per the FND-005 graduation rule.
+import { MapPin, Phone, Mail, Globe, ArrowRight } from "lucide-react";
+import ScrollReveal from "@/shared/ui/scroll-reveal";
+import { SectionHeader } from "@/shared/ui/section-header";
+import { LeadFormDialog } from "@/shared/ui/lead-form-dialog";
+import { Button } from "@/shared/ui/button";
+import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
+import type { Locale } from "@/shared/i18n";
+
+export interface ContactRow {
+  id: number;
+  kind: "office" | "warehouse" | "phone" | "email" | "website";
+  label: string;
+  address: string | null;
+  phone: string | null;
+  url: string | null;
+  langClass: string | null;
+}
+
+const ContactSection = ({
+  lang,
+  copy,
+  locations,
+}: Readonly<{ lang: Locale; copy: MarketingCopy; locations: readonly ContactRow[] }>) => {
+  const t = tFrom(copy);
+
+  return (
+    <section id="contact" className="py-28 relative overflow-hidden bg-secondary/30">
+      <div className="section-divider absolute top-0 left-0 right-0" />
+      <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
+
+      <div className="container mx-auto px-4 relative z-10">
+        <ScrollReveal>
+          <SectionHeader
+            size="lg"
+            eyebrow={t("contact.subtitle")}
+            title={t("contact.title")}
+            titleHighlight={t("contact.title_highlight")}
+            titleSuffix={t("contact.title2")}
+          />
+        </ScrollReveal>
+
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
+          <ScrollReveal direction="left">
+            <div>
+              <h3 className="text-2xl font-bold text-navy mb-8">{t("contact.offices_title")}</h3>
+              <ContactList locations={locations} />
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal direction="right" delay={200}>
+            <div className="bg-background rounded-3xl p-10 text-center tilt-card" style={{ boxShadow: "var(--shadow-3d)" }}>
+              <ContactCtaCard lang={lang} copy={copy} />
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* Footer bar — existing brand info and links only, no invented legal copy. */}
+        <div className="mt-20 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} THG Fulfill · Transport Happiness Group</p>
+          <a
+            href="https://hub.thgfulfill.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-foreground transition-colors"
+          >
+            Hub System
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+function ContactList({ locations }: Readonly<{ locations: readonly ContactRow[] }>) {
+  // Rows arrive already position-sorted from the FND-005 loader.
+  return (
+    <div className="space-y-6">
+      {locations.map((item) => {
+        const Icon =
+          item.kind === "phone" ? Phone : item.kind === "email" ? Mail : item.kind === "website" ? Globe : MapPin;
+        const display =
+          item.address ?? item.phone ?? item.url?.replace(/^mailto:/, "").replace(/^https?:\/\//, "") ?? "";
+        const externalHref =
+          item.url && (item.url.startsWith("http") || item.url.startsWith("mailto:")) ? item.url : undefined;
+        return (
+          <div key={item.id} className="flex gap-4 group">
+            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
+              <Icon className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-1">{item.label}</p>
+              {externalHref ? (
+                <a
+                  href={externalHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground text-sm hover:text-accent transition-colors"
+                >
+                  {display}
+                </a>
+              ) : (
+                <p
+                  className="text-muted-foreground text-sm"
+                  style={
+                    item.langClass === "font-cn"
+                      ? { fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" }
+                      : undefined
+                  }
+                >
+                  {display}
+                </p>
+              )}
+              {item.phone && item.address && (
+                <p className="text-muted-foreground text-xs mt-0.5">{item.phone}</p>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ContactCtaCard({ lang, copy }: Readonly<{ lang: Locale; copy: MarketingCopy }>) {
+  const t = tFrom(copy);
+  return (
+    <>
+      <div className="w-16 h-16 rounded-full bg-navy mx-auto mb-6 flex items-center justify-center p-3 glow-pulse">
+        <img src="/assets/thg-logo.png" alt="THG" className="w-full h-full object-contain brightness-0 invert" />
+      </div>
+      <h3 className="text-2xl font-bold text-navy mb-3">{t("contact.cta_title")}</h3>
+      <p className="text-muted-foreground mb-8 leading-relaxed">{t("contact.cta_desc")}</p>
+
+      <div className="flex flex-col gap-3 w-full">
+        {/* Submit Inquiry */}
+        <LeadFormDialog
+          lang={lang}
+          copy={copy}
+          trigger={
+            <Button size="lg" className="w-full rounded-full font-semibold gap-2 text-sm">
+              {t("contact.leave_info")}
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          }
+        />
+
+        <div className="relative flex items-center gap-3 my-1">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-muted-foreground">{t("contact.or_via")}</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        {SOCIAL_LINKS.map((s) => (
+          <a
+            key={s.href}
+            href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 w-full px-5 py-3.5 rounded-full font-semibold text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            style={{ background: s.background }}
+          >
+            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+              {s.icon}
+            </svg>
+            <span>{t(s.labelKey)}</span>
+          </a>
+        ))}
+      </div>
+    </>
+  );
+}
+
+// Brand icons stay inline SVG paths (no icon-library equivalents shipped for
+// these marks). Labels resolve through i18n so EN/ZH visitors see their locale.
+const SOCIAL_LINKS = [
+  {
+    labelKey: "contact.via_facebook",
+    href: "https://www.facebook.com/THGFulfill",
+    background: "#1877F2",
+    icon: (
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+    ),
+  },
+  {
+    labelKey: "contact.via_youtube",
+    href: "https://www.youtube.com/@thgfulfillment",
+    background: "#FF0000",
+    icon: (
+      <>
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" />
+        <polygon fill="white" points="9.545 15.568 15.818 12 9.545 8.432" />
+      </>
+    ),
+  },
+  {
+    labelKey: "contact.via_tiktok",
+    href: "https://www.tiktok.com/@thgfulfillment",
+    background: "#010101",
+    icon: (
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.74a4.85 4.85 0 0 1-1.01-.05z" />
+    ),
+  },
+];
+
+export { ContactSection };
