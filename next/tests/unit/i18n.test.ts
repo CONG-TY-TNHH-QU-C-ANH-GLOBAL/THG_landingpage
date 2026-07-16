@@ -72,6 +72,12 @@ describe("dictionary schema + parity", () => {
     // @ts-expect-error unsupported locale is a type + runtime error
     expect(() => getDictionary("fr")).toThrow();
   });
+
+  it("every dictionary's meta.htmlLang matches the canonical HTML_LANG (construction invariant)", () => {
+    for (const locale of SUPPORTED_LOCALES) {
+      expect(getDictionary(locale).meta.htmlLang).toBe(HTML_LANG[locale]);
+    }
+  });
 });
 
 describe("request efficiency (FND-002 §12)", () => {

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { assertSupportedLocale, SUPPORTED_LOCALES, type Locale } from "../config/locales";
+import { assertSupportedLocale, SUPPORTED_LOCALES, HTML_LANG, type Locale } from "../config/locales";
 import { dictionarySchema } from "../schemas/dictionary.schema";
 import type { ReadonlyDictionary } from "../model/dictionary";
 import vi from "../dictionaries/vi.json";
@@ -22,7 +22,16 @@ function freezeDictionary(dict: ReadonlyDictionary): ReadonlyDictionary {
 
 const DICTIONARIES: Readonly<Record<Locale, ReadonlyDictionary>> = Object.freeze(
   Object.fromEntries(
-    SUPPORTED_LOCALES.map((locale) => [locale, freezeDictionary(dictionarySchema.parse(RAW[locale]))]),
+    SUPPORTED_LOCALES.map((locale) => {
+      const dict = dictionarySchema.parse(RAW[locale]);
+      // Cross-check meta.htmlLang against the canonical HTML_LANG mapping (drift guard).
+      if (dict.meta.htmlLang !== HTML_LANG[locale]) {
+        throw new Error(
+          `Dictionary "${locale}" meta.htmlLang "${dict.meta.htmlLang}" != HTML_LANG "${HTML_LANG[locale]}"`,
+        );
+      }
+      return [locale, freezeDictionary(dict)];
+    }),
   ) as Record<Locale, ReadonlyDictionary>,
 );
 

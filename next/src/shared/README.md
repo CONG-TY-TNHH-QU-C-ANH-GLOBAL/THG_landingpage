@@ -4,7 +4,7 @@ Cross-cutting primitives owned centrally. **shared may not import `app`, `featur
 `integrations`** (enforced by ESLint + `tests/architecture`). No generic dumping grounds
 (`utils`, `helpers`, `common`, `misc`, ambiguous `lib`, generic root components).
 
-| Module | Owner / purpose | Status in FND-001 |
+| Module | Owner / purpose | Status |
 |---|---|---|
 | `config/` | typed env validation (server vs public split) | **implemented** (`env.server.ts`, `env.public.ts`) |
 | `errors/` | public-safe error surface + redaction | **implemented** (`index.ts`) |
