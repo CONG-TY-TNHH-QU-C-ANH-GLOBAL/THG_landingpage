@@ -10,28 +10,44 @@ SITE="${SITE_ORIGIN:-https://thgfulfill.com}"
 CONNECT_TIMEOUT=3
 MAX_TIME=10
 
-body() { curl -s --connect-timeout "${CONNECT_TIMEOUT}" --max-time "${MAX_TIME}" "$1"; }
-st()   { curl -s --connect-timeout "${CONNECT_TIMEOUT}" --max-time "${MAX_TIME}" -o /dev/null -w '%{http_code}' "$1"; }
+body() {
+  local url="$1"
+  curl -s --connect-timeout "${CONNECT_TIMEOUT}" --max-time "${MAX_TIME}" "${url}"
+}
+st() {
+  local url="$1"
+  curl -s --connect-timeout "${CONNECT_TIMEOUT}" --max-time "${MAX_TIME}" -o /dev/null -w '%{http_code}' "${url}"
+}
 
-fail() { echo "FAIL: $1" >&2; exit 1; }
-ok()   { echo "ok: $1"; }
+fail() {
+  local message="$1"
+  echo "FAIL: ${message}" >&2
+  exit 1
+}
+ok() {
+  local message="$1"
+  echo "ok: ${message}"
+}
 
 has() { # has <url> <fixed-string> <label>
-  if body "$1" | grep -qF "$2"; then ok "$3"; else fail "$3 — [$2] missing from $1"; fi
+  local url="$1" needle="$2" label="$3"
+  if body "${url}" | grep -qF "${needle}"; then ok "${label}"; else fail "${label} — [${needle}] missing from ${url}"; fi
 }
 hreflang() { # hreflang <url> <tag> <href> <label> — attribute-name case varies (React hrefLang)
   # Fixed-string matching only: URLs must never be interpolated into a regex.
+  local url="$1" tag="$2" href="$3" label="$4"
   local html
-  html="$(body "$1")"
-  if printf '%s' "${html}" | grep -qF "hrefLang=\"$2\" href=\"$3\"" \
-    || printf '%s' "${html}" | grep -qF "hreflang=\"$2\" href=\"$3\""; then
-    ok "$4"
+  html="$(body "${url}")"
+  if printf '%s' "${html}" | grep -qF "hrefLang=\"${tag}\" href=\"${href}\"" \
+    || printf '%s' "${html}" | grep -qF "hreflang=\"${tag}\" href=\"${href}\""; then
+    ok "${label}"
   else
-    fail "$4 — hreflang $2 → $3 missing from $1"
+    fail "${label} — hreflang ${tag} → ${href} missing from ${url}"
   fi
 }
 lacks() { # lacks <url> <fixed-string> <label>
-  if body "$1" | grep -qF "$2"; then fail "$3 — [$2] present in $1"; else ok "$3"; fi
+  local url="$1" needle="$2" label="$3"
+  if body "${url}" | grep -qF "${needle}"; then fail "${label} — [${needle}] present in ${url}"; else ok "${label}"; fi
 }
 
 for lang in vi en zh; do
@@ -55,9 +71,10 @@ for lang in vi en zh; do
 done
 
 hasi() { # hasi <url> <fixed-string> <label> — robots.txt directives are case-insensitive
+  local url="$1" raw_needle="$2" label="$3"
   local needle
-  needle="$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')"
-  if body "$1" | tr '[:upper:]' '[:lower:]' | grep -qF "${needle}"; then ok "$3"; else fail "$3 — [$2] missing from $1"; fi
+  needle="$(printf '%s' "${raw_needle}" | tr '[:upper:]' '[:lower:]')"
+  if body "${url}" | tr '[:upper:]' '[:lower:]' | grep -qF "${needle}"; then ok "${label}"; else fail "${label} — [${raw_needle}] missing from ${url}"; fi
 }
 
 [[ "$(st "${BASE}/robots.txt")" == "200" ]] || fail "/robots.txt status"

@@ -11,7 +11,7 @@ const DEFAULT_SITE_ORIGIN = "https://thgfulfill.com";
  *  origin). A malformed or non-HTTP(S) configured value fails loud; the value is not echoed
  *  into the error. */
 export function resolveSiteOrigin(raw: string | undefined = publicEnv.siteUrl): string {
-  const origin = (raw && raw.trim()) || DEFAULT_SITE_ORIGIN;
+  const origin = raw?.trim() || DEFAULT_SITE_ORIGIN;
   let url: URL;
   try {
     url = new URL(origin);
@@ -27,8 +27,9 @@ export function resolveSiteOrigin(raw: string | undefined = publicEnv.siteUrl): 
 /** Locale-prefixed path for a locale-less base path: ("vi", "/") → "/vi";
  *  ("en", "/blog") → "/en/blog". Never double-slashes, never trailing-slashes the root. */
 export function localePath(lang: Locale, path = "/"): string {
-  const p = path.startsWith("/") ? path : `/${path}`;
-  return p === "/" ? `/${lang}` : `/${lang}${p.replace(/\/+$/, "")}`;
+  let p = path.startsWith("/") ? path : `/${path}`;
+  while (p.endsWith("/")) p = p.slice(0, -1);
+  return p === "" ? `/${lang}` : `/${lang}${p}`;
 }
 
 /** Absolute locale URL on the canonical origin. */
