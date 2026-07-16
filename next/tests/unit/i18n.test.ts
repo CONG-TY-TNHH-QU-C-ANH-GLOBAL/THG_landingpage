@@ -92,3 +92,42 @@ describe("request efficiency (FND-002 §12)", () => {
     expect(src).toMatch(/\.\.\/dictionaries\/(vi|en|zh)\.json/);
   });
 });
+
+describe("runtime immutability (FND-002 §11)", () => {
+  it("SUPPORTED_LOCALES is frozen and cannot be mutated", () => {
+    expect(Object.isFrozen(SUPPORTED_LOCALES)).toBe(true);
+    expect(() => (SUPPORTED_LOCALES as unknown as string[]).push("fr")).toThrow();
+    expect([...SUPPORTED_LOCALES]).toEqual(["vi", "en", "zh"]);
+  });
+
+  it("dictionaries are deeply frozen; mutation attempts do not alter shared state", () => {
+    const dict = getDictionary("en");
+    expect(Object.isFrozen(dict)).toBe(true);
+    expect(Object.isFrozen(dict.meta)).toBe(true);
+    expect(Object.isFrozen(dict.foundation)).toBe(true);
+    expect(() => ((dict as { meta: { htmlLang: string } }).meta.htmlLang = "xx")).toThrow();
+    expect(() => ((dict as { foundation: { title: string } }).foundation.title = "x")).toThrow();
+    expect(() => ((dict as { extra?: string }).extra = "y")).toThrow();
+    // shared cache unchanged
+    expect(getDictionary("en").meta.htmlLang).toBe("en");
+    expect(getDictionary("en").foundation.title).toBe(dict.foundation.title);
+  });
+});
+
+describe("locale boundary (FND-002 §10)", () => {
+  it("unsupported strings cannot reach HTML_LANG or dictionary indexing (guard first)", () => {
+    const raw: string = "fr"; // raw route param typed as string
+    expect(isSupportedLocale(raw)).toBe(false);
+    if (isSupportedLocale(raw)) {
+      // narrowed to Locale here — these COMPILE (type-level proof); unreachable for "fr"
+      expect(HTML_LANG[raw]).toBeDefined();
+      expect(getDictionary(raw)).toBeDefined();
+    }
+    // direct unsupported access throws at the runtime boundary
+    expect(() => assertSupportedLocale(raw)).toThrow();
+  });
+
+  it("HTML_LANG maps zh to the approved zh-CN (hreflang source)", () => {
+    expect(HTML_LANG.zh).toBe("zh-CN");
+  });
+});
