@@ -11,7 +11,7 @@ Three scenarios (FND-001 §14). k6 is an external binary (install: https://k6.io
 
 ## Run
 
-```
+```sh
 # start the standalone app first (see next/README.md), then:
 k6 run tests/performance/foundation-smoke.js
 k6 run tests/performance/baseline-1000.js

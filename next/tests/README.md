@@ -6,7 +6,7 @@
 | `smoke/` | foundation contract checks (health, errors, env) | **implemented** |
 | `performance/` | k6 load scenarios (smoke / baseline / capacity) | **implemented** (scripts) |
 | `contract/` | cross-product contract conformance | reserved — first contract consumer |
-| `integration/` | feature loader ↔ integration tests | reserved — M2+ |
+| `integration/` | locale-routing integration (`routing.test.ts`) implemented; feature-loader ↔ integration reserved | **partly implemented** — FND-002 routing; feature loaders M2+ |
 | `e2e/` | Playwright end-to-end | reserved — FND-002/WEB-001 |
 
 Reserved dirs are documented here, not pre-generated as empty directories. Unit/smoke/

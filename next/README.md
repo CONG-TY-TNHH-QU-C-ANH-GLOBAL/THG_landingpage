@@ -22,7 +22,7 @@ manifest and lockfile are untouched.
 
 ## Commands (run inside `next/`)
 
-```
+```bash
 bun install --frozen-lockfile
 bun run lint
 bun run typecheck
@@ -64,7 +64,7 @@ mechanics only; server `[lang]` routes load local dictionaries and set `<html la
 
 Run the Next candidate (does not affect the Vite dev server):
 
-```
+```bash
 cd THG_landingpage/next && bun run dev
 ```
 
