@@ -27,6 +27,22 @@ const STEPS = [
 const ROUTE = "M 115,108 C 205,52 315,46 378,84 C 482,136 642,52 768,108";
 const PLEN  = 920;
 
+// Count a stat up to `target` in 55 ticks (parity: 28ms interval). Module-scope so the
+// observer callback stays shallow (Sonar S2004).
+function startCounter(
+  setCounts: React.Dispatch<React.SetStateAction<number[]>>,
+  target: number,
+  i: number,
+) {
+  let v = 0;
+  const step = target / 55;
+  const timer = setInterval(() => {
+    v = Math.min(v + step, target);
+    setCounts(prev => { const n = [...prev]; n[i] = v; return n; });
+    if (v >= target) clearInterval(timer);
+  }, 28);
+}
+
 // The Vite source hardcodes every string (no useI18n) — no copy prop needed (parity).
 export default function LogisticsAnimationSection() {
   const [active,  setActive]  = useState(0);
@@ -42,19 +58,10 @@ export default function LogisticsAnimationSection() {
   useEffect(() => {
     if (!statsRef.current || counted) return;
     const targets = [48, 99.2, 150];
-    const startCounter = (target: number, i: number) => {
-      let v = 0;
-      const step = target / 55;
-      const timer = setInterval(() => {
-        v = Math.min(v + step, target);
-        setCounts(prev => { const n = [...prev]; n[i] = v; return n; });
-        if (v >= target) clearInterval(timer);
-      }, 28);
-    };
     const obs = new IntersectionObserver(([e]) => {
       if (!e.isIntersecting) return;
       setCounted(true);
-      targets.forEach(startCounter);
+      targets.forEach((target, i) => startCounter(setCounts, target, i));
     }, { threshold: 0.5 });
     obs.observe(statsRef.current);
     return () => obs.disconnect();
