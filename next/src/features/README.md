@@ -9,7 +9,7 @@ reserves the boundary; features are created by their owning specs (M2+).
 | Feature | Owner spec | Notes |
 |---|---|---|
 | `shell/` | WEB-001 | global shell / layout composition |
-| `home/` | WEB-001 | homepage |
+| `home/` | WEB-001 | homepage — content layer implemented (FND-005: schemas/mappers/models/server loaders; UI lands with WEB-001) |
 | `services/` | WEB-002 | thg-fulfill/express/warehouse/order |
 | `pricing/` | WEB-003 | pricing tables + calculator/export islands |
 | `catalog/` | WEB-004 | **public catalog discovery** for sellers (browse/filter/reference) |
