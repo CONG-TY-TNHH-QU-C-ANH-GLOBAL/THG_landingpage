@@ -143,7 +143,9 @@ const ServicesSection = ({ copy, services }: Readonly<{ copy: MarketingCopy; ser
         <div className={`grid gap-6 ${services.length === 4 ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-3"}`}>
           {services.map((s, i) => {
             const Illustration = ILLUSTRATIONS[s.id] ?? defaultIllustration(s.icon);
-            const direction: "left" | "up" | "right" = i === 0 ? "left" : i === services.length - 1 ? "right" : "up";
+            let direction: "left" | "up" | "right" = "up";
+            if (i === 0) direction = "left";
+            else if (i === services.length - 1) direction = "right";
             return (
               <ScrollReveal key={s.id} delay={i * 120} direction={direction}>
                 <div className="group relative rounded-3xl border border-border/60 bg-background overflow-hidden tilt-card h-full flex flex-col">

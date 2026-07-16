@@ -49,7 +49,7 @@ export function SectionHeader({
   size = "default",
   align = "center",
   className,
-}: SectionHeaderProps) {
+}: Readonly<SectionHeaderProps>) {
   return (
     <div className={cn(align === "center" && "text-center", "mb-16", className)}>
       {eyebrow && (

@@ -21,7 +21,7 @@ const globeImageWebp = "/assets/globe-3d.webp";
 function renderTitle(raw: string) {
   const parts = raw.split(/\*\*([^*]+)\*\*/g);
   return parts.map((p, i) =>
-    i % 2 === 1 ? <span key={i} className="text-gradient-gold">{p}</span> : p,
+    i % 2 === 1 ? <span key={`gold-${p}-${i}`} className="text-gradient-gold">{p}</span> : p,
   );
 }
 
@@ -93,8 +93,8 @@ const HeroSection = ({ lang, copy, hero }: HeroSectionProps) => {
 
           <ScrollReveal delay={400}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-sm sm:max-w-none mx-auto lg:mx-0">
-              {features.map((f, i) => (
-                <div key={i} className="flex items-center gap-2.5">
+              {features.map((f) => (
+                <div key={f} className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
                   <span className="text-sm text-foreground/75" >{f}</span>
                 </div>

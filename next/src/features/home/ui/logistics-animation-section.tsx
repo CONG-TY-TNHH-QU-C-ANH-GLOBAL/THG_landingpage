@@ -3,7 +3,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import type { MarketingCopy } from "@/shared/i18n/marketing";
 
 /* ═══════════════════════════════════════════════════════
    LogisticsAnimationSection  –  v2 "Live Ops" edition
@@ -43,18 +42,19 @@ export default function LogisticsAnimationSection() {
   useEffect(() => {
     if (!statsRef.current || counted) return;
     const targets = [48, 99.2, 150];
+    const startCounter = (target: number, i: number) => {
+      let v = 0;
+      const step = target / 55;
+      const timer = setInterval(() => {
+        v = Math.min(v + step, target);
+        setCounts(prev => { const n = [...prev]; n[i] = v; return n; });
+        if (v >= target) clearInterval(timer);
+      }, 28);
+    };
     const obs = new IntersectionObserver(([e]) => {
       if (!e.isIntersecting) return;
       setCounted(true);
-      targets.forEach((target, i) => {
-        let v = 0;
-        const step = target / 55;
-        const timer = setInterval(() => {
-          v = Math.min(v + step, target);
-          setCounts(prev => { const n = [...prev]; n[i] = v; return n; });
-          if (v >= target) clearInterval(timer);
-        }, 28);
-      });
+      targets.forEach(startCounter);
     }, { threshold: 0.5 });
     obs.observe(statsRef.current);
     return () => obs.disconnect();
@@ -163,7 +163,7 @@ export default function LogisticsAnimationSection() {
         {/* ── PIPELINE ── */}
         <div className="g2-pipe">
           {STEPS.map((s, i) => (
-            <div key={i} className="g2-pitem">
+            <div key={s.num} className="g2-pitem">
               <div className={[
                 "g2-card",
                 i === active && "g2-card-on",
@@ -194,7 +194,7 @@ export default function LogisticsAnimationSection() {
             { suf: "%",  lbl: "Order accuracy"       },
             { suf: "+",  lbl: "Daily shipments"      },
           ].map((s, i) => (
-            <div key={i} className="g2-stat">
+            <div key={s.lbl} className="g2-stat">
               <span className="g2-sv">{fmt(counts[i], i)}{s.suf}</span>
               <span className="g2-sl">{s.lbl}</span>
             </div>

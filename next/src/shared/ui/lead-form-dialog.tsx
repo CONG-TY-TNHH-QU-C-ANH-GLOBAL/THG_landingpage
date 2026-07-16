@@ -4,7 +4,7 @@
 // DEV_BYPASS only when NEXT_PUBLIC_TURNSTILE_SITE_KEY is unset (local dev).
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -24,7 +24,12 @@ import { DELAYS } from "@/shared/ui/constants";
 // Client-side POST straight to the public CMS API — same request cmsClient.postLead
 // made in Vite (method/path/headers/body identical). The server-only "@/shared/cms"
 // transport is off-limits in this client island.
-const CMS_BASE = (publicEnv.cmsApiUrl ?? "http://localhost:8080/api/v1").replace(/\/+$/, "");
+function stripTrailingSlashes(value: string): string {
+  let v = value;
+  while (v.endsWith("/")) v = v.slice(0, -1);
+  return v;
+}
+const CMS_BASE = stripTrailingSlashes(publicEnv.cmsApiUrl ?? "http://localhost:8080/api/v1");
 
 interface LeadInput {
   name: string;
@@ -70,9 +75,17 @@ interface Props {
   copy: MarketingCopy;
 }
 
-export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy }: Props) {
+export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy }: Readonly<Props>) {
   const t = tFrom(copy);
   const [open, setOpen] = useState(false);
+  // The delayed post-close reset must not fire into a reopened dialog.
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    },
+    [],
+  );
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: defaultMessage ?? "" });
@@ -146,7 +159,8 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy
       open={open}
       onOpenChange={(o) => {
         setOpen(o);
-        if (!o) setTimeout(reset, DELAYS.DIALOG_RESET_AFTER_CLOSE_MS);
+        if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+        if (!o) resetTimerRef.current = setTimeout(reset, DELAYS.DIALOG_RESET_AFTER_CLOSE_MS);
       }}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>

@@ -59,8 +59,8 @@ const TestimonialsSection = ({ copy }: Readonly<{ copy: MarketingCopy }>) => {
               <div className="glass-card rounded-2xl p-7 tilt-card h-full flex flex-col">
                 {/* Stars */}
                 <div className="flex gap-0.5 mb-4">
-                  {Array.from({ length: item.rating }).map((_, idx) => (
-                    <Star key={idx} className="w-4 h-4 fill-primary text-primary" />
+                  {Array.from({ length: item.rating }, (_, idx) => `${item.nameKey}-star-${idx}`).map((starKey) => (
+                    <Star key={starKey} className="w-4 h-4 fill-primary text-primary" />
                   ))}
                 </div>
                 {/* Quote */}

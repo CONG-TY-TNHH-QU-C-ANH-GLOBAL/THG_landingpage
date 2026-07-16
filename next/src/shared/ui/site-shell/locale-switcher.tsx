@@ -24,9 +24,10 @@ const LocaleSwitcher = ({ lang }: { lang: Locale }) => {
     router.push(`/${code}${pathWithoutLang}${window.location.search}${window.location.hash}`);
   };
 
+  // Native grouping element instead of role="group" (Sonar a11y); Tailwind preflight
+  // zeroes fieldset chrome so the rendered pill is pixel-identical.
   return (
-    <div
-      role="group"
+    <fieldset
       aria-label="Language"
       className="flex items-center gap-1 bg-secondary/80 rounded-full p-1"
     >
@@ -51,7 +52,7 @@ const LocaleSwitcher = ({ lang }: { lang: Locale }) => {
           </button>
         );
       })}
-    </div>
+    </fieldset>
   );
 };
 

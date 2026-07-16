@@ -22,7 +22,7 @@ function extractYouTubeId(input: string | null | undefined): string {
     const v = url.searchParams.get("v");
     if (v && /^[A-Za-z0-9_-]{11}$/.test(v)) return v;
     const parts = url.pathname.split("/").filter(Boolean);
-    const last = parts[parts.length - 1];
+    const last = parts.at(-1);
     if (last && /^[A-Za-z0-9_-]{11}$/.test(last)) return last;
   } catch {
     // not a URL — fall through

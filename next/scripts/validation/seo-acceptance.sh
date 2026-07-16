@@ -94,5 +94,8 @@ lacks "${BASE}/sitemap.xml" "localhost" "sitemap has no localhost URLs"
 has "${BASE}/sitemap.xml" "<loc>${SITE}/vi</loc>" "sitemap lists /vi"
 has "${BASE}/sitemap.xml" "<loc>${SITE}/en</loc>" "sitemap lists /en"
 has "${BASE}/sitemap.xml" "<loc>${SITE}/zh</loc>" "sitemap lists /zh"
+LOCS=$(body "${BASE}/sitemap.xml" | grep -oF "<loc>" | wc -l | tr -d " ")
+[[ "${LOCS}" == "3" ]] || fail "sitemap must list exactly the 3 home rows (got ${LOCS})"
+ok "sitemap lists exactly 3 URLs"
 
 echo "SEO acceptance: all checks passed"

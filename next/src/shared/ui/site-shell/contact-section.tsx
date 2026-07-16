@@ -77,13 +77,20 @@ const ContactSection = ({
   );
 };
 
+const KIND_ICONS = {
+  phone: Phone,
+  email: Mail,
+  website: Globe,
+  office: MapPin,
+  warehouse: MapPin,
+} as const;
+
 function ContactList({ locations }: Readonly<{ locations: readonly ContactRow[] }>) {
   // Rows arrive already position-sorted from the FND-005 loader.
   return (
     <div className="space-y-6">
       {locations.map((item) => {
-        const Icon =
-          item.kind === "phone" ? Phone : item.kind === "email" ? Mail : item.kind === "website" ? Globe : MapPin;
+        const Icon = KIND_ICONS[item.kind];
         const display =
           item.address ?? item.phone ?? item.url?.replace(/^mailto:/, "").replace(/^https?:\/\//, "") ?? "";
         const externalHref =
