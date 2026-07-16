@@ -42,26 +42,33 @@ function withEnv(vars: Record<string, string | undefined>, fn: () => void) {
   }
 }
 
+// Each test pins BOTH NODE_ENV and PORT so it never depends on an inherited shell/CI value.
 describe("server env validation", () => {
   it("defaults NODE_ENV to development when missing", () => {
-    withEnv({ NODE_ENV: undefined }, () => expect(readServerEnv().nodeEnv).toBe("development"));
+    withEnv({ NODE_ENV: undefined, PORT: "3000" }, () => expect(readServerEnv().nodeEnv).toBe("development"));
   });
 
   it("accepts each valid NODE_ENV", () => {
     for (const env of ["development", "production", "test"] as const) {
-      withEnv({ NODE_ENV: env }, () => expect(readServerEnv().nodeEnv).toBe(env));
+      withEnv({ NODE_ENV: env, PORT: "3000" }, () => expect(readServerEnv().nodeEnv).toBe(env));
     }
   });
 
   it("rejects an invalid NODE_ENV such as staging", () => {
-    withEnv({ NODE_ENV: "staging" }, () => expect(() => readServerEnv()).toThrow(/Invalid NODE_ENV/));
+    withEnv({ NODE_ENV: "staging", PORT: "3000" }, () => expect(() => readServerEnv()).toThrow(/Invalid NODE_ENV/));
   });
 
-  it("rejects an invalid PORT", () => {
-    withEnv({ PORT: "not-a-port" }, () => expect(() => readServerEnv()).toThrow(/Invalid PORT/));
+  it("rejects an empty NODE_ENV", () => {
+    withEnv({ NODE_ENV: "", PORT: "3000" }, () => expect(() => readServerEnv()).toThrow(/Invalid NODE_ENV/));
+  });
+
+  it("rejects invalid PORT values (non-integer, zero, negative, out of range, empty)", () => {
+    for (const port of ["not-a-port", "0", "-1", "3000.5", "70000", ""]) {
+      withEnv({ NODE_ENV: "test", PORT: port }, () => expect(() => readServerEnv()).toThrow(/Invalid PORT/));
+    }
   });
 
   it("accepts a valid PORT", () => {
-    withEnv({ PORT: "3000" }, () => expect(readServerEnv().port).toBe(3000));
+    withEnv({ NODE_ENV: "test", PORT: "3000" }, () => expect(readServerEnv().port).toBe(3000));
   });
 });

@@ -14,19 +14,19 @@ function isNodeEnv(value: string): value is NodeEnv {
   return (NODE_ENVS as readonly string[]).includes(value);
 }
 
-function parseNodeEnv(raw: string | undefined): NodeEnv {
-  const value = raw ?? "development"; // development default
-  if (!isNodeEnv(value)) {
-    throw new Error(`Invalid NODE_ENV: "${value}" must be one of ${NODE_ENVS.join(", ")}`);
+// Default parameters supply the fallbacks (no reassignment). A default applies only when the
+// argument is `undefined`, so an empty string stays invalid.
+function parseNodeEnv(raw: string = "development"): NodeEnv {
+  if (!isNodeEnv(raw)) {
+    throw new Error(`Invalid NODE_ENV: "${raw}" must be one of ${NODE_ENVS.join(", ")}`);
   }
-  return value; // narrowed by the guard — no cast
+  return raw; // narrowed by the guard — no cast
 }
 
-function parsePort(raw: string | undefined): number {
-  const value = raw ?? "3000";
-  const port = Number(value);
+function parsePort(raw: string = "3000"): number {
+  const port = Number(raw);
   if (!Number.isInteger(port) || port <= 0 || port > 65535) {
-    throw new Error(`Invalid PORT env: "${value}" must be an integer in 1..65535`);
+    throw new Error(`Invalid PORT env: "${raw}" must be an integer in 1..65535`);
   }
   return port;
 }
