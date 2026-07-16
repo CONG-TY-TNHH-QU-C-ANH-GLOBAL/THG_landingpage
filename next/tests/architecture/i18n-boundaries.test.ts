@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join, dirname } from "node:path";
-import { sourceFiles, importSpecifiers, canonicalizeImport } from "./import-graph";
+import { sourceFiles, moduleSpecifiers, canonicalizeImport } from "./import-graph";
 
 // FND-002 i18n boundary proofs. Server/client separation for dictionaries + proxy
 // request-safety, with relative imports resolved so they cannot bypass the checks.
@@ -26,7 +26,7 @@ describe("shared/i18n server/client boundaries", () => {
   it("no i18n module imports app/features/integrations (relative resolved); only server imports server-only", () => {
     for (const f of sourceFiles(I18N)) {
       const src = read(f);
-      for (const raw of importSpecifiers(src)) {
+      for (const raw of moduleSpecifiers(src)) {
         const spec = canonicalizeImport(f, SRC, raw);
         expect(/^@\/(app|features|integrations)\//.test(spec), `${norm(f)} imports ${spec}`).toBe(false);
       }
@@ -34,12 +34,16 @@ describe("shared/i18n server/client boundaries", () => {
     }
   });
 
-  it("proxy.ts imports only the request-safe locale-routing primitive (relative resolved)", () => {
+  it("proxy.ts imports EXACTLY @/shared/i18n/config/locale-routing from i18n (exact allowlist)", () => {
     const proxy = join(SRC, "proxy.ts");
-    const specs = importSpecifiers(read(proxy)).map((s) => canonicalizeImport(proxy, SRC, s));
-    expect(specs.some((s) => s.includes("shared/i18n/config/locale-routing"))).toBe(true);
+    const specs = moduleSpecifiers(read(proxy)).map((s) => canonicalizeImport(proxy, SRC, s));
+    // must import the pure routing primitive…
+    expect(specs).toContain("@/shared/i18n/config/locale-routing");
+    // …and any i18n import must be EXACTLY that primitive (no loader, no other i18n module).
     for (const s of specs) {
-      expect(/server\/get-dictionary/.test(s)).toBe(false);
+      if (/^@\/shared\/i18n\//.test(s)) {
+        expect(s).toBe("@/shared/i18n/config/locale-routing");
+      }
       expect(/^@\/(app|features|integrations)\//.test(s)).toBe(false);
     }
   });

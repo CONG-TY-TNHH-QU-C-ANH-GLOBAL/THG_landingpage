@@ -15,16 +15,27 @@ export function sourceFiles(dir: string): string[] {
 }
 
 /**
- * Module specifiers from real static `import` declarations only, in source order. Handles
- * default / named / namespace / type-only / side-effect imports (incl. with annotations).
- * Ignores imports inside comments, strings/templates and dynamic `import(...)` expressions —
- * those are not `ImportDeclaration` nodes. Does not execute the code.
+ * Module specifiers of the dependency graph, in source order:
+ * - static `import` declarations (default / named / namespace / type-only / side-effect,
+ *   incl. with annotations); and
+ * - re-export declarations that carry a module specifier (`export * from`, `export {} from`,
+ *   `export * as ns from`, `export type {} from`).
+ *
+ * Ignores specifiers written inside comments, strings/templates and dynamic `import(...)`
+ * expressions, and local `export {}` / `export const` without a module specifier — those are
+ * not `ImportDeclaration` / re-export nodes. Does not execute the code.
  */
-export function importSpecifiers(code: string): string[] {
+export function moduleSpecifiers(code: string): string[] {
   const sourceFile = ts.createSourceFile("module.tsx", code, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX);
   const specifiers: string[] = [];
   for (const statement of sourceFile.statements) {
     if (ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier)) {
+      specifiers.push(statement.moduleSpecifier.text);
+    } else if (
+      ts.isExportDeclaration(statement) &&
+      statement.moduleSpecifier &&
+      ts.isStringLiteral(statement.moduleSpecifier)
+    ) {
       specifiers.push(statement.moduleSpecifier.text);
     }
   }

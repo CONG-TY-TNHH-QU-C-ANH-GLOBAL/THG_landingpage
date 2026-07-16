@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join, dirname } from "node:path";
-import { sourceFiles, importSpecifiers, canonicalizeImport } from "./import-graph";
+import { sourceFiles, moduleSpecifiers, canonicalizeImport } from "./import-graph";
 
 // Architecture import gate (FND-001 §10 + FND-002 review). Deterministic — no ESLint plugin
 // resolution. Scans src/**, resolves relative imports to a canonical `@/…` form (so `../`
@@ -51,7 +51,7 @@ describe("architecture boundaries", () => {
   it("no source file violates a boundary rule (relative imports resolved)", () => {
     const violations: string[] = [];
     for (const file of sourceFiles(SRC)) {
-      for (const raw of importSpecifiers(readFileSync(file, "utf8"))) {
+      for (const raw of moduleSpecifiers(readFileSync(file, "utf8"))) {
         const spec = canonicalizeImport(file, SRC, raw);
         for (const rule of RULES) {
           if (rule.inZone(file) && rule.forbidden(spec)) {
