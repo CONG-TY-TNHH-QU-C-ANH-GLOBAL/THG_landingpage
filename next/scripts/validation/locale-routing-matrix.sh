@@ -4,10 +4,28 @@
 set -euo pipefail
 BASE="${BASE_URL:-http://127.0.0.1:3000}"
 
-st()  { curl -s -o /dev/null -w '%{http_code}' "$1"; }
-loc() { curl -s -o /dev/null -w '%{redirect_url}' "$1"; }
-lng() { curl -s "$1" | grep -oE '<html lang="[^"]*"' | head -1; }
-eq()  { if [ "$2" != "$3" ]; then echo "FAIL: $1 — expected [$3] got [$2]" >&2; exit 1; fi; echo "ok: $1 = $2"; }
+st() {
+  local url="$1"
+  curl -s -o /dev/null -w '%{http_code}' "${url}"
+}
+loc() {
+  local url="$1"
+  curl -s -o /dev/null -w '%{redirect_url}' "${url}"
+}
+lng() {
+  local url="$1"
+  curl -s "${url}" | grep -oE '<html lang="[^"]*"' | head -1
+}
+eq() {
+  local label="$1"
+  local actual="$2"
+  local expected="$3"
+  if [[ "${actual}" != "${expected}" ]]; then
+    echo "FAIL: ${label} — expected [${expected}] got [${actual}]" >&2
+    exit 1
+  fi
+  echo "ok: ${label} = ${actual}"
+}
 
 # Root + locale normalization (308, query preserved), no loop.
 eq "/ status"                "$(st "${BASE}/")"                       "308"
