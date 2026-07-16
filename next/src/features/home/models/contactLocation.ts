@@ -11,4 +11,6 @@ export interface ContactLocation {
   address: string | null;
   phone: string | null;
   url: string | null;
+  /** CMS font hint ("font-cn" switches the CJK font stack); null → default font. */
+  langClass: string | null;
 }

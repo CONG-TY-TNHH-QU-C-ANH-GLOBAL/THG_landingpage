@@ -13,6 +13,7 @@ export const cmsContactLocationSchema = z.object({
   address: z.string().nullable(),
   phone: z.string().nullable(),
   url: z.string().nullable(),
+  lang_class: z.string().nullable(),
 });
 export type CmsContactLocation = z.infer<typeof cmsContactLocationSchema>;
 
