@@ -73,6 +73,40 @@ export function moduleSpecifiers(code: string): string[] {
   return specifiers;
 }
 
+/**
+ * Module specifiers of dynamic `import("...")` expressions anywhere in the module, in source
+ * order. Complements `moduleSpecifiers` (which stays static-only by contract) so boundary gates
+ * can also reject dynamic-import bypasses. Non-literal arguments (`import(variable)`) are not
+ * resolvable statically and are ignored.
+ */
+export function dynamicImportSpecifiers(code: string): string[] {
+  const sourceFile = ts.createSourceFile(
+    "module.tsx",
+    code,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.TSX,
+  );
+
+  const specifiers: string[] = [];
+
+  const visit = (node: ts.Node): void => {
+    if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const [argument] = node.arguments;
+
+      if (argument && ts.isStringLiteralLike(argument)) {
+        specifiers.push(argument.text);
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+
+  return specifiers;
+}
+
 function toPosix(path: string): string {
   return path.split(sep).join("/");
 }

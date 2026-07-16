@@ -2,7 +2,12 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join, dirname } from "node:path";
-import { sourceFiles, moduleSpecifiers, canonicalizeImport } from "./import-graph";
+import {
+  sourceFiles,
+  moduleSpecifiers,
+  dynamicImportSpecifiers,
+  canonicalizeImport,
+} from "./import-graph";
 
 // FND-004 CMS-adapter boundary gate (CODE_STRUCTURE "Import boundaries", AC-30). Deterministic
 // AST scan — asserts the server-only transport cannot enter a client bundle, the proxy, or the
@@ -27,6 +32,12 @@ const isClientModule = (code: string): boolean =>
 
 const isProxyModule = (file: string): boolean => norm(file).endsWith("/src/proxy.ts");
 
+// Static and dynamic imports alike — a dynamic import("...") must not bypass the gate.
+const allSpecifiers = (code: string): string[] => [
+  ...moduleSpecifiers(code),
+  ...dynamicImportSpecifiers(code),
+];
+
 const isFeatureAppOrIntegration = (spec: string): boolean =>
   /^@\/(app|features|integrations)\//.test(spec);
 
@@ -36,7 +47,7 @@ describe("CMS adapter boundaries (FND-004)", () => {
     for (const file of sourceFiles(SRC)) {
       const code = readFileSync(file, "utf8");
       if (!isClientModule(code)) continue;
-      for (const raw of moduleSpecifiers(code)) {
+      for (const raw of allSpecifiers(code)) {
         if (isCmsTransportImport(canonicalizeImport(file, SRC, raw))) {
           violations.push(`${norm(file)} ("use client") imports the CMS transport "${raw}"`);
         }
@@ -49,7 +60,7 @@ describe("CMS adapter boundaries (FND-004)", () => {
     const violations: string[] = [];
     for (const file of sourceFiles(SRC)) {
       if (!isProxyModule(file)) continue;
-      for (const raw of moduleSpecifiers(readFileSync(file, "utf8"))) {
+      for (const raw of allSpecifiers(readFileSync(file, "utf8"))) {
         const spec = canonicalizeImport(file, SRC, raw);
         if (isCmsTransportImport(spec) || /^@\/shared\/cms(\/|$)/.test(spec)) {
           violations.push(`proxy.ts imports the CMS adapter "${raw}"`);
@@ -62,7 +73,7 @@ describe("CMS adapter boundaries (FND-004)", () => {
   it("shared/cms never imports app, features or integrations", () => {
     const violations: string[] = [];
     for (const file of sourceFiles(CMS_DIR)) {
-      for (const raw of moduleSpecifiers(readFileSync(file, "utf8"))) {
+      for (const raw of allSpecifiers(readFileSync(file, "utf8"))) {
         if (isFeatureAppOrIntegration(canonicalizeImport(file, SRC, raw))) {
           violations.push(`${norm(file)} imports "${raw}"`);
         }
@@ -79,7 +90,7 @@ describe("CMS adapter boundaries (FND-004)", () => {
   it("shared/cms owns no FND-005 mappers/models nor FND-006 tags/revalidation", () => {
     const leaks = sourceFiles(CMS_DIR)
       .map(norm)
-      .filter((f) => /\/(tags|revalidate|mapper|mappers|model|models)\.ts$/.test(f));
+      .filter((f) => /\/(tags|revalidate|mappers?|models?)\.tsx?$/.test(f));
     expect(leaks).toEqual([]);
   });
 
@@ -91,6 +102,15 @@ describe("CMS adapter boundaries (FND-004)", () => {
     expect(isCmsTransportImport("@/shared/cms/index")).toBe(true);
     expect(isCmsTransportImport("@/shared/cms/errors")).toBe(false);
     expect(isCmsTransportImport("@/shared/i18n")).toBe(false);
+  });
+
+  it("catches a dynamic import of the transport from a Client Component (synthetic violation)", () => {
+    const code = '"use client";\nexport async function load() {\n  return import("@/shared/cms");\n}';
+    expect(isClientModule(code)).toBe(true);
+    const specs = allSpecifiers(code);
+    expect(specs).toContain("@/shared/cms");
+    const file = join(SRC, "features", "synthetic", "Client.tsx");
+    expect(specs.some((s) => isCmsTransportImport(canonicalizeImport(file, SRC, s)))).toBe(true);
   });
 
   it("isClientModule detects the directive past comments but not incidental strings", () => {

@@ -19,7 +19,8 @@ export interface CmsFetchOptions {
   tags?: string[];
   /** Header/method escape hatch (parity with fetchJson's `init`). */
   init?: RequestInit;
-  /** Bounded timeout in ms. Omitted → no timeout (exact parity with today's no-timeout fetch). */
+  /** Bounded timeout in ms covering the whole request including body read. Omitted → no
+   *  timeout (exact parity with today's no-timeout fetch). */
   timeoutMs?: number;
   /** Caller abort signal; composed with any timeout signal. */
   signal?: AbortSignal;
@@ -33,7 +34,8 @@ export function resolveCmsBaseUrl(raw: string | undefined = process.env.CMS_API_
   try {
     new URL(base);
   } catch {
-    throw new Error(`Invalid CMS_API_URL: ${JSON.stringify(base)} is not a valid URL`);
+    // Value deliberately not echoed (AC-41: no env base in thrown errors).
+    throw new Error("Invalid CMS_API_URL: not a valid URL (value redacted; check the server env)");
   }
   return base.replace(/\/+$/, "");
 }
@@ -90,46 +92,57 @@ export async function cmsFetch<T extends z.ZodTypeAny>(
   const url = `${resolveCmsBaseUrl()}${path}`;
 
   const timeout = createTimeout(timeoutMs);
+  // Headers built via the Headers API so callers may pass any HeadersInit form (plain object,
+  // Headers instance, entries array) without silent loss; a caller-provided Accept still wins.
+  const headers = new Headers(init?.headers);
+  if (!headers.has("Accept")) headers.set("Accept", "application/json");
   const requestInit: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {
     ...init,
-    headers: { Accept: "application/json", ...(init?.headers as Record<string, string> | undefined) },
+    headers,
     next: { revalidate, tags },
-    signal: composeSignals(signal, timeout?.signal),
+    signal: composeSignals(signal, init?.signal ?? undefined, timeout?.signal),
   };
 
-  let res: Response;
   try {
-    res = await fetch(url, requestInit);
-  } catch (err) {
-    throw new CmsNetworkError(path, classifyAbort(err, timeout, signal));
+    let res: Response;
+    try {
+      res = await fetch(url, requestInit);
+    } catch (err) {
+      throw new CmsNetworkError(path, classifyAbort(err, timeout, signal));
+    }
+
+    if (!res.ok) {
+      let message = `${res.status} ${res.statusText}`;
+      try {
+        const body = (await res.json()) as { error?: string };
+        if (body.error) message = body.error;
+      } catch {
+        // Non-JSON error body: keep the "{status} {statusText}" default (parity: cmsClient.ts:101).
+      }
+      throw new CmsHttpError(path, res.status, message);
+    }
+
+    let json: unknown;
+    try {
+      json = await res.json();
+    } catch {
+      // An abort mid-body is a transport failure, not a malformed payload.
+      if (timeout?.fired() || signal?.aborted || init?.signal?.aborted) {
+        throw new CmsNetworkError(path, timeout?.fired() ? "timeout" : "aborted");
+      }
+      throw new CmsParseError(path);
+    }
+
+    const parsed = schema.safeParse(json);
+    if (!parsed.success) {
+      // Structured Zod issues only (never the raw body) — parity with cmsClient.ts:112 and the
+      // FND-008 observability hook point (SPEC §17).
+      console.error(`[CMS] Schema validation failed for ${path}:`, parsed.error.issues);
+      throw new CmsShapeError(path);
+    }
+    return parsed.data;
   } finally {
+    // Cleared only after the body is consumed, so timeoutMs bounds the entire exchange.
     timeout?.clear();
   }
-
-  if (!res.ok) {
-    let message = `${res.status} ${res.statusText}`;
-    try {
-      const body = (await res.json()) as { error?: string };
-      if (body.error) message = body.error;
-    } catch {
-      // Non-JSON error body: keep the "{status} {statusText}" default (parity: cmsClient.ts:101).
-    }
-    throw new CmsHttpError(path, res.status, message);
-  }
-
-  let json: unknown;
-  try {
-    json = await res.json();
-  } catch {
-    throw new CmsParseError(path);
-  }
-
-  const parsed = schema.safeParse(json);
-  if (!parsed.success) {
-    // Structured Zod issues only (never the raw body) — parity with cmsClient.ts:112 and the
-    // FND-008 observability hook point (SPEC §17).
-    console.error(`[CMS] Schema validation failed for ${path}:`, parsed.error.issues);
-    throw new CmsShapeError(path);
-  }
-  return parsed.data;
 }
