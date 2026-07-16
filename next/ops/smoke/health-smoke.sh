@@ -4,7 +4,7 @@
 set -euo pipefail
 BASE="${BASE_URL:-http://127.0.0.1:3000}"
 
-body="$(curl -fsS "${BASE}/api/health")"
+body="$(curl -fsS --connect-timeout 3 --max-time 10 "${BASE}/api/health")"
 echo "health body: ${body}"
 
 expected='{"status":"ok","service":"thg-public-web","runtime":"next"}'

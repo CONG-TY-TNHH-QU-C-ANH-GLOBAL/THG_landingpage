@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "localeName": "Tiếng Việt",
+    "htmlLang": "vi"
+  },
+  "foundation": {
+    "title": "Nền tảng THG — định tuyến ngôn ngữ",
+    "description": "Bằng chứng vận hành định tuyến locale (FND-002). Không phải môi trường production.",
+    "localeLabel": "Ngôn ngữ hiện tại: Tiếng Việt"
+  }
+}

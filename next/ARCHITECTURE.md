@@ -7,7 +7,7 @@ implemented here.
 
 ## Layering
 
-```
+```text
 app         → composes feature public APIs; parses routes; owns metadata
 features    → vertical slices; each exposes one public API (index.ts)
 integrations→ external-system boundaries (transport/config/validation)
@@ -19,7 +19,8 @@ shared      → cross-cutting primitives (config, errors, i18n, seo, analytics, 
 
 - `app` may import: feature public APIs, `contracts`, `shared`.
 - `features` may import: integration public APIs, `contracts`, `shared`.
-- `integrations` may import: `contracts`, `shared/config`, `shared/errors`.
+- `integrations` may import **only**: `contracts`, `shared/config`, `shared/errors` — **not**
+  `app`, `features`, or any other `shared` subtree (`ui`/`i18n`/`seo`/`analytics`/`security`/`testing`).
 - `contracts` may **not** import: framework/application modules (React, Next, DB models,
   provider SDKs, UI types, CMS transport).
 - `shared` may **not** import: `app`, `features`, `integrations`.
@@ -75,7 +76,7 @@ owning specs). No `utils`/`helpers`/`common`/`misc`/ambiguous `lib` dumping grou
 
 ## Standard feature package (§9)
 
-```
+```text
 features/<feature>/
 ├── model/      # landing-domain models
 ├── schemas/    # runtime validation

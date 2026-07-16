@@ -28,10 +28,26 @@ const config = [
     ["@/app/*", "@/features/*", "@/integrations/*"],
     "shared must not import app, features or integrations",
   ),
-  // integrations: only contracts + shared/config + shared/errors
+  // integrations: only contracts + shared/config + shared/errors (all other shared subtrees,
+  // app and features are rejected). The vitest architecture test is the deny-by-default gate.
   boundary(
     ["src/integrations/**"],
-    ["@/app/*", "@/features/*"],
+    [
+      "@/app/*",
+      "@/features/*",
+      "@/shared/ui",
+      "@/shared/ui/*",
+      "@/shared/i18n",
+      "@/shared/i18n/*",
+      "@/shared/seo",
+      "@/shared/seo/*",
+      "@/shared/analytics",
+      "@/shared/analytics/*",
+      "@/shared/security",
+      "@/shared/security/*",
+      "@/shared/testing",
+      "@/shared/testing/*",
+    ],
     "integrations may import only contracts, shared/config and shared/errors",
   ),
 ];

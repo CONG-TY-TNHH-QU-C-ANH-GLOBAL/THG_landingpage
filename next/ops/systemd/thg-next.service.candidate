@@ -6,13 +6,17 @@ After=network.target
 
 [Service]
 Type=simple
+# Run as a dedicated UNPRIVILEGED candidate account (never root). The account must exist and
+# the current/release directories must be readable by it (see next/ops/README.md).
+User=thg-next
+Group=thg-next
 # Placeholder paths — FND-010 fills exact release/symlink paths after human review.
 WorkingDirectory=/var/www/thgfulfill-next/current
 Environment=NODE_ENV=production
 Environment=PORT=3000
 ExecStart=/usr/bin/node .next/standalone/server.js
-# Graceful restart
-ExecReload=/bin/kill -HUP $MAINPID
+# No ExecReload: the standalone Node server has no SIGHUP reload handler (SIGHUP would
+# terminate it). Reload = `systemctl restart` (atomic release swap owned by FND-010).
 KillSignal=SIGTERM
 TimeoutStopSec=20
 Restart=on-failure
@@ -20,7 +24,9 @@ RestartSec=2
 # Hardening (candidate; validated by FND-010)
 NoNewPrivileges=true
 ProtectSystem=strict
-ReadWritePaths=/var/www/thgfulfill-next
+# No ReadWritePaths: the foundation app writes nothing at runtime (serves static assets +
+# the health route). FND-010 adds a narrowly-scoped writable path only if a real
+# runtime-mutated directory is introduced.
 
 [Install]
 WantedBy=multi-user.target
