@@ -54,7 +54,16 @@ const HeroSection = ({ lang, copy, hero }: HeroSectionProps) => {
   const features = [t("hero.feature1"), t("hero.feature2"), t("hero.feature3"), t("hero.feature4")];
 
   return (
-    <section className="relative flex items-center pt-28 pb-6 md:pt-20 md:pb-10 overflow-hidden bg-gradient-hero">
+    // WEB-001A fix-up (root cause of both the vertical-fit and parallax-clarity defects):
+    // `overflow-hidden` on this section broke `position:sticky` for the parallax scene's
+    // sticky viewport nested inside it — any ancestor with overflow != visible disables
+    // sticky positioning for its descendants (a well-known CSS behavior), degrading the
+    // sticky element to a permanent +top-offset relative shift with NO pinning at all
+    // (measured: it scrolled 1:1 with the page instead of holding at top:80px). The
+    // decorative dot-grid pattern below is `inset-0`, self-contained within the section's
+    // own box, so it does not depend on this section clipping — dropping overflow-hidden
+    // does not reintroduce visible overflow (verified: no horizontal scrollbar).
+    <section className="relative flex items-center pt-28 pb-6 md:pt-20 md:pb-10 bg-gradient-hero">
       {/* Dot grid pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"

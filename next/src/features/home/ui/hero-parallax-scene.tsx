@@ -150,10 +150,19 @@ export function HeroParallaxScene({ children, imageSrc, imageSrcAvif, imageSrcWe
       const p = computeProgress();
       const ds = depthScale;
 
-      lGrid!.style.transform = `translateY(${(p * 14 * ds).toFixed(1)}px)`;
+      // WEB-001A fix-up 2: per-layer depth amplitude increased ~2.3-2.5x from the
+      // artifact's literal px constants (grid 14/routes 22/globe 18(+14)/nodes 30/fg 40 —
+      // still IMPLEMENTATION_BASELINE.md's documented relative depth ORDER: grid slowest,
+      // fg fastest). Verified via live DOM measurement that the original constants,
+      // computed correctly, produced identical output to the approved artifact at matching
+      // scroll progress (e.g. p=0.2: grid=2.8/routes=4.4/globe=3.6/nodes=6/fg=8px on both) —
+      // i.e. the port itself was already 1:1. The amplitude was faithful but genuinely too
+      // subtle to read as "depth" at any real viewport; this bump is a deliberate owner-
+      // directed departure from the literal baseline numbers, not a porting fix.
+      lGrid!.style.transform = `translateY(${(p * 32 * ds).toFixed(1)}px)`;
       lGrid!.style.opacity = String(1 - smoothstep(0.78, 1, p) * 0.6);
 
-      lRoutes!.style.transform = `translateY(${(p * 22 * ds).toFixed(1)}px)`;
+      lRoutes!.style.transform = `translateY(${(p * 50 * ds).toFixed(1)}px)`;
       for (const path of routePaths) {
         const start = Number.parseFloat(path.dataset.revealStart ?? "0");
         const end = Number.parseFloat(path.dataset.revealEnd ?? "1");
@@ -170,14 +179,14 @@ export function HeroParallaxScene({ children, imageSrc, imageSrcAvif, imageSrcWe
       const rotY = rotBase + ptrX * 2.5;
       const rotX = -ptrY * 2.5;
       globeTilt!.style.transform = `scale(${scale.toFixed(3)}) rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg)`;
-      lGlobe!.style.transform = `translateY(${((p * 18 + smoothstep(0.78, 1, p) * 14) * ds).toFixed(1)}px)`;
+      lGlobe!.style.transform = `translateY(${((p * 36 + smoothstep(0.78, 1, p) * 28) * ds).toFixed(1)}px)`;
 
-      lNodes!.style.transform = `translateY(${(p * 30 * ds).toFixed(1)}px)`;
+      lNodes!.style.transform = `translateY(${(p * 65 * ds).toFixed(1)}px)`;
       for (const node of nodes) {
         node.el.classList.toggle(styles.active, p >= node.activeAt);
       }
 
-      lFg!.style.transform = `translate(${(ptrX * 8).toFixed(1)}px, ${(p * 40 * ds).toFixed(1)}px)`;
+      lFg!.style.transform = `translate(${(ptrX * 12).toFixed(1)}px, ${(p * 90 * ds).toFixed(1)}px)`;
       lFg!.style.opacity = String(0.5 * (1 - smoothstep(0.85, 1, p)));
 
       const dotsActive = heroInView && p > 0.28 && p < 0.86;
