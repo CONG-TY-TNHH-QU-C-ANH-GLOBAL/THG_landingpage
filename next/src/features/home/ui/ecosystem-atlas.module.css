@@ -35,6 +35,8 @@
 .node {
   opacity: 0;
   transform: scale(0.4);
+  /* scale each node group around its own bounds, not the shared view-box origin */
+  transform-box: fill-box;
   transform-origin: center;
   transition: opacity 0.3s var(--motion-smooth), transform 0.3s var(--motion-spring);
 }

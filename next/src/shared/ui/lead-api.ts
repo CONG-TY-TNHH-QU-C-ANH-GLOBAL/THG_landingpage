@@ -28,6 +28,10 @@ export interface LeadInput {
   turnstile_token: string;
 }
 
+// Keep a hung CMS from pinning the form in its submitting state forever — the
+// abort surfaces as a DOMException the callers' existing error paths handle.
+const REQUEST_TIMEOUT_MS = 15_000;
+
 export async function postLead(input: LeadInput): Promise<void> {
   const res = await fetch(`${CMS_BASE}/leads`, {
     method: "POST",
@@ -36,6 +40,7 @@ export async function postLead(input: LeadInput): Promise<void> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
   if (!res.ok) {
     let message = `${res.status} ${res.statusText}`;
