@@ -22,6 +22,7 @@ import {
   loadContactLocations,
   loadSiteSettings,
 } from "../../src/features/home/server/loaders";
+import { resetLoggedCmsFallbacks } from "../../src/shared/cms/log-fallback";
 
 // FND-005 homepage content slice (IP-006): fixture DTO → model mapping, malformed shapes,
 // locale pass-through, deterministic per-section fallback (WEB-001 DATA_FLOW), and the
@@ -187,7 +188,9 @@ function jsonResponse(body: unknown, status = 200): Response {
 beforeEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
+  resetLoggedCmsFallbacks();
   vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -223,16 +226,45 @@ describe("home loaders", () => {
     await expect(loadSiteSettings()).resolves.toEqual(EMPTY_SITE_SETTINGS);
   });
 
-  it("falls back on a malformed contract and logs redaction-safe metadata only", async () => {
-    mockFetch(async () => jsonResponse({ locale: "vi", services: "not-an-array" }));
+  it("falls back on unavailability with a redaction-safe WARNING and no console.error", async () => {
+    mockFetch(async () => jsonResponse({ error: "boom" }, 500));
     await expect(loadHomeServices("vi")).resolves.toEqual([]);
-    const call = (console.error as ReturnType<typeof vi.fn>).mock.calls.find((c) =>
-      String(c[0]).includes("home loader fallback"),
+    // Expected recoverable fallback: warn, not error — console.error would become a Next
+    // dev error-overlay entry for a non-defect.
+    expect(console.error).not.toHaveBeenCalled();
+    const call = (console.warn as ReturnType<typeof vi.fn>).mock.calls.find((c) =>
+      String(c[0]).includes("[CMS] fallback"),
     );
     expect(call).toBeDefined();
     const serialized = JSON.stringify(call);
     expect(serialized).toContain("/services?lang=vi");
-    expect(serialized).not.toContain("not-an-array");
+    expect(serialized).not.toContain("boom");
+  });
+
+  it("falls back on a malformed contract: WARN for the fallback, transport keeps its drift log", async () => {
+    mockFetch(async () => jsonResponse({ locale: "vi", services: "not-an-array" }));
+    await expect(loadHomeServices("vi")).resolves.toEqual([]);
+    // The FND-004 transport's structured schema-drift log (parity: cmsClient.ts:112) is a
+    // real contract-violation signal and stays console.error; the WEB-001 fallback itself
+    // only warns, and neither log carries the raw payload.
+    const errors = (console.error as ReturnType<typeof vi.fn>).mock.calls;
+    expect(errors).toHaveLength(1);
+    expect(String(errors[0][0])).toContain("Schema validation failed");
+    const warns = (console.warn as ReturnType<typeof vi.fn>).mock.calls.filter((c) =>
+      String(c[0]).includes("[CMS] fallback"),
+    );
+    expect(warns).toHaveLength(1);
+    expect(JSON.stringify([...errors, ...warns])).not.toContain("not-an-array");
+  });
+
+  it("dedupes the fallback warning for a repeatedly failing endpoint", async () => {
+    mockFetch(async () => jsonResponse({ error: "down" }, 500));
+    await loadHomeServices("vi");
+    await loadHomeServices("vi");
+    const warns = (console.warn as ReturnType<typeof vi.fn>).mock.calls.filter((c) =>
+      String(c[0]).includes("/services?lang=vi"),
+    );
+    expect(warns).toHaveLength(1);
   });
 
   it("falls back on network failure and empty homepage yields dictionary-fallback content", async () => {
