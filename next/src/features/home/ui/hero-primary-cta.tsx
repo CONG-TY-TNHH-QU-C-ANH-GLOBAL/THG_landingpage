@@ -19,7 +19,10 @@ export function HeroPrimaryCta({ lang, copy, cta }: Readonly<{ lang: Locale; cop
       sourcePage="/"
       trigger={
         <Button
-          className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
+          // rounded-lg binds to the semantic --radius token (12px) — IMPLEMENTATION_BASELINE.md
+          // "Restraint on rounding": rounded-full is a measured anti-pattern outside true
+          // circular controls.
+          className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-lg px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
           style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
         >
           <span>{cta}</span> <ArrowRight className="w-4 h-4" />

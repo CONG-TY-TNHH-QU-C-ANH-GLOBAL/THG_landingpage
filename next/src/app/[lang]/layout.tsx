@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
+import { Be_Vietnam_Pro, Inter } from "next/font/google";
 import "../globals.css";
 import { SUPPORTED_LOCALES, HTML_LANG, isSupportedLocale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
@@ -15,6 +16,23 @@ import { Toaster } from "@/shared/ui/sonner-toaster";
 // client islands for interaction (mobile menu, floating contact, UTM capture, toasts).
 // Shell-owned server data only: marketing copy, contact locations, site settings. Per-page
 // metadata (title/robots/canonical) is owned by the pages via FND-003 buildPageMetadata.
+
+// Typography foundation (WEB-001A — IMPLEMENTATION_BASELINE.md "Typography rules"):
+// self-hosted via next/font/google (no manual asset copy, no manifest/lockfile change).
+// "vietnamese" subset covers the full VI Latin-Extended range; "latin" covers en; Noto
+// Sans SC stays the declared zh fallback in globals.css (neither face ships CJK glyphs).
+const displayFont = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
+  weight: ["600", "700", "800"],
+  variable: "--font-display-face",
+  display: "swap",
+});
+const bodyFont = Inter({
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body-face",
+  display: "swap",
+});
 
 export const dynamicParams = false; // unsupported locales are not rendered — they 404
 
@@ -39,7 +57,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   ]);
   return (
     <html lang={HTML_LANG[lang]}>
-      <body className="min-h-screen bg-background">
+      <body className={`${displayFont.variable} ${bodyFont.variable} min-h-screen bg-background`}>
         <UtmCapture />
         <Navbar lang={lang} copy={copy} />
         {children}

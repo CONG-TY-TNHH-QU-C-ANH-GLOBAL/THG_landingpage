@@ -1,0 +1,271 @@
+/* Ported from the approved Open Design artifact
+   (homepage-concept-global-fulfillment-orbit.html, "hero scroll scene" + "globe stage"
+   blocks) — see IMPLEMENTATION_BASELINE.md "Motion phases and interaction rules".
+   Scoped as a CSS Module (not global.css) so --scene-h/--depth-scale stay a hero-local
+   concern instead of leaking into :root.
+
+   Default (no JS / reduced-motion) state is the COMPLETE STATIC SCENE: normal document
+   flow, no sticky, every route/node fully visible, globe settled. JS only adds
+   .motionOn (never under prefers-reduced-motion) to turn this into a tall sticky
+   scroll scene — see hero-parallax-scene.tsx for the scroll-progress -> transform
+   mapping. */
+
+.heroScene {
+  height: auto;
+  --scene-h: 200vh;
+  --depth-scale: 1;
+}
+.heroScene.motionOn {
+  height: var(--scene-h);
+}
+
+.heroSticky {
+  position: relative;
+  overflow: hidden;
+}
+.motionOn .heroSticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.heroCopy {
+  transition: opacity 0.1s linear, transform 0.1s linear;
+}
+.heroSubFade {
+  transition: opacity 0.1s linear;
+}
+
+/* ---- globe stage (5 depth layers) ---- */
+.globeStage {
+  position: relative;
+  height: clamp(420px, 42vw, 640px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+}
+.globeLayer {
+  position: absolute;
+  inset: 0;
+}
+.motionOn .globeLayer {
+  transition: transform 0.08s linear, opacity 0.15s linear;
+  will-change: transform;
+}
+
+.lGrid {
+  background-image: repeating-linear-gradient(0deg, hsl(var(--navy) / 0.05) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, hsl(var(--navy) / 0.05) 0 1px, transparent 1px 44px);
+  border-radius: 50%;
+  mask-image: radial-gradient(circle at 50% 50%, #000 55%, transparent 78%);
+}
+
+.lRoutes svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.routePath {
+  fill: none;
+  stroke: hsl(var(--gold));
+  stroke-width: 1.4;
+  opacity: 0.55;
+  stroke-dasharray: 2 7;
+  stroke-linecap: round;
+}
+.motionOn .routePath {
+  opacity: 0;
+  transition: opacity 0.3s var(--motion-smooth);
+}
+.routePath.pulse {
+  animation: dashmove 3.4s linear infinite;
+}
+@keyframes dashmove {
+  to {
+    stroke-dashoffset: -90;
+  }
+}
+.shipmentDot {
+  fill: hsl(var(--gold-light));
+}
+.shipmentDot.a {
+  animation: travelA 5.2s ease-in-out infinite;
+}
+.shipmentDot.b {
+  animation: travelB 6.4s ease-in-out infinite 1.4s;
+}
+.motionOn .shipmentDot {
+  animation-play-state: paused;
+}
+@keyframes travelA {
+  0%,
+  100% {
+    offset-distance: 0%;
+  }
+  50% {
+    offset-distance: 100%;
+  }
+}
+@keyframes travelB {
+  0%,
+  100% {
+    offset-distance: 0%;
+  }
+  50% {
+    offset-distance: 100%;
+  }
+}
+
+.lGlobe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.globeTilt {
+  width: min(72%, 560px);
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+}
+.motionOn .globeTilt {
+  transition: transform 0.12s linear;
+}
+.globeImgWrap {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+}
+.globeImgWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 30px 46px hsl(var(--navy) / 0.35));
+}
+.globeGlow {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, hsl(var(--gold-light) / 0.35), transparent 62%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.lNodes {
+  pointer-events: none;
+}
+.node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.motionOn .node {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.35s var(--motion-smooth), transform 0.35s var(--motion-smooth);
+}
+.motionOn .node.active {
+  opacity: 1;
+  transform: none;
+}
+.nodeDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: hsl(var(--gold));
+  box-shadow: 0 0 0 4px var(--gold-dim);
+  flex: 0 0 auto;
+}
+.nodeChip {
+  background: hsl(var(--card) / 0.94);
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: hsl(var(--navy));
+  box-shadow: 0 4px 10px hsl(var(--navy) / 0.12);
+  white-space: nowrap;
+}
+.nodeApac .nodeChip {
+  background: hsl(var(--navy));
+  color: #fff;
+  border-color: transparent;
+}
+.nodeUs {
+  top: 26%;
+  left: 6%;
+}
+.nodeEu {
+  top: 16%;
+  right: 10%;
+}
+.nodeApac {
+  bottom: 20%;
+  right: -2%;
+}
+
+.lFg {
+  border: 1px dashed hsl(var(--gold) / 0.35);
+  border-radius: 50%;
+  inset: -2%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroScene,
+  .heroScene.motionOn {
+    height: auto !important;
+  }
+  .heroSticky,
+  .motionOn .heroSticky {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+  }
+  .routePath.pulse,
+  .shipmentDot {
+    animation: none !important;
+  }
+  .globeTilt,
+  .globeLayer,
+  .node,
+  .heroCopy {
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+  }
+  .routePath {
+    opacity: 0.55 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .heroScene {
+    --depth-scale: 0.6;
+    --scene-h: 170vh;
+  }
+  .globeStage {
+    height: min(78vw, 380px);
+    margin-top: 8px;
+  }
+  .nodeChip {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+  .lFg {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroScene {
+    --depth-scale: 0.4;
+    --scene-h: 140vh;
+  }
+  .lGrid {
+    opacity: 0.5;
+  }
+}

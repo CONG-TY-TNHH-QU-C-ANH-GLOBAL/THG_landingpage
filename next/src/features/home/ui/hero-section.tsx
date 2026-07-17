@@ -1,5 +1,12 @@
 // Parity source: src/components/HeroSection.tsx
-import { CheckCircle2, MapPin, Package, Plane } from "lucide-react";
+// WEB-001A: right column recomposed to the approved Open Design baseline (visual
+// authority: homepage-concept-global-fulfillment-orbit.html; rules:
+// IMPLEMENTATION_BASELINE.md "Hero with 3D globe" / "Real scroll-driven parallax") —
+// decorative floating stat cards + continuously-looping orbit icons (an anti-pattern
+// per the baseline: "every entry animation fires once, no continuous/looping decorative
+// motion") replaced by <HeroParallaxScene>, a one-shot-per-scroll, reduced-motion-safe
+// client island. Left column content/i18n keys are unchanged production copy.
+import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
@@ -7,6 +14,7 @@ import type { Locale } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
 import ScrollReveal from "@/shared/ui/scroll-reveal";
 import { HeroPrimaryCta } from "./hero-primary-cta";
+import { HeroParallaxScene } from "./hero-parallax-scene";
 
 import type { HomeHeroContent } from "../models/homepageContent";
 
@@ -56,18 +64,17 @@ const HeroSection = ({ lang, copy, hero }: HeroSectionProps) => {
         }}
       />
 
-      {/* Shimmer overlay */}
-      <div className="absolute inset-0 shimmer-effect opacity-30 pointer-events-none" />
-
-      <div className="container mx-auto px-4 flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center relative z-10">
+      <div
+        id="hero-copy"
+        className="container mx-auto px-4 flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center relative z-10 transition-all duration-100 ease-linear"
+      >
         <div className="space-y-6 md:space-y-8 text-center lg:text-left">
           <ScrollReveal delay={100}>
-            <div className="inline-flex max-w-full items-center gap-2 glass-card rounded-full px-4 py-2 md:px-5 md:py-2.5 text-sm glow-pulse">
-              <span className="w-2 h-2 rounded-full bg-accent animate-pulse flex-shrink-0" />
-              <span className="font-medium text-muted-foreground tracking-wide uppercase text-[10px] md:text-xs truncate" >
-                {badge}
-              </span>
-            </div>
+            {/* Plain eyebrow label, not a pulsing pill — IMPLEMENTATION_BASELINE.md
+                anti-patterns: "decorative floating cards without informational purpose". */}
+            <p className="font-semibold text-accent tracking-[0.2em] uppercase text-[length:var(--step-label)]">
+              {badge}
+            </p>
           </ScrollReveal>
 
           <ScrollReveal delay={200}>
@@ -111,7 +118,7 @@ const HeroSection = ({ lang, copy, hero }: HeroSectionProps) => {
               <Button
                 variant="outline"
                 asChild
-                className="rounded-full px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
+                className="rounded-lg px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
               >
                 <Link prefetch={false} href="/catalog">
                   <span>{ctaSecondary}</span>
@@ -125,86 +132,23 @@ const HeroSection = ({ lang, copy, hero }: HeroSectionProps) => {
           </ScrollReveal>
         </div>
 
-        <ScrollReveal
-          direction="scale"
-          delay={400}
-          className="relative flex justify-center items-center w-full overflow-hidden mx-auto lg:mx-0 mt-2 lg:mt-0 max-w-[280px] sm:max-w-none aspect-square sm:aspect-auto"
-        >
-          <div className="relative flex items-center justify-center scale-[0.55] sm:scale-[0.65] md:scale-[0.8] lg:scale-100 origin-center -my-16 sm:-my-12 md:-my-8 lg:my-0">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-[420px] h-[420px] rounded-full bg-primary/10 blur-[80px] animate-pulse" />
-            </div>
-
-            <div className="globe-real-container">
-              {/* LCP candidate — AVIF/WebP fallbacks shrink from 536KB PNG → ~43KB.
-                  Width/height attrs reserve aspect ratio so CSS scaling doesn't shift layout. */}
-              <picture>
-                <source srcSet={globeImageAvif} type="image/avif" />
-                <source srcSet={globeImageWebp} type="image/webp" />
-                <img
-                  src={globeImage}
-                  alt="THG Global Network"
-                  className="globe-real-image"
-                  width={1024}
-                  height={1024}
-                  fetchPriority="high"
-                  decoding="async"
-                />
-              </picture>
-              <div className="globe-orbit" />
-              <div className="globe-orbit globe-orbit-2" />
-
-              <div className="airplane-orbit">
-                <div className="airplane airplane-1"><Plane className="w-5 h-5 text-navy fill-navy/20" aria-hidden="true" /></div>
-              </div>
-              <div className="airplane-orbit airplane-orbit-reverse">
-                <div className="airplane airplane-2"><Plane className="w-5 h-5 text-navy fill-navy/20" aria-hidden="true" /></div>
-              </div>
-
-              <div className="package-orbit">
-                <div className="package-item"><Package className="w-4 h-4 text-primary" aria-hidden="true" /></div>
-              </div>
-              <div className="package-orbit package-orbit-2">
-                <div className="package-item package-item-2"><Package className="w-4 h-4 text-primary" aria-hidden="true" /></div>
-              </div>
-            </div>
-
-            <div className="absolute top-10 left-0 sm:-left-8 md:-left-12 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
-              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground mb-1">
-                <MapPin className="w-3 h-3 text-primary" aria-hidden="true" /> EU
-              </div>
-              <p className="text-xl sm:text-2xl md:text-3xl font-bold text-navy tracking-tight">5-8</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground" >{t("hero.delivery_days")}</p>
-            </div>
-
-            <div className="absolute top-24 right-6 sm:right-2 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
-              <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
-              <span className="text-xs font-semibold">USA</span>
-            </div>
-
-            <div className="absolute top-44 -right-10 md:-right-10 glass-card rounded-2xl px-4 md:px-5 py-3 md:py-4 animate-float z-10 block glow-pulse">
-              <p className="text-2xl md:text-3xl font-bold text-navy tracking-tight">4</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">{t("hero.warehouses")}</p>
-            </div>
-
-            <div className="absolute bottom-36 right-2 md:right-4 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
-              <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
-              <span className="text-xs font-semibold">China</span>
-            </div>
-
-            <div className="absolute bottom-24 right-0 md:-right-4 glass-card rounded-xl px-3 md:px-4 py-2 flex items-center gap-2 animate-float z-10">
-              <MapPin className="w-3.5 h-3.5 text-primary" aria-hidden="true" />
-              <span className="text-xs font-semibold">Vietnam</span>
-            </div>
-
-            <div className="absolute bottom-8 left-2 sm:-left-4 md:-left-8 glass-card rounded-2xl px-3 sm:px-4 md:px-5 py-3 md:py-4 animate-float z-10 glow-pulse">
-              <p className="text-lg sm:text-xl md:text-2xl font-bold text-navy tracking-tight">
-                {t("hero.from_price")} <span className="text-gradient-gold">1.2$</span>
-              </p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground" >{t("hero.us_fulfill")}</p>
-            </div>
-          </div>
-        </ScrollReveal>
+        {/* Real scroll-driven parallax (IMPLEMENTATION_BASELINE.md "Motion phases and
+            interaction rules") — server-rendered static scene by default; the client
+            island below only ever adds motion post-hydration, and never under
+            prefers-reduced-motion. Node copy reuses the same production i18n strings the
+            previous floating stat cards showed (delivery days / US fulfillment price),
+            just relocated onto the network layer instead of decorative glass cards. */}
+        <div className="relative w-full mx-auto lg:mx-0 mt-2 lg:mt-0">
+          <HeroParallaxScene
+            imageSrc={globeImage}
+            imageSrcAvif={globeImageAvif}
+            imageSrcWebp={globeImageWebp}
+            imageAlt="THG Fulfill global logistics network"
+            apac={{ value: "Vietnam · China", caption: "Asia-Pacific" }}
+            us={{ value: "$1.2", caption: t("hero.us_fulfill") }}
+            eu={{ value: "5-8", caption: t("hero.delivery_days") }}
+          />
+        </div>
       </div>
     </section>
   );

@@ -67,6 +67,41 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Semantic layout tokens (WEB-001A — IMPLEMENTATION_BASELINE.md "Semantic color,
+       spacing, radius, border, elevation rules"). --radius/--navy/--cream/--card/--gold/
+       --border above already equal the approved values 1:1 (see BRAND.md provenance);
+       only the large/small radius steps and the gold "dim" glow tint were missing. */
+    --radius-lg: 16px;
+    --radius-sm: 6px;
+    --gold-dim: hsl(var(--gold) / 0.16);
+
+    /* 12-step type scale (IMPLEMENTATION_BASELINE.md "Typography rules"). Fluid clamp()
+       steps consumed via Tailwind arbitrary values (e.g. text-[length:var(--step-h1)]) —
+       no tailwind.config.ts change needed. */
+    --step-display: clamp(40px, 5.6vw, 68px);
+    --step-h1: clamp(32px, 4.2vw, 54px);
+    --step-h2: clamp(24px, 3vw, 36px);
+    --step-h3: clamp(19px, 2vw, 24px);
+    --step-h4: 16px;
+    --step-lead: clamp(17px, 1.6vw, 20px);
+    --step-body: 16px;
+    --step-small: 13.5px;
+    --step-nav: 14px;
+    --step-label: 11px;
+    --step-metric: clamp(28px, 3.2vw, 40px);
+    --step-button: 14px;
+    --tracking-tight: -0.03em;
+
+    /* Typography foundation (IMPLEMENTATION_BASELINE.md "Typography rules — vi / en / zh").
+       *-face resolve to next/font/google's self-hosted Be Vietnam Pro / Inter (see
+       [lang]/layout.tsx); the composite stacks below add the fallback chain, keeping
+       Noto Sans SC as the CJK fallback exactly per brand.json typography.*.fallbacks —
+       neither display nor body face ships CJK glyphs, so zh must not drop this fallback. */
+    --font-display: var(--font-display-face), system-ui, -apple-system, "Segoe UI", Roboto,
+      "Noto Sans SC", sans-serif;
+    --font-body: var(--font-body-face), system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
   }
 }
 
@@ -78,7 +113,7 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-
+    font-family: var(--font-body);
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -91,13 +126,20 @@
   h4,
   h5,
   h6 {
-
+    font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.025em;
+    letter-spacing: var(--tracking-tight);
   }
 }
 
 @layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
 
   /* ─── Text Gradients ─── */
   .text-gradient-gold {
