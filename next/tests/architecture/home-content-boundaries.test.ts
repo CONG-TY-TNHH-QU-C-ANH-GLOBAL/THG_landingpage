@@ -63,12 +63,17 @@ describe("home content boundaries (FND-005)", () => {
   });
 
   it("no Client Component imports the home server loaders", () => {
+    // Blocks the barrel (re-exports the server loaders alongside safe model types) and
+    // the server/ subtree directly. Deliberately does NOT block a client component
+    // importing its own co-located ui/ siblings (e.g. a CSS Module) or model types —
+    // those are the safe, intended imports for a client island (WEB-001A).
+    const FORBIDDEN = /^@\/features\/home$|^@\/features\/home\/server(\/|$)/;
     const violations: string[] = [];
     for (const file of sourceFiles(SRC)) {
       const code = readFileSync(file, "utf8");
       if (!isClientModule(code)) continue;
       for (const raw of allSpecifiers(code)) {
-        if (/^@\/features\/home(\/server)?(\/|$)/.test(canonicalizeImport(file, SRC, raw))) {
+        if (FORBIDDEN.test(canonicalizeImport(file, SRC, raw))) {
           violations.push(`${norm(file)} ("use client") imports "${raw}"`);
         }
       }

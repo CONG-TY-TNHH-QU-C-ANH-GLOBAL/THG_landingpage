@@ -190,7 +190,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
           <div>
-            <span className={`text-base font-bold leading-tight tracking-tight block ${tone.brandText}`}>THG Fulfill</span>
+            <span className={`font-display text-base font-bold leading-tight tracking-tight block ${tone.brandText}`}>THG Fulfill</span>
             <span className={`text-[9px] tracking-[0.15em] uppercase block ${tone.brandSub}`}>Transport Happiness Group</span>
           </div>
         </Link>
@@ -292,7 +292,10 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
             copy={copy}
             sourcePage="navbar-desktop"
             trigger={
-              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-6 py-5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0">
+              // rounded-lg binds to the semantic --radius token (12px, IMPLEMENTATION_BASELINE.md
+              // "Restraint on rounding" — rounded-full is a measured anti-pattern outside true
+              // circular controls); rounded-xl/2xl elsewhere in this file already equal 12px/16px.
+              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-lg px-6 py-5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0">
                 {t("nav.consult")}
               </Button>
             }
