@@ -1,0 +1,102 @@
+/* THG Community Knowledge Loop — one-shot Ask → Review → Answer & Share reveal
+   (Open Design artifact "knowledge-loop"). Only the entry choreography lives here;
+   layout/fields of the surrounding conversion section are Tailwind. The default
+   (no `inView`) state under reduced motion is the complete resolved path. */
+
+.klNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  width: 68px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.35s var(--motion-smooth), transform 0.35s var(--motion-smooth);
+}
+.klIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid rgb(255 255 255 / 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(195 201 212);
+  transition: box-shadow 0.2s var(--motion-smooth);
+}
+.klIcon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+.klNodeReview .klIcon {
+  border-color: hsl(var(--gold-light));
+  color: hsl(var(--gold-light));
+}
+.klNodeAnswer .klIcon {
+  border-color: hsl(var(--gold-light));
+  color: hsl(var(--gold-light));
+  background: var(--gold-dim);
+}
+.klLine {
+  flex: 1;
+  height: 1px;
+  background: rgb(255 255 255 / 0.14);
+  margin-top: 17px;
+  position: relative;
+  overflow: hidden;
+}
+.klLine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--gold-light));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--motion-smooth);
+}
+.inView .klNode {
+  opacity: 1;
+  transform: none;
+}
+.inView .klNodeAsk {
+  transition-delay: 0s;
+}
+.inView .klNodeReview {
+  transition-delay: 0.5s;
+}
+.inView .klNodeAnswer {
+  transition-delay: 0.95s;
+}
+.inView .klLine1::after {
+  transition-delay: 0.25s;
+  transform: scaleX(1);
+}
+.inView .klLine2::after {
+  transition-delay: 0.75s;
+  transform: scaleX(1);
+}
+.loop:hover .klLine::after,
+.loop:focus-within .klLine::after {
+  filter: brightness(1.4);
+}
+.loop:hover .klNodeAnswer .klIcon,
+.loop:focus-within .klNodeAnswer .klIcon {
+  box-shadow: 0 0 0 4px var(--gold-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .klNode {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .klLine::after {
+    transition: none !important;
+    transform: scaleX(1) !important;
+  }
+}
