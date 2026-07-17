@@ -3,11 +3,10 @@
 // The shell declares its own row shape (structurally identical to the FND-005
 // ContactLocation model): shared/ must not import features/, and the models graduate to
 // shared/cms/models in a dedicated PR per the FND-005 graduation rule.
-import { MapPin, Phone, Mail, Globe, ArrowRight } from "lucide-react";
+import { MapPin, Phone, Mail, Globe } from "lucide-react";
 import ScrollReveal from "@/shared/ui/scroll-reveal";
 import { SectionHeader } from "@/shared/ui/section-header";
-import { LeadFormDialog } from "@/shared/ui/lead-form-dialog";
-import { Button } from "@/shared/ui/button";
+import { ContactCtaTrigger } from "@/shared/ui/site-shell/contact-cta-trigger";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
 import type { Locale } from "@/shared/i18n";
 
@@ -146,16 +145,7 @@ function ContactCtaCard({ lang, copy }: Readonly<{ lang: Locale; copy: Marketing
 
       <div className="flex flex-col gap-3 w-full">
         {/* Submit Inquiry */}
-        <LeadFormDialog
-          lang={lang}
-          copy={copy}
-          trigger={
-            <Button size="lg" className="w-full rounded-full font-semibold gap-2 text-sm">
-              {t("contact.leave_info")}
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          }
-        />
+        <ContactCtaTrigger lang={lang} copy={copy} />
 
         <div className="relative flex items-center gap-3 my-1">
           <div className="flex-1 h-px bg-border" />

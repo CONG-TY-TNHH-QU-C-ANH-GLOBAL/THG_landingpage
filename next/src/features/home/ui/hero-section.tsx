@@ -1,12 +1,12 @@
 // Parity source: src/components/HeroSection.tsx
-import { ArrowRight, CheckCircle2, MapPin, Package, Plane } from "lucide-react";
+import { CheckCircle2, MapPin, Package, Plane } from "lucide-react";
 import Link from "next/link";
 
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
 import type { Locale } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
-import { LeadFormDialog } from "@/shared/ui/lead-form-dialog";
 import ScrollReveal from "@/shared/ui/scroll-reveal";
+import { HeroPrimaryCta } from "./hero-primary-cta";
 
 import type { HomeHeroContent } from "../models/homepageContent";
 
@@ -105,19 +105,7 @@ const HeroSection = ({ lang, copy, hero }: HeroSectionProps) => {
           <ScrollReveal delay={500}>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:justify-center lg:justify-start">
               {/* Primary CTA — "Nhận báo giá miễn phí" → open lead form modal */}
-              <LeadFormDialog
-            lang={lang}
-            copy={copy}
-                sourcePage="/"
-                trigger={
-                  <Button
-                    className="bg-primary hover:bg-gold-dark text-primary-foreground rounded-full px-8 py-6 text-base gap-2 hover:-translate-y-1 transition-all duration-300"
-                    style={{ boxShadow: "0 8px 25px hsl(36 45% 42% / 0.3)" }}
-                  >
-                    <span>{cta}</span> <ArrowRight className="w-4 h-4" />
-                  </Button>
-                }
-              />
+              <HeroPrimaryCta lang={lang} copy={copy} cta={cta} />
               {/* Secondary CTA — "Xem dịch vụ" → catalog page. Kept unprefixed like
                   Vite's navigate('/catalog'); the proxy preserves today's redirect. */}
               <Button

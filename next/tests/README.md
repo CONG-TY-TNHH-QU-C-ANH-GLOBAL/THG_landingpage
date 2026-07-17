@@ -3,6 +3,7 @@
 | Dir | Purpose | Status in FND-001 |
 |---|---|---|
 | `architecture/` | import-boundary gate (+ forbidden-import fixtures) | **implemented** |
+| `component/` | React Testing Library + happy-dom render/interaction tests (opt in per-file via `@vitest-environment`; rest of the suite stays on the default `node` environment) | **implemented** — WEB-001 lead-dialog CTA |
 | `smoke/` | foundation contract checks (health, errors, env) | **implemented** |
 | `performance/` | k6 load scenarios (smoke / baseline / capacity) | **implemented** (scripts) |
 | `contract/` | cross-product contract conformance | reserved — first contract consumer |
