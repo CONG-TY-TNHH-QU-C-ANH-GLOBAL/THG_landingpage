@@ -4,6 +4,7 @@ import type { z } from "zod";
 
 import { cmsFetch } from "@/shared/cms";
 import { CmsError } from "@/shared/cms/errors";
+import { logCmsFallback } from "@/shared/cms/log-fallback";
 import { siteSettingsResponseSchema } from "@/shared/cms/schemas";
 import type { Locale } from "@/shared/i18n";
 
@@ -44,7 +45,7 @@ async function loadOrFallback<S extends z.ZodTypeAny, M>(
     return map(await cmsFetch(path, schema));
   } catch (err) {
     if (!(err instanceof CmsError)) throw err;
-    console.error(`[CMS] home loader fallback for ${path}:`, err.safeMeta());
+    logCmsFallback(path, err);
     return fallback;
   }
 }

@@ -2,6 +2,7 @@ import "server-only";
 
 import { cmsFetch } from "@/shared/cms";
 import { CmsError } from "@/shared/cms/errors";
+import { logCmsFallback } from "@/shared/cms/log-fallback";
 import type { Locale } from "../config/locales";
 import { MARKETING_COPY } from "../marketing-copy";
 import type { MarketingCopy } from "../marketing";
@@ -22,7 +23,7 @@ export async function getMarketingCopy(lang: Locale): Promise<MarketingCopy> {
     Object.assign(base, dto.translations);
   } catch (err) {
     if (!(err instanceof CmsError)) throw err;
-    console.error(`[CMS] marketing-copy overlay fallback for /translations?lang=${lang}:`, err.safeMeta());
+    logCmsFallback(`/translations?lang=${lang}`, err);
   }
   return base;
 }
