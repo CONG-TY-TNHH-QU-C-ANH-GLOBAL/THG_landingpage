@@ -4,17 +4,21 @@
 // (homepage-concept-global-fulfillment-orbit.html #heroScene / #globeStage script) —
 // see IMPLEMENTATION_BASELINE.md "Motion phases and interaction rules" for the P1-P4
 // spec this mirrors. Client island boundary (WEB-001A): receives only pre-rendered,
-// serializable layer content as props — no data fetching, no CMS import here (enforced
-// by tests/architecture/home-content-boundaries.test.ts "no Client Component imports the
-// home server loaders"). The server-rendered markup below IS the complete static/
-// reduced-motion scene; this effect only ever adds the "motionOn" class and inline
+// serializable layer content/`children` as props — no data fetching, no CMS import here
+// (enforced by tests/architecture/home-content-boundaries.test.ts "no Client Component
+// imports the home server loaders"). The server-rendered markup below IS the complete
+// static/reduced-motion scene; this effect only ever adds the "motionOn" class and inline
 // transforms post-hydration, so first paint and hydration always match.
 //
-// The scrolling headline/CTA column (#hero-copy) is rendered by the Server Component
-// sibling (hero-section.tsx), not by this island — mirroring the source script's own
-// `document.getElementById('heroCopy')` lookup rather than threading a ref across the
-// server/client boundary, which would force the whole hero into a client component.
-import { useEffect, useRef } from "react";
+// WEB-001A fix-up: this island owns the FULL heroScene -> heroSticky -> heroGrid
+// structure (matching the artifact 1:1) and takes the headline/CTA column as
+// `children` from its Server Component sibling (hero-section.tsx). An earlier
+// version rendered only the globe side here and left `children` as a plain grid
+// sibling in hero-section.tsx — that grid row then stretched to heroScene's 200vh
+// scroll-track height, and `items-center` centered the (unwrapped) copy column
+// inside that 200vh row, clipping the H1 below the fold. `children` is a
+// pre-rendered React element (opaque to this client boundary), not a data fetch.
+import { useEffect, useRef, type ReactNode } from "react";
 import styles from "./hero-parallax-scene.module.css";
 
 interface HeroParallaxNodeContent {
@@ -23,6 +27,7 @@ interface HeroParallaxNodeContent {
 }
 
 interface HeroParallaxSceneProps {
+  readonly children: ReactNode;
   readonly imageSrc: string;
   readonly imageSrcAvif: string;
   readonly imageSrcWebp: string;
@@ -50,8 +55,9 @@ const US_EU_ROUTE = "M70,150 Q200,40 330,90";
 const US_APAC_ROUTE = "M70,150 Q160,260 330,300";
 const EU_APAC_ROUTE = "M330,90 Q380,190 330,300";
 
-export function HeroParallaxScene({ imageSrc, imageSrcAvif, imageSrcWebp, imageAlt, apac, us, eu }: HeroParallaxSceneProps) {
+export function HeroParallaxScene({ children, imageSrc, imageSrcAvif, imageSrcWebp, imageAlt, apac, us, eu }: HeroParallaxSceneProps) {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const heroCopyRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const globeTiltRef = useRef<HTMLDivElement>(null);
   const lGlobeRef = useRef<HTMLDivElement>(null);
@@ -76,7 +82,7 @@ export function HeroParallaxScene({ imageSrc, imageSrcAvif, imageSrcWebp, imageA
 
     scene.classList.add(styles.motionOn);
 
-    const heroCopy = document.getElementById("hero-copy");
+    const heroCopy = heroCopyRef.current;
     const globeTilt = globeTiltRef.current;
     const lGlobe = lGlobeRef.current;
     const lGrid = lGridRef.current;
@@ -221,59 +227,66 @@ export function HeroParallaxScene({ imageSrc, imageSrcAvif, imageSrcWebp, imageA
 
   return (
     <div ref={sceneRef} className={styles.heroScene} data-testid="hero-parallax-scene">
-      <div ref={stageRef} className={styles.globeStage} data-testid="hero-globe-stage">
-        {/* Layer 1: coordinate atmosphere */}
-        <div ref={lGridRef} className={`${styles.globeLayer} ${styles.lGrid}`} />
-        {/* Layer 2: global route network — each path reveals (opacity) across its own
-            scroll-progress window, then pulses once fully drawn and in view */}
-        <div ref={lRoutesRef} className={`${styles.globeLayer} ${styles.lRoutes}`}>
-          <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
-            <path ref={routeUsEuRef} className={styles.routePath} data-reveal-start="0.40" data-reveal-end="0.55" d={US_EU_ROUTE} />
-            <path ref={routeUsApacRef} className={styles.routePath} data-reveal-start="0.20" data-reveal-end="0.36" d={US_APAC_ROUTE} />
-            <path ref={routeEuApacRef} className={styles.routePath} data-reveal-start="0.30" data-reveal-end="0.48" d={EU_APAC_ROUTE} />
-            <circle ref={dotARef} className={`${styles.shipmentDot} ${styles.a}`} r="3.2">
-              <animateMotion dur="5.2s" repeatCount="indefinite" path={US_EU_ROUTE} />
-            </circle>
-            <circle ref={dotBRef} className={`${styles.shipmentDot} ${styles.b}`} r="3.2">
-              <animateMotion dur="6.4s" repeatCount="indefinite" path={US_APAC_ROUTE} />
-            </circle>
-          </svg>
-        </div>
-        {/* Layer 3: the globe (real asset) — principal visual anchor */}
-        <div ref={lGlobeRef} className={`${styles.globeLayer} ${styles.lGlobe}`}>
-          <div ref={globeTiltRef} className={styles.globeTilt}>
-            <div className={styles.globeGlow} />
-            <div className={styles.globeImgWrap}>
-              <picture>
-                <source srcSet={imageSrcAvif} type="image/avif" />
-                <source srcSet={imageSrcWebp} type="image/webp" />
-                <img src={imageSrc} alt={imageAlt} width={1024} height={1024} fetchPriority="high" decoding="async" />
-              </picture>
+      <div className={styles.heroSticky}>
+        <div className={styles.heroGrid}>
+          <div ref={heroCopyRef} className={styles.heroCopy} data-testid="hero-copy">
+            {children}
+          </div>
+          <div ref={stageRef} className={styles.globeStage} data-testid="hero-globe-stage">
+            {/* Layer 1: coordinate atmosphere */}
+            <div ref={lGridRef} className={`${styles.globeLayer} ${styles.lGrid}`} />
+            {/* Layer 2: global route network — each path reveals (opacity) across its own
+                scroll-progress window, then pulses once fully drawn and in view */}
+            <div ref={lRoutesRef} className={`${styles.globeLayer} ${styles.lRoutes}`}>
+              <svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+                <path ref={routeUsEuRef} className={styles.routePath} data-reveal-start="0.40" data-reveal-end="0.55" d={US_EU_ROUTE} />
+                <path ref={routeUsApacRef} className={styles.routePath} data-reveal-start="0.20" data-reveal-end="0.36" d={US_APAC_ROUTE} />
+                <path ref={routeEuApacRef} className={styles.routePath} data-reveal-start="0.30" data-reveal-end="0.48" d={EU_APAC_ROUTE} />
+                <circle ref={dotARef} className={`${styles.shipmentDot} ${styles.a}`} r="3.2">
+                  <animateMotion dur="5.2s" repeatCount="indefinite" path={US_EU_ROUTE} />
+                </circle>
+                <circle ref={dotBRef} className={`${styles.shipmentDot} ${styles.b}`} r="3.2">
+                  <animateMotion dur="6.4s" repeatCount="indefinite" path={US_APAC_ROUTE} />
+                </circle>
+              </svg>
             </div>
+            {/* Layer 3: the globe (real asset) — principal visual anchor */}
+            <div ref={lGlobeRef} className={`${styles.globeLayer} ${styles.lGlobe}`}>
+              <div ref={globeTiltRef} className={styles.globeTilt}>
+                <div className={styles.globeGlow} />
+                <div className={styles.globeImgWrap}>
+                  <picture>
+                    <source srcSet={imageSrcAvif} type="image/avif" />
+                    <source srcSet={imageSrcWebp} type="image/webp" />
+                    <img src={imageSrc} alt={imageAlt} width={1024} height={1024} fetchPriority="high" decoding="async" />
+                  </picture>
+                </div>
+              </div>
+            </div>
+            {/* Layer 4: warehouse nodes + operational labels, attached to their route */}
+            <div ref={lNodesRef} className={`${styles.globeLayer} ${styles.lNodes}`}>
+              <div ref={nodeUsRef} className={`${styles.node} ${styles.nodeUs}`}>
+                <span className={styles.nodeDot} />
+                <span className={styles.nodeChip}>
+                  <strong>{us.value}</strong> {us.caption}
+                </span>
+              </div>
+              <div ref={nodeEuRef} className={`${styles.node} ${styles.nodeEu}`}>
+                <span className={styles.nodeDot} />
+                <span className={styles.nodeChip}>
+                  <strong>{eu.value}</strong> {eu.caption}
+                </span>
+              </div>
+              <div ref={nodeApacRef} className={`${styles.node} ${styles.nodeApac}`}>
+                <span className={styles.nodeChip}>
+                  {apac.value} — {apac.caption}
+                </span>
+              </div>
+            </div>
+            {/* Layer 5: restrained foreground depth marker, fastest layer */}
+            <div ref={lFgRef} className={`${styles.globeLayer} ${styles.lFg}`} />
           </div>
         </div>
-        {/* Layer 4: warehouse nodes + operational labels, attached to their route */}
-        <div ref={lNodesRef} className={`${styles.globeLayer} ${styles.lNodes}`}>
-          <div ref={nodeUsRef} className={`${styles.node} ${styles.nodeUs}`}>
-            <span className={styles.nodeDot} />
-            <span className={styles.nodeChip}>
-              <strong>{us.value}</strong> {us.caption}
-            </span>
-          </div>
-          <div ref={nodeEuRef} className={`${styles.node} ${styles.nodeEu}`}>
-            <span className={styles.nodeDot} />
-            <span className={styles.nodeChip}>
-              <strong>{eu.value}</strong> {eu.caption}
-            </span>
-          </div>
-          <div ref={nodeApacRef} className={`${styles.node} ${styles.nodeApac}`}>
-            <span className={styles.nodeChip}>
-              {apac.value} — {apac.caption}
-            </span>
-          </div>
-        </div>
-        {/* Layer 5: restrained foreground depth marker, fastest layer */}
-        <div ref={lFgRef} className={`${styles.globeLayer} ${styles.lFg}`} />
       </div>
     </div>
   );

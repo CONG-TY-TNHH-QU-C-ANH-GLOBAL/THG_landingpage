@@ -10,6 +10,13 @@
    scroll scene — see hero-parallax-scene.tsx for the scroll-progress -> transform
    mapping. */
 
+/* WEB-001A fix-up: heroScene must wrap BOTH the copy column and the globe
+   column so the tall (200vh) scroll track and the sticky viewport apply to
+   the whole hero, not just the globe side — a grid row stretched to 200vh
+   with `items-center` on only one wrapped child was pushing the other
+   (unwrapped) column's content to the vertical middle of that 200vh row,
+   clipping the H1 below the fold. See hero-parallax-scene.tsx for how
+   `children` (the Server Component-rendered copy) is composed in here. */
 .heroScene {
   height: auto;
   --scene-h: 200vh;
@@ -25,10 +32,35 @@
 }
 .motionOn .heroSticky {
   position: sticky;
-  top: 0;
+  /* Accounts for the real fixed navbar height (navbar.tsx h-16/lg:h-20) so the
+     pinned scene sits below it instead of underneath it while scrolling. */
+  top: 64px;
   height: 100vh;
   display: flex;
   align-items: center;
+}
+@media (min-width: 1024px) {
+  .motionOn .heroSticky {
+    top: 80px;
+  }
+}
+
+.heroGrid {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 24px;
+}
+@media (min-width: 1024px) {
+  .heroGrid {
+    /* Approved asymmetric ratio (IMPLEMENTATION_BASELINE.md visual authority),
+       not a 50/50 split. */
+    grid-template-columns: 53% 47%;
+    gap: 48px;
+  }
 }
 
 .heroCopy {
@@ -242,7 +274,10 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
+  /* Aligned to the same 1024px (Tailwind lg) breakpoint the grid collapses
+     at above, so there is no in-between range where the layout is already
+     single-column but the depth/scene constants still assume desktop. */
   .heroScene {
     --depth-scale: 0.6;
     --scene-h: 170vh;

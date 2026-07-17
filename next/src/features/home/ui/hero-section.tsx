@@ -64,91 +64,86 @@ const HeroSection = ({ lang, copy, hero }: HeroSectionProps) => {
         }}
       />
 
-      <div
-        id="hero-copy"
-        className="container mx-auto px-4 flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-12 items-center relative z-10 transition-all duration-100 ease-linear"
-      >
-        <div className="space-y-6 md:space-y-8 text-center lg:text-left">
-          <ScrollReveal delay={100}>
-            {/* Plain eyebrow label, not a pulsing pill — IMPLEMENTATION_BASELINE.md
-                anti-patterns: "decorative floating cards without informational purpose". */}
-            <p className="font-semibold text-accent tracking-[0.2em] uppercase text-[length:var(--step-label)]">
-              {badge}
-            </p>
-          </ScrollReveal>
+      {/* Real scroll-driven parallax (IMPLEMENTATION_BASELINE.md "Motion phases and
+          interaction rules") — HeroParallaxScene owns the outer scroll-track/sticky/grid
+          structure (matching the artifact 1:1) and takes this copy as `children`, so the
+          tall scroll track applies to the whole hero, not just the globe side. Node copy
+          reuses the same production i18n strings the previous floating stat cards showed
+          (delivery days / US fulfillment price), just relocated onto the network layer. */}
+      <div className="container mx-auto px-4 relative z-10">
+        <HeroParallaxScene
+          imageSrc={globeImage}
+          imageSrcAvif={globeImageAvif}
+          imageSrcWebp={globeImageWebp}
+          imageAlt="THG Fulfill global logistics network"
+          apac={{ value: "Vietnam · China", caption: "Asia-Pacific" }}
+          us={{ value: "$1.2", caption: t("hero.us_fulfill") }}
+          eu={{ value: "5-8", caption: t("hero.delivery_days") }}
+        >
+          <div className="space-y-6 md:space-y-8 text-center lg:text-left">
+            <ScrollReveal delay={100}>
+              {/* Plain eyebrow label, not a pulsing pill — IMPLEMENTATION_BASELINE.md
+                  anti-patterns: "decorative floating cards without informational purpose". */}
+              <p className="font-semibold text-accent tracking-[0.2em] uppercase text-[length:var(--step-label)]">
+                {badge}
+              </p>
+            </ScrollReveal>
 
-          <ScrollReveal delay={200}>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-[4.2rem] font-bold leading-[1.1] text-navy tracking-tight mx-auto lg:mx-0" >
-              {cmsTitle ? (
-                renderTitle(cmsTitle)
-              ) : (
-                <>
-                  {t("hero.title1")}{" "}
-                  <span className="text-gradient-gold">{t("hero.title_highlight")}</span>{" "}
-                  {t("hero.title2")}{" "}
-                  <span className="text-gradient-gold">{t("hero.title3")}</span>
-                </>
-              )}
-            </h1>
-          </ScrollReveal>
+            <ScrollReveal delay={200}>
+              <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-[4.2rem] font-bold leading-[1.1] text-navy tracking-tight mx-auto lg:mx-0" >
+                {cmsTitle ? (
+                  renderTitle(cmsTitle)
+                ) : (
+                  <>
+                    {t("hero.title1")}{" "}
+                    <span className="text-gradient-gold">{t("hero.title_highlight")}</span>{" "}
+                    {t("hero.title2")}{" "}
+                    <span className="text-gradient-gold">{t("hero.title3")}</span>
+                  </>
+                )}
+              </h1>
+            </ScrollReveal>
 
-          <ScrollReveal delay={300}>
-            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto lg:mx-0" >
-              {subtitle}
-            </p>
-          </ScrollReveal>
+            <ScrollReveal delay={300}>
+              <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto lg:mx-0" >
+                {subtitle}
+              </p>
+            </ScrollReveal>
 
-          <ScrollReveal delay={400}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-sm sm:max-w-none mx-auto lg:mx-0">
-              {features.map((f) => (
-                <div key={f} className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                  <span className="text-sm text-foreground/75" >{f}</span>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
+            <ScrollReveal delay={400}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-sm sm:max-w-none mx-auto lg:mx-0">
+                {features.map((f) => (
+                  <div key={f} className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                    <span className="text-sm text-foreground/75" >{f}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
 
-          <ScrollReveal delay={500}>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:justify-center lg:justify-start">
-              {/* Primary CTA — "Nhận báo giá miễn phí" → open lead form modal */}
-              <HeroPrimaryCta lang={lang} copy={copy} cta={cta} />
-              {/* Secondary CTA — "Xem dịch vụ" → catalog page. Kept unprefixed like
-                  Vite's navigate('/catalog'); the proxy preserves today's redirect. */}
-              <Button
-                variant="outline"
-                asChild
-                className="rounded-lg px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
-              >
-                <Link prefetch={false} href="/catalog">
-                  <span>{ctaSecondary}</span>
-                </Link>
-              </Button>
-            </div>
-            {/* Trust microcopy — soft reassurance after the commit-heavy CTAs. */}
-            <p className="text-[11px] sm:text-xs text-muted-foreground/80 mt-3 text-center lg:text-left">
-              {t("trust.cta_micro")}
-            </p>
-          </ScrollReveal>
-        </div>
-
-        {/* Real scroll-driven parallax (IMPLEMENTATION_BASELINE.md "Motion phases and
-            interaction rules") — server-rendered static scene by default; the client
-            island below only ever adds motion post-hydration, and never under
-            prefers-reduced-motion. Node copy reuses the same production i18n strings the
-            previous floating stat cards showed (delivery days / US fulfillment price),
-            just relocated onto the network layer instead of decorative glass cards. */}
-        <div className="relative w-full mx-auto lg:mx-0 mt-2 lg:mt-0">
-          <HeroParallaxScene
-            imageSrc={globeImage}
-            imageSrcAvif={globeImageAvif}
-            imageSrcWebp={globeImageWebp}
-            imageAlt="THG Fulfill global logistics network"
-            apac={{ value: "Vietnam · China", caption: "Asia-Pacific" }}
-            us={{ value: "$1.2", caption: t("hero.us_fulfill") }}
-            eu={{ value: "5-8", caption: t("hero.delivery_days") }}
-          />
-        </div>
+            <ScrollReveal delay={500}>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:justify-center lg:justify-start">
+                {/* Primary CTA — "Nhận báo giá miễn phí" → open lead form modal */}
+                <HeroPrimaryCta lang={lang} copy={copy} cta={cta} />
+                {/* Secondary CTA — "Xem dịch vụ" → catalog page. Kept unprefixed like
+                    Vite's navigate('/catalog'); the proxy preserves today's redirect. */}
+                <Button
+                  variant="outline"
+                  asChild
+                  className="rounded-lg px-8 py-6 text-base border-foreground/15 hover:bg-secondary hover:border-foreground/25 hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  <Link prefetch={false} href="/catalog">
+                    <span>{ctaSecondary}</span>
+                  </Link>
+                </Button>
+              </div>
+              {/* Trust microcopy — soft reassurance after the commit-heavy CTAs. */}
+              <p className="text-[11px] sm:text-xs text-muted-foreground/80 mt-3 text-center lg:text-left">
+                {t("trust.cta_micro")}
+              </p>
+            </ScrollReveal>
+          </div>
+        </HeroParallaxScene>
       </div>
     </section>
   );

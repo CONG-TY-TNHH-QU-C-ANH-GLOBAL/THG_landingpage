@@ -53,12 +53,23 @@ describe("HeroParallaxScene (WEB-001A)", () => {
     mockReducedMotion(true);
     const addSpy = vi.spyOn(window, "addEventListener");
 
-    const { getByTestId } = render(<HeroParallaxScene {...SCENE_PROPS} />);
+    const { getByTestId } = render(
+      <HeroParallaxScene {...SCENE_PROPS}>
+        <h1>Test headline</h1>
+      </HeroParallaxScene>,
+    );
     const scene = getByTestId("hero-parallax-scene");
 
     expect(scene.className).not.toMatch(/motionOn/i);
     expect(addSpy.mock.calls.some(([type]) => type === "scroll")).toBe(false);
     expect(addSpy.mock.calls.some(([type]) => type === "resize")).toBe(false);
+
+    // WEB-001A regression guard: children (the headline/CTA column) must render inside
+    // the scene's own sticky/grid structure, not as a detached sibling — an earlier
+    // version left it outside, which stretched the grid row to the 200vh scroll-track
+    // height and centered the text mid-page, clipping the H1 below the fold.
+    expect(scene.contains(getByTestId("hero-copy"))).toBe(true);
+    expect(getByTestId("hero-copy").textContent).toContain("Test headline");
 
     const stageText = getByTestId("hero-globe-stage").textContent ?? "";
     expect(stageText).toContain("Vietnam · China");
@@ -70,10 +81,15 @@ describe("HeroParallaxScene (WEB-001A)", () => {
     mockReducedMotion(false);
     const addSpy = vi.spyOn(window, "addEventListener");
 
-    const { getByTestId } = render(<HeroParallaxScene {...SCENE_PROPS} />);
+    const { getByTestId } = render(
+      <HeroParallaxScene {...SCENE_PROPS}>
+        <h1>Test headline</h1>
+      </HeroParallaxScene>,
+    );
     const scene = getByTestId("hero-parallax-scene");
 
     expect(scene.className).toMatch(/motionOn/i);
+    expect(scene.contains(getByTestId("hero-copy"))).toBe(true);
     expect(addSpy.mock.calls.some(([type, , opts]) => type === "scroll" && (opts as AddEventListenerOptions)?.passive)).toBe(
       true,
     );
