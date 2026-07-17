@@ -1,0 +1,183 @@
+/* Connected ecosystem — "Commerce Infrastructure Atlas" route.
+   Ported from the approved Open Design artifact ("CONNECTED ECOSYSTEM"): one
+   continuous curved route with two larger "anchor" hubs (Warehouse, Fulfillment)
+   and four smaller transition waypoints, each carrying its owning pillar as a
+   micro-label. Reveals once on first scroll-into-view (`inView` class); one
+   shipment signal travels the path once (SMIL beginElement, never looped).
+   Mobile (≤600px) swaps to a vertical route with the same owner/anchor language. */
+
+.atlas {
+  position: relative;
+  margin-top: 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-lg);
+  background: hsl(var(--card));
+  padding: 8px;
+  overflow: hidden;
+}
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 1000 / 300;
+}
+.path {
+  fill: none;
+  stroke: hsl(var(--gold));
+  stroke-width: 1.6;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 1.1s var(--motion-smooth) 0.1s;
+}
+.atlas.inView .path {
+  stroke-dashoffset: 0;
+}
+.node {
+  opacity: 0;
+  transform: scale(0.4);
+  transform-origin: center;
+  transition: opacity 0.3s var(--motion-smooth), transform 0.3s var(--motion-spring);
+}
+.atlas.inView .node {
+  opacity: 1;
+  transform: scale(1);
+}
+.nodeTransition {
+  fill: hsl(var(--card));
+  stroke: hsl(var(--gold));
+  stroke-width: 2;
+}
+.nodeAnchor {
+  fill: hsl(var(--navy));
+  stroke: hsl(var(--gold-light));
+  stroke-width: 2;
+}
+.signal {
+  opacity: 0;
+  filter: drop-shadow(0 0 4px hsl(var(--gold-light) / 0.8));
+}
+.atlas.inView .signal {
+  opacity: 1;
+}
+.labels {
+  position: absolute;
+  inset: 8px;
+}
+.label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.posAbove {
+  transform: translate(-50%, -135%);
+}
+.posBelow {
+  transform: translate(-50%, 32%);
+}
+.owner {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9.5px;
+  color: hsl(var(--gold));
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+.label h4 {
+  font-size: 11.5px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: hsl(var(--navy));
+  white-space: nowrap;
+  margin: 0;
+}
+.labelAnchor h4 {
+  font-size: 13px;
+}
+
+.mobile {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .owner {
+    font-size: 9px;
+  }
+  .label h4 {
+    font-size: 10.5px;
+  }
+}
+
+@media (max-width: 600px) {
+  .atlas {
+    display: none;
+  }
+  .mobile {
+    display: block;
+    position: relative;
+    margin-top: 12px;
+  }
+  .mobile::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: linear-gradient(hsl(var(--gold)), hsl(var(--navy) / 0.4));
+  }
+  .mStep {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+  }
+  .mNode {
+    flex: 0 0 auto;
+    width: 11px;
+    height: 11px;
+    margin-top: 4px;
+    border-radius: 50%;
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--gold));
+    box-shadow: 0 0 0 4px hsl(var(--cream));
+    position: relative;
+    z-index: 1;
+  }
+  .mStepAnchor .mNode {
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    background: hsl(var(--navy));
+    border-color: hsl(var(--gold-light));
+  }
+  .mBody .owner {
+    font-size: 10px;
+  }
+  .mBody h4 {
+    font-size: 13px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: hsl(var(--navy));
+    margin: 2px 0 0;
+  }
+}
+
+/* Reduced motion: the complete connected network immediately — no path travel,
+   no node activation, no traveling signal. */
+@media (prefers-reduced-motion: reduce) {
+  .path {
+    transition: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  .node {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .signal {
+    display: none !important;
+  }
+}
