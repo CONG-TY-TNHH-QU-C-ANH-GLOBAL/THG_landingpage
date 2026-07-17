@@ -16,54 +16,10 @@ import { Textarea } from "@/shared/ui/textarea";
 import { Label } from "@/shared/ui/label";
 import type { Locale } from "@/shared/i18n";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
-import { publicEnv } from "@/shared/config/env.public";
+import { postLead } from "@/shared/ui/lead-api";
 import { useTurnstile } from "@/shared/ui/use-turnstile";
 import { getUtmPayload } from "@/shared/ui/utm";
 import { DELAYS } from "@/shared/ui/constants";
-
-// Client-side POST straight to the public CMS API — same request cmsClient.postLead
-// made in Vite (method/path/headers/body identical). The server-only "@/shared/cms"
-// transport is off-limits in this client island.
-function stripTrailingSlashes(value: string): string {
-  let v = value;
-  while (v.endsWith("/")) v = v.slice(0, -1);
-  return v;
-}
-const CMS_BASE = stripTrailingSlashes(publicEnv.cmsApiUrl ?? "http://localhost:8080/api/v1");
-
-interface LeadInput {
-  name: string;
-  email: string;
-  phone?: string;
-  message?: string;
-  source_page: string;
-  locale: Locale;
-  utm?: Record<string, string>;
-  turnstile_token: string;
-}
-
-async function postLead(input: LeadInput): Promise<void> {
-  const res = await fetch(`${CMS_BASE}/leads`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(input),
-  });
-  if (!res.ok) {
-    let message = `${res.status} ${res.statusText}`;
-    try {
-      const body = (await res.json()) as { error?: string };
-      if (body.error) message = body.error;
-    } catch {
-      // ignore JSON parse errors
-    }
-    throw new Error(`CMS /leads: ${message}`);
-  }
-  // ponytail: Vite validated the { ok } response with Zod; the result is unused
-  // here, so a 2xx status is the success signal.
-}
 
 interface Props {
   trigger: ReactNode;
