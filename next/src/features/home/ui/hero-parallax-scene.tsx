@@ -40,8 +40,8 @@ interface HeroParallaxSceneProps {
   readonly eu: HeroParallaxNodeContent;
 }
 
-function clamp01(v: number): number {
-  return v < 0 ? 0 : v > 1 ? 1 : v;
+export function clamp01(v: number): number {
+  return Math.min(1, Math.max(0, v));
 }
 function smoothstep(a: number, b: number, x: number): number {
   const t = clamp01((x - a) / (b - a));

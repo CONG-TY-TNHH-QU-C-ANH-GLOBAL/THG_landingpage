@@ -8,9 +8,33 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, cleanup } from "@testing-library/react";
 
-import { HeroParallaxScene } from "@/features/home/ui/hero-parallax-scene";
+import { HeroParallaxScene, clamp01 } from "@/features/home/ui/hero-parallax-scene";
 
 afterEach(cleanup);
+
+// Sonar (New Code): "Prefer Math.min()" / "extract nested ternary" flagged the previous
+// `v < 0 ? 0 : v > 1 ? 1 : v` body. Locks the clamp behavior the rewrite must preserve,
+// including the NaN passthrough (Math.max/Math.min both propagate NaN, same as the
+// original comparisons falling through to `v`).
+describe("clamp01", () => {
+  it.each([
+    [-5, 0],
+    [-0.0001, 0],
+    [0, 0],
+    [0.5, 0.5],
+    [1, 1],
+    [1.0001, 1],
+    [5, 1],
+    [Number.POSITIVE_INFINITY, 1],
+    [Number.NEGATIVE_INFINITY, 0],
+  ])("clamp01(%p) === %p", (input, expected) => {
+    expect(clamp01(input)).toBe(expected);
+  });
+
+  it("passes NaN through unchanged", () => {
+    expect(Number.isNaN(clamp01(Number.NaN))).toBe(true);
+  });
+});
 
 class FakeIntersectionObserver implements IntersectionObserver {
   readonly root = null;
