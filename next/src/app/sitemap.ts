@@ -1,14 +1,20 @@
 import type { MetadataRoute } from "next";
+import { SUPPORTED_LOCALES } from "@/shared/i18n";
+import { buildAlternates, localeUrl } from "@/shared/seo";
 
-// Sitemap foundation (FND-003). Only routes that exist in next/ AND are indexable may be
-// listed — leaked noindex URLs fail the SEO gate (SPEC §17), and the only existing route is
-// the deliberately-noindex [lang] foundation page, so the sitemap is valid and empty.
-//
-// ponytail: WEB-001 adds the home rows when the real homepage lands — one entry per locale:
-// { url: localeUrl(lang, "/"), changeFrequency: "weekly", priority: 1.0,
-//   alternates: { languages: buildAlternates(lang, "/").languages } }
-// (parity structure: scripts/generate-sitemap.ts). CMS-driven entries (blog/jobs) join with
-// their slices; full parity with the Vite sitemap is the M9/M10 gate.
+// Sitemap (FND-003 foundation, first rows added by WEB-001). Only indexable routes that
+// exist in next/ may be listed (SPEC §17). Home: priority 1.0 weekly — parity with
+// scripts/generate-sitemap.ts. Further route families append with their slices; CMS-driven
+// entries (blog/jobs) join via GET /sitemap with theirs. Full Vite parity is the M9/M10 gate.
+const INDEXABLE_ROUTES = [{ path: "/", changeFrequency: "weekly", priority: 1.0 }] as const;
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [];
+  return INDEXABLE_ROUTES.flatMap((route) =>
+    SUPPORTED_LOCALES.map((lang) => ({
+      url: localeUrl(lang, route.path),
+      changeFrequency: route.changeFrequency,
+      priority: route.priority,
+      alternates: { languages: buildAlternates(lang, route.path).languages },
+    })),
+  );
 }

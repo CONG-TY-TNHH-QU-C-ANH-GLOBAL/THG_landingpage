@@ -1,24 +1,690 @@
-:root {
-  color-scheme: light dark;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  :root {
+    --background: 40 20% 97%;
+    --foreground: 220 25% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 12%;
+
+    --primary: 36 45% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40 18% 92%;
+    --secondary-foreground: 220 25% 12%;
+
+    --muted: 40 15% 94%;
+    --muted-foreground: 220 10% 46%;
+
+    --accent: 36 50% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 40 15% 90%;
+    --input: 40 15% 90%;
+    --ring: 36 45% 42%;
+
+    --radius: 0.75rem;
+
+    --gold: 36 45% 42%;
+    --gold-light: 40 35% 70%;
+    --gold-dark: 36 50% 28%;
+    --cream: 40 20% 97%;
+    --cream-dark: 40 18% 92%;
+    --navy: 220 40% 13%;
+    --olive: 140 25% 32%;
+    --olive-light: 140 20% 45%;
+
+    /* Pricing Layout */
+    --pricing-border: 40 15% 85%;
+
+    /* 3D Motion System */
+    --perspective: 1200px;
+    --tilt-x: 4deg;
+    --tilt-y: -2deg;
+    --motion-spring: cubic-bezier(0.23, 1, 0.32, 1);
+    --motion-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --motion-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* 3D Shadows */
+    --shadow-3d: 0 25px 50px -12px hsl(36 45% 42% / 0.15), 0 0 30px hsl(36 45% 42% / 0.08);
+    --shadow-3d-hover: 0 35px 60px -15px hsl(36 45% 42% / 0.25), 0 0 40px hsl(36 45% 42% / 0.12);
+    --shadow-glow: 0 0 30px hsl(36 50% 48% / 0.2);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
 }
 
-* {
-  box-sizing: border-box;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+@layer utilities {
+
+  /* ─── Text Gradients ─── */
+  .text-gradient-gold {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(135deg, hsl(36 45% 42%), hsl(40 50% 58%), hsl(36 45% 42%));
+    font-family: inherit;
+  }
+
+  /* ─── Hide Scrollbar ─── */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* ─── Background Gradients ─── */
+  .bg-gradient-hero {
+    background: linear-gradient(180deg, hsl(40 20% 97%) 0%, hsl(40 18% 92%) 100%);
+  }
+
+  .bg-gradient-dark {
+    background: linear-gradient(180deg, hsl(220 40% 13%) 0%, hsl(220 35% 18%) 100%);
+  }
+
+  /* ─── Glass Card (Enhanced 3D) ─── */
+  .glass-card {
+    background-color: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 8px 24px hsl(220 25% 12% / 0.06);
+    transition: all 0.5s var(--motion-spring);
+  }
+
+  .glass-card:hover {
+    box-shadow: var(--shadow-3d);
+    transform: translateY(-4px);
+  }
+
+  /* ─── 3D Tilt Card ─── */
+  .tilt-card {
+    perspective: var(--perspective);
+    transform-style: preserve-3d;
+    transition: all 0.5s var(--motion-spring);
+  }
+
+  .tilt-card:hover {
+    transform: translateY(-8px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    box-shadow: var(--shadow-3d-hover);
+  }
+
+  /* ─── Hover Lift (Enhanced) ─── */
+  .hover-lift {
+    transition: all 0.5s var(--motion-spring);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: var(--shadow-3d);
+  }
+
+  /* ─── Glow Pulse ─── */
+  .glow-pulse {
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+
+  /* ─── Shimmer Effect ─── */
+  .shimmer-effect {
+    background: linear-gradient(90deg,
+        transparent 0%,
+        hsl(36 45% 42% / 0.08) 50%,
+        transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* ─── Section Divider ─── */
+  .section-divider {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent, hsl(36 45% 42% / 0.2), transparent);
+  }
+
+  /* ─── Globe (kept) ─── */
+  .globe-real-container {
+    width: 480px;
+    height: 480px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .globe-real-image {
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    object-fit: cover;
+    overflow: hidden;
+    animation: globe-rotate 20s linear infinite;
+    filter: drop-shadow(0 0 60px hsl(36 45% 42% / 0.3)) drop-shadow(0 20px 40px hsl(220 40% 13% / 0.2));
+  }
+
+  .globe-orbit {
+    position: absolute;
+    width: 440px;
+    height: 440px;
+    border-radius: 50%;
+    border: 1px dashed hsl(36 45% 42% / 0.15);
+    animation: orbit-spin 30s linear infinite;
+  }
+
+  .globe-orbit-2 {
+    width: 500px;
+    height: 500px;
+    border-color: hsl(36 45% 42% / 0.08);
+    animation-duration: 45s;
+    animation-direction: reverse;
+  }
+
+  .airplane-orbit {
+    position: absolute;
+    width: 460px;
+    height: 460px;
+    border-radius: 50%;
+    animation: orbit-spin 12s linear infinite;
+  }
+
+  .airplane-orbit-reverse {
+    animation-direction: reverse;
+    animation-duration: 16s;
+    width: 420px;
+    height: 420px;
+  }
+
+  .airplane {
+    position: absolute;
+    font-size: 20px;
+    filter: drop-shadow(0 2px 4px hsl(220 40% 13% / 0.3));
+  }
+
+  .airplane-1 {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .airplane-2 {
+    bottom: 0;
+    right: 10%;
+    transform: rotate(-135deg);
+  }
+
+  .package-orbit {
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    animation: orbit-spin 18s linear infinite;
+  }
+
+  .package-orbit-2 {
+    animation-duration: 22s;
+    animation-direction: reverse;
+    width: 440px;
+    height: 440px;
+  }
+
+  .package-item {
+    position: absolute;
+    font-size: 16px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    filter: drop-shadow(0 2px 4px hsl(220 40% 13% / 0.2));
+  }
+
+  .package-item-2 {
+    top: auto;
+    bottom: 15%;
+    left: auto;
+    right: 5%;
+    transform: none;
+  }
+
+  /* ─── Service Card Animations ─── */
+  .shipping-package-fly {
+    animation: fly-across 3s ease-in-out infinite;
+  }
+
+  .shipping-airplane-fly {
+    animation: fly-across 2.5s ease-in-out infinite 0.5s;
+  }
+
+  .warehouse-truck-arrive {
+    animation: truck-arrive 3s ease-in-out infinite;
+  }
+
+  .warehouse-truck-depart {
+    animation: truck-depart 3s ease-in-out infinite 1.5s;
+  }
+
+  @keyframes fly-across {
+    0% {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+
+    20% {
+      opacity: 1;
+    }
+
+    80% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(100px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes truck-arrive {
+    0% {
+      transform: translateX(-30px);
+      opacity: 0;
+    }
+
+    30% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    70% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(0);
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes truck-depart {
+    0% {
+      transform: translateX(0);
+      opacity: 0.5;
+    }
+
+    30% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateX(30px);
+      opacity: 0;
+    }
+  }
+
+  /* ─── 3D Motion Keyframes ─── */
+  @keyframes globe-rotate {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes orbit-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes glowPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsl(36 50% 48% / 0.1);
+    }
+
+    50% {
+      box-shadow: 0 0 40px hsl(36 50% 48% / 0.25);
+    }
+  }
+
+  @keyframes pulse3D {
+
+    0%,
+    100% {
+      transform: scale(1) perspective(800px) rotateY(0deg);
+    }
+
+    50% {
+      transform: scale(1.02) perspective(800px) rotateY(1deg);
+    }
+  }
+
+  @keyframes rotateIn3D {
+    from {
+      opacity: 0;
+      transform: perspective(1200px) rotateY(-15deg) translateZ(-50px);
+    }
+
+    to {
+      opacity: 1;
+      transform: perspective(1200px) rotateY(0) translateZ(0);
+    }
+  }
+
+  @keyframes slideInFromBottom {
+    from {
+      opacity: 0;
+      transform: translateY(60px) scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes fadeInUp3D {
+    from {
+      opacity: 0;
+      transform: translateY(40px) perspective(var(--perspective)) rotateX(2deg);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) perspective(var(--perspective)) rotateX(0);
+    }
+  }
+
+  @keyframes heroZoom {
+    0% {
+      transform: scale(1.05);
+    }
+
+    100% {
+      transform: scale(1.15);
+    }
+  }
 }
 
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
+/* ─── Scrollbar Styling ─── */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-main {
-  max-width: 48rem;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+::-webkit-scrollbar-track {
+  background: hsl(40 20% 97%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(36 45% 42%), hsl(36 50% 48%));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(36 50% 28%);
+}
+
+/* ─── Touch-Friendly ─── */
+@media (pointer: coarse) {
+  .tilt-card:hover {
+    transform: none;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* ─── GTRANSLATE CUSTOM STYLING ─────────── */
+.gtranslate_wrapper {
+  display: inline-flex !important;
+  align-items: center;
+  position: relative;
+  z-index: 1000;
+}
+
+/* The selected language button (direct child) */
+.gtranslate_wrapper>a {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 14px !important;
+  background: hsl(var(--secondary) / 0.8) !important;
+  border-radius: 999px !important;
+  color: hsl(var(--foreground)) !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.gtranslate_wrapper>a:hover {
+  background: hsl(var(--secondary)) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Hide the black overlay completely and prevent click-blocking */
+.gt_black_overlay {
+  opacity: 0 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+/* The dropdown container */
+.gt_white_content {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  margin: 10px 0 0 0 !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  border: 1px solid hsl(var(--border) / 0.6) !important;
+  padding: 8px !important;
+  background: hsl(var(--card) / 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+  min-width: 140px !important;
+  z-index: 9999 !important;
+}
+
+/* Links inside the dropdown */
+.gt_white_content a {
+  display: flex;
+  align-items: center !important;
+  gap: 10px !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  padding: 8px 12px !important;
+  margin-bottom: 2px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  line-height: normal !important;
+  white-space: normal !important;
+}
+
+/* Hide the active language which has display:none by default */
+.gt_white_content a[style*="display: none"],
+.gt_white_content a[style*="display:none"],
+.gt_white_content a.gt-current-lang {
+  display: none !important;
+}
+
+.gt_white_content a:hover {
+  background: hsl(var(--secondary) / 0.8) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* All flags */
+.gt_white_content a img,
+.gtranslate_wrapper>a img {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ─── GTRANSLATE MOBILE FIX ─────────── */
+@media (max-width: 1023px) {
+  /* Ensure navbar doesn't clip the dropdown */
+  nav, nav > div {
+    overflow: visible !important;
+  }
+
+  .gtranslate_wrapper {
+    z-index: 9999 !important;
+    position: relative !important;
+  }
+
+  .gtranslate_wrapper>a {
+    padding: 8px 12px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .gt_white_content {
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin-top: 8px !important;
+    min-width: 180px !important;
+    z-index: 99999 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
+  }
+
+  .gt_white_content a {
+    padding: 10px 12px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .gt_white_content a img {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Simplify heavy animations on touch/mobile ─── */
+/* ─── Simplify heavy animations on touch/mobile ─── */
+@media (pointer: coarse) {
+  .globe-real-image {
+    /* Keep animation, but make it optional or lightweight */
+  }
+
+  /* Slow down orbits instead of removing them */
+  .globe-orbit,
+  .globe-orbit-2,
+  .airplane-orbit,
+  .package-orbit,
+  .package-orbit-2 {
+    animation-duration: 25s;
+    opacity: 0.7;
+  }
+
+  .shipping-package-fly,
+  .shipping-airplane-fly,
+  .warehouse-truck-arrive,
+  .warehouse-truck-depart {
+    animation-duration: 15s;
+    opacity: 0.8;
+  }
+
+  /* Keep glow-pulse on mobile but slower */
+  .glow-pulse {
+    animation-duration: 3s;
+  }
+
+  /* Shimmer can be kept or removed; let's keep it but slower */
+  .shimmer-effect {
+    animation-duration: 4s;
+  }
+
+  /* Mobile touch feedback for interactive elements */
+  .hover-lift:active {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .tilt-card:active {
+    transform: scale(0.98);
+  }
+
+  .glass-card:active {
+    border-color: hsl(var(--primary) / 0.3);
+  }
 }

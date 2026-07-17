@@ -13,5 +13,6 @@ export function contactLocationsFromDto(dto: CmsContactLocationsResponse): Conta
       address: l.address,
       phone: l.phone,
       url: l.url,
+      langClass: l.lang_class,
     }));
 }

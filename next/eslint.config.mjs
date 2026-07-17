@@ -16,6 +16,10 @@ const boundary = (files, patterns, message) => ({
 const config = [
   { ignores: [".next/**", "node_modules/**", "next-env.d.ts", "tests/performance/**"] },
   ...next,
+  // WEB-001 keeps the hand-tuned <img>/<picture> markup from the Vite baseline (spec §6:
+  // next/image adoption needs LCP evidence first) — CMS-hosted images cannot use next/image
+  // remotePatterns until an approved config exists.
+  { files: ["src/features/home/ui/**", "src/shared/ui/**"], rules: { "@next/next/no-img-element": "off" } },
   // contracts: no framework / app / features / integrations / UI
   boundary(
     ["src/contracts/**"],
