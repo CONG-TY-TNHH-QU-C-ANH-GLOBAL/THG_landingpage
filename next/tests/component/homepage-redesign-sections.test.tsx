@@ -233,6 +233,20 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
   });
 });
 
+describe("ScrollReveal progressive enhancement (WEB-001B)", () => {
+  it("server markup carries no hidden inline style — the entry state is client-applied only", async () => {
+    // Contract: the JSX must not render a style attribute (the old version SSR'd
+    // opacity:0, leaving the whole page invisible without JS). The hidden state
+    // may only be applied inside the effect, after the motion checks.
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const code = readFileSync(join(__dirname, "..", "..", "src/shared/ui/scroll-reveal.tsx"), "utf8");
+    expect(code).not.toMatch(/<div[^>]*style=/);
+    expect(code).toMatch(/prefers-reduced-motion/);
+    expect(code).toMatch(/IntersectionObserver" in window/);
+  });
+});
+
 describe("default visibility contract (WEB-001B progressive enhancement)", () => {
   // Essential/animated content must be visible by default: every initial-hidden
   // animation state in the section CSS modules must be scoped under the `.motion`

@@ -238,9 +238,9 @@
 .card:hover .opSignal,
 .card:focus-within .opSignal {
   opacity: 1;
-  animation: opTravel 1.4s var(--motion-smooth) forwards;
+  animation: op-travel 1.4s var(--motion-smooth) forwards;
 }
-@keyframes opTravel {
+@keyframes op-travel {
   from {
     offset-distance: 0%;
   }
