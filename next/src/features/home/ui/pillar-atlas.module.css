@@ -1,14 +1,20 @@
-/* Four-service pillar showcase — "Commerce Infrastructure Atlas".
-   Ported from the approved Open Design artifact
-   (homepage-concept-global-fulfillment-orbit.html "FOUR SERVICE PILLARS").
-   Editorial capability canvas, not four equal cards: one dominant anchor panel
-   (Fulfill), one wide corridor banner (Express), two supporting tiles
-   (Warehouse/Dropship), threaded by one shared low-opacity route drawn behind
-   all four. Capability lines read as a manifest, not pill chips. Each icon is
-   a small choreographed scene that resolves once, on first scroll-into-view
-   (the `inView` class, added by the InViewOnce shell). Colors resolve through
-   the semantic tokens in globals.css; steel is a derived navy tint per
-   IMPLEMENTATION_BASELINE.md ("computed, not a new brand color"). */
+/* Four-service pillar showcase — "Commerce Infrastructure Atlas" with
+   Operational Blueprint stages (owner-approved refinement, artifact callout 16;
+   IMPLEMENTATION_BASELINE.md "Operational Blueprint Cards").
+
+   Each pillar carries ONE merged "service visual stage": the production
+   homepage's service metaphor (blank→POD→branded garment, VN/CN→US·UK·EU
+   corridor, warehouse floor plan under its roof, Taobao/1688→THG→USA network)
+   drawn in the new token system, with the blueprint route as its operational
+   sub-layer. Diagram structure (frames, node outlines, labels) is ALWAYS
+   visible at rest; only the activity layer (route draw-in, node/zone fill,
+   travelling signal) is gated behind :hover/:focus-within, resolves once, and
+   never loops. Both prefers-reduced-motion and (hover:none) force every
+   diagram to its fully-resolved static state permanently.
+
+   Progressive enhancement: the InViewOnce shell adds `.motion` on mount only
+   when motion is allowed — entry states (edge draw, capability contrast rise)
+   are scoped under `.card.motion`; the no-JS default is the complete scene. */
 
 .atlas {
   position: relative;
@@ -51,11 +57,12 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 1px 2px hsl(var(--navy) / 0.05);
-  transition: box-shadow 0.3s var(--motion-smooth), transform 0.3s var(--motion-smooth);
+  transition: box-shadow 0.3s var(--motion-smooth), transform 0.35s var(--motion-smooth);
 }
+/* 3px lift + soft shadow only — no 3D tilt, no sheen (artifact callout 15→16) */
 .card:hover,
 .card:focus-within {
-  box-shadow: 0 20px 40px -22px hsl(var(--navy) / 0.28);
+  box-shadow: 0 20px 40px -22px hsl(var(--navy) / 0.26);
   transform: translateY(-3px);
 }
 .cardFulfill {
@@ -77,12 +84,7 @@
   grid-row: 2;
 }
 
-/* Progressive enhancement contract: the default (no-JS / reduced-motion / failed
-   observer) state below is the COMPLETE resolved scene. The InViewOnce shell adds
-   `.motion` on mount only when motion is allowed — every initial-hidden animation
-   state is scoped under `.card.motion` and resolves under `.card.motion.inView`. */
-
-/* precise edge highlight — draws in on first view, not a static solid bar */
+/* precise edge highlight — draws in on first view; glow scoped to the edge only */
 .edge {
   position: absolute;
   top: 0;
@@ -91,7 +93,7 @@
   height: 1px;
   background: hsl(var(--gold-light));
   transform-origin: left;
-  transition: transform 0.8s var(--motion-smooth) 0.1s;
+  transition: transform 0.8s var(--motion-smooth) 0.1s, box-shadow 0.3s var(--motion-smooth);
 }
 .cardWarehouse .edge {
   background: var(--pillar-steel);
@@ -105,8 +107,12 @@
 .card.motion.inView .edge {
   transform: scaleX(1);
 }
+.card:hover .edge,
+.card:focus-within .edge {
+  box-shadow: 0 0 8px 0 hsl(var(--gold) / 0.3);
+}
 
-/* ghost index numeral — editorial, not a mono badge */
+/* ghost index numeral + service-code plate — one composed index mark */
 .indexGhost {
   position: absolute;
   top: 6px;
@@ -116,7 +122,7 @@
   font-size: 56px;
   line-height: 1;
   color: hsl(var(--navy));
-  opacity: 0.045;
+  opacity: 0.07;
   letter-spacing: -0.02em;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
@@ -125,18 +131,165 @@
   font-size: 88px;
   top: 10px;
 }
+.code {
+  position: absolute;
+  top: 50px;
+  right: 21px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: hsl(var(--gold));
+  opacity: 0.6;
+  pointer-events: none;
+}
+.cardFulfill .code {
+  top: 83px;
+  font-size: 11px;
+}
 
-.icon {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 20px;
-  flex: 0 0 auto;
+/* ---- merged service visual stage (production metaphor + blueprint) ---- */
+.stage {
+  margin: 0 0 18px;
+  transition: transform 0.3s var(--motion-smooth);
 }
-.cardFulfill .icon {
-  width: 104px;
-  height: 104px;
-  margin-bottom: 24px;
+.card:hover .stage,
+.card:focus-within .stage {
+  transform: scale(1.03);
 }
+.stage svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.cardExpress .stage,
+.cardWarehouse .stage,
+.cardDropship .stage {
+  max-width: 100%;
+}
+.cardFulfill .stage {
+  max-width: 240px;
+}
+
+.opFrame,
+.opGridLine {
+  fill: none;
+  stroke: hsl(var(--border));
+  stroke-width: 1;
+}
+.opGridLine {
+  stroke-width: 0.6;
+  opacity: 0.8;
+}
+.opMetaphor {
+  fill: none;
+  stroke: hsl(var(--navy));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.opRoute {
+  fill: none;
+  stroke: hsl(var(--gold));
+  stroke-width: 1.3;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 0.5s var(--motion-smooth);
+}
+.opRouteDashed {
+  fill: none;
+  stroke: hsl(var(--gold));
+  stroke-width: 1.3;
+  stroke-dasharray: 2 4;
+  opacity: 0.35;
+  transition: opacity 0.35s var(--motion-smooth);
+}
+.opNode {
+  fill: hsl(var(--card));
+  stroke: hsl(var(--muted-foreground));
+  stroke-width: 1.3;
+  transition: fill 0.3s var(--motion-smooth), stroke 0.3s var(--motion-smooth);
+}
+.opNodeHub {
+  stroke-width: 1.6;
+}
+.opZone,
+.opCell {
+  fill: hsl(var(--card));
+  stroke: hsl(var(--border));
+  stroke-width: 1;
+  transition: fill 0.3s var(--motion-smooth), stroke 0.3s var(--motion-smooth);
+}
+.opLabel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 8px;
+  fill: hsl(var(--muted-foreground));
+  letter-spacing: 0.02em;
+}
+.opArrow {
+  fill: hsl(var(--gold));
+}
+/* one-shot travelling signal — exists only for hover-capable pointers */
+.opSignal {
+  opacity: 0;
+  offset-path: path("M25,58 Q90,18 160,22 Q220,8 280,18 Q350,12 415,46");
+  offset-distance: 0%;
+}
+.card:hover .opSignal,
+.card:focus-within .opSignal {
+  opacity: 1;
+  animation: opTravel 1.4s var(--motion-smooth) forwards;
+}
+@keyframes opTravel {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
+}
+/* stepped activity resolve — once per interaction, never looping */
+.opStep1 {
+  transition-delay: 0s;
+}
+.opStep2 {
+  transition-delay: 0.4s;
+}
+.opStep3 {
+  transition-delay: 0.8s;
+}
+.opStep4 {
+  transition-delay: 1.2s;
+}
+.card:hover .opRoute,
+.card:focus-within .opRoute {
+  stroke-dashoffset: 0;
+}
+.card:hover .opRouteDashed,
+.card:focus-within .opRouteDashed {
+  opacity: 1;
+}
+.card:hover .opNode,
+.card:focus-within .opNode {
+  fill: hsl(var(--gold));
+  stroke: hsl(var(--gold));
+}
+.card:hover .opNodeHub,
+.card:focus-within .opNodeHub {
+  fill: hsl(var(--navy));
+  stroke: hsl(var(--navy));
+}
+.card:hover .opZone,
+.card:focus-within .opZone {
+  fill: var(--gold-dim);
+  stroke: hsl(var(--gold));
+}
+.card:hover .opCell.opStep2,
+.card:focus-within .opCell.opStep2 {
+  fill: hsl(var(--gold));
+  stroke: hsl(var(--gold));
+}
+
 .title {
   font-size: var(--step-h3);
   font-weight: 700;
@@ -154,8 +307,7 @@
   max-width: 38ch;
   line-height: 1.6;
 }
-/* supplementary microcopy — identical reveal on :hover and :focus-within, never
-   essential information (IMPLEMENTATION_BASELINE.md "Motion earns its place") */
+/* supplementary microcopy — hover/focus reveal, never essential */
 .detail {
   font-size: 11px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -172,7 +324,8 @@
   max-height: 20px;
 }
 
-/* structured capability lines — a manifest, not pills */
+/* structured capability lines — full manifest, no clamping; per-row contrast
+   rises in list order once the card enters view (quiet echo of the blueprint) */
 .caps {
   margin: 0 0 20px;
   padding: 2px 0 0;
@@ -188,9 +341,32 @@
   font-size: 12.5px;
   font-family: var(--font-body);
   color: hsl(var(--navy));
+  transition: color 0.4s var(--motion-smooth), background 0.2s var(--motion-smooth), padding-left 0.2s var(--motion-smooth);
 }
 .caps li:last-child {
   border-bottom: 0;
+}
+.caps li:hover {
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+  padding-left: 6px;
+}
+.caps li:nth-child(1) {
+  transition-delay: 0s;
+}
+.caps li:nth-child(2) {
+  transition-delay: 0.08s;
+}
+.caps li:nth-child(3) {
+  transition-delay: 0.16s;
+}
+.caps li:nth-child(4) {
+  transition-delay: 0.24s;
+}
+.card.motion .caps li {
+  color: hsl(var(--muted-foreground));
+}
+.card.motion.inView .caps li {
+  color: hsl(var(--navy));
 }
 .capIdx {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -198,6 +374,10 @@
   color: hsl(var(--muted-foreground));
   flex: 0 0 auto;
   width: 14px;
+  transition: color 0.2s var(--motion-smooth);
+}
+.caps li:hover .capIdx {
+  color: hsl(var(--gold));
 }
 
 .cta {
@@ -231,6 +411,14 @@
 .cta:focus-visible::after {
   right: 0;
 }
+.ctaArrow {
+  display: inline-block;
+  transition: transform 0.25s var(--motion-smooth);
+}
+.cta:hover .ctaArrow,
+.cta:focus-visible .ctaArrow {
+  transform: translateX(4px);
+}
 
 @media (max-width: 900px) {
   .grid {
@@ -243,10 +431,6 @@
     grid-column: auto;
     grid-row: auto;
   }
-  .cardFulfill .icon {
-    width: 72px;
-    height: 72px;
-  }
   .cardFulfill .title {
     font-size: var(--step-h3);
   }
@@ -256,169 +440,97 @@
   .cardFulfill .indexGhost {
     font-size: 56px;
   }
+  .code {
+    top: 36px;
+  }
+  .cardFulfill .code {
+    top: 52px;
+  }
 }
 
-/* per-pillar icon choreography — resolves once on first scroll-into-view.
-   Bases hold only transitions/origins; hidden states live under `.card.motion`. */
-.capLeft {
-  transition: transform 0.5s var(--motion-smooth) 0.05s, opacity 0.5s var(--motion-smooth) 0.05s;
-}
-.capRight {
-  transition: transform 0.5s var(--motion-smooth) 0.15s, opacity 0.5s var(--motion-smooth) 0.15s;
-}
-.capTop {
-  transition: opacity 0.4s var(--motion-smooth) 0.3s;
-}
-.capBadge,
-.capCheck {
-  transform-origin: 32px 24px;
-  transition: opacity 0.3s var(--motion-smooth) 0.45s, transform 0.3s var(--motion-spring) 0.45s;
-}
-.card.motion .capLeft {
-  transform: translate(-4px, -2px);
-  opacity: 0;
-}
-.card.motion .capRight {
-  transform: translate(4px, -2px);
-  opacity: 0;
-}
-.card.motion .capTop {
-  opacity: 0;
-}
-.card.motion .capBadge,
-.card.motion .capCheck {
-  opacity: 0;
-  transform: scale(0.5);
-}
-.card.motion.inView .capLeft,
-.card.motion.inView .capRight,
-.card.motion.inView .capTop {
-  opacity: 1;
-  transform: none;
-}
-.card.motion.inView .capBadge,
-.card.motion.inView .capCheck {
-  opacity: 1;
-  transform: scale(1);
+/* Touch/coarse pointers have no reliable hover — show every blueprint already
+   fully resolved and static (never a permanently un-triggered activity layer). */
+@media (hover: none) {
+  .opRoute,
+  .opRouteDashed,
+  .opNode,
+  .opZone,
+  .opCell {
+    transition: none;
+  }
+  .opRoute {
+    stroke-dashoffset: 0;
+  }
+  .opRouteDashed {
+    opacity: 1;
+  }
+  .opNode {
+    fill: hsl(var(--gold));
+    stroke: hsl(var(--gold));
+  }
+  .opNodeHub {
+    fill: hsl(var(--navy));
+    stroke: hsl(var(--navy));
+  }
+  .opZone {
+    fill: var(--gold-dim);
+    stroke: hsl(var(--gold));
+  }
+  .opCell.opStep2 {
+    fill: hsl(var(--gold));
+    stroke: hsl(var(--gold));
+  }
+  .opSignal {
+    display: none;
+  }
+  .card:hover .stage {
+    transform: none;
+  }
 }
 
-.expRoute {
-  stroke-dasharray: 100;
-  transition: stroke-dashoffset 0.8s var(--motion-smooth) 0.05s;
-}
-.expSignal {
-  transition: opacity 0.25s var(--motion-smooth) 0.55s;
-}
-.expDest {
-  transform-origin: 52px 18px;
-  transition: opacity 0.3s var(--motion-smooth) 0.75s, transform 0.3s var(--motion-spring) 0.75s;
-}
-.card.motion .expRoute {
-  stroke-dashoffset: 100;
-}
-.card.motion .expSignal {
-  opacity: 0;
-}
-.card.motion .expDest {
-  opacity: 0;
-  transform: scale(0.4);
-}
-.card.motion.inView .expRoute {
-  stroke-dashoffset: 0;
-}
-.card.motion.inView .expSignal {
-  opacity: 1;
-}
-.card.motion.inView .expDest {
-  opacity: 1;
-  transform: none;
-}
-
-.whShell,
-.whCell,
-.whGate {
-  transition: opacity 0.3s var(--motion-smooth);
-}
-.whCell1 {
-  transition-delay: 0.15s;
-}
-.whCell2 {
-  transition-delay: 0.28s;
-}
-.whCell3 {
-  transition-delay: 0.41s;
-}
-.whGate {
-  transition-delay: 0.58s;
-}
-.card.motion .whShell,
-.card.motion .whCell,
-.card.motion .whGate {
-  opacity: 0;
-}
-.card.motion.inView .whShell,
-.card.motion.inView .whCell,
-.card.motion.inView .whGate {
-  opacity: 1;
-}
-
-.dsItem {
-  transition: opacity 0.35s var(--motion-smooth), transform 0.35s var(--motion-smooth);
-}
-.dsItem1 {
-  transition-delay: 0.05s;
-}
-.dsItem2 {
-  transition-delay: 0.15s;
-}
-.dsItem3 {
-  transition-delay: 0.25s;
-}
-.dsHub,
-.dsHandle {
-  transition: opacity 0.3s var(--motion-smooth) 0.35s;
-}
-.dsLink {
-  opacity: 0.3;
-  transition: opacity 0.3s var(--motion-smooth) 0.5s, stroke-width 0.3s var(--motion-smooth) 0.5s;
-}
-.dsLinkSelected {
-  opacity: 1;
-  stroke-width: 2.2;
-  transition-delay: 0.62s;
-}
-.card.motion .dsItem {
-  opacity: 0;
-  transform: translateX(-4px);
-}
-.card.motion .dsHub,
-.card.motion .dsHandle {
-  opacity: 0;
-}
-.card.motion .dsLinkSelected {
-  opacity: 0.3;
-  stroke-width: 1.4;
-}
-.card.motion.inView .dsItem {
-  opacity: 1;
-  transform: none;
-}
-.card.motion.inView .dsHub,
-.card.motion.inView .dsHandle {
-  opacity: 1;
-}
-.card.motion.inView .dsLinkSelected {
-  opacity: 1;
-  stroke-width: 2.2;
-}
-
-/* Reduced motion never reaches the `.motion` states (the shell checks matchMedia
-   before adding the class); this only stills the hover lift. */
+/* Reduced motion: identical fully-resolved static diagrams; hover lift stilled.
+   Entry states never engage (.motion is matchMedia-gated in JS). */
 @media (prefers-reduced-motion: reduce) {
+  .opRoute,
+  .opRouteDashed,
+  .opNode,
+  .opZone,
+  .opCell {
+    transition: none;
+  }
+  .opRoute {
+    stroke-dashoffset: 0;
+  }
+  .opRouteDashed {
+    opacity: 1;
+  }
+  .opNode {
+    fill: hsl(var(--gold));
+    stroke: hsl(var(--gold));
+  }
+  .opNodeHub {
+    fill: hsl(var(--navy));
+    stroke: hsl(var(--navy));
+  }
+  .opZone {
+    fill: var(--gold-dim);
+    stroke: hsl(var(--gold));
+  }
+  .opCell.opStep2 {
+    fill: hsl(var(--gold));
+    stroke: hsl(var(--gold));
+  }
+  .opSignal {
+    display: none;
+  }
   .card,
   .card:hover,
   .card:focus-within {
-    transition: none;
+    transition: box-shadow 0.2s var(--motion-smooth);
+    transform: none;
+  }
+  .card:hover .stage,
+  .card:focus-within .stage {
     transform: none;
   }
 }

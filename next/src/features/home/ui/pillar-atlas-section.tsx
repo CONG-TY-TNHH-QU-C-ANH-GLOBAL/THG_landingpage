@@ -1,11 +1,18 @@
-// Four service pillars — "Commerce Infrastructure Atlas" (Open Design artifact
-// "FOUR SERVICE PILLARS", IMPLEMENTATION_BASELINE.md "Four pillars as one designed
-// composition"). Replaces the four-equal-cards ServicesSection: one dominant anchor
-// panel (Fulfill), a wide corridor banner (Express), two supporting tiles
-// (Warehouse/Dropship), threaded by a shared low-opacity route. Server Component —
-// all copy comes from the CMS Service model (name/tagline/heroEyebrow/bullets/CTA);
-// icons and the background route are static design assets. The only client code is
-// the InViewOnce shell that toggles the one-shot entry choreography class.
+// Four service pillars — "Commerce Infrastructure Atlas" with merged service
+// visual stages (owner addendum, artifact callout 16 / IMPLEMENTATION_BASELINE.md
+// "Operational Blueprint Cards"). Each pillar renders ONE stage that unifies the
+// production homepage's service metaphor with its operational blueprint sub-layer:
+//   Fulfill   — blank garment → POD/prep → branded garment, over the orthogonal
+//               Receive→Prep/POD→Pack→Dispatch route.
+//   Express   — parcel origin + VN/CN → checkpoints → US·UK·EU arc with a
+//               one-shot travelling signal (hover/focus only).
+//   Warehouse — floor plan (IN → storage cells → OUT) under the building roof,
+//               with the production "PA & NC · USA" location context.
+//   Dropship  — Taobao·1688 supplier → THG hub → USA customer, no warehouse
+//               intermediate.
+// Structure/labels are always visible at rest; only the activity layer is
+// hover/focus-gated (see the CSS module for the hover:none / reduced-motion
+// fully-resolved states). Server Component — content stays CMS/production-owned.
 import Link from "next/link";
 
 import InViewOnce from "@/shared/ui/in-view-once";
@@ -27,12 +34,26 @@ const VARIANT_BY_ID: Readonly<Record<string, Variant>> = {
 };
 const SLOT_ORDER: readonly Variant[] = ["fulfill", "express", "warehouse", "dropship"];
 
+const VARIANT_CLASS: Readonly<Record<Variant, string>> = {
+  fulfill: styles.cardFulfill,
+  express: styles.cardExpress,
+  warehouse: styles.cardWarehouse,
+  dropship: styles.cardDropship,
+};
+
+// Always-visible mono service-code plates (artifact callout 16).
+const SERVICE_CODE: Readonly<Record<Variant, string>> = {
+  fulfill: "FUL‑01",
+  express: "EXP‑02",
+  warehouse: "WHS‑03",
+  dropship: "DRP‑04",
+};
+
 // The four-pillar portfolio is STRUCTURAL: the approved composition always presents
 // all four THG businesses. The CMS services collection provides per-pillar content
 // overrides; a pillar whose CMS entry is missing or not live degrades to the
 // production-owned nav copy and its real locale-aware service route — never to an
-// empty slot. (Root cause of the owner-reported regression: the CMS returned a
-// single live service, and slot-by-id rendering left the other three slots blank.)
+// empty slot.
 const FALLBACK_CONTENT: Readonly<Record<Variant, { nameKey: string; descKey: string; path: string }>> = {
   fulfill: { nameKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", path: "/thg-fulfill" },
   express: { nameKey: "nav.thg_express", descKey: "nav.express_desc", path: "/thg-express" },
@@ -50,62 +71,108 @@ interface PillarView {
   readonly ctaUrl: string | null;
 }
 
-const VARIANT_CLASS: Readonly<Record<Variant, string>> = {
-  fulfill: styles.cardFulfill,
-  express: styles.cardExpress,
-  warehouse: styles.cardWarehouse,
-  dropship: styles.cardDropship,
-};
+// Minimal garment outline used twice in the Fulfill stage (blank → branded).
+const TEE_PATH = "M6 8 L20 2 a8 8 0 0 0 16 0 L50 8 L44 22 L38 18 V50 H18 V18 L12 22 Z";
 
-/* Choreographed pillar icons, ported 1:1 from the approved artifact. Decorative
-   (aria-hidden) — the pillar name/summary carry the information. */
-function PillarIcon({ variant }: Readonly<{ variant: Variant }>) {
+/* Merged service visual stages — static design assets (aria-hidden); the pillar
+   name/summary/capabilities carry the information. Diagram micro-labels are mono
+   design glyphs from the approved artifact, not localized copy. */
+function PillarStage({ variant }: Readonly<{ variant: Variant }>) {
   if (variant === "fulfill") {
     return (
-      <svg className={styles.icon} viewBox="0 0 64 64" fill="none" aria-hidden="true">
-        <path className={styles.capTop} d="M12 24 L32 14 L52 24 L32 34 Z" stroke="hsl(var(--navy))" strokeWidth="1.6" strokeLinejoin="round" />
-        <path className={styles.capLeft} d="M12 24 V44 L32 54 V34" stroke="hsl(var(--navy))" strokeWidth="1.6" strokeLinejoin="round" />
-        <path className={styles.capRight} d="M52 24 V44 L32 54" stroke="hsl(var(--navy))" strokeWidth="1.6" strokeLinejoin="round" />
-        <circle className={styles.capBadge} cx="32" cy="24" r="6.5" fill="hsl(var(--gold))" />
-        <path className={styles.capCheck} d="M29 24 l2 2.2 l4.5 -4.6" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="12" cy="24" r="1.3" fill="hsl(var(--muted-foreground))" />
-        <circle cx="52" cy="24" r="1.3" fill="hsl(var(--muted-foreground))" />
-      </svg>
+      <div className={styles.stage} aria-hidden="true">
+        <svg viewBox="0 0 220 210" fill="none">
+          {/* production metaphor: blank product → POD/prep → branded product */}
+          <g transform="translate(14,4)">
+            <path className={styles.opMetaphor} d={TEE_PATH} />
+          </g>
+          <path className={styles.opRouteDashed} d="M72 30 H98" />
+          <circle cx="110" cy="30" r="8" fill="hsl(var(--gold))" />
+          <path d="M106.5 30 l2.5 2.7 5-5.4" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <path className={styles.opRouteDashed} d="M122 30 H148" />
+          <g transform="translate(150,4)">
+            <path className={styles.opMetaphor} d={TEE_PATH} />
+            <rect x="21" y="26" width="14" height="9" rx="1" fill="hsl(var(--gold))" />
+          </g>
+          {/* blueprint sub-layer: orthogonal Receive→Prep/POD→Pack→Dispatch route */}
+          <path className={`${styles.opRoute} ${styles.opStep1}`} d="M36,84 H184 V118" pathLength={100} />
+          <path className={`${styles.opRoute} ${styles.opStep2}`} d="M184,118 H36 V152" pathLength={100} />
+          <path className={`${styles.opRoute} ${styles.opStep3}`} d="M36,152 H184 V186" pathLength={100} />
+          <circle className={`${styles.opNode} ${styles.opStep1}`} cx="36" cy="84" r="5" />
+          <circle className={`${styles.opNode} ${styles.opStep2}`} cx="184" cy="118" r="5" />
+          <circle className={`${styles.opNode} ${styles.opStep3}`} cx="36" cy="152" r="5" />
+          <circle className={`${styles.opNode} ${styles.opStep4}`} cx="184" cy="186" r="5" />
+          <text className={styles.opLabel} x="36" y="100" textAnchor="middle">RECEIVE</text>
+          <text className={styles.opLabel} x="184" y="134" textAnchor="middle">PREP / POD</text>
+          <text className={styles.opLabel} x="36" y="168" textAnchor="middle">PACK</text>
+          <text className={styles.opLabel} x="184" y="202" textAnchor="middle">DISPATCH</text>
+        </svg>
+      </div>
     );
   }
   if (variant === "express") {
     return (
-      <svg className={styles.icon} viewBox="0 0 64 64" fill="none" aria-hidden="true">
-        <circle cx="12" cy="46" r="4" fill="hsl(var(--gold))" />
-        <path className={styles.expRoute} d="M12 46 Q34 10 52 18" stroke="hsl(var(--navy))" strokeWidth="1.6" strokeLinecap="round" pathLength={100} />
-        <path className={styles.expSignal} d="M40 20.5 l8 -3.2 l-2.2 8.2 Z" fill="hsl(var(--gold))" />
-        <circle className={styles.expDest} cx="52" cy="18" r="4" fill="hsl(var(--navy))" />
-      </svg>
+      <div className={styles.stage} aria-hidden="true">
+        <svg viewBox="0 0 440 82" fill="none">
+          {/* production metaphor: parcel leaving VN/CN for the US·UK·EU corridor */}
+          <rect className={styles.opMetaphor} x="16" y="38" width="9" height="9" rx="1.5" strokeWidth="1.3" />
+          <path className={`${styles.opRoute} ${styles.opStep1}`} d="M25,58 Q90,18 160,22" pathLength={100} />
+          <path className={`${styles.opRoute} ${styles.opStep2}`} d="M160,22 Q220,8 280,18" pathLength={100} />
+          <path className={`${styles.opRoute} ${styles.opStep3}`} d="M280,18 Q350,12 415,46" pathLength={100} />
+          <circle className={styles.opSignal} r="3.5" fill="hsl(var(--gold))" />
+          <circle className={`${styles.opNode} ${styles.opStep1}`} cx="25" cy="58" r="5" />
+          <circle className={`${styles.opNode} ${styles.opStep2}`} cx="160" cy="22" r="3.5" />
+          <circle className={`${styles.opNode} ${styles.opStep3}`} cx="280" cy="18" r="3.5" />
+          <circle className={`${styles.opNode} ${styles.opStep4}`} cx="415" cy="46" r="5" />
+          <path className={styles.opArrow} d="M415,38 L423,46 L415,54 L418,46 Z" />
+          <text className={styles.opLabel} x="8" y="74" textAnchor="start">VN / CN</text>
+          <text className={styles.opLabel} x="432" y="74" textAnchor="end">US · UK · EU</text>
+        </svg>
+      </div>
     );
   }
   if (variant === "warehouse") {
     return (
-      <svg className={styles.icon} viewBox="0 0 64 64" fill="none" aria-hidden="true">
-        <path className={styles.whShell} d="M8 28 L32 12 L56 28 V52 H8 Z" stroke="hsl(var(--navy))" strokeWidth="1.6" strokeLinejoin="round" />
-        <rect className={`${styles.whCell} ${styles.whCell1}`} x="16" y="34" width="8" height="8" fill="var(--pillar-steel)" />
-        <rect className={`${styles.whCell} ${styles.whCell2}`} x="28" y="34" width="8" height="8" fill="var(--pillar-steel)" />
-        <rect className={`${styles.whCell} ${styles.whCell3}`} x="40" y="34" width="8" height="8" fill="var(--pillar-steel)" />
-        <rect className={styles.whGate} x="16" y="44" width="8" height="8" fill="none" stroke="hsl(var(--navy))" strokeWidth="1.2" />
-        <rect className={styles.whGate} x="40" y="44" width="8" height="8" fill="none" stroke="hsl(var(--navy))" strokeWidth="1.2" />
-      </svg>
+      <div className={styles.stage} aria-hidden="true">
+        <svg viewBox="0 0 200 126" fill="none">
+          {/* production metaphor: the THG building + US location context */}
+          <path className={styles.opFrame} d="M6 26 L100 6 L194 26" />
+          <text className={styles.opLabel} x="194" y="18" textAnchor="end">PA &amp; NC · USA</text>
+          {/* blueprint floor plan: inbound → storage cells → outbound */}
+          <rect className={styles.opFrame} x="8" y="26" width="184" height="72" rx="2" />
+          <path className={styles.opGridLine} d="M68,26 V98 M128,26 V98" />
+          <rect className={`${styles.opZone} ${styles.opStep1}`} x="14" y="32" width="24" height="60" rx="1.5" />
+          <rect className={`${styles.opCell} ${styles.opStep2}`} x="70" y="32" width="26" height="26" rx="1.5" />
+          <rect className={styles.opCell} x="100" y="32" width="26" height="26" rx="1.5" />
+          <rect className={styles.opCell} x="70" y="62" width="26" height="26" rx="1.5" />
+          <rect className={styles.opCell} x="100" y="62" width="26" height="26" rx="1.5" />
+          <rect className={`${styles.opZone} ${styles.opStep3}`} x="154" y="32" width="24" height="60" rx="1.5" />
+          <path className={`${styles.opRoute} ${styles.opStep2}`} d="M38,62 L83,45 L154,62" pathLength={100} />
+          {/* inbound / outbound transport */}
+          <path className={styles.opArrow} d="M1,58 l7,4 -7,4 Z" />
+          <path className={styles.opArrow} d="M193,58 l7,4 -7,4 Z" />
+          <text className={styles.opLabel} x="26" y="112" textAnchor="middle">IN</text>
+          <text className={styles.opLabel} x="98" y="112" textAnchor="middle">STORAGE</text>
+          <text className={styles.opLabel} x="166" y="112" textAnchor="middle">OUT</text>
+        </svg>
+      </div>
     );
   }
   return (
-    <svg className={styles.icon} viewBox="0 0 64 64" fill="none" aria-hidden="true">
-      <rect className={`${styles.dsItem} ${styles.dsItem1}`} x="10" y="14" width="10" height="10" rx="2" stroke="hsl(var(--navy))" strokeWidth="1.4" />
-      <rect className={`${styles.dsItem} ${styles.dsItem2}`} x="10" y="30" width="10" height="10" rx="2" stroke="hsl(var(--navy))" strokeWidth="1.4" />
-      <rect className={`${styles.dsItem} ${styles.dsItem3}`} x="10" y="46" width="10" height="10" rx="2" stroke="hsl(var(--navy))" strokeWidth="1.4" />
-      <circle className={styles.dsHub} cx="42" cy="34" r="12" stroke="hsl(var(--navy))" strokeWidth="1.6" />
-      <path className={styles.dsHandle} d="M50.5 42.5 L58 50" stroke="hsl(var(--navy))" strokeWidth="1.8" strokeLinecap="round" />
-      <path className={styles.dsLink} d="M20 19 H30" stroke="hsl(var(--gold))" strokeWidth="1.4" strokeDasharray="2 4" />
-      <path className={`${styles.dsLink} ${styles.dsLinkSelected}`} d="M20 35 H30" stroke="hsl(var(--gold))" strokeWidth="1.4" strokeDasharray="2 4" />
-      <path className={styles.dsLink} d="M20 51 H30" stroke="hsl(var(--gold))" strokeWidth="1.4" strokeDasharray="2 4" />
-    </svg>
+    <div className={styles.stage} aria-hidden="true">
+      <svg viewBox="0 0 200 78" fill="none">
+        {/* production metaphor as blueprint: Taobao·1688 supplier → THG → USA,
+            no warehouse intermediate */}
+        <path className={`${styles.opRouteDashed} ${styles.opStep1}`} d="M33,33 H87" />
+        <path className={`${styles.opRouteDashed} ${styles.opStep2}`} d="M113,33 H165" />
+        <rect className={`${styles.opNode} ${styles.opStep1}`} x="23.5" y="28.5" width="9" height="9" rx="2" />
+        <circle className={`${styles.opNode} ${styles.opNodeHub} ${styles.opStep2}`} cx="100" cy="33" r="13" />
+        <circle className={`${styles.opNode} ${styles.opStep3}`} cx="172" cy="33" r="7" />
+        <text className={styles.opLabel} x="28" y="60" textAnchor="middle">TAOBAO · 1688</text>
+        <text className={styles.opLabel} x="100" y="60" textAnchor="middle">THG</text>
+        <text className={styles.opLabel} x="172" y="60" textAnchor="middle">USA</text>
+      </svg>
+    </div>
   );
 }
 
@@ -163,7 +230,6 @@ const PillarAtlasSection = ({
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <SectionHeader
-            size="xl"
             align="left"
             className="mb-10 max-w-2xl"
             eyebrow={t("services.subtitle")}
@@ -192,13 +258,14 @@ const PillarAtlasSection = ({
               >
                 <span className={styles.edge} aria-hidden="true" />
                 <span className={styles.indexGhost} aria-hidden="true">{`0${i + 1}`}</span>
-                <PillarIcon variant={p.variant} />
+                <span className={styles.code} aria-hidden="true">{SERVICE_CODE[p.variant]}</span>
+                <PillarStage variant={p.variant} />
                 <h3 className={styles.title}>{p.name}</h3>
                 {p.summary && <p className={styles.summary}>{p.summary}</p>}
                 {p.detail && <p className={styles.detail}>{p.detail}</p>}
                 {p.bullets.length > 0 && (
                   <ul className={styles.caps}>
-                    {p.bullets.slice(0, 4).map((b, j) => (
+                    {p.bullets.map((b, j) => (
                       <li key={b}>
                         <span className={styles.capIdx}>{String(j + 1).padStart(2, "0")}</span>
                         {b}
@@ -208,7 +275,10 @@ const PillarAtlasSection = ({
                 )}
                 {p.ctaUrl && (
                   <Link prefetch={false} href={p.ctaUrl} className={styles.cta}>
-                    {p.ctaText} <span aria-hidden="true">→</span>
+                    {p.ctaText}{" "}
+                    <span className={styles.ctaArrow} aria-hidden="true">
+                      →
+                    </span>
                   </Link>
                 )}
               </InViewOnce>
