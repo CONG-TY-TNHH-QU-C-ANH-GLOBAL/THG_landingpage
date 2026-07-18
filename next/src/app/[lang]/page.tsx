@@ -77,7 +77,7 @@ export default async function HomePage({ params }: PageProps) {
       <HomeFaqJsonLd faqs={faqs} />
       <HeroSection lang={lang} copy={copy} hero={content.hero} />
       <ProofStripSection copy={copy} />
-      <PillarAtlasSection copy={copy} services={services} />
+      <PillarAtlasSection lang={lang} copy={copy} services={services} />
       <EcosystemAtlasSection copy={copy} />
       <CoverageSection copy={copy} />
       <WhoWeServeSection copy={copy} />

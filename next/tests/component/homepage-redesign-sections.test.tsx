@@ -68,7 +68,7 @@ function expectNoAnnotationChrome(container: HTMLElement) {
 
 describe("PillarAtlasSection (WEB-001B)", () => {
   it.each(LOCALES)("renders all four pillars from CMS services with real CTAs — %s", (locale) => {
-    const { container } = render(<PillarAtlasSection copy={copyFor(locale)} services={FOUR_SERVICES} />);
+    const { container } = render(<PillarAtlasSection lang={locale} copy={copyFor(locale)} services={FOUR_SERVICES} />);
 
     for (const variant of ["fulfill", "express", "warehouse", "dropship"]) {
       expect(screen.getByTestId(`pillar-${variant}`)).toBeTruthy();
@@ -86,21 +86,80 @@ describe("PillarAtlasSection (WEB-001B)", () => {
   });
 
   it("maps CMS service ids onto their atlas slots (fulfill = anchor panel)", () => {
-    render(<PillarAtlasSection copy={copyFor("en")} services={FOUR_SERVICES} />);
+    render(<PillarAtlasSection lang="en" copy={copyFor("en")} services={FOUR_SERVICES} />);
     expect(within(screen.getByTestId("pillar-fulfill")).getByText("Name thg-fulfill")).toBeTruthy();
     expect(within(screen.getByTestId("pillar-dropship")).getByText("Name thg-order")).toBeTruthy();
   });
 
   it("falls back to position order for unknown service ids", () => {
     const unknown = [service("svc-a"), service("svc-b"), service("svc-c"), service("svc-d")];
-    render(<PillarAtlasSection copy={copyFor("en")} services={unknown} />);
+    render(<PillarAtlasSection lang="en" copy={copyFor("en")} services={unknown} />);
     expect(within(screen.getByTestId("pillar-fulfill")).getByText("Name svc-a")).toBeTruthy();
     expect(within(screen.getByTestId("pillar-dropship")).getByText("Name svc-d")).toBeTruthy();
   });
 
-  it("keeps the explicit empty state when CMS returns no services", () => {
-    render(<PillarAtlasSection copy={copyFor("en")} services={[]} />);
-    expect(screen.getByText(MARKETING_COPY["services.empty"].en)).toBeTruthy();
+  // Owner-reported release blocker: the CMS returned a single live service (thg-order)
+  // and the section rendered ONE corner card. The four-pillar portfolio is structural:
+  // every slot without a CMS entry must degrade to the production nav copy + real route.
+  it.each(LOCALES)("always renders all four pillars when CMS has one live service — %s", (locale) => {
+    const copy = copyFor(locale);
+    render(<PillarAtlasSection lang={locale} copy={copy} services={[service("thg-order")]} />);
+
+    for (const variant of ["fulfill", "express", "warehouse", "dropship"]) {
+      expect(screen.getByTestId(`pillar-${variant}`)).toBeTruthy();
+    }
+    // the one CMS service keeps its slot and content
+    expect(within(screen.getByTestId("pillar-dropship")).getByText("Name thg-order")).toBeTruthy();
+    // the other three carry production-owned names + locale-aware real routes
+    expect(within(screen.getByTestId("pillar-fulfill")).getByText(copy["nav.thg_fulfill"])).toBeTruthy();
+    expect(within(screen.getByTestId("pillar-express")).getByText(copy["nav.thg_express"])).toBeTruthy();
+    expect(within(screen.getByTestId("pillar-warehouse")).getByText(copy["nav.thg_warehouse"])).toBeTruthy();
+    expect(
+      within(screen.getByTestId("pillar-fulfill")).getByRole("link").getAttribute("href"),
+    ).toBe(`/${locale}/thg-fulfill`);
+  });
+
+  it.each(LOCALES)("renders all four pillars from production copy when CMS is empty — %s", (locale) => {
+    const copy = copyFor(locale);
+    render(<PillarAtlasSection lang={locale} copy={copy} services={[]} />);
+    for (const key of ["nav.thg_fulfill", "nav.thg_express", "nav.thg_warehouse", "nav.thg_order"]) {
+      expect(screen.getByText(copy[key])).toBeTruthy();
+    }
+  });
+});
+
+describe("default visibility contract (WEB-001B progressive enhancement)", () => {
+  // Essential/animated content must be visible by default: every initial-hidden
+  // animation state in the section CSS modules must be scoped under the `.motion`
+  // class that client shells add only when motion is allowed. Exemptions: `.detail`
+  // (hover/focus-revealed supplementary microcopy, never essential per
+  // IMPLEMENTATION_BASELINE.md) and `.signal` (decorative traveling dot that only
+  // exists in the enhanced experience, hidden via display gating).
+  const CSS_FILES = [
+    "src/features/home/ui/pillar-atlas.module.css",
+    "src/features/home/ui/ecosystem-atlas.module.css",
+    "src/features/home/ui/conversion.module.css",
+  ];
+  // opacity fully 0, undrawn dash routes, and collapse-scale hidden states.
+  const HIDDEN_DECL = /opacity:\s*0\s*(?:;|$)|stroke-dashoffset:\s*100|scaleX\(0\)|scale\(0\.[0-9]+\)/m;
+  const EXEMPT_SELECTOR = /\.detail\b|\.signal\b/;
+
+  it("hides animatable states only under the .motion class", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const root = join(__dirname, "..", "..");
+    const violations: string[] = [];
+    for (const file of CSS_FILES) {
+      const css = readFileSync(join(root, file), "utf8").replaceAll(/\/\*[\s\S]*?\*\//g, "");
+      for (const block of css.split("}")) {
+        const [selector, body] = block.split("{");
+        if (!selector || !body) continue;
+        if (!HIDDEN_DECL.test(body)) continue;
+        if (selector.includes(".motion") || EXEMPT_SELECTOR.test(selector)) continue;
+        violations.push(`${file}: "${selector.trim().replaceAll(/\s+/g, " ")}"`);
+      }
+    }
+    expect(violations).toEqual([]);
   });
 });
 

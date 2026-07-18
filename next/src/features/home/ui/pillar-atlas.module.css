@@ -77,6 +77,11 @@
   grid-row: 2;
 }
 
+/* Progressive enhancement contract: the default (no-JS / reduced-motion / failed
+   observer) state below is the COMPLETE resolved scene. The InViewOnce shell adds
+   `.motion` on mount only when motion is allowed — every initial-hidden animation
+   state is scoped under `.card.motion` and resolves under `.card.motion.inView`. */
+
 /* precise edge highlight — draws in on first view, not a static solid bar */
 .edge {
   position: absolute;
@@ -85,7 +90,6 @@
   right: 28px;
   height: 1px;
   background: hsl(var(--gold-light));
-  transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.8s var(--motion-smooth) 0.1s;
 }
@@ -95,7 +99,10 @@
 .cardDropship .edge {
   background: hsl(var(--navy));
 }
-.card.inView .edge {
+.card.motion .edge {
+  transform: scaleX(0);
+}
+.card.motion.inView .edge {
   transform: scaleX(1);
 }
 
@@ -251,62 +258,78 @@
   }
 }
 
-/* per-pillar icon choreography — resolves once on first scroll-into-view */
+/* per-pillar icon choreography — resolves once on first scroll-into-view.
+   Bases hold only transitions/origins; hidden states live under `.card.motion`. */
 .capLeft {
-  transform: translate(-4px, -2px);
-  opacity: 0;
   transition: transform 0.5s var(--motion-smooth) 0.05s, opacity 0.5s var(--motion-smooth) 0.05s;
 }
 .capRight {
-  transform: translate(4px, -2px);
-  opacity: 0;
   transition: transform 0.5s var(--motion-smooth) 0.15s, opacity 0.5s var(--motion-smooth) 0.15s;
 }
 .capTop {
-  opacity: 0;
   transition: opacity 0.4s var(--motion-smooth) 0.3s;
 }
 .capBadge,
 .capCheck {
-  opacity: 0;
-  transform: scale(0.5);
   transform-origin: 32px 24px;
   transition: opacity 0.3s var(--motion-smooth) 0.45s, transform 0.3s var(--motion-spring) 0.45s;
 }
-.card.inView .capLeft,
-.card.inView .capRight,
-.card.inView .capTop {
+.card.motion .capLeft {
+  transform: translate(-4px, -2px);
+  opacity: 0;
+}
+.card.motion .capRight {
+  transform: translate(4px, -2px);
+  opacity: 0;
+}
+.card.motion .capTop {
+  opacity: 0;
+}
+.card.motion .capBadge,
+.card.motion .capCheck {
+  opacity: 0;
+  transform: scale(0.5);
+}
+.card.motion.inView .capLeft,
+.card.motion.inView .capRight,
+.card.motion.inView .capTop {
   opacity: 1;
   transform: none;
 }
-.card.inView .capBadge,
-.card.inView .capCheck {
+.card.motion.inView .capBadge,
+.card.motion.inView .capCheck {
   opacity: 1;
   transform: scale(1);
 }
 
 .expRoute {
   stroke-dasharray: 100;
-  stroke-dashoffset: 100;
   transition: stroke-dashoffset 0.8s var(--motion-smooth) 0.05s;
 }
 .expSignal {
-  opacity: 0;
   transition: opacity 0.25s var(--motion-smooth) 0.55s;
 }
 .expDest {
-  opacity: 0;
-  transform: scale(0.4);
   transform-origin: 52px 18px;
   transition: opacity 0.3s var(--motion-smooth) 0.75s, transform 0.3s var(--motion-spring) 0.75s;
 }
-.card.inView .expRoute {
+.card.motion .expRoute {
+  stroke-dashoffset: 100;
+}
+.card.motion .expSignal {
+  opacity: 0;
+}
+.card.motion .expDest {
+  opacity: 0;
+  transform: scale(0.4);
+}
+.card.motion.inView .expRoute {
   stroke-dashoffset: 0;
 }
-.card.inView .expSignal {
+.card.motion.inView .expSignal {
   opacity: 1;
 }
-.card.inView .expDest {
+.card.motion.inView .expDest {
   opacity: 1;
   transform: none;
 }
@@ -314,7 +337,6 @@
 .whShell,
 .whCell,
 .whGate {
-  opacity: 0;
   transition: opacity 0.3s var(--motion-smooth);
 }
 .whCell1 {
@@ -329,15 +351,18 @@
 .whGate {
   transition-delay: 0.58s;
 }
-.card.inView .whShell,
-.card.inView .whCell,
-.card.inView .whGate {
+.card.motion .whShell,
+.card.motion .whCell,
+.card.motion .whGate {
+  opacity: 0;
+}
+.card.motion.inView .whShell,
+.card.motion.inView .whCell,
+.card.motion.inView .whGate {
   opacity: 1;
 }
 
 .dsItem {
-  opacity: 0;
-  transform: translateX(-4px);
   transition: opacity 0.35s var(--motion-smooth), transform 0.35s var(--motion-smooth);
 }
 .dsItem1 {
@@ -351,7 +376,6 @@
 }
 .dsHub,
 .dsHandle {
-  opacity: 0;
   transition: opacity 0.3s var(--motion-smooth) 0.35s;
 }
 .dsLink {
@@ -359,56 +383,42 @@
   transition: opacity 0.3s var(--motion-smooth) 0.5s, stroke-width 0.3s var(--motion-smooth) 0.5s;
 }
 .dsLinkSelected {
+  opacity: 1;
+  stroke-width: 2.2;
   transition-delay: 0.62s;
 }
-.card.inView .dsItem {
+.card.motion .dsItem {
+  opacity: 0;
+  transform: translateX(-4px);
+}
+.card.motion .dsHub,
+.card.motion .dsHandle {
+  opacity: 0;
+}
+.card.motion .dsLinkSelected {
+  opacity: 0.3;
+  stroke-width: 1.4;
+}
+.card.motion.inView .dsItem {
   opacity: 1;
   transform: none;
 }
-.card.inView .dsHub,
-.card.inView .dsHandle {
+.card.motion.inView .dsHub,
+.card.motion.inView .dsHandle {
   opacity: 1;
 }
-.card.inView .dsLinkSelected {
+.card.motion.inView .dsLinkSelected {
   opacity: 1;
   stroke-width: 2.2;
 }
 
-/* Reduced motion is structural, not slowed — the default state IS the complete
-   resolved scene (IMPLEMENTATION_BASELINE.md "Reduced motion"). */
+/* Reduced motion never reaches the `.motion` states (the shell checks matchMedia
+   before adding the class); this only stills the hover lift. */
 @media (prefers-reduced-motion: reduce) {
-  .edge,
-  .capLeft,
-  .capRight,
-  .capTop,
-  .capBadge,
-  .capCheck,
-  .expRoute,
-  .expSignal,
-  .expDest,
-  .whShell,
-  .whCell,
-  .whGate,
-  .dsItem,
-  .dsHub,
-  .dsHandle,
-  .dsLink {
-    transition: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    stroke-dashoffset: 0 !important;
-    transform-origin: center;
-  }
-  .edge {
-    transform: scaleX(1) !important;
-  }
-  .dsLinkSelected {
-    stroke-width: 2.2 !important;
-  }
   .card,
   .card:hover,
   .card:focus-within {
-    transition: none !important;
-    transform: none !important;
+    transition: none;
+    transform: none;
   }
 }

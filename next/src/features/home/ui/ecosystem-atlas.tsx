@@ -38,10 +38,9 @@ export function EcosystemAtlas({ stages }: Readonly<{ stages: readonly Ecosystem
     const el = atlasRef.current;
     if (!el) return;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion || !("IntersectionObserver" in window)) {
-      el.classList.add(styles.inView);
-      return;
-    }
+    // Default markup is the complete static network — without motion, add nothing.
+    if (reduceMotion || !("IntersectionObserver" in window)) return;
+    el.classList.add(styles.motion);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;

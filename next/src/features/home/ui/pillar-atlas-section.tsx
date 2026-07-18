@@ -12,6 +12,7 @@ import InViewOnce from "@/shared/ui/in-view-once";
 import ScrollReveal from "@/shared/ui/scroll-reveal";
 import { SectionHeader } from "@/shared/ui/section-header";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
+import type { Locale } from "@/shared/i18n";
 import type { Service } from "../models/service";
 import styles from "./pillar-atlas.module.css";
 
@@ -25,6 +26,29 @@ const VARIANT_BY_ID: Readonly<Record<string, Variant>> = {
   "thg-order": "dropship",
 };
 const SLOT_ORDER: readonly Variant[] = ["fulfill", "express", "warehouse", "dropship"];
+
+// The four-pillar portfolio is STRUCTURAL: the approved composition always presents
+// all four THG businesses. The CMS services collection provides per-pillar content
+// overrides; a pillar whose CMS entry is missing or not live degrades to the
+// production-owned nav copy and its real locale-aware service route — never to an
+// empty slot. (Root cause of the owner-reported regression: the CMS returned a
+// single live service, and slot-by-id rendering left the other three slots blank.)
+const FALLBACK_CONTENT: Readonly<Record<Variant, { nameKey: string; descKey: string; path: string }>> = {
+  fulfill: { nameKey: "nav.thg_fulfill", descKey: "nav.fulfill_desc", path: "/thg-fulfill" },
+  express: { nameKey: "nav.thg_express", descKey: "nav.express_desc", path: "/thg-express" },
+  warehouse: { nameKey: "nav.thg_warehouse", descKey: "nav.warehouse_desc", path: "/thg-warehouse" },
+  dropship: { nameKey: "nav.thg_order", descKey: "nav.order_desc", path: "/thg-order" },
+};
+
+interface PillarView {
+  readonly variant: Variant;
+  readonly name: string;
+  readonly summary: string;
+  readonly detail: string;
+  readonly bullets: readonly string[];
+  readonly ctaText: string;
+  readonly ctaUrl: string | null;
+}
 
 const VARIANT_CLASS: Readonly<Record<Variant, string>> = {
   fulfill: styles.cardFulfill,
@@ -85,9 +109,14 @@ function PillarIcon({ variant }: Readonly<{ variant: Variant }>) {
   );
 }
 
-/** Order services into the atlas slots (anchor → banner → tiles); unknown ids keep
- *  their CMS position order in whichever slots remain. */
-function orderIntoSlots(services: readonly Service[]): { service: Service; variant: Variant }[] {
+/** Build all four pillar views: CMS services land on their brand slot (unknown ids fill
+ *  remaining slots in CMS position order); every slot left without a CMS service renders
+ *  the production nav copy + real locale-aware route. Always returns exactly four. */
+function buildPillars(
+  t: (key: string) => string,
+  lang: Locale,
+  services: readonly Service[],
+): PillarView[] {
   const byVariant = new Map<Variant, Service>();
   const unknown: Service[] = [];
   for (const s of services) {
@@ -95,27 +124,39 @@ function orderIntoSlots(services: readonly Service[]): { service: Service; varia
     if (v && !byVariant.has(v)) byVariant.set(v, s);
     else unknown.push(s);
   }
-  const result: { service: Service; variant: Variant }[] = [];
-  for (const v of SLOT_ORDER) {
-    const known = byVariant.get(v);
-    const service = known ?? unknown.shift();
-    if (service) result.push({ service, variant: v });
-  }
-  return result;
+  return SLOT_ORDER.map((variant) => {
+    const s = byVariant.get(variant) ?? unknown.shift();
+    if (s) {
+      return {
+        variant,
+        name: s.name,
+        summary: s.tagline || s.body,
+        detail: s.heroEyebrow,
+        bullets: s.bullets,
+        ctaText: s.ctaText || t("services.learn_more"),
+        ctaUrl: s.ctaUrl,
+      };
+    }
+    const fallback = FALLBACK_CONTENT[variant];
+    return {
+      variant,
+      name: t(fallback.nameKey),
+      summary: t(fallback.descKey),
+      detail: "",
+      bullets: [],
+      ctaText: t("services.learn_more"),
+      ctaUrl: `/${lang}${fallback.path}`,
+    };
+  });
 }
 
-const PillarAtlasSection = ({ copy, services }: Readonly<{ copy: MarketingCopy; services: readonly Service[] }>) => {
+const PillarAtlasSection = ({
+  lang,
+  copy,
+  services,
+}: Readonly<{ lang: Locale; copy: MarketingCopy; services: readonly Service[] }>) => {
   const t = tFrom(copy);
-
-  if (services.length === 0) {
-    return (
-      <section id="services" className="py-28 relative overflow-hidden">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">{t("services.empty")}</div>
-      </section>
-    );
-  }
-
-  const slots = orderIntoSlots(services);
+  const pillars = buildPillars(t, lang, services);
 
   return (
     <section id="services" className="py-28 relative overflow-hidden" data-testid="pillar-atlas">
@@ -141,22 +182,23 @@ const PillarAtlasSection = ({ copy, services }: Readonly<{ copy: MarketingCopy; 
             </svg>
           </div>
           <div className={styles.grid}>
-            {slots.map(({ service: s, variant }, i) => (
+            {pillars.map((p, i) => (
               <InViewOnce
-                key={s.id}
-                className={`${styles.card} ${VARIANT_CLASS[variant]}`}
+                key={p.variant}
+                className={`${styles.card} ${VARIANT_CLASS[p.variant]}`}
+                motionClassName={styles.motion}
                 inViewClassName={styles.inView}
-                data-testid={`pillar-${variant}`}
+                data-testid={`pillar-${p.variant}`}
               >
                 <span className={styles.edge} aria-hidden="true" />
                 <span className={styles.indexGhost} aria-hidden="true">{`0${i + 1}`}</span>
-                <PillarIcon variant={variant} />
-                <h3 className={styles.title}>{s.name}</h3>
-                {(s.tagline || s.body) && <p className={styles.summary}>{s.tagline || s.body}</p>}
-                {s.heroEyebrow && <p className={styles.detail}>{s.heroEyebrow}</p>}
-                {s.bullets.length > 0 && (
+                <PillarIcon variant={p.variant} />
+                <h3 className={styles.title}>{p.name}</h3>
+                {p.summary && <p className={styles.summary}>{p.summary}</p>}
+                {p.detail && <p className={styles.detail}>{p.detail}</p>}
+                {p.bullets.length > 0 && (
                   <ul className={styles.caps}>
-                    {s.bullets.slice(0, 4).map((b, j) => (
+                    {p.bullets.slice(0, 4).map((b, j) => (
                       <li key={b}>
                         <span className={styles.capIdx}>{String(j + 1).padStart(2, "0")}</span>
                         {b}
@@ -164,9 +206,9 @@ const PillarAtlasSection = ({ copy, services }: Readonly<{ copy: MarketingCopy; 
                     ))}
                   </ul>
                 )}
-                {s.ctaUrl && (
-                  <Link prefetch={false} href={s.ctaUrl} className={styles.cta}>
-                    {s.ctaText || t("services.learn_more")} <span aria-hidden="true">→</span>
+                {p.ctaUrl && (
+                  <Link prefetch={false} href={p.ctaUrl} className={styles.cta}>
+                    {p.ctaText} <span aria-hidden="true">→</span>
                   </Link>
                 )}
               </InViewOnce>
