@@ -92,6 +92,7 @@
     --step-metric: clamp(28px, 3.2vw, 40px);
     --step-button: 14px;
     --tracking-tight: -0.03em;
+    --tracking-wide: 0.08em;
 
     /* Typography foundation (IMPLEMENTATION_BASELINE.md "Typography rules — vi / en / zh").
        *-face resolve to next/font/google's self-hosted Be Vietnam Pro / Inter (see

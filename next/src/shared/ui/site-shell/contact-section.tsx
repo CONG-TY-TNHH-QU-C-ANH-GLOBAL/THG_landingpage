@@ -44,20 +44,30 @@ const ContactSection = ({
           />
         </ScrollReveal>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          <ScrollReveal direction="left">
-            <div>
-              <h3 className="text-2xl font-bold text-navy mb-8">{t("contact.offices_title")}</h3>
-              <ContactList locations={locations} />
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal direction="right" delay={200}>
-            <div className="bg-background rounded-3xl p-10 text-center tilt-card" style={{ boxShadow: "var(--shadow-3d)" }}>
+        {/* WEB-001B: when the CMS has no location records the offices column
+            collapses entirely — never a heading over an empty area — and the
+            endcap card takes a balanced centered one-column composition. */}
+        {locations.length > 0 ? (
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <ScrollReveal direction="left">
+              <div>
+                <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-8">{t("contact.offices_title")}</h3>
+                <ContactList locations={locations} />
+              </div>
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={200}>
+              <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
+                <ContactCtaCard lang={lang} copy={copy} />
+              </div>
+            </ScrollReveal>
+          </div>
+        ) : (
+          <ScrollReveal>
+            <div className="max-w-xl mx-auto bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
               <ContactCtaCard lang={lang} copy={copy} />
             </div>
           </ScrollReveal>
-        </div>
+        )}
 
         {/* Footer bar — existing brand info and links only, no invented legal copy. */}
         <div className="mt-20 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
@@ -137,11 +147,15 @@ function ContactCtaCard({ lang, copy }: Readonly<{ lang: Locale; copy: Marketing
   const t = tFrom(copy);
   return (
     <>
-      <div className="w-16 h-16 rounded-full bg-navy mx-auto mb-6 flex items-center justify-center p-3 glow-pulse">
+      {/* WEB-001B endcap alignment: no continuous glow-pulse (anti-pattern:
+          looping decorative motion), token radii/shadows, step-scale heading.
+          Offer/response copy is verified production dictionary content
+          (parity: src/lib/i18n/translations/contact.ts:18-19, live today). */}
+      <div className="w-14 h-14 rounded-full bg-navy mx-auto mb-5 flex items-center justify-center p-3">
         <img src="/assets/thg-logo.png" alt="THG" className="w-full h-full object-contain brightness-0 invert" />
       </div>
-      <h3 className="text-2xl font-bold text-navy mb-3">{t("contact.cta_title")}</h3>
-      <p className="text-muted-foreground mb-8 leading-relaxed">{t("contact.cta_desc")}</p>
+      <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-2.5">{t("contact.cta_title")}</h3>
+      <p className="text-muted-foreground text-sm mb-7 leading-relaxed max-w-[44ch] mx-auto">{t("contact.cta_desc")}</p>
 
       <div className="flex flex-col gap-3 w-full">
         {/* Submit Inquiry */}
@@ -153,19 +167,23 @@ function ContactCtaCard({ lang, copy }: Readonly<{ lang: Locale; copy: Marketing
           <div className="flex-1 h-px bg-border" />
         </div>
 
+        {/* Secondary channels beneath the primary consultation CTA: token radius
+            (no pill shapes), uniform height/icon size, aligned baselines; hover
+            never shifts layout; brand colors kept per channel. Real production
+            URLs only — never a "#" placeholder. */}
         {SOCIAL_LINKS.map((s) => (
           <a
             key={s.href}
             href={s.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 w-full px-5 py-3.5 rounded-full font-semibold text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            className="flex items-center gap-3 w-full min-h-[44px] px-4 py-2.5 rounded-lg font-semibold text-sm text-white transition-[filter,box-shadow] duration-200 hover:brightness-110 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             style={{ background: s.background }}
           >
-            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               {s.icon}
             </svg>
-            <span>{t(s.labelKey)}</span>
+            <span className="leading-none">{t(s.labelKey)}</span>
           </a>
         ))}
       </div>

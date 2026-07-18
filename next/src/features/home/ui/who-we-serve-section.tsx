@@ -17,7 +17,6 @@ const WhoWeServeSection = ({ copy }: Readonly<{ copy: MarketingCopy }>) => {
         <div className="grid lg:grid-cols-[2fr_3fr] gap-10 lg:gap-16 items-start">
           <ScrollReveal direction="left">
             <SectionHeader
-              size="xl"
               align="left"
               className="mb-0 lg:sticky lg:top-28"
               eyebrow={t("sellers.subtitle")}

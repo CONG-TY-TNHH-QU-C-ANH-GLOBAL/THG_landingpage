@@ -12,13 +12,15 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/shared/ui/cn";
 
+// WEB-001B typography parity: section titles resolve through the approved fluid
+// step scale (IMPLEMENTATION_BASELINE.md "12-step type scale") instead of the
+// Tailwind literals the parity port used — the artifact's section H2 is
+// --step-h2 (clamp 24→36px) at every section, with --step-h1 as the single
+// larger escape hatch. No second type scale.
 const SIZE_CLASSES = {
-  // 90% of existing call sites use this size.
-  default: "text-3xl md:text-4xl",
-  // Contact section.
-  lg: "text-4xl md:text-5xl",
-  // Advantages section (largest).
-  xl: "text-4xl md:text-5xl lg:text-[3.5rem]",
+  default: "text-[length:var(--step-h2)]",
+  lg: "text-[length:var(--step-h2)]",
+  xl: "text-[length:var(--step-h1)]",
 } as const;
 
 interface SectionHeaderProps {
@@ -53,7 +55,7 @@ export function SectionHeader({
   return (
     <div className={cn(align === "center" && "text-center", "mb-16", className)}>
       {eyebrow && (
-        <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em] mb-4">
+        <p className="text-[length:var(--step-label)] font-bold text-accent uppercase tracking-[var(--tracking-wide)] mb-4">
           {eyebrow}
         </p>
       )}
@@ -73,7 +75,12 @@ export function SectionHeader({
         )}
       </h2>
       {description && (
-        <p className="text-muted-foreground mt-4 max-w-2xl mx-auto leading-relaxed">
+        <p
+          className={cn(
+            "text-muted-foreground text-[length:var(--step-lead)] mt-3 max-w-[52ch] leading-relaxed",
+            align === "center" && "mx-auto",
+          )}
+        >
           {description}
         </p>
       )}

@@ -16,7 +16,6 @@ const WhyThgSection = ({ copy }: Readonly<{ copy: MarketingCopy }>) => {
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <SectionHeader
-            size="xl"
             align="left"
             className="mb-6 max-w-2xl"
             eyebrow={t("adv.subtitle")}
