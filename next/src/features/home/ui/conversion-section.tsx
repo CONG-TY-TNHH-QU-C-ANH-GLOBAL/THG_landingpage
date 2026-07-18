@@ -34,8 +34,17 @@ const FIELD_CLASS =
   "aria-[invalid=true]:border-red-400/80";
 const LABEL_CLASS = "block text-[11px] uppercase tracking-[0.05em] text-white/55 mb-1.5 font-medium";
 
-function isEmailish(v: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+// Deterministic linear-time email shape check (Sonar S5852: the previous single
+// regex backtracked super-linearly on hostile input). Same accept/reject set as
+// /^[^\s@]+@[^\s@]+\.[^\s@]+$/: exactly one "@", non-empty local part, a domain
+// dot with characters on both sides, and no whitespace anywhere.
+function isEmailish(value: string): boolean {
+  const s = value.trim();
+  const at = s.indexOf("@");
+  if (at <= 0 || at !== s.lastIndexOf("@") || at === s.length - 1) return false;
+  if (/\s/.test(s)) return false;
+  const dot = s.lastIndexOf(".");
+  return dot > at + 1 && dot < s.length - 1;
 }
 
 /** Reserved-space field error: always occupies its line so a field never shifts
@@ -61,10 +70,9 @@ function KnowledgeLoop({ lang, copy, postSubmit }: KnowledgeLoopProps) {
   useEffect(() => {
     const el = loopRef.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
-      el.classList.add(styles.inView);
-      return;
-    }
+    // Default markup is the complete resolved path — without motion, add nothing.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+    el.classList.add(styles.motion);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -218,8 +226,10 @@ const ConversionSection = ({ lang, copy }: ConversionSectionProps) => {
       });
       setDone(true);
       setStatus(t("lead_form.success_title"));
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : t("lead_form.err_generic"));
+    } catch {
+      // Application-owned copy only — CMS response bodies/diagnostics never
+      // reach the public UI (owner-accepted CodeRabbit security finding).
+      setStatus(t("lead_form.err_generic"));
       resetForRetry();
     } finally {
       setPending(false);

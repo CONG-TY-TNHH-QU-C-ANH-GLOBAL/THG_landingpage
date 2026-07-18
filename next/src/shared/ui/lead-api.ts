@@ -43,15 +43,12 @@ export async function postLead(input: LeadInput): Promise<void> {
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
   if (!res.ok) {
-    let message = `${res.status} ${res.statusText}`;
-    try {
-      const body = (await res.json()) as { error?: string };
-      if (body.error) message = body.error;
-    } catch {
-      // ignore JSON parse errors
-    }
-    throw new Error(`CMS /leads: ${message}`);
+    // Stable application-owned failure (owner-accepted CodeRabbit security
+    // finding): the CMS response body is never parsed or propagated, so backend
+    // diagnostics cannot reach public UI or logs. Callers show the localized
+    // lead_form.err_generic copy and keep retry enabled. The status code in the
+    // message is for debuggers only — no caller renders Error messages.
+    throw new Error(`lead submit failed (${res.status})`);
   }
-  // ponytail: Vite validated the { ok } response with Zod; the result is unused
-  // here, so a 2xx status is the success signal.
+  // A 2xx status is the success signal; the response body is unused.
 }

@@ -95,8 +95,10 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy
       });
       setDone(true);
       toast.success(t("lead_form.success_toast"));
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("lead_form.err_generic"));
+    } catch {
+      // Application-owned copy only — postLead never exposes CMS diagnostics,
+      // and this boundary must not either (timeouts/network errors included).
+      toast.error(t("lead_form.err_generic"));
       resetForRetry();
     } finally {
       setPending(false);

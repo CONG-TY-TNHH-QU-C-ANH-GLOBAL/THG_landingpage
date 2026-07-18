@@ -19,12 +19,13 @@ function copyFor(locale: Locale): MarketingCopy {
 // The verified CMS leads schema — the payload may never carry anything else.
 const CONTRACT_KEYS = ["name", "email", "phone", "message", "source_page", "locale", "utm", "turnstile_token"];
 
-function mockLeadsFetch(status = 201) {
+function mockLeadsFetch(status = 201, body: unknown = { ok: true, id: 1 }) {
   const fn = vi.fn(async () => ({
     ok: status < 400,
     status,
     statusText: "Created",
-    json: async () => ({ ok: true, id: 1 }),
+    json: async () => body,
+    text: async () => JSON.stringify(body),
   }) as unknown as Response);
   vi.stubGlobal("fetch", fn);
   return fn;
@@ -116,16 +117,86 @@ describe("ConversionSection — /leads contract (WEB-001B)", () => {
     expect(screen.getByTestId("consult-success").textContent).toContain(MARKETING_COPY["consult.privacy"].en);
   });
 
-  it("recovers from a failed submit — form stays editable, error announced", async () => {
-    mockLeadsFetch(500);
+  it("fails safely: generic localized copy only, CMS body never rendered, retry stays enabled", async () => {
+    // Owner-accepted CodeRabbit security finding: backend diagnostics must not
+    // reach public UI. The mocked CMS body is a sentinel that must never render.
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const fetchMock = mockLeadsFetch(500, { error: "secret-internal-detail" });
     render(<ConversionSection lang="en" copy={copyFor("en")} />);
+
+    fillRequired("Nguyen Van A", "leak-check@example.com");
+    fireEvent.submit(screen.getByTestId("consult-form"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("consult-status").textContent).toBe(MARKETING_COPY["lead_form.err_generic"].en);
+    });
+    const pageText = document.body.textContent ?? "";
+    expect(pageText).not.toContain("secret-internal-detail");
+    expect(pageText).not.toContain("CMS /leads");
+    expect(pageText).not.toContain("500");
+    expect(screen.queryByTestId("consult-success")).toBeNull();
+    expect((document.getElementById("consult-name") as HTMLInputElement).disabled).toBe(false);
+
+    // form data is never logged
+    const logged = JSON.stringify([...logSpy.mock.calls, ...warnSpy.mock.calls, ...errorSpy.mock.calls]);
+    expect(logged).not.toContain("leak-check@example.com");
+    expect(logged).not.toContain("secret-internal-detail");
+
+    // retry works: a second submit reaches the network again and can succeed
+    mockLeadsFetch(201);
+    fireEvent.submit(screen.getByTestId("consult-form"));
+    expect(await screen.findByTestId("consult-success")).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns the form to a recoverable state after a timeout/abort", async () => {
+    const fn = vi.fn(async () => {
+      throw new DOMException("The operation timed out.", "TimeoutError");
+    });
+    vi.stubGlobal("fetch", fn);
+    render(<ConversionSection lang="vi" copy={copyFor("vi")} />);
 
     fillRequired();
     fireEvent.submit(screen.getByTestId("consult-form"));
 
-    await waitFor(() => expect(screen.getByTestId("consult-status").textContent).toMatch(/CMS \/leads/));
-    expect(screen.queryByTestId("consult-success")).toBeNull();
-    expect((document.getElementById("consult-name") as HTMLInputElement).disabled).toBe(false);
+    await waitFor(() => {
+      expect(screen.getByTestId("consult-status").textContent).toBe(MARKETING_COPY["lead_form.err_generic"].vi);
+    });
+    expect((document.getElementById("consult-email") as HTMLInputElement).disabled).toBe(false);
+    expect(document.body.textContent).not.toContain("TimeoutError");
+  });
+
+  // Deterministic email check (replaced the super-linear regex — Sonar S5852):
+  // behavior parity cases, including hostile long input (no timing assertion —
+  // linear parsing is verified structurally; Sonar confirms the static issue).
+  const HOSTILE = `${"a".repeat(50_000)}@${".".repeat(5_000)}`;
+  it.each([
+    ["plain", false],
+    ["a@b", false],
+    ["a@b.", false],
+    ["a@.b", false],
+    ["a b@c.d", false],
+    ["two@@at.vn", false],
+    ["", false],
+    [HOSTILE, false],
+    ["a@b.c", true],
+    ["ňam.việt@thương-mại.vn", true],
+  ])("email shape validation: %j → submits: %s", async (email, submits) => {
+    const fetchMock = mockLeadsFetch();
+    render(<ConversionSection lang="en" copy={copyFor("en")} />);
+    fillRequired("Name", email as string);
+    fireEvent.submit(screen.getByTestId("consult-form"));
+    if (submits) {
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    } else {
+      await waitFor(() => {
+        expect(screen.getByTestId("consult-status").textContent).toBe(MARKETING_COPY["lead_form.err_required"].en);
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect((document.getElementById("consult-email") as HTMLInputElement).getAttribute("aria-invalid")).toBe("true");
+    }
   });
 });
 
