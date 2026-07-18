@@ -246,6 +246,49 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
     expect(container.textContent).toContain(copy["contact.offices_title"]);
     expect(container.textContent).toContain("123 Test");
   });
+
+  // Full CMS directory: every record kind renders its real data — address + phone
+  // sub-line + map action for physical locations, tel/mailto/web links for contact
+  // kinds. Rendered count must equal the prop count (no silent row loss).
+  it.each(LOCALES)("renders the full CMS location directory — %s", (locale) => {
+    const copy = copyFor(locale);
+    const locations = [
+      { id: 1, kind: "office", label: "Office HCM", address: "12 Nguyen Hue, Q1", phone: "0901 234 567", url: "https://maps.example.com/office", langClass: null },
+      { id: 2, kind: "warehouse", label: "US Warehouse", address: "100 Warehouse Rd, PA", phone: null, url: null, langClass: null },
+      { id: 3, kind: "phone", label: "Hotline", address: null, phone: "0335 124 089", url: null, langClass: null },
+      { id: 4, kind: "email", label: "Email", address: null, phone: null, url: "mailto:ops@example.com", langClass: null },
+      { id: 5, kind: "website", label: "Website", address: null, phone: null, url: "https://thgfulfill.com", langClass: "font-cn" },
+    ] as const;
+    const { container } = render(<ContactSection lang={locale} copy={copy} locations={[...locations]} />);
+
+    const rows = screen.getByTestId("contact-directory").querySelectorAll("li");
+    expect(rows).toHaveLength(locations.length);
+    for (const l of locations) {
+      expect(container.textContent).toContain(l.label);
+    }
+    // physical location: address shown, phone sub-line, real map action
+    expect(container.textContent).toContain("12 Nguyen Hue, Q1");
+    expect(container.textContent).toContain("0901 234 567");
+    const mapLink = [...container.querySelectorAll("a")].find((a) => a.getAttribute("href") === "https://maps.example.com/office");
+    expect(mapLink?.textContent).toContain(copy["contact.view_map"]);
+    // contact kinds: display line IS the link
+    expect([...container.querySelectorAll("a")].some((a) => a.getAttribute("href") === "mailto:ops@example.com")).toBe(true);
+    // never a placeholder href anywhere in the footer
+    for (const a of container.querySelectorAll("a")) {
+      expect(a.getAttribute("href")).not.toBe("#");
+    }
+  });
+
+  it("contains no hardcoded address — every directory value flows from CMS props", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const code = readFileSync(
+      join(__dirname, "..", "..", "src/shared/ui/site-shell/contact-section.tsx"),
+      "utf8",
+    );
+    // street/district-looking literals must never appear in the component source
+    expect(code).not.toMatch(/\d+\s+[A-ZĐ][a-zà-ỹ]+\s+(Street|Road|Ave|Đường|District)|Quận\s*\d|District\s*\d/);
+  });
 });
 
 describe("ScrollReveal progressive enhancement (WEB-001B)", () => {

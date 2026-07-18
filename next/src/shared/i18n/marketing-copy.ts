@@ -278,4 +278,5 @@ export const MARKETING_COPY: Readonly<Record<string, CopyEntry>> = {
   "kl.sep2": { en: "You'll enter your question in a separate flow.", vi: "Bạn sẽ nhập câu hỏi trong một luồng riêng.", zh: "您将在单独流程中输入问题。" },
   "kl.sep3": { en: "Content is reviewed before it's made public.", vi: "Nội dung được kiểm duyệt trước khi công khai.", zh: "内容经审核后才会公开。" },
   "about.video_iframe_title": { en: "THG Fulfill introduction video", vi: "Video giới thiệu THG Fulfill", zh: "THG Fulfill介绍视频" },
+  "contact.view_map": { en: "View map", vi: "Xem bản đồ", zh: "查看地图" },
 };
