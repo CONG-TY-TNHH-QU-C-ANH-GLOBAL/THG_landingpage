@@ -3,35 +3,29 @@ import { notFound } from "next/navigation";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { buildPageMetadata, resolveSiteOrigin } from "@/shared/seo";
-import {
-  loadHomepageContent,
-  loadHomeServices,
-  loadHomeFaqs,
-  loadIntegrations,
-  loadMarqueeImages,
-  loadSiteSettings,
-} from "@/features/home";
+import { loadHomepageContent, loadHomeServices, loadHomeFaqs, loadSiteSettings } from "@/features/home";
 import HeroSection from "@/features/home/ui/hero-section";
-import ServicesSection from "@/features/home/ui/services-section";
 import AboutVideoSection from "@/features/home/ui/about-video-section";
-import SellerTypesSection from "@/features/home/ui/seller-types-section";
-import ProcessSection from "@/features/home/ui/process-section";
-import AdvantagesSection from "@/features/home/ui/advantages-section";
-import EcosystemJourneySection from "@/features/home/ui/ecosystem-journey-section";
-import IntegrationsSection from "@/features/home/ui/integrations-section";
-import LogisticsAnimationSection from "@/features/home/ui/logistics-animation-section";
-import TestimonialsSection from "@/features/home/ui/testimonials-section";
-import TrustBadgesSection from "@/features/home/ui/trust-badges-section";
+import ProofStripSection from "@/features/home/ui/proof-strip-section";
+import PillarAtlasSection from "@/features/home/ui/pillar-atlas-section";
+import EcosystemAtlasSection from "@/features/home/ui/ecosystem-atlas-section";
+import CoverageSection from "@/features/home/ui/coverage-section";
+import WhoWeServeSection from "@/features/home/ui/who-we-serve-section";
+import WhyThgSection from "@/features/home/ui/why-thg-section";
+import ConversionSection from "@/features/home/ui/conversion-section";
 import FAQSection from "@/features/home/ui/faq-section";
-import ImageMarquee from "@/features/home/ui/image-marquee";
 import { HomeOrganizationJsonLd, HomeFaqJsonLd } from "@/features/home/ui/home-jsonld";
-import ScrollReveal from "@/shared/ui/scroll-reveal";
-import { tFrom } from "@/shared/i18n/marketing";
 
-// The real THG homepage (WEB-001) — section order is exact parity with src/pages/Index.tsx.
-// This route file only orchestrates: FND-005 loaders → landing models → Server Components;
-// metadata and JSON-LD derive from the same models. Rendering: SSG + ISR (WEB-001 §6,
-// 06-migration/07-rendering-cache-matrix.csv row 1).
+// The real THG homepage — WEB-001B completes the approved Open Design baseline
+// (visual authority: homepage-concept-global-fulfillment-orbit.html; rules:
+// IMPLEMENTATION_BASELINE.md). Narrative: hero → proof handoff → four-pillar
+// atlas with operational blueprint stages → restored Why-THG video (owner
+// override) → connected ecosystem → coverage → who we serve → why THG →
+// private consultation + Community Knowledge Loop → FAQ → shared footer
+// (layout). Sections still omitted per the approved artifact: integrations,
+// testimonials, trust-badge placeholders, image marquee, logistics counters —
+// see the WEB-001B entries in THG_public_platform_specs for dispositions.
+// Rendering stays SSG + ISR: FND-005 loaders → landing models → Server Components.
 export const revalidate = 300;
 
 type PageProps = Readonly<{ params: Promise<{ lang: string }> }>;
@@ -71,52 +65,32 @@ export default async function HomePage({ params }: PageProps) {
   const { lang } = await params;
   if (!isSupportedLocale(lang)) notFound();
 
-  const [copy, content, services, faqs, integrations, marqueeImages, settings, enContent] =
-    await Promise.all([
-      getMarketingCopy(lang),
-      loadHomepageContent(lang),
-      loadHomeServices(lang),
-      loadHomeFaqs(lang),
-      loadIntegrations(),
-      loadMarqueeImages(),
-      loadSiteSettings(),
-      // The about video always uses the EN block's URL so all locales show the same video
-      // (parity: AboutVideoSection.tsx:38-39); site settings stay the global default.
-      loadHomepageContent("en"),
-    ]);
-  const t = tFrom(copy);
+  const [copy, content, services, faqs, settings, enContent] = await Promise.all([
+    getMarketingCopy(lang),
+    loadHomepageContent(lang),
+    loadHomeServices(lang),
+    loadHomeFaqs(lang),
+    loadSiteSettings(),
+    // The about video always uses the EN block's URL so all locales show the same
+    // video (parity with the pre-redesign homepage); site settings stay the default.
+    loadHomepageContent("en"),
+  ]);
   const aboutVideoUrl = enContent.aboutVideo.videoUrl || settings.aboutVideoUrl || "";
-  const sliderImages = marqueeImages.map((img) => img.src);
 
   return (
     <div className="min-h-screen bg-background">
       <HomeOrganizationJsonLd />
       <HomeFaqJsonLd faqs={faqs} />
       <HeroSection lang={lang} copy={copy} hero={content.hero} />
-      <ServicesSection copy={copy} services={services} />
+      <ProofStripSection copy={copy} />
+      <PillarAtlasSection lang={lang} copy={copy} services={services} />
       <AboutVideoSection copy={copy} about={content.aboutVideo} videoUrl={aboutVideoUrl} />
-      <SellerTypesSection copy={copy} />
-      <ProcessSection copy={copy} process={content.process} />
-      <AdvantagesSection copy={copy} />
-      <EcosystemJourneySection copy={copy} lang={lang} />
-      <IntegrationsSection copy={copy} integrations={integrations} />
-      <LogisticsAnimationSection />
-      <TestimonialsSection copy={copy} />
-      <TrustBadgesSection copy={copy} />
+      <EcosystemAtlasSection copy={copy} />
+      <CoverageSection copy={copy} />
+      <WhoWeServeSection copy={copy} />
+      <WhyThgSection copy={copy} />
+      <ConversionSection lang={lang} copy={copy} />
       <FAQSection copy={copy} lang={lang} />
-
-      {/* ════════════════════ IMAGE MARQUEE ════════════════════ (parity: Index.tsx) */}
-      <section className="py-14 bg-background relative overflow-hidden">
-        <div className="section-divider absolute top-0 left-0 right-0" />
-        <ScrollReveal>
-          <div className="container mx-auto px-4 text-center mb-8">
-            <p className="text-sm font-semibold text-accent uppercase tracking-[0.2em]">
-              {t("express_page.marquee_label")}
-            </p>
-          </div>
-        </ScrollReveal>
-        <ImageMarquee images={sliderImages} speed={40} height="200px" />
-      </section>
     </div>
   );
 }
