@@ -185,12 +185,16 @@ describe("AboutVideoSection — restored Why-THG video (WEB-001B addendum)", () 
     expectNoAnnotationChrome(container);
   });
 
-  it("extracts the operator-entered video id from common URL shapes", () => {
-    const { container } = render(
-      <AboutVideoSection copy={copyFor("en")} about={ABOUT} videoUrl="https://www.youtube.com/watch?v=abcDEF12345" />,
-    );
+  it.each([
+    ["https://www.youtube.com/watch?v=abcDEF12345", "abcDEF12345"],
+    ["https://youtu.be/xyzXYZ12345", "xyzXYZ12345"],
+    // findLast keeps the LAST matching path segment, trailing slash included —
+    // identical selection to the previous filter(Boolean).at(-1)
+    ["https://www.youtube.com/embed/lastID123-_/", "lastID123-_"],
+  ])("extracts the operator-entered video id from %s", (videoUrl, id) => {
+    const { container } = render(<AboutVideoSection copy={copyFor("en")} about={ABOUT} videoUrl={videoUrl} />);
     expect(container.querySelector("iframe")?.getAttribute("src")).toBe(
-      "https://www.youtube-nocookie.com/embed/abcDEF12345",
+      `https://www.youtube-nocookie.com/embed/${id}`,
     );
   });
 });
@@ -217,6 +221,17 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
     const { container } = render(<ContactSection lang="vi" copy={copy} locations={[]} />);
     // no orphan heading over an empty area
     expect(container.textContent).not.toContain(copy["contact.offices_title"]);
+    // the essential consultation CTA is present in the SSR markup with no hidden inline style
+    const cta = screen.getByRole("button", { name: new RegExp(copy["contact.leave_info"]) });
+    expect((cta as HTMLElement).style.opacity).not.toBe("0");
+  });
+
+  it.each(LOCALES)("keeps the owner-approved offer and response copy verbatim — %s", (locale) => {
+    const copy = copyFor(locale);
+    const { container } = render(<ContactSection lang={locale} copy={copy} locations={[]} />);
+    // content-owner decision: exact production strings, never neutralized
+    expect(container.textContent).toContain(copy["contact.cta_title"]);
+    expect(container.textContent).toContain(copy["contact.cta_desc"]);
   });
 
   it("keeps the offices column when location records exist", () => {
@@ -267,22 +282,57 @@ describe("default visibility contract (WEB-001B progressive enhancement)", () =>
   // reduced-motion CSS force the fully-resolved state, per artifact callout 16).
   const EXEMPT_SELECTOR = /\.detail\b|\.signal\b|\.opRoute\b|\.opSignal\b/;
 
-  it("hides animatable states only under the .motion class", async () => {
+  /** Tiny deterministic CSS walker (not a general parser): tracks nesting with a
+   *  selector stack so rules inside @media/at-rules are seen, and checks EVERY
+   *  selector in a comma-separated list individually — a safe selector can never
+   *  shadow an unsafe one in the same group. */
+  function hiddenRuleViolations(css: string): string[] {
+    const src = css.replaceAll(/\/\*[\s\S]*?\*\//g, "");
+    const stack: string[] = [];
+    const violations: string[] = [];
+    let buf = "";
+    for (const ch of src) {
+      if (ch === "{") {
+        stack.push(buf.trim());
+        buf = "";
+      } else if (ch === "}") {
+        const selector = stack.pop() ?? "";
+        if (!selector.startsWith("@") && selector !== "" && HIDDEN_DECL.test(buf)) {
+          for (const part of selector.split(",")) {
+            const single = part.trim().replaceAll(/\s+/g, " ");
+            if (!single.includes(".motion") && !EXEMPT_SELECTOR.test(single)) {
+              violations.push(single);
+            }
+          }
+        }
+        buf = "";
+      } else {
+        buf += ch;
+      }
+    }
+    return violations;
+  }
+
+  it("hides animatable states only under the .motion class — per selector, at any nesting", async () => {
     const { readFileSync } = await import("node:fs");
     const { join } = await import("node:path");
     const root = join(__dirname, "..", "..");
     const violations: string[] = [];
     for (const file of CSS_FILES) {
-      const css = readFileSync(join(root, file), "utf8").replaceAll(/\/\*[\s\S]*?\*\//g, "");
-      for (const block of css.split("}")) {
-        const [selector, body] = block.split("{");
-        if (!selector || !body) continue;
-        if (!HIDDEN_DECL.test(body)) continue;
-        if (selector.includes(".motion") || EXEMPT_SELECTOR.test(selector)) continue;
-        violations.push(`${file}: "${selector.trim().replaceAll(/\s+/g, " ")}"`);
+      for (const v of hiddenRuleViolations(readFileSync(join(root, file), "utf8"))) {
+        violations.push(`${file}: "${v}"`);
       }
     }
     expect(violations).toEqual([]);
+  });
+
+  it("the walker itself catches unsafe selectors in groups and inside @media", () => {
+    const sample = `
+      .safe.motion .a, .unsafe .a { opacity: 0; }
+      @media (max-width: 600px) { .nested { opacity: 0; } }
+      .resolved { opacity: 1; }
+    `;
+    expect(hiddenRuleViolations(sample)).toEqual([".unsafe .a", ".nested"]);
   });
 });
 

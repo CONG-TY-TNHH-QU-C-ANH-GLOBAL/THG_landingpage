@@ -152,7 +152,17 @@ describe("ConversionSection — /leads contract (WEB-001B)", () => {
   });
 
   it("returns the form to a recoverable state after a timeout/abort", async () => {
-    const fn = vi.fn(async () => {
+    // The mock observes the REAL request deadline: it captures RequestInit.signal,
+    // requires it to be a live (not yet aborted) AbortSignal, and rejects with the
+    // same DOMException fetch raises when that signal later fires. (The 15s
+    // AbortSignal.timeout cannot be fast-forwarded by fake timers, so the abort
+    // rejection is delivered immediately instead of after wall-clock 15s.)
+    let capturedSignal: AbortSignal | undefined;
+    const fn = vi.fn(async (_url: string, init?: RequestInit) => {
+      capturedSignal = init?.signal ?? undefined;
+      if (!(capturedSignal instanceof AbortSignal)) {
+        throw new Error("postLead sent no deadline signal");
+      }
       throw new DOMException("The operation timed out.", "TimeoutError");
     });
     vi.stubGlobal("fetch", fn);
@@ -164,6 +174,8 @@ describe("ConversionSection — /leads contract (WEB-001B)", () => {
     await waitFor(() => {
       expect(screen.getByTestId("consult-status").textContent).toBe(MARKETING_COPY["lead_form.err_generic"].vi);
     });
+    expect(capturedSignal).toBeInstanceOf(AbortSignal);
+    expect(capturedSignal?.aborted).toBe(false); // deadline was pending at call time
     expect((document.getElementById("consult-email") as HTMLInputElement).disabled).toBe(false);
     expect(document.body.textContent).not.toContain("TimeoutError");
   });

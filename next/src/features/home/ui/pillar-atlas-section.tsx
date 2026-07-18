@@ -160,17 +160,18 @@ function PillarStage({ variant }: Readonly<{ variant: Variant }>) {
   }
   return (
     <div className={styles.stage} aria-hidden="true">
-      <svg viewBox="0 0 200 78" fill="none">
+      {/* height matched to the Warehouse tile's stage for optical row balance */}
+      <svg viewBox="0 0 200 92" fill="none">
         {/* production metaphor as blueprint: Taobao·1688 supplier → THG → USA,
             no warehouse intermediate */}
-        <path className={`${styles.opRouteDashed} ${styles.opStep1}`} d="M33,33 H87" />
-        <path className={`${styles.opRouteDashed} ${styles.opStep2}`} d="M113,33 H165" />
-        <rect className={`${styles.opNode} ${styles.opStep1}`} x="23.5" y="28.5" width="9" height="9" rx="2" />
-        <circle className={`${styles.opNode} ${styles.opNodeHub} ${styles.opStep2}`} cx="100" cy="33" r="13" />
-        <circle className={`${styles.opNode} ${styles.opStep3}`} cx="172" cy="33" r="7" />
-        <text className={styles.opLabel} x="28" y="60" textAnchor="middle">TAOBAO · 1688</text>
-        <text className={styles.opLabel} x="100" y="60" textAnchor="middle">THG</text>
-        <text className={styles.opLabel} x="172" y="60" textAnchor="middle">USA</text>
+        <path className={`${styles.opRouteDashed} ${styles.opStep1}`} d="M33,40 H87" />
+        <path className={`${styles.opRouteDashed} ${styles.opStep2}`} d="M113,40 H165" />
+        <rect className={`${styles.opNode} ${styles.opStep1}`} x="23.5" y="35.5" width="9" height="9" rx="2" />
+        <circle className={`${styles.opNode} ${styles.opNodeHub} ${styles.opStep2}`} cx="100" cy="40" r="13" />
+        <circle className={`${styles.opNode} ${styles.opStep3}`} cx="172" cy="40" r="7" />
+        <text className={styles.opLabel} x="28" y="68" textAnchor="middle">TAOBAO · 1688</text>
+        <text className={styles.opLabel} x="100" y="68" textAnchor="middle">THG</text>
+        <text className={styles.opLabel} x="172" y="68" textAnchor="middle">USA</text>
       </svg>
     </div>
   );
@@ -227,7 +228,9 @@ const PillarAtlasSection = ({
 
   return (
     <section id="services" className="py-28 relative overflow-hidden" data-testid="pillar-atlas">
-      <div className="container mx-auto px-4">
+      {/* measured parity with the artifact's .wrap (1280px + 32px inline padding
+          at 1440); mobile keeps 16px for 320px readability — recorded deviation */}
+      <div className="container mx-auto max-w-[1280px] px-4 md:px-8">
         <ScrollReveal>
           <SectionHeader
             align="left"

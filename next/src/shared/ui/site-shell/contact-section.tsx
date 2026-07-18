@@ -33,7 +33,9 @@ const ContactSection = ({
       <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-primary/5 blur-3xl" />
       <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
 
-      <div className="container mx-auto px-4 relative z-10">
+      {/* measured parity with the artifact's .wrap (1280px + 32px inline padding
+          at 1440); mobile keeps 16px for 320px readability — recorded deviation */}
+      <div className="container mx-auto max-w-[1280px] px-4 md:px-8 relative z-10">
         <ScrollReveal>
           <SectionHeader
             size="lg"
@@ -177,7 +179,7 @@ function ContactCtaCard({ lang, copy }: Readonly<{ lang: Locale; copy: Marketing
             href={s.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 w-full min-h-[44px] px-4 py-2.5 rounded-lg font-semibold text-sm text-white transition-[filter,box-shadow] duration-200 hover:brightness-110 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="flex items-center gap-3 w-full min-h-[44px] px-4 py-2.5 rounded-lg border border-black/10 font-semibold text-sm text-white transition-[filter,box-shadow] duration-200 hover:brightness-110 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             style={{ background: s.background }}
           >
             <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
