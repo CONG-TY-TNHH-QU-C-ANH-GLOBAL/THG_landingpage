@@ -5,7 +5,7 @@
 // real, and the Community Knowledge Loop must stay a plain locale-aware link with
 // zero consultation PII in either pre- or post-submit state.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, waitFor, act } from "@testing-library/react";
 
 import ConversionSection from "@/features/home/ui/conversion-section";
 import { MARKETING_COPY } from "@/shared/i18n/marketing-copy";
@@ -152,30 +152,40 @@ describe("ConversionSection — /leads contract (WEB-001B)", () => {
   });
 
   it("returns the form to a recoverable state after a timeout/abort", async () => {
-    // The mock observes the REAL request deadline: it captures RequestInit.signal,
-    // requires it to be a live (not yet aborted) AbortSignal, and rejects with the
-    // same DOMException fetch raises when that signal later fires. (The 15s
-    // AbortSignal.timeout cannot be fast-forwarded by fake timers, so the abort
-    // rejection is delivered immediately instead of after wall-clock 15s.)
-    let capturedSignal: AbortSignal | undefined;
-    const fn = vi.fn(async (_url: string, init?: RequestInit) => {
-      capturedSignal = init?.signal ?? undefined;
-      if (!(capturedSignal instanceof AbortSignal)) {
-        throw new Error("postLead sent no deadline signal");
-      }
-      throw new DOMException("The operation timed out.", "TimeoutError");
-    });
+    // Genuine cancellation observation: AbortSignal.timeout is mocked to return a
+    // controlled controller's signal, the fetch mock resolves ONLY through that
+    // signal's abort event, and the test then fires the deadline itself. The
+    // rejection can only come from the abort path — a manually thrown error
+    // would leave the request pending and the assertions below would fail.
+    const controller = new AbortController();
+    vi.spyOn(AbortSignal, "timeout").mockReturnValue(controller.signal);
+
+    let receivedSignal: AbortSignal | undefined;
+    const fn = vi.fn(
+      (_url: string, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          receivedSignal = init?.signal ?? undefined;
+          receivedSignal?.addEventListener("abort", () => reject(receivedSignal?.reason), { once: true });
+        }),
+    );
     vi.stubGlobal("fetch", fn);
     render(<ConversionSection lang="vi" copy={copyFor("vi")} />);
 
     fillRequired();
     fireEvent.submit(screen.getByTestId("consult-form"));
 
+    // the request is in flight, carrying exactly the deadline signal
+    await waitFor(() => expect(fn).toHaveBeenCalledTimes(1));
+    expect(receivedSignal).toBe(controller.signal);
+    expect(screen.getByTestId("consult-status").textContent).toBe(MARKETING_COPY["lead_form.submitting"].vi);
+
+    // the deadline fires — same abort reason fetch raises on a real timeout
+    act(() => controller.abort(new DOMException("The operation timed out.", "TimeoutError")));
+
     await waitFor(() => {
       expect(screen.getByTestId("consult-status").textContent).toBe(MARKETING_COPY["lead_form.err_generic"].vi);
     });
-    expect(capturedSignal).toBeInstanceOf(AbortSignal);
-    expect(capturedSignal?.aborted).toBe(false); // deadline was pending at call time
+    expect(receivedSignal?.aborted).toBe(true);
     expect((document.getElementById("consult-email") as HTMLInputElement).disabled).toBe(false);
     expect(document.body.textContent).not.toContain("TimeoutError");
   });
