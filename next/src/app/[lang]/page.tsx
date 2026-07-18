@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { buildPageMetadata, resolveSiteOrigin } from "@/shared/seo";
-import { loadHomepageContent, loadHomeServices, loadHomeFaqs } from "@/features/home";
+import { loadHomepageContent, loadHomeServices, loadHomeFaqs, loadSiteSettings } from "@/features/home";
 import HeroSection from "@/features/home/ui/hero-section";
+import AboutVideoSection from "@/features/home/ui/about-video-section";
 import ProofStripSection from "@/features/home/ui/proof-strip-section";
 import PillarAtlasSection from "@/features/home/ui/pillar-atlas-section";
 import EcosystemAtlasSection from "@/features/home/ui/ecosystem-atlas-section";
@@ -18,12 +19,12 @@ import { HomeOrganizationJsonLd, HomeFaqJsonLd } from "@/features/home/ui/home-j
 // The real THG homepage — WEB-001B completes the approved Open Design baseline
 // (visual authority: homepage-concept-global-fulfillment-orbit.html; rules:
 // IMPLEMENTATION_BASELINE.md). Narrative: hero → proof handoff → four-pillar
-// atlas → connected ecosystem → coverage → who we serve → why THG → private
-// consultation + Community Knowledge Loop → FAQ → shared footer (layout).
-// Sections not present in the approved artifact (about-video, integrations,
-// testimonials, trust-badge placeholders, image marquee, logistics counters)
-// are intentionally omitted — see the WEB-001B execution record in
-// THG_public_platform_specs for the per-section disposition.
+// atlas with operational blueprint stages → restored Why-THG video (owner
+// override) → connected ecosystem → coverage → who we serve → why THG →
+// private consultation + Community Knowledge Loop → FAQ → shared footer
+// (layout). Sections still omitted per the approved artifact: integrations,
+// testimonials, trust-badge placeholders, image marquee, logistics counters —
+// see the WEB-001B entries in THG_public_platform_specs for dispositions.
 // Rendering stays SSG + ISR: FND-005 loaders → landing models → Server Components.
 export const revalidate = 300;
 
@@ -64,12 +65,17 @@ export default async function HomePage({ params }: PageProps) {
   const { lang } = await params;
   if (!isSupportedLocale(lang)) notFound();
 
-  const [copy, content, services, faqs] = await Promise.all([
+  const [copy, content, services, faqs, settings, enContent] = await Promise.all([
     getMarketingCopy(lang),
     loadHomepageContent(lang),
     loadHomeServices(lang),
     loadHomeFaqs(lang),
+    loadSiteSettings(),
+    // The about video always uses the EN block's URL so all locales show the same
+    // video (parity with the pre-redesign homepage); site settings stay the default.
+    loadHomepageContent("en"),
   ]);
+  const aboutVideoUrl = enContent.aboutVideo.videoUrl || settings.aboutVideoUrl || "";
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,6 +84,7 @@ export default async function HomePage({ params }: PageProps) {
       <HeroSection lang={lang} copy={copy} hero={content.hero} />
       <ProofStripSection copy={copy} />
       <PillarAtlasSection lang={lang} copy={copy} services={services} />
+      <AboutVideoSection copy={copy} about={content.aboutVideo} videoUrl={aboutVideoUrl} />
       <EcosystemAtlasSection copy={copy} />
       <CoverageSection copy={copy} />
       <WhoWeServeSection copy={copy} />

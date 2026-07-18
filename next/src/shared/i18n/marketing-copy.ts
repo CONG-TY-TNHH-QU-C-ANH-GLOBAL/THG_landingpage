@@ -277,4 +277,5 @@ export const MARKETING_COPY: Readonly<Record<string, CopyEntry>> = {
   "kl.sep1": { en: "Your consultation details aren't shared with Community.", vi: "Thông tin tư vấn không được chia sẻ với Cộng đồng.", zh: "您的咨询信息不会分享至社区。" },
   "kl.sep2": { en: "You'll enter your question in a separate flow.", vi: "Bạn sẽ nhập câu hỏi trong một luồng riêng.", zh: "您将在单独流程中输入问题。" },
   "kl.sep3": { en: "Content is reviewed before it's made public.", vi: "Nội dung được kiểm duyệt trước khi công khai.", zh: "内容经审核后才会公开。" },
+  "about.video_iframe_title": { en: "THG Fulfill introduction video", vi: "Video giới thiệu THG Fulfill", zh: "THG Fulfill介绍视频" },
 };
