@@ -84,3 +84,43 @@ describe("proxy matcher bypass", () => {
     }
   });
 });
+
+// Runtime-community-route investigation (fix/Anh/runtime-community-route): the browser
+// "Invalid or unexpected token" symptom would require an HTML body served where a
+// script was requested. These cases pin the two mechanics that guarantee the proxy can
+// never do that, and the exact community-path handling.
+describe("proxy — community paths and script-request safety", () => {
+  const pattern = (config.matcher as string[])[0];
+  const re = new RegExp(`^${pattern.replace(/\\\\/g, "\\")}$`);
+  const runsProxy = (path: string) => re.test(path);
+
+  it("passes locale community paths straight to Next routing (no rewrite, no loop)", () => {
+    for (const p of ["/vi/community", "/en/community", "/zh/community", "/vi/community/reviews"]) {
+      expect(decodeLocaleRoute(p)).toEqual({ kind: "pass" });
+    }
+  });
+
+  it("normalizes an unknown-locale community path to the default locale once", () => {
+    const d = decodeLocaleRoute("/fr/community");
+    expect(d).toEqual({ kind: "redirect", location: "/vi/community" });
+    // the target passes — never a second locale prefix, never a loop
+    expect(decodeLocaleRoute(d.location!)).toEqual({ kind: "pass" });
+  });
+
+  it("never double-prefixes an already-localized path", () => {
+    expect(decodeLocaleRoute("/vi/en")).toEqual({ kind: "pass" });
+    expect(decodeLocaleRoute("/vi/vi/community")).toEqual({ kind: "pass" });
+  });
+
+  it("script/static requests bypass the proxy entirely — an HTML response for a JS chunk is impossible here", () => {
+    for (const p of [
+      "/_next/static/chunks/app/%5Blang%5D/page.js",
+      "/_next/static/chunks/main-app.js",
+      "/_next/static/chunks/x.js.map",
+      "/assets/globe-3d.avif",
+      "/fonts/inter-400.woff2",
+    ]) {
+      expect(runsProxy(p)).toBe(false);
+    }
+  });
+});
