@@ -6,6 +6,8 @@ import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup, within } from "@testing-library/react";
 
 import PillarAtlasSection from "@/features/home/ui/pillar-atlas-section";
+import AboutVideoSection from "@/features/home/ui/about-video-section";
+import { ContactSection } from "@/shared/ui/site-shell/contact-section";
 import EcosystemAtlasSection from "@/features/home/ui/ecosystem-atlas-section";
 import CoverageSection from "@/features/home/ui/coverage-section";
 import WhoWeServeSection from "@/features/home/ui/who-we-serve-section";
@@ -126,6 +128,109 @@ describe("PillarAtlasSection (WEB-001B)", () => {
       expect(screen.getByText(copy[key])).toBeTruthy();
     }
   });
+
+  it("carries the always-visible service-code plates and renders the FULL capability manifest", () => {
+    const many = service("thg-fulfill", {
+      bullets: ["cap 1", "cap 2", "cap 3", "cap 4", "cap 5", "cap 6"],
+    });
+    const { container } = render(
+      <PillarAtlasSection lang="en" copy={copyFor("en")} services={[many]} />,
+    );
+    for (const code of ["FUL‑01", "EXP‑02", "WHS‑03", "DRP‑04"]) {
+      expect(container.textContent).toContain(code);
+    }
+    // no shortening of verified content: all six manifest rows render
+    const rows = within(screen.getByTestId("pillar-fulfill")).getAllByRole("listitem");
+    expect(rows).toHaveLength(6);
+  });
+
+  it("essential copy is never line-clamped or truncated (component architecture)", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const root = join(__dirname, "..", "..");
+    for (const file of [
+      "src/features/home/ui/pillar-atlas-section.tsx",
+      "src/features/home/ui/about-video-section.tsx",
+      "src/features/home/ui/pillar-atlas.module.css",
+    ]) {
+      const code = readFileSync(join(root, file), "utf8");
+      expect(code, file).not.toMatch(/line-clamp|truncate|text-ellipsis|-webkit-line-clamp/);
+    }
+  });
+});
+
+describe("AboutVideoSection — restored Why-THG video (WEB-001B addendum)", () => {
+  const ABOUT = { videoUrl: "", highlights: ["", "", "", ""] as const };
+
+  it.each(LOCALES)("renders the production narrative + video with a localized iframe title — %s", (locale) => {
+    const copy = copyFor(locale);
+    const { container } = render(<AboutVideoSection copy={copy} about={ABOUT} videoUrl="" />);
+
+    expect(container.textContent).toContain(copy["about.subtitle"]);
+    expect(container.textContent).toContain(copy["about.title"]);
+    expect(container.textContent).toContain(copy["about.video_title"]);
+    for (const i of [1, 2, 3, 4]) {
+      expect(container.textContent).toContain(copy[`about.highlight${i}`]);
+    }
+
+    const iframe = container.querySelector("iframe");
+    expect(iframe).toBeTruthy();
+    // production fallback video id, privacy-enhanced host, no autoplay/mute/loop
+    expect(iframe?.getAttribute("src")).toBe("https://www.youtube-nocookie.com/embed/AzlW2irPANQ");
+    expect(iframe?.getAttribute("src")).not.toContain("autoplay");
+    expect(iframe?.getAttribute("loading")).toBe("lazy");
+    expect(iframe?.getAttribute("title")).toBe(copy["about.video_iframe_title"]);
+    // stable aspect ratio reserved by the wrapper — no CLS while YouTube loads
+    expect(iframe?.parentElement?.className).toContain("aspect-video");
+    expectNoAnnotationChrome(container);
+  });
+
+  it("extracts the operator-entered video id from common URL shapes", () => {
+    const { container } = render(
+      <AboutVideoSection copy={copyFor("en")} about={ABOUT} videoUrl="https://www.youtube.com/watch?v=abcDEF12345" />,
+    );
+    expect(container.querySelector("iframe")?.getAttribute("src")).toBe(
+      "https://www.youtube-nocookie.com/embed/abcDEF12345",
+    );
+  });
+});
+
+describe("ContactSection endcap (WEB-001B addendum)", () => {
+  it.each(LOCALES)("renders only verified social channels — real URLs, no placeholders — %s", (locale) => {
+    const copy = copyFor(locale);
+    const { container } = render(<ContactSection lang={locale} copy={copy} locations={[]} />);
+    const socials = [...container.querySelectorAll('a[target="_blank"]')].filter((a) =>
+      a.getAttribute("rel")?.includes("noopener"),
+    );
+    const hrefs = socials.map((a) => a.getAttribute("href"));
+    expect(hrefs).toContain("https://www.facebook.com/THGFulfill");
+    expect(hrefs).toContain("https://www.youtube.com/@thgfulfillment");
+    expect(hrefs).toContain("https://www.tiktok.com/@thgfulfillment");
+    for (const href of hrefs) {
+      expect(href).not.toBe("#");
+      expect(href).toMatch(/^https:\/\//);
+    }
+  });
+
+  it("collapses the offices column when the CMS has no location records", () => {
+    const copy = copyFor("vi");
+    const { container } = render(<ContactSection lang="vi" copy={copy} locations={[]} />);
+    // no orphan heading over an empty area
+    expect(container.textContent).not.toContain(copy["contact.offices_title"]);
+  });
+
+  it("keeps the offices column when location records exist", () => {
+    const copy = copyFor("vi");
+    const { container } = render(
+      <ContactSection
+        lang="vi"
+        copy={copy}
+        locations={[{ id: 1, kind: "office", label: "HCMC", address: "123 Test", phone: null, url: null, langClass: null }]}
+      />,
+    );
+    expect(container.textContent).toContain(copy["contact.offices_title"]);
+    expect(container.textContent).toContain("123 Test");
+  });
 });
 
 describe("default visibility contract (WEB-001B progressive enhancement)", () => {
@@ -142,7 +247,11 @@ describe("default visibility contract (WEB-001B progressive enhancement)", () =>
   ];
   // opacity fully 0, undrawn dash routes, and collapse-scale hidden states.
   const HIDDEN_DECL = /opacity:\s*0\s*(?:;|$)|stroke-dashoffset:\s*100|scaleX\(0\)|scale\(0\.[0-9]+\)/m;
-  const EXEMPT_SELECTOR = /\.detail\b|\.signal\b/;
+  // .detail — hover/focus supplementary microcopy; .signal — decorative traveling
+  // dot of the enhanced experience; .opRoute/.opSignal — the blueprint ACTIVITY
+  // layer (structure/nodes/labels stay visible at rest; hover:none and
+  // reduced-motion CSS force the fully-resolved state, per artifact callout 16).
+  const EXEMPT_SELECTOR = /\.detail\b|\.signal\b|\.opRoute\b|\.opSignal\b/;
 
   it("hides animatable states only under the .motion class", async () => {
     const { readFileSync } = await import("node:fs");
