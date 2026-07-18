@@ -53,8 +53,8 @@ const ContactSection = ({
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <ScrollReveal direction="left">
               <div>
-                <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-8">{t("contact.offices_title")}</h3>
-                <ContactList locations={locations} />
+                <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
+                <ContactList locations={locations} mapLabel={t("contact.view_map")} />
               </div>
             </ScrollReveal>
             <ScrollReveal direction="right" delay={200}>
@@ -96,35 +96,47 @@ const KIND_ICONS = {
   warehouse: MapPin,
 } as const;
 
-function ContactList({ locations }: Readonly<{ locations: readonly ContactRow[] }>) {
+// WEB-001B footer refinement: the location directory reads as a manifest — hairline
+// dividers, square token-radius icon plates, step-scale labels — instead of repeated
+// generic icon cards. Every value is CMS data (never hardcoded); the display-line
+// nullish chain and the font-cn handling keep exact parity with the FND-005 model.
+function ContactList({ locations, mapLabel }: Readonly<{ locations: readonly ContactRow[]; mapLabel: string }>) {
   // Rows arrive already position-sorted from the FND-005 loader.
   return (
-    <div className="space-y-6">
+    <ul className="m-0 p-0 list-none border-t border-border" data-testid="contact-directory">
       {locations.map((item) => {
         const Icon = KIND_ICONS[item.kind];
         const display =
           item.address ?? item.phone ?? item.url?.replace(/^mailto:/, "").replace(/^https?:\/\//, "") ?? "";
         const externalHref =
           item.url && (item.url.startsWith("http") || item.url.startsWith("mailto:")) ? item.url : undefined;
+        // A physical location whose URL is not already the display line gets a
+        // real map action; contact kinds keep the link on the display line itself.
+        const mapHref =
+          (item.kind === "office" || item.kind === "warehouse") && item.address && item.url?.startsWith("http")
+            ? item.url
+            : undefined;
         return (
-          <div key={item.id} className="flex gap-4 group">
-            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-accent/20 group-hover:scale-110 transition-all duration-300">
-              <Icon className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-1">{item.label}</p>
-              {externalHref ? (
+          <li key={item.id} className="flex gap-4 py-5 border-b border-border">
+            <span className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Icon className="w-4 h-4 text-accent" aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[length:var(--step-label)] font-bold text-accent uppercase tracking-[var(--tracking-wide)] mb-1">
+                {item.label}
+              </p>
+              {externalHref && !mapHref ? (
                 <a
                   href={externalHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground text-sm hover:text-accent transition-colors"
+                  className="text-sm text-navy leading-relaxed hover:text-accent transition-colors break-words"
                 >
                   {display}
                 </a>
               ) : (
                 <p
-                  className="text-muted-foreground text-sm"
+                  className="text-sm text-navy leading-relaxed break-words"
                   style={
                     item.langClass === "font-cn"
                       ? { fontFamily: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" }
@@ -135,13 +147,23 @@ function ContactList({ locations }: Readonly<{ locations: readonly ContactRow[] 
                 </p>
               )}
               {item.phone && item.address && (
-                <p className="text-muted-foreground text-xs mt-0.5">{item.phone}</p>
+                <p className="text-muted-foreground text-[13px] mt-0.5">{item.phone}</p>
+              )}
+              {mapHref && (
+                <a
+                  href={mapHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[13px] font-semibold text-primary hover:text-gold-dark transition-colors mt-1.5"
+                >
+                  {mapLabel} <span aria-hidden="true">↗</span>
+                </a>
               )}
             </div>
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }
 
