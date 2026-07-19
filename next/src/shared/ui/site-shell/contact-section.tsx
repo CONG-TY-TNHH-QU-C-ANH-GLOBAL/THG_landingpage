@@ -89,7 +89,7 @@ const ContactSection = ({
 // stays visible, placed by its CMS type. The registration-address row keeps its CMS kind
 // (office) and therefore stays in the directory; re-homing it to the legal bar is a
 // CMS-side kind decision, not a UI heuristic.
-const PHYSICAL_KINDS: readonly ContactRow["kind"][] = ["office", "warehouse"];
+const PHYSICAL_KINDS: ReadonlySet<ContactRow["kind"]> = new Set(["office", "warehouse"]);
 
 function DirectoryComposition({
   lang,
@@ -100,7 +100,7 @@ function DirectoryComposition({
   const t = tFrom(copy);
   const offices = rows.filter((r) => r.kind === "office");
   const warehouses = rows.filter((r) => r.kind === "warehouse");
-  const channels = rows.filter((r) => !PHYSICAL_KINDS.includes(r.kind));
+  const channels = rows.filter((r) => !PHYSICAL_KINDS.has(r.kind));
   const physicalCount = offices.length + warehouses.length;
 
   if (rows.length > 0) {
@@ -182,8 +182,8 @@ function ChannelList({ channels }: Readonly<{ channels: readonly ContactRow[] }>
         const display =
           item.phone ?? item.url?.replace(/^mailto:/, "").replace(/^https?:\/\//, "") ?? item.address ?? "";
         const digits = item.phone?.replace(/\D/g, "") ?? "";
-        const href =
-          item.kind === "phone" && digits ? `tel:${digits}` : (item.url ?? undefined);
+        let href: string | undefined = item.url ?? undefined;
+        if (item.kind === "phone" && digits) href = `tel:${digits}`;
         return (
           <li key={item.id} className="flex items-center gap-3 py-2.5 border-b border-border">
             <Icon className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
