@@ -184,6 +184,10 @@ function ChannelList({ channels }: Readonly<{ channels: readonly ContactRow[] }>
         const digits = item.phone?.replace(/\D/g, "") ?? "";
         let href: string | undefined = item.url ?? undefined;
         if (item.kind === "phone" && digits) href = `tel:${digits}`;
+        const externalAttrs =
+          href?.startsWith("http") === true
+            ? ({ target: "_blank", rel: "noopener noreferrer" } as const)
+            : {};
         return (
           <li key={item.id} className="flex items-center gap-3 py-2.5 border-b border-border">
             <Icon className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
@@ -193,7 +197,7 @@ function ChannelList({ channels }: Readonly<{ channels: readonly ContactRow[] }>
             {href ? (
               <a
                 href={href}
-                {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                {...externalAttrs}
                 className="text-sm text-navy hover:text-accent transition-colors break-all text-left"
               >
                 {display}
