@@ -8,6 +8,9 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:webpack": "next dev --webpack",
+    "dev:doctor": "node scripts/dev-doctor.mjs",
+    "dev:clean": "node scripts/dev-clean.mjs",
     "build": "next build",
     "package:standalone": "node scripts/package-standalone.mjs",
     "start": "next start",
