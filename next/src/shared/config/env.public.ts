@@ -36,5 +36,7 @@ export function resolvePublicCmsApiUrl(
     }
     return DEV_CMS_API_URL;
   }
-  return configured.replace(/\/+$/, "");
+  let base = configured;
+  while (base.endsWith("/")) base = base.slice(0, -1);
+  return base;
 }
