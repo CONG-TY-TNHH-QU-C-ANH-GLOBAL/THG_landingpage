@@ -3,15 +3,11 @@
 // homepage ConversationSection so the /leads contract lives in exactly one place.
 // The server-only "@/shared/cms" transport is off-limits in client islands.
 import type { Locale } from "@/shared/i18n";
-import { publicEnv } from "@/shared/config/env.public";
+import { resolvePublicCmsApiUrl } from "@/shared/config/env.public";
 
-function stripTrailingSlashes(value: string): string {
-  let v = value;
-  while (v.endsWith("/")) v = v.slice(0, -1);
-  return v;
-}
-
-export const CMS_BASE = stripTrailingSlashes(publicEnv.cmsApiUrl ?? "http://localhost:8080/api/v1");
+// Build-time-resolved, normalized public CMS base (env.public policy: localhost only for
+// dev/test; production builds require an explicit NEXT_PUBLIC_CMS_API_URL — never localhost).
+export const CMS_BASE = resolvePublicCmsApiUrl();
 
 // Mirrors the verified POST /api/v1/leads contract (CMS routes/api/v1/(public)/leads):
 // name + email + turnstile_token required; phone/message/source_page/locale/utm optional.

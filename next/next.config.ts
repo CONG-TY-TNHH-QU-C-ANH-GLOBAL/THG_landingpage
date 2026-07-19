@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,4 +19,17 @@ const nextConfig: NextConfig = {
   experimental: { globalNotFound: true },
 };
 
-export default nextConfig;
+// Build-time configuration gate. `NEXT_PUBLIC_CMS_API_URL` is inlined into the client bundle
+// during `next build`, so a missing value must fail the BUILD (not the runtime) — otherwise a
+// production bundle would silently ship the localhost dev CMS as the lead-form endpoint. The
+// value is public (the CMS base is not a secret), but it must come from approved deployment
+// config (MIG-010 sets it in the build environment) rather than an implicit localhost default.
+// Dev (`next dev`) and other phases are unaffected — local zero-config still works.
+export default function config(phase: string): NextConfig {
+  if (phase === PHASE_PRODUCTION_BUILD && !process.env.NEXT_PUBLIC_CMS_API_URL?.trim()) {
+    throw new Error(
+      "NEXT_PUBLIC_CMS_API_URL must be set for `next build`: it is build-time browser config for the lead-form POST and must not fall back to localhost in a production bundle. Set it in the build environment (see next/.env.example and ops/systemd/thg-next.service.candidate).",
+    );
+  }
+  return nextConfig;
+}
