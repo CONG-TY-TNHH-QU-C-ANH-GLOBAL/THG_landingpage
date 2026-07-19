@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Be_Vietnam_Pro, Inter } from "next/font/google";
 import "../globals.css";
@@ -34,6 +35,17 @@ const bodyFont = Inter({
   display: "swap",
 });
 
+// Existing approved brand assets only (copied from production public/): declaring them here
+// emits the <link rel="icon"> set so browsers stop probing the absent /favicon.ico.
+export const metadata: Metadata = {
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+  },
+};
+
 export const dynamicParams = false; // unsupported locales are not rendered — they 404
 
 export function generateStaticParams() {
@@ -50,7 +62,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   if (!isSupportedLocale(lang)) {
     notFound();
   }
-  const [copy, locations, settings] = await Promise.all([
+  const [copy, contact, settings] = await Promise.all([
     getMarketingCopy(lang),
     loadContactLocations(lang),
     loadSiteSettings(),
@@ -61,7 +73,11 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <UtmCapture />
         <Navbar lang={lang} copy={copy} />
         {children}
-        <ContactSection lang={lang} copy={copy} locations={locations} />
+        <ContactSection
+          lang={lang}
+          copy={copy}
+          directory={{ status: contact.status, rows: contact.locations }}
+        />
         <FloatingContact
           lang={lang}
           copy={copy}

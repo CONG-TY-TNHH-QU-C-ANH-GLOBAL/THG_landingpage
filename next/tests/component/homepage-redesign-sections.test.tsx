@@ -8,6 +8,7 @@ import { render, screen, cleanup, within } from "@testing-library/react";
 import PillarAtlasSection from "@/features/home/ui/pillar-atlas-section";
 import AboutVideoSection from "@/features/home/ui/about-video-section";
 import { ContactSection } from "@/shared/ui/site-shell/contact-section";
+import { FALLBACK_CONTACT_LOCATIONS } from "@/features/home/server/contact-fallback";
 import EcosystemAtlasSection from "@/features/home/ui/ecosystem-atlas-section";
 import CoverageSection from "@/features/home/ui/coverage-section";
 import WhoWeServeSection from "@/features/home/ui/who-we-serve-section";
@@ -202,7 +203,7 @@ describe("AboutVideoSection — restored Why-THG video (WEB-001B addendum)", () 
 describe("ContactSection endcap (WEB-001B addendum)", () => {
   it.each(LOCALES)("renders only verified social channels — real URLs, no placeholders — %s", (locale) => {
     const copy = copyFor(locale);
-    const { container } = render(<ContactSection lang={locale} copy={copy} locations={[]} />);
+    const { container } = render(<ContactSection lang={locale} copy={copy} directory={{ status: "empty", rows: [] }} />);
     const socials = [...container.querySelectorAll('a[target="_blank"]')].filter((a) =>
       a.getAttribute("rel")?.includes("noopener"),
     );
@@ -218,7 +219,7 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
 
   it("collapses the offices column when the CMS has no location records", () => {
     const copy = copyFor("vi");
-    const { container } = render(<ContactSection lang="vi" copy={copy} locations={[]} />);
+    const { container } = render(<ContactSection lang="vi" copy={copy} directory={{ status: "empty", rows: [] }} />);
     // no orphan heading over an empty area
     expect(container.textContent).not.toContain(copy["contact.offices_title"]);
     // the essential consultation CTA is present in the SSR markup with no hidden inline style
@@ -228,7 +229,7 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
 
   it.each(LOCALES)("keeps the owner-approved offer and response copy verbatim — %s", (locale) => {
     const copy = copyFor(locale);
-    const { container } = render(<ContactSection lang={locale} copy={copy} locations={[]} />);
+    const { container } = render(<ContactSection lang={locale} copy={copy} directory={{ status: "empty", rows: [] }} />);
     // content-owner decision: exact production strings, never neutralized
     expect(container.textContent).toContain(copy["contact.cta_title"]);
     expect(container.textContent).toContain(copy["contact.cta_desc"]);
@@ -240,7 +241,10 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
       <ContactSection
         lang="vi"
         copy={copy}
-        locations={[{ id: 1, kind: "office", label: "HCMC", address: "123 Test", phone: null, url: null, langClass: null }]}
+        directory={{
+          status: "ready",
+          rows: [{ id: 1, kind: "office", label: "HCMC", address: "123 Test", phone: null, url: null, langClass: null }],
+        }}
       />,
     );
     expect(container.textContent).toContain(copy["contact.offices_title"]);
@@ -259,7 +263,7 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
       { id: 4, kind: "email", label: "Email", address: null, phone: null, url: "mailto:ops@example.com", langClass: null },
       { id: 5, kind: "website", label: "Website", address: null, phone: null, url: "https://thgfulfill.com", langClass: "font-cn" },
     ] as const;
-    const { container } = render(<ContactSection lang={locale} copy={copy} locations={[...locations]} />);
+    const { container } = render(<ContactSection lang={locale} copy={copy} directory={{ status: "ready", rows: [...locations] }} />);
 
     const rows = screen.getByTestId("contact-directory").querySelectorAll("li");
     expect(rows).toHaveLength(locations.length);
@@ -445,5 +449,61 @@ describe("supporting sections (WEB-001B)", () => {
       expect(container.textContent).toContain(copy[`adv.a${i}_title`]);
     }
     expectNoAnnotationChrome(container);
+  });
+});
+
+describe("ContactSection directory states (CMS runtime contract)", () => {
+  const fallbackVi = FALLBACK_CONTACT_LOCATIONS.vi;
+
+  it.each(LOCALES)("unavailable + verified fallback renders the full directory, no error copy — %s", (locale) => {
+    const rows = FALLBACK_CONTACT_LOCATIONS[locale];
+    const { container } = render(
+      <ContactSection lang={locale} copy={copyFor(locale)} directory={{ status: "unavailable", rows }} />,
+    );
+    const items = container.querySelectorAll('[data-testid="contact-directory"] > li');
+    expect(items).toHaveLength(rows.length);
+    const text = container.textContent ?? "";
+    for (const r of rows) expect(text).toContain(r.label);
+    // no technical wording in the public DOM
+    for (const term of ["CmsNetworkError", "CMS", "fetch", "500", "network error", "Error:"]) {
+      expect(text).not.toContain(term);
+    }
+  });
+
+  it("unavailable is NOT treated as empty: distinct composition markers", () => {
+    const un = render(
+      <ContactSection lang="vi" copy={copyFor("vi")} directory={{ status: "unavailable", rows: fallbackVi }} />,
+    );
+    expect(un.container.querySelector("section")?.getAttribute("data-directory-status")).toBe("unavailable");
+    expect(un.container.querySelector('[data-testid="contact-directory"]')).not.toBeNull();
+    un.unmount();
+    const empty = render(
+      <ContactSection lang="vi" copy={copyFor("vi")} directory={{ status: "empty", rows: [] }} />,
+    );
+    expect(empty.container.querySelector("section")?.getAttribute("data-directory-status")).toBe("empty");
+    expect(empty.container.querySelector('[data-testid="contact-directory"]')).toBeNull();
+    expect(empty.container.querySelector('[data-testid="contact-unavailable"]')).toBeNull();
+  });
+
+  it.each(LOCALES)("unavailable WITHOUT fallback shows the restrained localized notice — %s", (locale) => {
+    const { container } = render(
+      <ContactSection lang={locale} copy={copyFor(locale)} directory={{ status: "unavailable", rows: [] }} />,
+    );
+    const note = container.querySelector('[data-testid="contact-unavailable"]');
+    expect(note).not.toBeNull();
+    expect(note?.textContent?.trim().length).toBeGreaterThan(10);
+    // never claims THG has no offices; never technical
+    expect(note?.textContent).not.toMatch(/CMS|error|Error|500|fetch/);
+    // consultation card still present
+    expect(container.textContent).toContain(copyFor(locale)["contact.cta_title"]);
+  });
+
+  it("renders every verified fallback record without clipping styles", () => {
+    const { container } = render(
+      <ContactSection lang="vi" copy={copyFor("vi")} directory={{ status: "unavailable", rows: fallbackVi }} />,
+    );
+    const list = container.querySelector('[data-testid="contact-directory"]');
+    expect(list?.className ?? "").not.toMatch(/line-clamp|max-h-|h-\[/);
+    expect(container.textContent).toContain("121/5");
   });
 });

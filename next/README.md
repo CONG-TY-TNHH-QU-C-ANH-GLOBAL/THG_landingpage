@@ -20,6 +20,21 @@ manifest and lockfile are untouched.
 - Node: **≥ 20.9** (`.nvmrc` = 20).
 - `next.config.ts`: `output: "standalone"`.
 
+## Local CMS (dev content)
+
+CMS-backed sections need the sibling CMS API running locally (the base URL defaults to
+`http://localhost:8080/api/v1`; override via `next/.env.local`, template in `.env.example`):
+
+```sh
+cd ../CMS_management-
+bun run db:migrate:local   # once — creates/updates the local D1 tables
+bun run dev                # serves http://localhost:8080 (port fixed in its vite.config.ts)
+```
+
+Without it the app still renders: every CMS loader degrades to its approved static/model
+fallback (the contact directory shows the verified production fallback rows) and the server
+logs one redaction-safe `[CMS]` warning per endpoint per process.
+
 ## Commands (run inside `next/`)
 
 ```bash
