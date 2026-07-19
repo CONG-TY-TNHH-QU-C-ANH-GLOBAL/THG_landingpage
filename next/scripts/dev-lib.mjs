@@ -8,47 +8,57 @@ import { dirname, join } from "node:path";
 /** The next/ app root (parent of scripts/). */
 export const APP_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 
+const toPosix = (p) => p.replaceAll("\\", "/").toLowerCase();
+const isNextDist = (cmd) => /[\\/]next[\\/]dist[\\/]/.test(cmd);
+
+// Absolute binaries so process enumeration never relies on a writable PATH entry.
+const PS_EXE = `${process.env.SystemRoot ?? "C:\\Windows"}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`;
+const PS_ARGS = [
+  "-NoProfile",
+  "-Command",
+  "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Select-Object ProcessId,CommandLine | ConvertTo-Json -Compress",
+];
+
+function winProcesses(needle) {
+  const out = execFileSync(PS_EXE, PS_ARGS, { encoding: "utf8", windowsHide: true });
+  const parsed = JSON.parse(out || "[]");
+  const list = Array.isArray(parsed) ? parsed : [parsed];
+  return list
+    .filter((p) => {
+      const cmd = String(p.CommandLine ?? "");
+      return isNextDist(cmd) && toPosix(cmd).includes(needle);
+    })
+    .map((p) => ({ pid: p.ProcessId, cmd: String(p.CommandLine ?? "") }));
+}
+
+function posixProcesses(needle) {
+  const psExe = existsSync("/bin/ps") ? "/bin/ps" : "/usr/bin/ps";
+  const out = execFileSync(psExe, ["-Ao", "pid=,command="], { encoding: "utf8" });
+  const rows = [];
+  for (const line of out.split("\n")) {
+    const trimmed = line.trimStart();
+    const gap = trimmed.indexOf(" ");
+    if (gap < 1) continue;
+    const pid = Number(trimmed.slice(0, gap));
+    const cmd = trimmed.slice(gap + 1);
+    if (!Number.isNaN(pid) && isNextDist(cmd) && cmd.toLowerCase().includes(needle)) {
+      rows.push({ pid, cmd });
+    }
+  }
+  return rows;
+}
+
 /** Repo-scoped Next dev processes: `next` processes whose command line references THIS app.
  *  Matching on the app path avoids touching an unrelated Next app on the same machine. */
 export function findNextProcesses() {
-  const needle = APP_ROOT.replace(/\\/g, "/").toLowerCase();
-  const rows = [];
+  const needle = toPosix(APP_ROOT);
   try {
-    if (process.platform === "win32") {
-      // CIM over the deprecated wmic; JSON keeps parsing robust across cmdline quoting.
-      const out = execFileSync(
-        "powershell",
-        [
-          "-NoProfile",
-          "-Command",
-          "Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Select-Object ProcessId,CommandLine | ConvertTo-Json -Compress",
-        ],
-        { encoding: "utf8", windowsHide: true },
-      );
-      const parsed = JSON.parse(out || "[]");
-      for (const p of Array.isArray(parsed) ? parsed : [parsed]) {
-        const cmd = String(p.CommandLine ?? "");
-        if (/[\\/]next[\\/]dist[\\/]/.test(cmd) && cmd.replace(/\\/g, "/").toLowerCase().includes(needle)) {
-          rows.push({ pid: p.ProcessId, cmd });
-        }
-      }
-    } else {
-      const out = execFileSync("ps", ["-Ao", "pid=,command="], { encoding: "utf8" });
-      for (const line of out.split("\n")) {
-        const m = /^\s*(\d+)\s+(.*)$/.exec(line);
-        if (!m) continue;
-        const cmd = m[2];
-        if (/[\\/]next[\\/]dist[\\/]/.test(cmd) && cmd.toLowerCase().includes(needle)) {
-          rows.push({ pid: Number(m[1]), cmd });
-        }
-      }
-    }
+    const rows = process.platform === "win32" ? winProcesses(needle) : posixProcesses(needle);
+    return { rows, enumerated: true };
   } catch {
-    // Process enumeration unavailable (locked-down CI) — treat as "cannot confirm"; callers
-    // decide. Returning [] here; dev:clean re-checks and errs on the side of safety.
+    // Enumeration unavailable (locked-down CI) — "cannot confirm"; dev:clean errs safe.
     return { rows: [], enumerated: false };
   }
-  return { rows, enumerated: true };
 }
 
 function dirSize(dir) {
@@ -73,10 +83,7 @@ function dirSize(dir) {
 export function cacheState() {
   const dotNext = join(APP_ROOT, ".next");
   const turbo = join(dotNext, "dev", "cache", "turbopack");
-  return {
-    dotNextPresent: existsSync(dotNext),
-    turbo: dirSize(turbo),
-  };
+  return { dotNextPresent: existsSync(dotNext), turbo: dirSize(turbo) };
 }
 
 /** Free disk on the app volume (GB), best-effort. */
@@ -91,7 +98,8 @@ export function diskFreeGb() {
 
 /** Public CMS origin the dev server would use — host only, never a secret (the base is public). */
 export function cmsOrigin() {
-  const raw = process.env.CMS_API_URL || process.env.NEXT_PUBLIC_CMS_API_URL || "http://localhost:8080/api/v1";
+  const raw =
+    process.env.CMS_API_URL || process.env.NEXT_PUBLIC_CMS_API_URL || "http://localhost:8080/api/v1";
   try {
     return new URL(raw).host;
   } catch {

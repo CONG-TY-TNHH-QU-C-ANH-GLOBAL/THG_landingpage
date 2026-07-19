@@ -1,10 +1,9 @@
 // dev:doctor — read-only local dev diagnostics for the incident class in ops/DEV-RUNTIME.md
 // (orphaned Next processes, stale Turbopack persistence cache). Reports, never mutates,
 // never prints secrets. Run before/after a dev session that misbehaves.
-import { findNextProcesses, cacheState, diskFreeGb, cmsOrigin, mb } from "./dev-lib.mjs";
+import { findNextProcesses, cacheState, diskFreeGb, cmsOrigin, mb, APP_ROOT } from "./dev-lib.mjs";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { APP_ROOT } from "./dev-lib.mjs";
 
 const { rows, enumerated } = findNextProcesses();
 const cache = cacheState();
