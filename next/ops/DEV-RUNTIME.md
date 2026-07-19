@@ -37,7 +37,7 @@ Ruled out: **F** disk health (ample free space, no disk errors), **G** app archi
 1. **Stop dev.** Ctrl-C the `bun run dev` you started.
 2. **Verify no process** — `bun run dev:doctor`. It lists any Next process still bound to
    this app (orphans survive a port-only kill). Stop every one it reports.
-   - Windows: `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object CommandLine -match 'THG_landingpage.next' | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`
+   - Windows: `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -match 'THG_landingpage[\\/]next[\\/]' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`
 3. **Delete `.next`** — `bun run dev:clean`. It **refuses** while any repo dev process is
    still alive (deleting `.next` under a live Turbopack process is what corrupts the cache),
    then removes only the generated `.next`. It never kills processes and never edits env.
@@ -53,7 +53,7 @@ Ruled out: **F** disk health (ample free space, no disk errors), **G** app archi
 | `bun run dev:doctor` | read-only: active Next processes, `.next`/cache state, CMS origin, disk. |
 | `bun run dev:clean` | delete `.next` **only when no dev process is running**. |
 | `bun run dev:webpack` | diagnostic fallback — `next dev --webpack`, bypasses Turbopack persistence entirely. |
-| traced Turbopack | set `NEXT_TURBOPACK_TRACING=1` then `bun run dev` — PowerShell: `$env:NEXT_TURBOPACK_TRACING=1; bun run dev`; POSIX: `NEXT_TURBOPACK_TRACING=1 bun run dev`. Writes `.next/trace-turbopack`. |
+| traced Turbopack | set `NEXT_TURBOPACK_TRACING=1` then `bun run dev` — PowerShell: `$env:NEXT_TURBOPACK_TRACING=1; bun run dev`; POSIX: `NEXT_TURBOPACK_TRACING=1 bun run dev`. Writes a Turbopack trace under `.next/` for the Next team. |
 
 The Webpack fallback is **diagnostic only** — do not switch the project's default dev bundler
 or the production build bundler without comparative evidence.

@@ -26,7 +26,7 @@ function winProcesses(needle) {
   return list
     .filter((p) => {
       const cmd = String(p.CommandLine ?? "");
-      return isNextDist(cmd) && toPosix(cmd).includes(needle);
+      return isNextDist(cmd) && (toPosix(cmd) + "/").includes(needle);
     })
     .map((p) => ({ pid: p.ProcessId, cmd: String(p.CommandLine ?? "") }));
 }
@@ -41,7 +41,7 @@ function posixProcesses(needle) {
     if (gap < 1) continue;
     const pid = Number(trimmed.slice(0, gap));
     const cmd = trimmed.slice(gap + 1);
-    if (!Number.isNaN(pid) && isNextDist(cmd) && cmd.toLowerCase().includes(needle)) {
+    if (!Number.isNaN(pid) && isNextDist(cmd) && (toPosix(cmd) + "/").includes(needle)) {
       rows.push({ pid, cmd });
     }
   }
@@ -51,7 +51,7 @@ function posixProcesses(needle) {
 /** Repo-scoped Next dev processes: `next` processes whose command line references THIS app.
  *  Matching on the app path avoids touching an unrelated Next app on the same machine. */
 export function findNextProcesses() {
-  const needle = toPosix(APP_ROOT);
+  const needle = toPosix(APP_ROOT) + "/";
   try {
     const rows = process.platform === "win32" ? winProcesses(needle) : posixProcesses(needle);
     return { rows, enumerated: true };
@@ -67,7 +67,12 @@ function dirSize(dir) {
   const walk = (d) => {
     for (const name of readdirSync(d)) {
       const p = join(d, name);
-      const st = statSync(p);
+      let st;
+      try {
+        st = statSync(p);
+      } catch {
+        continue; // vanished mid-walk (Turbopack compaction) — skip, don't crash the report
+      }
       if (st.isDirectory()) walk(p);
       else {
         bytes += st.size;
