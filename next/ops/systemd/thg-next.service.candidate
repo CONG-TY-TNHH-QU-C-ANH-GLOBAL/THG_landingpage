@@ -14,6 +14,9 @@ Group=thg-next
 WorkingDirectory=/var/www/thgfulfill-next/current
 Environment=NODE_ENV=production
 Environment=PORT=3000
+# REQUIRED at runtime (MIG-010 injects the real value; no default in production —
+# the app refuses to fall back to the localhost dev CMS):
+#   Environment=CMS_API_URL=<approved production CMS base, e.g. set via drop-in/EnvironmentFile>
 ExecStart=/usr/bin/node .next/standalone/server.js
 # No ExecReload: the standalone Node server has no SIGHUP reload handler (SIGHUP would
 # terminate it). Reload = `systemctl restart` (atomic release swap owned by FND-010).

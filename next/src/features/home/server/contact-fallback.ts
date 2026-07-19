@@ -12,6 +12,14 @@ import type { ContactLocation } from "../models/contactLocation";
 // CMS is unreachable (ContactLocationsResult status "unavailable"), and any live CMS
 // response — including a valid empty list — always wins. Refresh by re-capturing the
 // production payload; do not hand-edit addresses here.
+/** Where every record came from — the verified public production endpoint. */
+export const CONTACT_FALLBACK_SOURCE = "https://cms.thgfulfill.com/api/v1/contact-locations";
+/** Capture date of the snapshot below. Refresh = re-capture the production payload. */
+export const CONTACT_FALLBACK_CAPTURED_AT = "2026-07-18";
+
+// Governance: introduced as an implementation decision executing the owner directive to
+// reuse "current production CMS payload" as the authoritative fallback source (WEB-001
+// runtime task, 2026-07-18); explicit owner sign-off tracked on PR #75.
 export const FALLBACK_CONTACT_LOCATIONS: Readonly<Record<Locale, readonly ContactLocation[]>> = {
   vi: [
     { id: 2, kind: "office", label: "VĂN PHÒNG HỒ CHÍ MINH", address: "121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú, TP.HCM", phone: null, url: null, langClass: null },

@@ -311,3 +311,42 @@ describe("cmsFetch — error hygiene / redaction (AC-41)", () => {
     expect(e.safeMeta()).toEqual({ name: "CmsHttpError", path: "/pricing", status: 500 });
   });
 });
+
+describe("resolveCmsBaseUrl environment policy (owner-mandated)", () => {
+  it("development: missing CMS_API_URL uses the approved localhost default", () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("CMS_API_URL", "");
+    expect(resolveCmsBaseUrl(undefined)).toBe("http://localhost:8080/api/v1");
+  });
+
+  it("test env: missing CMS_API_URL uses the localhost default", () => {
+    vi.stubEnv("NODE_ENV", "test");
+    expect(resolveCmsBaseUrl(undefined)).toBe("http://localhost:8080/api/v1");
+  });
+
+  it("production runtime: missing CMS_API_URL fails loud — never localhost", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PHASE", "");
+    expect(() => resolveCmsBaseUrl(undefined)).toThrow(/CMS_API_URL is required in production/);
+    expect(() => resolveCmsBaseUrl("   ")).toThrow(/CMS_API_URL is required in production/);
+    // and the error never carries a URL value
+    try {
+      resolveCmsBaseUrl(undefined);
+    } catch (e) {
+      expect(String(e)).not.toContain("localhost");
+      expect(String(e)).not.toContain("8080");
+    }
+  });
+
+  it("production BUILD phase: prerender may use the default (deployment injects the runtime value)", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PHASE", "phase-production-build");
+    expect(resolveCmsBaseUrl(undefined)).toBe("http://localhost:8080/api/v1");
+  });
+
+  it("production runtime with explicit CMS_API_URL uses exactly that origin", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PHASE", "");
+    expect(resolveCmsBaseUrl("https://cms.example.com/api/v1/")).toBe("https://cms.example.com/api/v1");
+  });
+});

@@ -265,8 +265,14 @@ describe("ContactSection endcap (WEB-001B addendum)", () => {
     ] as const;
     const { container } = render(<ContactSection lang={locale} copy={copy} directory={{ status: "ready", rows: [...locations] }} />);
 
-    const rows = screen.getByTestId("contact-directory").querySelectorAll("li");
-    expect(rows).toHaveLength(locations.length);
+    // Semantic grouping by CMS kind (PR #75 owner review): physical rows form the
+    // directory; phone/email/website render as direct channels under the endcap card.
+    const physical = locations.filter((l) => l.kind === "office" || l.kind === "warehouse");
+    const channels = locations.filter((l) => l.kind !== "office" && l.kind !== "warehouse");
+    const dirRows = screen.getByTestId("contact-directory").querySelectorAll("li");
+    expect(dirRows).toHaveLength(physical.length);
+    const channelRows = screen.getByTestId("contact-channels").querySelectorAll("li");
+    expect(channelRows).toHaveLength(channels.length);
     for (const l of locations) {
       expect(container.textContent).toContain(l.label);
     }
@@ -460,8 +466,11 @@ describe("ContactSection directory states (CMS runtime contract)", () => {
     const { container } = render(
       <ContactSection lang={locale} copy={copyFor(locale)} directory={{ status: "unavailable", rows }} />,
     );
-    const items = container.querySelectorAll('[data-testid="contact-directory"] > li');
-    expect(items).toHaveLength(rows.length);
+    const physical = rows.filter((r) => r.kind === "office" || r.kind === "warehouse");
+    const dirItems = container.querySelectorAll('[data-testid="contact-directory"] li');
+    expect(dirItems).toHaveLength(physical.length);
+    const channelItems = container.querySelectorAll('[data-testid="contact-channels"] li');
+    expect(channelItems).toHaveLength(rows.length - physical.length);
     const text = container.textContent ?? "";
     for (const r of rows) expect(text).toContain(r.label);
     // no technical wording in the public DOM
