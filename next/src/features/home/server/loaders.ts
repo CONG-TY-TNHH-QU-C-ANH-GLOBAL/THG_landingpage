@@ -25,7 +25,7 @@ import { FALLBACK_CONTACT_LOCATIONS } from "./contact-fallback";
 import type { HomepageContent } from "../models/homepageContent";
 import type { Service } from "../models/service";
 import type { Faq } from "../models/faq";
-import type { ContactLocation, ContactLocationsResult, ContactUnavailableReason } from "../models/contactLocation";
+import type { ContactLocationsResult, ContactUnavailableReason } from "../models/contactLocation";
 import type { Integration } from "../models/integration";
 import type { MarqueeImage } from "../models/marqueeImage";
 import type { SiteSettings } from "../models/siteSettings";

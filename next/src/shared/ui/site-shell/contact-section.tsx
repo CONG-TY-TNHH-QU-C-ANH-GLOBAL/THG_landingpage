@@ -63,43 +63,7 @@ const ContactSection = ({
             - "unavailable" with no fallback rows → balanced two-column with a restrained
               localized notice — never presented as if THG had no locations, never a
               technical error. */}
-        {rows.length > 0 ? (
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            <ScrollReveal direction="left">
-              <div>
-                <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
-                <ContactList locations={rows} mapLabel={t("contact.view_map")} />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal direction="right" delay={200}>
-              <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
-                <ContactCtaCard lang={lang} copy={copy} />
-              </div>
-            </ScrollReveal>
-          </div>
-        ) : status === "unavailable" ? (
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            <ScrollReveal direction="left">
-              <div>
-                <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
-                <p className="text-sm text-navy leading-relaxed max-w-[48ch] border-t border-border pt-5" data-testid="contact-unavailable">
-                  {t("contact.unavailable")}
-                </p>
-              </div>
-            </ScrollReveal>
-            <ScrollReveal direction="right" delay={200}>
-              <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
-                <ContactCtaCard lang={lang} copy={copy} />
-              </div>
-            </ScrollReveal>
-          </div>
-        ) : (
-          <ScrollReveal>
-            <div className="max-w-xl mx-auto bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
-              <ContactCtaCard lang={lang} copy={copy} />
-            </div>
-          </ScrollReveal>
-        )}
+        <DirectoryComposition lang={lang} copy={copy} status={status} rows={rows} />
 
         {/* Footer bar — existing brand info and links only, no invented legal copy. */}
         <div className="mt-20 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
@@ -117,6 +81,59 @@ const ContactSection = ({
     </section>
   );
 };
+
+// State-selected composition — separate statements instead of a nested ternary (S3358).
+function DirectoryComposition({
+  lang,
+  copy,
+  status,
+  rows,
+}: Readonly<{ lang: Locale; copy: MarketingCopy; status: ContactDirectoryView["status"]; rows: readonly ContactRow[] }>) {
+  const t = tFrom(copy);
+  if (rows.length > 0) {
+    return (
+      <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <ScrollReveal direction="left">
+          <div>
+            <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
+            <ContactList locations={rows} mapLabel={t("contact.view_map")} />
+          </div>
+        </ScrollReveal>
+        <ScrollReveal direction="right" delay={200}>
+          <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
+            <ContactCtaCard lang={lang} copy={copy} />
+          </div>
+        </ScrollReveal>
+      </div>
+    );
+  }
+  if (status === "unavailable") {
+    return (
+      <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <ScrollReveal direction="left">
+          <div>
+            <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
+            <p className="text-sm text-navy leading-relaxed max-w-[48ch] border-t border-border pt-5" data-testid="contact-unavailable">
+              {t("contact.unavailable")}
+            </p>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal direction="right" delay={200}>
+          <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
+            <ContactCtaCard lang={lang} copy={copy} />
+          </div>
+        </ScrollReveal>
+      </div>
+    );
+  }
+  return (
+    <ScrollReveal>
+      <div className="max-w-xl mx-auto bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
+        <ContactCtaCard lang={lang} copy={copy} />
+      </div>
+    </ScrollReveal>
+  );
+}
 
 const KIND_ICONS = {
   phone: Phone,

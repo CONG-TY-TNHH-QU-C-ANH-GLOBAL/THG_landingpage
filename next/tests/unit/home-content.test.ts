@@ -328,9 +328,9 @@ describe("loadContactLocations result contract (ready / empty / unavailable)", (
   });
 
   it("fallback dataset integrity: production-captured rows per locale, no empty locale", () => {
-    expect(FALLBACK_CONTACT_LOCATIONS.vi.length).toBe(9);
-    expect(FALLBACK_CONTACT_LOCATIONS.en.length).toBe(8);
-    expect(FALLBACK_CONTACT_LOCATIONS.zh.length).toBe(8);
+    expect(FALLBACK_CONTACT_LOCATIONS.vi).toHaveLength(9);
+    expect(FALLBACK_CONTACT_LOCATIONS.en).toHaveLength(8);
+    expect(FALLBACK_CONTACT_LOCATIONS.zh).toHaveLength(8);
     for (const rows of Object.values(FALLBACK_CONTACT_LOCATIONS)) {
       for (const l of rows) {
         expect(l.label.trim().length).toBeGreaterThan(0);
