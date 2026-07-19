@@ -23,6 +23,7 @@ import {
   loadSiteSettings,
 } from "../../src/features/home/server/loaders";
 import { resetLoggedCmsFallbacks } from "../../src/shared/cms/log-fallback";
+import { FALLBACK_CONTACT_LOCATIONS } from "../../src/features/home/server/contact-fallback";
 
 // FND-005 homepage content slice (IP-006): fixture DTO → model mapping, malformed shapes,
 // locale pass-through, deterministic per-section fallback (WEB-001 DATA_FLOW), and the
@@ -222,7 +223,6 @@ describe("home loaders", () => {
     mockFetch(async () => jsonResponse({ error: "not found" }, 404));
     await expect(loadHomeServices("vi")).resolves.toEqual([]);
     mockFetch(async () => jsonResponse({ error: "boom" }, 500));
-    await expect(loadContactLocations("vi")).resolves.toEqual([]);
     await expect(loadSiteSettings()).resolves.toEqual(EMPTY_SITE_SETTINGS);
   });
 
@@ -278,5 +278,65 @@ describe("home loaders", () => {
     vi.stubEnv("CMS_API_URL", "not-a-valid-url");
     mockFetch(async () => jsonResponse({ locale: "vi", services: [] }));
     await expect(loadHomeServices("vi")).rejects.toThrow(/Invalid CMS_API_URL/);
+  });
+});
+
+describe("loadContactLocations result contract (ready / empty / unavailable)", () => {
+  const row = { id: 1, position: 1, kind: "office", label: "HQ", address: "A", phone: null, url: null, lang_class: null };
+
+  it("HTTP 200 with records → ready with every record", async () => {
+    mockFetch(async () => jsonResponse({ locale: "vi", locations: [row] }));
+    const r = await loadContactLocations("vi");
+    expect(r.status).toBe("ready");
+    expect(r.locations).toHaveLength(1);
+    expect(r.locations[0]).toMatchObject({ kind: "office", label: "HQ" });
+  });
+
+  it("HTTP 200 with a valid empty list → CONFIRMED empty (never the fallback)", async () => {
+    mockFetch(async () => jsonResponse({ locale: "vi", locations: [] }));
+    const r = await loadContactLocations("vi");
+    expect(r).toEqual({ status: "empty", locations: [] });
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it("network failure → unavailable with the verified production fallback rows", async () => {
+    mockFetch(async () => {
+      throw new TypeError("fetch failed");
+    });
+    const r = await loadContactLocations("vi");
+    expect(r.status).toBe("unavailable");
+    if (r.status === "unavailable") expect(r.reason).toBe("network");
+    expect(r.locations).toBe(FALLBACK_CONTACT_LOCATIONS.vi);
+    expect(r.locations.length).toBeGreaterThan(0);
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it("invalid schema → unavailable (contract), never presented as empty", async () => {
+    mockFetch(async () => jsonResponse({ locale: "vi", locations: "nope" }));
+    const r = await loadContactLocations("en");
+    expect(r.status).toBe("unavailable");
+    if (r.status === "unavailable") expect(r.reason).toBe("contract");
+    expect(r.locations).toBe(FALLBACK_CONTACT_LOCATIONS.en);
+  });
+
+  it("HTTP 5xx → unavailable (http) with fallback; the reason never reaches the rows", async () => {
+    mockFetch(async () => jsonResponse({ error: "internal-secret" }, 500));
+    const r = await loadContactLocations("zh");
+    expect(r.status).toBe("unavailable");
+    if (r.status === "unavailable") expect(r.reason).toBe("http");
+    expect(JSON.stringify(r.locations)).not.toContain("internal-secret");
+  });
+
+  it("fallback dataset integrity: production-captured rows per locale, no empty locale", () => {
+    expect(FALLBACK_CONTACT_LOCATIONS.vi).toHaveLength(9);
+    expect(FALLBACK_CONTACT_LOCATIONS.en).toHaveLength(8);
+    expect(FALLBACK_CONTACT_LOCATIONS.zh).toHaveLength(8);
+    for (const rows of Object.values(FALLBACK_CONTACT_LOCATIONS)) {
+      for (const l of rows) {
+        expect(l.label.trim().length).toBeGreaterThan(0);
+        // every row carries a real display line (address, phone or url) — no invented stubs
+        expect(l.address ?? l.phone ?? l.url).toBeTruthy();
+      }
+    }
   });
 });

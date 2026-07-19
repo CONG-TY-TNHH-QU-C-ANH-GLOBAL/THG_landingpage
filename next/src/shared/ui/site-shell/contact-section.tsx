@@ -20,15 +20,24 @@ export interface ContactRow {
   langClass: string | null;
 }
 
+/** Observable directory state (mirrors the FND-005 ContactLocationsResult without the
+ *  server-only failure reason): "unavailable" rows are the verified production fallback —
+ *  an outage must never read as "THG has no locations". */
+export interface ContactDirectoryView {
+  status: "ready" | "empty" | "unavailable";
+  rows: readonly ContactRow[];
+}
+
 const ContactSection = ({
   lang,
   copy,
-  locations,
-}: Readonly<{ lang: Locale; copy: MarketingCopy; locations: readonly ContactRow[] }>) => {
+  directory,
+}: Readonly<{ lang: Locale; copy: MarketingCopy; directory: ContactDirectoryView }>) => {
   const t = tFrom(copy);
+  const { status, rows } = directory;
 
   return (
-    <section id="contact" className="py-28 relative overflow-hidden bg-secondary/30">
+    <section id="contact" data-directory-status={status} className="py-28 relative overflow-hidden bg-secondary/30">
       <div className="section-divider absolute top-0 left-0 right-0" />
       <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-primary/5 blur-3xl" />
       <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
@@ -46,30 +55,15 @@ const ContactSection = ({
           />
         </ScrollReveal>
 
-        {/* WEB-001B: when the CMS has no location records the offices column
-            collapses entirely — never a heading over an empty area — and the
-            endcap card takes a balanced centered one-column composition. */}
-        {locations.length > 0 ? (
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            <ScrollReveal direction="left">
-              <div>
-                <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
-                <ContactList locations={locations} mapLabel={t("contact.view_map")} />
-              </div>
-            </ScrollReveal>
-            <ScrollReveal direction="right" delay={200}>
-              <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
-                <ContactCtaCard lang={lang} copy={copy} />
-              </div>
-            </ScrollReveal>
-          </div>
-        ) : (
-          <ScrollReveal>
-            <div className="max-w-xl mx-auto bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
-              <ContactCtaCard lang={lang} copy={copy} />
-            </div>
-          </ScrollReveal>
-        )}
+        {/* Directory states (WEB-001 owner requirement):
+            - rows present (live CMS records OR the verified production fallback during an
+              outage) → two-column directory + consultation endcap;
+            - "empty" = the CMS CONFIRMED there are no published records → intentional
+              compact one-column endcap, never a heading over an empty area;
+            - "unavailable" with no fallback rows → balanced two-column with a restrained
+              localized notice — never presented as if THG had no locations, never a
+              technical error. */}
+        <DirectoryComposition lang={lang} copy={copy} status={status} rows={rows} />
 
         {/* Footer bar — existing brand info and links only, no invented legal copy. */}
         <div className="mt-20 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
@@ -88,6 +82,136 @@ const ContactSection = ({
   );
 };
 
+// State-selected composition — separate statements instead of a nested ternary (S3358).
+// Semantic grouping by the CMS's own kind field (owner review, PR #75): physical
+// office/warehouse records form the location directory; phone/email/website records are
+// direct-contact channels rendered under the consultation card — every verified record
+// stays visible, placed by its CMS type. The registration-address row keeps its CMS kind
+// (office) and therefore stays in the directory; re-homing it to the legal bar is a
+// CMS-side kind decision, not a UI heuristic.
+const PHYSICAL_KINDS: ReadonlySet<ContactRow["kind"]> = new Set(["office", "warehouse"]);
+
+function DirectoryComposition({
+  lang,
+  copy,
+  status,
+  rows,
+}: Readonly<{ lang: Locale; copy: MarketingCopy; status: ContactDirectoryView["status"]; rows: readonly ContactRow[] }>) {
+  const t = tFrom(copy);
+  const offices = rows.filter((r) => r.kind === "office");
+  const warehouses = rows.filter((r) => r.kind === "warehouse");
+  const channels = rows.filter((r) => !PHYSICAL_KINDS.has(r.kind));
+  const physicalCount = offices.length + warehouses.length;
+
+  if (rows.length > 0) {
+    return (
+      <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <ScrollReveal direction="left">
+          <div>
+            <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
+            <div data-testid="contact-directory">
+              {physicalCount > 0 ? (
+                <>
+                  <ContactList locations={offices} mapLabel={t("contact.view_map")} />
+                  {warehouses.length > 0 && (
+                    <div className={offices.length > 0 ? "mt-8" : undefined}>
+                      <ContactList locations={warehouses} mapLabel={t("contact.view_map")} />
+                    </div>
+                  )}
+                </>
+              ) : (
+                // Channels-only payload: nothing physical to list on the left.
+                <ContactList locations={channels} mapLabel={t("contact.view_map")} />
+              )}
+            </div>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal direction="right" delay={200}>
+          <div>
+            <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
+              <ContactCtaCard lang={lang} copy={copy} />
+            </div>
+            {physicalCount > 0 && channels.length > 0 && (
+              <div className="mt-8" data-testid="contact-channels">
+                <p className="text-[length:var(--step-label)] font-bold text-accent uppercase tracking-[var(--tracking-wide)] mb-1.5">
+                  {t("contact.channels")}
+                </p>
+                <ChannelList channels={channels} />
+              </div>
+            )}
+          </div>
+        </ScrollReveal>
+      </div>
+    );
+  }
+  if (status === "unavailable") {
+    return (
+      <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <ScrollReveal direction="left">
+          <div>
+            <h3 className="text-[length:var(--step-h3)] font-bold text-navy mb-6">{t("contact.offices_title")}</h3>
+            <p className="text-sm text-navy leading-relaxed max-w-[48ch] border-t border-border pt-5" data-testid="contact-unavailable">
+              {t("contact.unavailable")}
+            </p>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal direction="right" delay={200}>
+          <div className="bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
+            <ContactCtaCard lang={lang} copy={copy} />
+          </div>
+        </ScrollReveal>
+      </div>
+    );
+  }
+  return (
+    <ScrollReveal>
+      <div className="max-w-xl mx-auto bg-card border border-border rounded-2xl p-8 md:p-10 text-center shadow-[var(--shadow-card)]">
+        <ContactCtaCard lang={lang} copy={copy} />
+      </div>
+    </ScrollReveal>
+  );
+}
+
+// Direct-contact channels — one hairline row per record with a real action:
+// tel: for phone kinds, the record's own mailto:/https URL otherwise.
+function ChannelList({ channels }: Readonly<{ channels: readonly ContactRow[] }>) {
+  return (
+    <ul className="m-0 p-0 list-none border-t border-border">
+      {channels.map((item) => {
+        const Icon = KIND_ICONS[item.kind];
+        const display =
+          item.phone ?? item.url?.replace(/^mailto:/, "").replace(/^https?:\/\//, "") ?? item.address ?? "";
+        const digits = item.phone?.replace(/\D/g, "") ?? "";
+        let href: string | undefined = item.url ?? undefined;
+        if (item.kind === "phone" && digits) href = `tel:${digits}`;
+        const externalAttrs =
+          href?.startsWith("http") === true
+            ? ({ target: "_blank", rel: "noopener noreferrer" } as const)
+            : {};
+        return (
+          <li key={item.id} className="flex items-center gap-3 py-2.5 border-b border-border">
+            <Icon className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
+            <span className="text-[length:var(--step-label)] font-bold text-accent uppercase tracking-[var(--tracking-wide)] w-24 flex-shrink-0 text-left">
+              {item.label}
+            </span>
+            {href ? (
+              <a
+                href={href}
+                {...externalAttrs}
+                className="text-sm text-navy hover:text-accent transition-colors break-all text-left"
+              >
+                {display}
+              </a>
+            ) : (
+              <span className="text-sm text-navy break-all text-left">{display}</span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 const KIND_ICONS = {
   phone: Phone,
   email: Mail,
@@ -103,7 +227,7 @@ const KIND_ICONS = {
 function ContactList({ locations, mapLabel }: Readonly<{ locations: readonly ContactRow[]; mapLabel: string }>) {
   // Rows arrive already position-sorted from the FND-005 loader.
   return (
-    <ul className="m-0 p-0 list-none border-t border-border" data-testid="contact-directory">
+    <ul className="m-0 p-0 list-none border-t border-border">
       {locations.map((item) => {
         const Icon = KIND_ICONS[item.kind];
         const display =

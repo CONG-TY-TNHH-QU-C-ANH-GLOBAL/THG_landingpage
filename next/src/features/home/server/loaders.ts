@@ -3,7 +3,7 @@ import "server-only";
 import type { z } from "zod";
 
 import { cmsFetch } from "@/shared/cms";
-import { CmsError } from "@/shared/cms/errors";
+import { CmsError, CmsHttpError, CmsParseError, CmsShapeError } from "@/shared/cms/errors";
 import { logCmsFallback } from "@/shared/cms/log-fallback";
 import { siteSettingsResponseSchema } from "@/shared/cms/schemas";
 import type { Locale } from "@/shared/i18n";
@@ -21,10 +21,11 @@ import { contactLocationsFromDto } from "../mappers/contactLocation";
 import { integrationsFromDto } from "../mappers/integration";
 import { marqueeImagesFromDto } from "../mappers/marqueeImage";
 import { siteSettingsFromDto, EMPTY_SITE_SETTINGS } from "../mappers/siteSettings";
+import { FALLBACK_CONTACT_LOCATIONS } from "./contact-fallback";
 import type { HomepageContent } from "../models/homepageContent";
 import type { Service } from "../models/service";
 import type { Faq } from "../models/faq";
-import type { ContactLocation } from "../models/contactLocation";
+import type { ContactLocationsResult, ContactUnavailableReason } from "../models/contactLocation";
 import type { Integration } from "../models/integration";
 import type { MarqueeImage } from "../models/marqueeImage";
 import type { SiteSettings } from "../models/siteSettings";
@@ -70,14 +71,30 @@ export function loadHomeFaqs(lang: Locale): Promise<Faq[]> {
   return loadOrFallback(`/faqs?lang=${lang}&scope=home`, faqsResponseSchema, faqsFromDto, []);
 }
 
-/** Footer contact rows; [] renders no rows. */
-export function loadContactLocations(lang: Locale): Promise<ContactLocation[]> {
-  return loadOrFallback(
-    `/contact-locations?lang=${lang}`,
-    contactLocationsResponseSchema,
-    contactLocationsFromDto,
-    [],
-  );
+function contactUnavailableReason(err: CmsError): ContactUnavailableReason {
+  if (err instanceof CmsHttpError) return "http";
+  if (err instanceof CmsShapeError || err instanceof CmsParseError) return "contract";
+  return "network";
+}
+
+/** Footer contact directory with explicit observable states (WEB-001 owner requirement):
+ *  a schema-valid empty list is a CONFIRMED "empty"; any CmsError is "unavailable" and
+ *  carries the verified production fallback rows so an outage never reads as "no offices".
+ *  Non-CMS programming errors rethrow unchanged. */
+export async function loadContactLocations(lang: Locale): Promise<ContactLocationsResult> {
+  const path = `/contact-locations?lang=${lang}`;
+  try {
+    const locations = contactLocationsFromDto(await cmsFetch(path, contactLocationsResponseSchema));
+    return locations.length > 0 ? { status: "ready", locations } : { status: "empty", locations };
+  } catch (err) {
+    if (!(err instanceof CmsError)) throw err;
+    logCmsFallback(path, err);
+    return {
+      status: "unavailable",
+      locations: FALLBACK_CONTACT_LOCATIONS[lang],
+      reason: contactUnavailableReason(err),
+    };
+  }
 }
 
 /** Integration tiles (locale-less endpoint). */

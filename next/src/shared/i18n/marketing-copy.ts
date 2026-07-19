@@ -279,4 +279,14 @@ export const MARKETING_COPY: Readonly<Record<string, CopyEntry>> = {
   "kl.sep3": { en: "Content is reviewed before it's made public.", vi: "Nội dung được kiểm duyệt trước khi công khai.", zh: "内容经审核后才会公开。" },
   "about.video_iframe_title": { en: "THG Fulfill introduction video", vi: "Video giới thiệu THG Fulfill", zh: "THG Fulfill介绍视频" },
   "contact.view_map": { en: "View map", vi: "Xem bản đồ", zh: "查看地图" },
+  "contact.channels": {
+    en: "Direct channels",
+    vi: "Kênh liên hệ trực tiếp",
+    zh: "直接联系方式",
+  },
+  "contact.unavailable": {
+    en: "Contact details are temporarily unavailable. Please reach us through the consultation form.",
+    vi: "Thông tin liên hệ tạm thời chưa hiển thị được. Vui lòng liên hệ qua biểu mẫu tư vấn.",
+    zh: "联系信息暂时无法显示，请通过咨询表单与我们联系。",
+  },
 };

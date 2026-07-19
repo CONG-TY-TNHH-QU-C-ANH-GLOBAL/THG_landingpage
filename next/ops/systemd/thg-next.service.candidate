@@ -14,6 +14,14 @@ Group=thg-next
 WorkingDirectory=/var/www/thgfulfill-next/current
 Environment=NODE_ENV=production
 Environment=PORT=3000
+# CMS configuration (MIG-010 provides BOTH; no localhost fallback in production):
+#   1. CMS_API_URL — server RUNTIME. Read here in the service environment; the server refuses
+#      to start CMS reads without it. Inject via drop-in / EnvironmentFile:
+#        Environment=CMS_API_URL=<approved production CMS base>
+#   2. NEXT_PUBLIC_CMS_API_URL — client BUILD-TIME, NOT a runtime variable. It is inlined into
+#      the client bundle during `next build`, so it must be present in the BUILD environment
+#      (the CI/release `next build` step), not merely in this systemd unit. Setting it here has
+#      NO effect on an already-built bundle. See next/.env.example.
 ExecStart=/usr/bin/node .next/standalone/server.js
 # No ExecReload: the standalone Node server has no SIGHUP reload handler (SIGHUP would
 # terminate it). Reload = `systemctl restart` (atomic release swap owned by FND-010).

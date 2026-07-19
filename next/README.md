@@ -20,6 +20,33 @@ manifest and lockfile are untouched.
 - Node: **≥ 20.9** (`.nvmrc` = 20).
 - `next.config.ts`: `output: "standalone"`.
 
+## Local CMS (dev content)
+
+CMS-backed sections need the sibling CMS API running locally (the base URL defaults to
+`http://localhost:8080/api/v1`; override via `next/.env.local`, template in `.env.example`):
+
+```sh
+cd ../CMS_management-
+bun run db:migrate:local   # once — creates/updates the local D1 tables
+bun run dev                # serves http://localhost:8080 (port fixed in its vite.config.ts)
+```
+
+Without it the app still renders: every CMS loader degrades to its approved static/model
+fallback (the contact directory shows the verified production fallback rows) and the server
+logs one redaction-safe `[CMS]` warning per endpoint per process.
+
+### CMS configuration by phase (production must not use localhost)
+
+| Variable | Scope | Missing in dev/test | Missing in production |
+|---|---|---|---|
+| `CMS_API_URL` | server **runtime** | localhost default | server refuses CMS reads (throws) |
+| `NEXT_PUBLIC_CMS_API_URL` | client **build-time** (`next build`) | localhost default | **`next build` fails** |
+
+`NEXT_PUBLIC_*` is inlined into the client bundle at build time, so `NEXT_PUBLIC_CMS_API_URL`
+must be set **where `next build` runs** (CI/release), not just in the systemd runtime unit.
+MIG-010 provides both. Both are public (the CMS base is not a secret) but must come from
+approved deployment config, never an implicit localhost fallback.
+
 ## Commands (run inside `next/`)
 
 ```bash

@@ -59,6 +59,13 @@ jobs:
       - name: Architecture + smoke tests
         run: bun run test
       - name: Production build (standalone)
+        # NEXT_PUBLIC_CMS_API_URL is required for `next build` (build-time browser config for
+        # the lead-form POST; the config gate fails the build without it). CI is a
+        # build/regression environment, not a deployment, so an explicit public localhost
+        # value is honest here — the gate exists to forbid an IMPLICIT localhost fallback, not
+        # an explicit CI value. A real deployment build (MIG-010) sets the production CMS base.
+        env:
+          NEXT_PUBLIC_CMS_API_URL: http://localhost:8080/api/v1
         run: bun run build
       - name: Package self-contained standalone artifact
         run: bun run package:standalone

@@ -28,9 +28,26 @@ export interface CmsFetchOptions {
 
 /** Resolve and normalize the server-only CMS base URL. Trailing slashes are trimmed so
  *  `base + path` never double-slashes; a malformed configured value fails loud rather than
- *  emitting a broken request URL. Exported for deterministic tests. */
+ *  emitting a broken request URL. Exported for deterministic tests.
+ *
+ *  Environment policy (owner-mandated): the localhost default exists ONLY for local
+ *  development/tests and the CI production BUILD (prerender bakes the approved fallbacks;
+ *  the deployment contract — ops/systemd candidate — injects CMS_API_URL at runtime and ISR
+ *  revalidation replaces the baked content). A production RUNTIME request without an
+ *  explicit CMS_API_URL fails loud instead of silently calling localhost. */
 export function resolveCmsBaseUrl(raw: string | undefined = process.env.CMS_API_URL): string {
-  const base = (raw && raw.trim()) || DEFAULT_BASE_URL;
+  const configured = raw?.trim();
+  if (!configured) {
+    const isProductionRuntime =
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PHASE !== "phase-production-build";
+    if (isProductionRuntime) {
+      throw new Error(
+        "CMS_API_URL is required in production: refusing to fall back to the local dev default (set it in the service environment; see ops/systemd/thg-next.service.candidate)",
+      );
+    }
+  }
+  const base = configured || DEFAULT_BASE_URL;
   try {
     new URL(base);
   } catch {
