@@ -12,7 +12,8 @@ const toPosix = (p) => p.replaceAll("\\", "/").toLowerCase();
 const isNextDist = (cmd) => /[\\/]next[\\/]dist[\\/]/.test(cmd);
 
 // Absolute binaries so process enumeration never relies on a writable PATH entry.
-const PS_EXE = `${process.env.SystemRoot ?? "C:\\Windows"}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`;
+const SYS_ROOT = process.env.SystemRoot ?? String.raw`C:\Windows`;
+const PS_EXE = SYS_ROOT + String.raw`\System32\WindowsPowerShell\v1.0\powershell.exe`;
 const PS_ARGS = [
   "-NoProfile",
   "-Command",
