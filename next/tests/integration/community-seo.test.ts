@@ -128,11 +128,14 @@ describe("community detail metadata safety", () => {
     expect(String(meta.description).length).toBeLessThanOrEqual(160);
   });
 
-  it("leaks no question title for an unknown, pending, rejected or withdrawn slug", async () => {
+  it("raises not-found during metadata for an unknown, pending, rejected or withdrawn slug", async () => {
+    // notFound() is raised in generateMetadata, not only in the page body: a streaming
+    // boundary above the route would otherwise flush 200 headers before the page could
+    // 404. So nothing is returned here at all — which is also why no title can leak.
     mockFetch({ error: "No published question" }, 404);
-    const meta = await detailMetadata({ params: Promise.resolve({ lang: "vi", slug: "gone" }) });
-    expect(String(meta.title)).not.toContain("Ship VN");
-    expect(meta.robots).toEqual({ index: false, follow: false });
+    await expect(
+      detailMetadata({ params: Promise.resolve({ lang: "vi", slug: "gone" }) }),
+    ).rejects.toThrow(/NEXT_HTTP_ERROR_FALLBACK;404|NEXT_NOT_FOUND/);
   });
 
   it("stays noindex when the CMS is unavailable", async () => {

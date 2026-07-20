@@ -9,6 +9,7 @@ import CommunityPage from "@/app/[lang]/community/page";
 import CommunityQuestionPage from "@/app/[lang]/community/[slug]/page";
 import CommunityReviewsPage from "@/app/[lang]/community/reviews/page";
 import { WithdrawButton } from "@/features/community/client/withdraw-button";
+import { CommunityUnavailableState } from "@/features/community/ui/community-states";
 import { rememberOwnerToken, reviewOwnerKey } from "@/features/community/client/owner-store";
 import type { MarketingCopy } from "@/shared/i18n/marketing";
 import { resetLoggedCmsFallbacks } from "@/shared/cms/log-fallback";
@@ -186,7 +187,22 @@ describe("community listing (SSR)", () => {
     render(await listPage());
 
     expect(screen.queryByText(/Chưa có câu hỏi nào/)).toBeNull();
-    expect(screen.getByRole("status").textContent).toMatch(/tạm thời không truy cập được/);
+    expect(screen.getByText(/tạm thời không truy cập được/)).toBeTruthy();
+  });
+
+  it("renders the outage state as static content, not a live region", () => {
+    // The state only ever exists in the initial SSR HTML — every call site is a Server
+    // Component — so there is no update for a live region to announce. role="status" would
+    // describe static page content as a running status, and <output> represents the result
+    // of a calculation or form interaction, which this is not. Screen readers reach it
+    // through normal reading order.
+    render(<CommunityUnavailableState message="Trang cộng đồng tạm thời không truy cập được." />);
+
+    const message = screen.getByText(/tạm thời không truy cập được/);
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(document.querySelector("output")).toBeNull();
+    expect(message.closest("[aria-live]")).toBeNull();
   });
 
   it("renders the reviews listing with its own empty copy", async () => {
@@ -261,7 +277,7 @@ describe("question detail (SSR)", () => {
 
   it("renders an outage notice rather than a 404 when the CMS is unavailable", async () => {
     await renderDetail({ error: "boom" }, 503);
-    expect(screen.getByRole("status").textContent).toMatch(/tạm thời không truy cập được/);
+    expect(screen.getByText(/tạm thời không truy cập được/)).toBeTruthy();
   });
 
   it("throws the Next not-found signal for an unknown, pending, rejected or withdrawn slug", async () => {

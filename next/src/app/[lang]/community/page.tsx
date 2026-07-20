@@ -4,8 +4,12 @@ import { MessageCircleQuestion } from "lucide-react";
 
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
-import { tFrom } from "@/shared/i18n/marketing";
-import { loadCommunityCategories, loadCommunityQuestions } from "@/features/community";
+import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
+import {
+  loadCommunityCategories,
+  loadCommunityQuestions,
+  type QuestionListResult,
+} from "@/features/community";
 import { CommunityShell } from "@/features/community/ui/community-shell";
 import { CategoryFilter } from "@/features/community/ui/category-filter";
 import { QuestionCard } from "@/features/community/ui/question-card";
@@ -27,6 +31,37 @@ type PageProps = Readonly<{
 function readCategory(raw: string | string[] | undefined): string | undefined {
   const value = Array.isArray(raw) ? raw[0] : raw;
   return value?.trim() || undefined;
+}
+
+/** The list body, as three mutually exclusive outcomes in a fixed order.
+ *
+ *  The order is load-bearing and must not be reordered: `unavailable` is checked first so
+ *  a CMS outage can never fall through to the empty state and tell the visitor there are
+ *  no questions — a claim the app cannot make when it could not read the list at all.
+ *  An empty result is a CONFIRMED empty list, filtered or not; the loader does not
+ *  distinguish those two and this does not invent the distinction. */
+function QuestionListContent({
+  result,
+  lang,
+  copy,
+}: Readonly<{ result: QuestionListResult; lang: Locale; copy: MarketingCopy }>) {
+  const t = tFrom(copy);
+
+  if (result.status === "unavailable") {
+    return <CommunityUnavailableState message={t("community.unavailable")} />;
+  }
+
+  if (result.status === "empty") {
+    return <CommunityEmptyState icon={MessageCircleQuestion} title={t("community.empty")} />;
+  }
+
+  return (
+    <ul className="space-y-4">
+      {result.questions.map((question) => (
+        <QuestionCard key={question.slug} question={question} lang={lang} copy={copy} />
+      ))}
+    </ul>
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -72,17 +107,7 @@ export default async function CommunityPage({ params, searchParams }: PageProps)
       />
 
       <div className="mt-8">
-        {result.status === "unavailable" ? (
-          <CommunityUnavailableState message={t("community.unavailable")} />
-        ) : result.status === "empty" ? (
-          <CommunityEmptyState icon={MessageCircleQuestion} title={t("community.empty")} />
-        ) : (
-          <ul className="space-y-4">
-            {result.questions.map((question) => (
-              <QuestionCard key={question.slug} question={question} lang={lang as Locale} copy={copy} />
-            ))}
-          </ul>
-        )}
+        <QuestionListContent result={result} lang={lang as Locale} copy={copy} />
       </div>
     </CommunityShell>
   );

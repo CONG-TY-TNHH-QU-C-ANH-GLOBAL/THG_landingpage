@@ -4,8 +4,12 @@ import { BadgeCheck } from "lucide-react";
 
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
-import { tFrom } from "@/shared/i18n/marketing";
-import { loadCommunityCategories, loadCommunityReviews } from "@/features/community";
+import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
+import {
+  loadCommunityCategories,
+  loadCommunityReviews,
+  type ReviewListResult,
+} from "@/features/community";
 import { CommunityShell } from "@/features/community/ui/community-shell";
 import { CategoryFilter } from "@/features/community/ui/category-filter";
 import { ReviewCard } from "@/features/community/ui/review-card";
@@ -25,6 +29,42 @@ type PageProps = Readonly<{
 function readCategory(raw: string | string[] | undefined): string | undefined {
   const value = Array.isArray(raw) ? raw[0] : raw;
   return value?.trim() || undefined;
+}
+
+/** The list body, as three mutually exclusive outcomes in a fixed order. `unavailable` is
+ *  checked first so a CMS outage never falls through to the empty state — see the Q&A
+ *  listing for the full reasoning. Kept local to this route rather than shared with the
+ *  Q&A listing: the two happen to have the same shape today, but they render different
+ *  models, copy and empty-state content, and merging them would couple two routes that
+ *  are free to diverge. */
+function ReviewListContent({
+  result,
+  lang,
+  copy,
+}: Readonly<{ result: ReviewListResult; lang: Locale; copy: MarketingCopy }>) {
+  const t = tFrom(copy);
+
+  if (result.status === "unavailable") {
+    return <CommunityUnavailableState message={t("reviews.unavailable")} />;
+  }
+
+  if (result.status === "empty") {
+    return (
+      <CommunityEmptyState
+        icon={BadgeCheck}
+        title={t("reviews.empty_title")}
+        description={t("reviews.empty_desc")}
+      />
+    );
+  }
+
+  return (
+    <ul className="space-y-4">
+      {result.reviews.map((review) => (
+        <ReviewCard key={review.slug} review={review} lang={lang} copy={copy} />
+      ))}
+    </ul>
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -70,21 +110,7 @@ export default async function CommunityReviewsPage({ params, searchParams }: Pag
       />
 
       <div className="mt-8">
-        {result.status === "unavailable" ? (
-          <CommunityUnavailableState message={t("reviews.unavailable")} />
-        ) : result.status === "empty" ? (
-          <CommunityEmptyState
-            icon={BadgeCheck}
-            title={t("reviews.empty_title")}
-            description={t("reviews.empty_desc")}
-          />
-        ) : (
-          <ul className="space-y-4">
-            {result.reviews.map((review) => (
-              <ReviewCard key={review.slug} review={review} lang={lang as Locale} copy={copy} />
-            ))}
-          </ul>
-        )}
+        <ReviewListContent result={result} lang={lang as Locale} copy={copy} />
       </div>
     </CommunityShell>
   );
