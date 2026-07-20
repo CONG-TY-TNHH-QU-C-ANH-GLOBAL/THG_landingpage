@@ -199,7 +199,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
         <div className="hidden lg:flex items-center gap-1">
           {/* Services Dropdown */}
           <div className="relative" onMouseEnter={() => menuEnter("services")} onMouseLeave={menuLeave}>
-            <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
+            <button type="button" className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
               <span translate="no">{t("nav.services")}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "services" ? "rotate-180" : ""}`} />
             </button>
@@ -218,7 +218,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
 
           {/* Pricing Dropdown */}
           <div className="relative" onMouseEnter={() => menuEnter("pricing")} onMouseLeave={menuLeave}>
-            <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
+            <button type="button" className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
               <span translate="no">{t("nav.pricing")}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "pricing" ? "rotate-180" : ""}`} />
             </button>
@@ -238,7 +238,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
           {/* Community Dropdown — interactive hub (Q&A + verified reviews) plus
               a link to the static homepage FAQ, kept clearly separate. */}
           <div className="relative" onMouseEnter={() => menuEnter("community")} onMouseLeave={menuLeave}>
-            <button className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
+            <button type="button" className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
               <span translate="no">{t("nav.community")}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "community" ? "rotate-180" : ""}`} />
             </button>
@@ -252,6 +252,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
                   <DesktopDropdownItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setOpenMenu(null)} />
                 ))}
                 <button
+                  type="button"
                   onClick={goToFaq}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 border-t border-border/40 mt-1 pt-3 text-left"
                 >
@@ -305,6 +306,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
         {/* Mobile toggle */}
         <div className="flex lg:hidden items-center gap-2">
           <button
+            type="button"
             className={`p-3 rounded-xl transition-colors ${tone.toggleBg}`}
             onClick={() => setIsOpen(!isOpen)}
             aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -336,6 +338,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
             <MobileNavItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setIsOpen(false)} />
           ))}
           <button
+            type="button"
             onClick={() => {
               setIsOpen(false);
               if (pathname === `/${lang}`) {

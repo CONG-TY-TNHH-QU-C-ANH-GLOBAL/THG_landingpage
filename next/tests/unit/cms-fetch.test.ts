@@ -81,6 +81,29 @@ describe("resolveCmsBaseUrl", () => {
     );
   });
 
+  it("leaves a base with no trailing slash untouched", () => {
+    expect(resolveCmsBaseUrl("https://cms.thgfulfill.com/api/v1")).toBe(
+      "https://cms.thgfulfill.com/api/v1",
+    );
+    // Origin-only, no path: the value is returned as configured, not URL-normalized to "/".
+    expect(resolveCmsBaseUrl("https://cms.example.com")).toBe("https://cms.example.com");
+  });
+
+  it("trims a pathological run of trailing slashes in linear time", () => {
+    // Guards the trailing-slash trim against super-linear backtracking. A quadratic or
+    // catastrophically-backtracking implementation does not finish this within the test
+    // timeout, so correctness here is also the performance assertion — no brittle
+    // wall-clock threshold needed.
+    const base = `https://cms.example.com/api/v1${"/".repeat(200_000)}`;
+    expect(resolveCmsBaseUrl(base)).toBe("https://cms.example.com/api/v1");
+  });
+
+  it("rejects a scheme-only base through URL validation, not through slash trimming", () => {
+    // `new URL("http://")` throws, so this never reaches the trim. Recorded so nobody
+    // later expects the trimmer to repair an invalid URL into a valid one.
+    expect(() => resolveCmsBaseUrl("http://")).toThrow(/Invalid CMS_API_URL/);
+  });
+
   it("throws on a malformed configured base without echoing the value (AC-41)", () => {
     let caught: Error | undefined;
     try {
@@ -105,6 +128,17 @@ describe("cmsFetch — request construction (AC-01, AC-15)", () => {
     expect(url).toBe("https://cms.thgfulfill.com/api/v1/faqs?lang=vi&scope=home");
     const headers = (reqInit as RequestInit).headers as Headers;
     expect(headers.get("Accept")).toBe("application/json");
+  });
+
+  it("joins a slash-terminated base to a path and query without doubling the slash", async () => {
+    vi.stubEnv("CMS_API_URL", "https://cms.thgfulfill.com/api/v1///");
+    const fetchMock = mockFetch(async () => jsonResponse({ items: [] }));
+
+    await cmsFetch("/community/questions?category=van-chuyen", schema);
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      "https://cms.thgfulfill.com/api/v1/community/questions?category=van-chuyen",
+    );
   });
 
   it("performs no locale inference: lang stays exactly what the loader passed (vi/en/zh)", async () => {
