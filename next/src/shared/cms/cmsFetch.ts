@@ -12,6 +12,22 @@ import { CmsHttpError, CmsNetworkError, CmsParseError, CmsShapeError } from "./e
 
 const DEFAULT_BASE_URL = "http://localhost:8080/api/v1";
 
+/** Strip trailing "/" characters in a single linear scan.
+ *
+ *  Replaces a `/\/+$/` replace: an anchored one-or-more group backtracks, so a long run of
+ *  slashes costs super-linear time on a value that arrives from the environment. This walks
+ *  the end of the string once and slices once — linear, and allocation-free until the slice.
+ *  (env.public.ts trims with a `while (endsWith) slice(0, -1)` loop; that is linear in
+ *  iterations but copies the string each time. The two are deliberately not shared: this
+ *  module is server-only and that one is client build config, so a common home would mean
+ *  either coupling client config into the server transport or a new shared module — more
+ *  churn than a four-line local function is worth in this PR.) */
+function stripTrailingSlashes(value: string): string {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === "/") end -= 1;
+  return value.slice(0, end);
+}
+
 export interface CmsFetchOptions {
   /** Next fetch-cache revalidation window in seconds — reserved slot; values owned by FND-006. */
   revalidate?: number;
@@ -54,7 +70,7 @@ export function resolveCmsBaseUrl(raw: string | undefined = process.env.CMS_API_
     // Value deliberately not echoed (AC-41: no env base in thrown errors).
     throw new Error("Invalid CMS_API_URL: not a valid URL (value redacted; check the server env)");
   }
-  return base.replace(/\/+$/, "");
+  return stripTrailingSlashes(base);
 }
 
 interface Timeout {
