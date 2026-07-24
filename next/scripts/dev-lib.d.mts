@@ -16,4 +16,15 @@ export function cacheState(): CacheState;
 
 export function diskFreeGb(): number | null;
 export function cmsOrigin(): string;
+
+export interface CmsReachability {
+  reachable: boolean;
+  status?: number;
+  error?: "timeout" | "unreachable";
+}
+export function checkCmsReachable(opts?: {
+  fetchImpl?: typeof fetch;
+  timeoutMs?: number;
+}): Promise<CmsReachability>;
+
 export function mb(bytes: number): number;

@@ -12,6 +12,15 @@ import { CmsHttpError, CmsNetworkError, CmsParseError, CmsShapeError } from "./e
 
 const DEFAULT_BASE_URL = "http://localhost:8080/api/v1";
 
+/** Default whole-request timeout for every CMS read (ms). Bounds a black-hole origin — one
+ *  that accepts the socket but never responds — so a shell/page read degrades to its
+ *  fallback instead of blocking a render/prerender indefinitely (the incident's hang class).
+ *  A refused connection (local CMS not running) still fails instantly through fetch's own
+ *  rejection — the timeout never enters that path. There is NO retry here or in any caller:
+ *  the transport makes exactly one attempt, so this single bound is the entire request budget.
+ *  Callers may pass a tighter `timeoutMs`; passing `Infinity` opts a specific read out. */
+export const DEFAULT_CMS_TIMEOUT_MS = 8000;
+
 /** Strip trailing "/" characters in a single linear scan.
  *
  *  Replaces a `/\/+$/` replace: an anchored one-or-more group backtracks, so a long run of
@@ -35,8 +44,8 @@ export interface CmsFetchOptions {
   tags?: string[];
   /** Header/method escape hatch (parity with fetchJson's `init`). */
   init?: RequestInit;
-  /** Bounded timeout in ms covering the whole request including body read. Omitted → no
-   *  timeout (exact parity with today's no-timeout fetch). */
+  /** Bounded timeout in ms covering the whole request including body read. Omitted →
+   *  DEFAULT_CMS_TIMEOUT_MS. Pass Infinity to opt a specific read out of the bound. */
   timeoutMs?: number;
   /** Caller abort signal; composed with any timeout signal. */
   signal?: AbortSignal;
@@ -80,7 +89,8 @@ interface Timeout {
 }
 
 function createTimeout(ms: number | undefined): Timeout | undefined {
-  if (ms === undefined) return undefined;
+  // undefined or a non-finite budget (Infinity opt-out) means "no timer".
+  if (ms === undefined || !Number.isFinite(ms)) return undefined;
   const controller = new AbortController();
   let fired = false;
   const id = setTimeout(() => {
@@ -121,8 +131,13 @@ export async function cmsFetch<T extends z.ZodTypeAny>(
   schema: T,
   opts: CmsFetchOptions = {},
 ): Promise<z.infer<T>> {
-  const { revalidate, tags, init, timeoutMs, signal } = opts;
+  const { revalidate, tags, init, timeoutMs = DEFAULT_CMS_TIMEOUT_MS, signal } = opts;
   const url = `${resolveCmsBaseUrl()}${path}`;
+
+  // The timeout adds only an AbortSignal to the request. Next's fetch request-memoization
+  // keys on url/method/headers/body/cache fields and excludes `signal`, so this bound does
+  // NOT split the layout+page reads of the same endpoint (e.g. /site-settings, /translations)
+  // into two requests — same-render dedupe is preserved.
 
   const timeout = createTimeout(timeoutMs);
   // Headers built via the Headers API so callers may pass any HeadersInit form (plain object,

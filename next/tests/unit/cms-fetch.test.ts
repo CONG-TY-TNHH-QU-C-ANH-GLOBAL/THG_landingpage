@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { z } from "zod";
 
-import { cmsFetch, resolveCmsBaseUrl } from "../../src/shared/cms/cmsFetch";
+import { cmsFetch, resolveCmsBaseUrl, DEFAULT_CMS_TIMEOUT_MS } from "../../src/shared/cms/cmsFetch";
 import {
   CmsHttpError,
   CmsShapeError,
@@ -322,6 +322,61 @@ describe("cmsFetch — network / timeout / abort (deterministic, distinct)", () 
     const e = (await pending) as CmsNetworkError;
     expect(e).toBeInstanceOf(CmsNetworkError);
     expect(e.reason).toBe("timeout");
+  });
+});
+
+describe("cmsFetch — default timeout budget (bounded, single-attempt, dedupe-safe)", () => {
+  it("applies DEFAULT_CMS_TIMEOUT_MS when no timeoutMs is passed (a hung origin degrades)", async () => {
+    vi.useFakeTimers();
+    mockFetch(
+      (_url, init) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(abortError()));
+        }),
+    );
+    const pending = cmsFetch("/site-settings", schema).catch((x) => x);
+    // Not yet fired one tick before the default budget…
+    await vi.advanceTimersByTimeAsync(DEFAULT_CMS_TIMEOUT_MS - 1);
+    // …then it aborts exactly at the budget, mapped to a network/timeout failure.
+    await vi.advanceTimersByTimeAsync(1);
+    const e = (await pending) as CmsNetworkError;
+    expect(e).toBeInstanceOf(CmsNetworkError);
+    expect(e.reason).toBe("timeout");
+  });
+
+  it("makes exactly one fetch attempt on failure — no retry amplification", async () => {
+    const fetchMock = mockFetch(async () =>
+      jsonResponse({ error: "boom" }, { ok: false, status: 503, statusText: "Service Unavailable" }),
+    );
+    await cmsFetch("/site-settings", schema).catch(() => {});
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it("Infinity opts a read out of the bound (no timer scheduled)", async () => {
+    vi.useFakeTimers();
+    mockFetch(async () => jsonResponse({ items: [] }));
+    await expect(cmsFetch("/site-settings", schema, { timeoutMs: Infinity })).resolves.toEqual({
+      items: [],
+    });
+    // No pending timer means the fake clock has nothing to run.
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("the default timeout adds only a signal — memoization-key fields stay identical across calls", async () => {
+    // Next dedupes same-render fetches on url/method/headers/body/cache fields (not `signal`).
+    // Two identical reads must therefore build byte-identical requests apart from the signal,
+    // so adding the default timeout cannot split layout+page's shared reads into two requests.
+    const fetchMock = mockFetch(async () => jsonResponse({ items: [] }));
+    await cmsFetch("/site-settings", schema);
+    await cmsFetch("/site-settings", schema);
+    const [urlA, initA] = fetchMock.mock.calls[0];
+    const [urlB, initB] = fetchMock.mock.calls[1];
+    expect(urlA).toBe(urlB);
+    expect((initA as RequestInit).method).toBe((initB as RequestInit).method);
+    expect((initA as { next?: unknown }).next).toEqual((initB as { next?: unknown }).next);
+    const hA = (initA as RequestInit).headers as Headers;
+    const hB = (initB as RequestInit).headers as Headers;
+    expect(hA.get("Accept")).toBe(hB.get("Accept"));
   });
 });
 
