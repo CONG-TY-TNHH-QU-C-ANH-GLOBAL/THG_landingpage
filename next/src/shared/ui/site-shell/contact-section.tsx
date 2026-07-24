@@ -8,6 +8,7 @@ import ScrollReveal from "@/shared/ui/scroll-reveal";
 import { SectionHeader } from "@/shared/ui/section-header";
 import { ContactCtaTrigger } from "@/shared/ui/site-shell/contact-cta-trigger";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
+import { pickCopy, CONTACT_CTA_COPY } from "@/shared/i18n/shell-copy";
 import type { Locale } from "@/shared/i18n";
 
 export interface ContactRow {
@@ -306,8 +307,8 @@ function ContactCtaCard({ lang, copy }: Readonly<{ lang: Locale; copy: Marketing
       <p className="text-muted-foreground text-sm mb-7 leading-relaxed max-w-[44ch] mx-auto">{t("contact.cta_desc")}</p>
 
       <div className="flex flex-col gap-3 w-full">
-        {/* Submit Inquiry */}
-        <ContactCtaTrigger lang={lang} copy={copy} />
+        {/* Submit Inquiry — client island, so it takes only its trigger + lead-form copy. */}
+        <ContactCtaTrigger lang={lang} copy={pickCopy(copy, CONTACT_CTA_COPY)} />
 
         <div className="relative flex items-center gap-3 my-1">
           <div className="flex-1 h-px bg-border" />

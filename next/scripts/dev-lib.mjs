@@ -113,4 +113,45 @@ export function cmsOrigin() {
   }
 }
 
+/** Resolve the CMS base URL the dev server would read from (host public; never a secret). */
+function cmsBaseUrl() {
+  return (
+    process.env.CMS_API_URL || process.env.NEXT_PUBLIC_CMS_API_URL || "http://localhost:8080/api/v1"
+  );
+}
+
+/** Read-only CMS reachability probe for dev:doctor. One GET, a short bounded timeout, no
+ *  retries, no credentials, no body read — it only answers "is the configured origin
+ *  answering?". A configured-but-down origin (e.g. production CMS intentionally offline in
+ *  local dev) is reported, never treated as a doctor failure. `fetchImpl`/`timeoutMs` are
+ *  injectable for deterministic tests.
+ *  Returns { reachable: boolean, status?: number, error?: string }. */
+export async function checkCmsReachable({ fetchImpl = fetch, timeoutMs = 2000 } = {}) {
+  // Linear trailing-slash trim (no anchored `/\/+$/`, which backtracks super-linearly on an
+  // env-derived value — same reason cmsFetch.ts avoids that pattern).
+  const raw = cmsBaseUrl();
+  let end = raw.length;
+  while (end > 0 && raw[end - 1] === "/") end -= 1;
+  const base = raw.slice(0, end);
+  let signal;
+  try {
+    signal = AbortSignal.timeout(timeoutMs);
+  } catch {
+    signal = undefined; // very old runtimes: probe without a timeout signal
+  }
+  try {
+    // /site-settings is a public, side-effect-free read used by the shell footer.
+    const res = await fetchImpl(`${base}/site-settings`, {
+      method: "GET",
+      signal,
+      headers: { Accept: "application/json" },
+    });
+    return { reachable: res.ok, status: res.status };
+  } catch (err) {
+    const name = err && typeof err === "object" && "name" in err ? String(err.name) : "Error";
+    const reason = name === "TimeoutError" || name === "AbortError" ? "timeout" : "unreachable";
+    return { reachable: false, error: reason };
+  }
+}
+
 export const mb = (bytes) => Math.round(bytes / 1e6);
