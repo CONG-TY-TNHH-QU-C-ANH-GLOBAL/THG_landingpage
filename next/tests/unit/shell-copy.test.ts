@@ -65,3 +65,22 @@ describe("shell-copy selections cover exactly what each island reads", () => {
     expect(picked["contact.title"]).toBeUndefined();
   });
 });
+
+describe("shell client namespaces resolve in every locale (vi/en/zh) — no raw key ships", () => {
+  // getMarketingCopy resolves byLocale[lang] || byLocale.en || key; a raw key would only ship
+  // if BOTH the locale and the en fallback were blank. Navbar/FloatingContact/LeadFormDialog
+  // read the nav./floating./lead_form. namespaces, so every such key must resolve non-empty in
+  // all three locales — this covers LeadFormDialog's strings without opening the dialog.
+  const NS = ["nav.", "floating.", "lead_form."];
+  const shellKeys = Object.keys(MARKETING_COPY).filter((k) => NS.some((p) => k.startsWith(p)));
+
+  it.each(["vi", "en", "zh"] as const)("locale %s resolves every shell key non-empty", (locale) => {
+    expect(shellKeys.length).toBeGreaterThan(0);
+    const missing = shellKeys.filter((k) => {
+      const entry = MARKETING_COPY[k as keyof typeof MARKETING_COPY];
+      const resolved = entry[locale] || entry.en || k;
+      return !resolved || resolved === k;
+    });
+    expect(missing).toEqual([]);
+  });
+});

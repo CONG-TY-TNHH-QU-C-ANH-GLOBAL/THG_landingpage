@@ -134,10 +134,11 @@ export async function cmsFetch<T extends z.ZodTypeAny>(
   const { revalidate, tags, init, timeoutMs = DEFAULT_CMS_TIMEOUT_MS, signal } = opts;
   const url = `${resolveCmsBaseUrl()}${path}`;
 
-  // The timeout adds only an AbortSignal to the request. Next's fetch request-memoization
-  // keys on url/method/headers/body/cache fields and excludes `signal`, so this bound does
-  // NOT split the layout+page reads of the same endpoint (e.g. /site-settings, /translations)
-  // into two requests — same-render dedupe is preserved.
+  // The per-request timeout gives each call a distinct AbortSignal, which makes Next's
+  // fetch-level request-memoization treat otherwise-identical reads as different requests
+  // (measured: a dynamic route issued /translations three times). Same-render dedupe is
+  // therefore provided one level up, by wrapping the multi-caller reads (getMarketingCopy,
+  // the shell loaders) in React cache() — do not rely on fetch memoization here.
 
   const timeout = createTimeout(timeoutMs);
   // Headers built via the Headers API so callers may pass any HeadersInit form (plain object,

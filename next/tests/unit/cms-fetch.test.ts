@@ -362,10 +362,10 @@ describe("cmsFetch — default timeout budget (bounded, single-attempt, dedupe-s
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it("the default timeout adds only a signal — memoization-key fields stay identical across calls", async () => {
-    // Next dedupes same-render fetches on url/method/headers/body/cache fields (not `signal`).
-    // Two identical reads must therefore build byte-identical requests apart from the signal,
-    // so adding the default timeout cannot split layout+page's shared reads into two requests.
+  it("the default timeout changes only the signal — url/method/next/Accept stay identical", async () => {
+    // The timeout adds a distinct AbortSignal per call (which is why same-render dedupe is
+    // handled by React cache() one level up, not by fetch memoization). This pins that the
+    // timeout does not otherwise alter the request shape between two identical reads.
     const fetchMock = mockFetch(async () => jsonResponse({ items: [] }));
     await cmsFetch("/site-settings", schema);
     await cmsFetch("/site-settings", schema);

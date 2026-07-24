@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { cmsFetch } from "@/shared/cms";
 import { CmsError } from "@/shared/cms/errors";
 import { logCmsFallback } from "@/shared/cms/log-fallback";
@@ -12,8 +14,13 @@ import { translationsResponseSchema } from "../schemas/translations";
 // static base resolved per locale (static[lang] || static.en || key), then the CMS
 // `/translations` overlay wins per key. CMS unavailability falls back to the static copy —
 // the shell never hard-fails on the overlay (same offline behavior as today).
-
-export async function getMarketingCopy(lang: Locale): Promise<MarketingCopy> {
+//
+// Wrapped in React cache() so the layout, the page and generateMetadata share ONE
+// `/translations` read per request (measured: without it, a dynamic route issued three).
+// Request memoization alone is not relied upon — cmsFetch's per-request timeout signal makes
+// each call's options distinct, which defeats Next's fetch-level dedupe; cache() keys on the
+// argument (lang) instead and is request-scoped, so cross-request freshness is unchanged.
+export const getMarketingCopy = cache(async (lang: Locale): Promise<MarketingCopy> => {
   const base: Record<string, string> = {};
   for (const [key, byLocale] of Object.entries(MARKETING_COPY)) {
     base[key] = byLocale[lang] || byLocale.en || key;
@@ -26,4 +33,4 @@ export async function getMarketingCopy(lang: Locale): Promise<MarketingCopy> {
     logCmsFallback(`/translations?lang=${lang}`, err);
   }
   return base;
-}
+});

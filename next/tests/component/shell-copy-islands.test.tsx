@@ -20,32 +20,32 @@ vi.mock("next/navigation", async (importOriginal) => ({
 
 afterEach(cleanup);
 
-const fullCopy: MarketingCopy = Object.fromEntries(
-  Object.entries(MARKETING_COPY).map(([key, entry]) => [key, entry.vi]),
-);
+const copyFor = (locale: "vi" | "en" | "zh"): MarketingCopy =>
+  Object.fromEntries(Object.entries(MARKETING_COPY).map(([key, entry]) => [key, entry[locale]]));
 
 // Any unresolved key surfaces as its own dotted token in the visible text.
 const RAW_KEY = /(?:nav|floating|lead_form)\.[a-z0-9_]+/;
 
-describe("shell islands render fully from narrowed copy", () => {
-  it("Navbar resolves every label (incl. dynamic dropdown items) with NAVBAR_COPY", () => {
-    render(<Navbar lang="vi" copy={pickCopy(fullCopy, NAVBAR_COPY)} />);
-
+describe("shell islands render fully from narrowed copy (vi/en/zh)", () => {
+  it.each(["vi", "en", "zh"] as const)("Navbar resolves every label in %s (incl. dynamic dropdown items)", (locale) => {
+    const full = copyFor(locale);
+    render(<Navbar lang={locale} copy={pickCopy(full, NAVBAR_COPY)} />);
     // A dynamically-resolved dropdown title and the consult CTA both land as real strings.
-    expect(screen.getAllByText(fullCopy["nav.thg_fulfill"]).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(fullCopy["nav.consult"]).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(full["nav.thg_fulfill"]).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(full["nav.consult"]).length).toBeGreaterThan(0);
     expect(document.body.textContent ?? "").not.toMatch(RAW_KEY);
   });
 
-  it("FloatingContact resolves its labels with FLOATING_CONTACT_COPY", () => {
+  it.each(["vi", "en", "zh"] as const)("FloatingContact resolves its labels in %s", (locale) => {
+    const full = copyFor(locale);
     render(
       <FloatingContact
-        lang="vi"
-        copy={pickCopy(fullCopy, FLOATING_CONTACT_COPY)}
+        lang={locale}
+        copy={pickCopy(full, FLOATING_CONTACT_COPY)}
         links={{ telUrl: "tel:1", zaloUrl: "https://zalo.me/1", messengerUrl: "https://m.me/1" }}
       />,
     );
-    expect(screen.getAllByText(fullCopy["nav.consult"]).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(full["nav.consult"]).length).toBeGreaterThan(0);
     expect(document.body.textContent ?? "").not.toMatch(RAW_KEY);
   });
 });
