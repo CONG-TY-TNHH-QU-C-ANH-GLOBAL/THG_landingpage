@@ -127,7 +127,12 @@ function cmsBaseUrl() {
  *  injectable for deterministic tests.
  *  Returns { reachable: boolean, status?: number, error?: string }. */
 export async function checkCmsReachable({ fetchImpl = fetch, timeoutMs = 2000 } = {}) {
-  const base = cmsBaseUrl().replace(/\/+$/, "");
+  // Linear trailing-slash trim (no anchored `/\/+$/`, which backtracks super-linearly on an
+  // env-derived value — same reason cmsFetch.ts avoids that pattern).
+  const raw = cmsBaseUrl();
+  let end = raw.length;
+  while (end > 0 && raw[end - 1] === "/") end -= 1;
+  const base = raw.slice(0, end);
   let signal;
   try {
     signal = AbortSignal.timeout(timeoutMs);

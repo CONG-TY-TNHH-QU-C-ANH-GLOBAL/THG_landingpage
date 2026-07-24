@@ -36,13 +36,9 @@ console.log(
     (cache.turbo.sst > 0 ? "" : " (none)"),
 );
 console.log(`cms origin (dev)  : ${cmsOrigin()}`);
-console.log(
-  `cms reachable     : ${
-    cms.reachable
-      ? "yes ✓"
-      : `no (${cms.error ?? `status ${cms.status}`}) — shell reads will use fallbacks`
-  }`,
-);
+const cmsDetail = cms.error ?? `status ${cms.status}`;
+const cmsReachable = cms.reachable ? "yes ✓" : `no (${cmsDetail}) — shell reads will use fallbacks`;
+console.log(`cms reachable     : ${cmsReachable}`);
 console.log(`.env.local        : ${existsSync(join(APP_ROOT, ".env.local")) ? "present" : "absent (dev defaults to localhost CMS)"}`);
 console.log(`disk free         : ${disk == null ? "unknown" : disk + " GB"}`);
 
