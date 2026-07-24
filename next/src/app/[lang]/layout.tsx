@@ -5,7 +5,10 @@ import { Be_Vietnam_Pro, Inter } from "next/font/google";
 import "../globals.css";
 import { SUPPORTED_LOCALES, HTML_LANG, isSupportedLocale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
-import { loadContactLocations, loadSiteSettings } from "@/features/home";
+import { pickCopy, NAVBAR_COPY, FLOATING_CONTACT_COPY } from "@/shared/i18n/shell-copy";
+// Direct shell-loader import (not the @/features/home barrel) so this shared layout — rendered
+// on every locale route — does not pull the homepage data graph into each route's module graph.
+import { loadContactLocations, loadSiteSettings } from "@/features/home/server/shell-loaders";
 import Navbar from "@/shared/ui/site-shell/navbar";
 import { ContactSection } from "@/shared/ui/site-shell/contact-section";
 import { FloatingContact } from "@/shared/ui/site-shell/floating-contact";
@@ -71,7 +74,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={HTML_LANG[lang]}>
       <body className={`${displayFont.variable} ${bodyFont.variable} min-h-screen bg-background`}>
         <UtmCapture />
-        <Navbar lang={lang} copy={copy} />
+        {/* Client islands receive only the copy they render (Navbar/FloatingContact are
+            "use client"); ContactSection is a Server Component and keeps the full map free. */}
+        <Navbar lang={lang} copy={pickCopy(copy, NAVBAR_COPY)} />
         {children}
         <ContactSection
           lang={lang}
@@ -80,7 +85,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         />
         <FloatingContact
           lang={lang}
-          copy={copy}
+          copy={pickCopy(copy, FLOATING_CONTACT_COPY)}
           links={{
             telUrl: settings.telUrl,
             zaloUrl: settings.zaloUrl,
