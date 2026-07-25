@@ -643,6 +643,11 @@ const CatalogPage = () => {
             const hasMerPrices = merPrices.length > 0;
             const hasAnyPrices = hasLblPrices || hasMerPrices;
 
+            // Ops 2026-07-25: xuất xứ hiển thị theo BIẾN THỂ đang chọn — một sản phẩm có thể gồm
+            // nhiều biến thể do NCC nước khác nhau làm, lấy 1 origin chung cho cả SP là sai.
+            // Biến thể chưa khai → rơi về origin sản phẩm (hành vi cũ).
+            const originOf = (selectedVariant?.supplierOrigin ?? "").trim() || selectedProduct.origin || "";
+
             const currentPrice = selectedVariant
               ? shipping === "lbl"
                 ? selectedVariant.priceSbtt
@@ -930,7 +935,7 @@ const CatalogPage = () => {
                           <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
                             <span className="text-muted-foreground font-medium flex items-center gap-1.5">🌍 Fulfillment location</span>
                             <span className="text-foreground font-semibold">
-                              {selectedProduct.origin ? `${countryFlag(selectedProduct.origin)} ${countryName(selectedProduct.origin, language)}` : "—"}
+                              {originOf ? `${countryFlag(originOf)} ${countryName(originOf, language)}` : "—"}
                             </span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-2.5 text-sm">

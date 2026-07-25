@@ -49,6 +49,7 @@ export interface CatalogProduct {
     priceSbsl?: number;
     thgSku?: string;
     supplierSku?: string;
+    supplierOrigin?: string | null; // Ops 2026-07-25: xuất xứ riêng của biến thể (SP nhiều NCC)
   }[];
 }
 
