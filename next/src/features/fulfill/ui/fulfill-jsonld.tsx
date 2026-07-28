@@ -1,7 +1,7 @@
 // Structured data for the fulfill route (WEB-002). Service is always emitted from validated
 // landing values; FAQPage is emitted ONLY when published fulfill-scope FAQs exist — never for
 // placeholder or empty content. Serialized through the FND-003 safe serializer.
-import { JsonLdScript } from "@/shared/seo";
+import { JsonLdScript, FaqPageJsonLd } from "@/shared/seo";
 import type { FulfillFaq } from "../models/faq";
 
 interface Props {
@@ -30,16 +30,7 @@ export function FulfillServiceJsonLd({ name, description, url }: Readonly<Omit<P
   return <JsonLdScript data={data} />;
 }
 
+/** Emitted only when published fulfill-scope FAQs exist. Delegates to the shared FAQPage emitter. */
 export function FulfillFaqJsonLd({ faqs }: Readonly<{ faqs: readonly FulfillFaq[] }>) {
-  if (faqs.length === 0) return null;
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
-    })),
-  };
-  return <JsonLdScript data={data} />;
+  return <FaqPageJsonLd faqs={faqs} />;
 }
