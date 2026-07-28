@@ -11,12 +11,9 @@ vi.mock("next/image", () => ({ default: () => null }));
 import HeroSection from "@/features/fulfill/ui/hero-section";
 import { getFulfillCopy } from "@/features/fulfill";
 import type { FulfillContent } from "@/features/fulfill";
-import { MARKETING_COPY } from "@/shared/i18n/marketing-copy";
-import type { MarketingCopy } from "@/shared/i18n/marketing";
+import { copyForLocale } from "../support/lead-test-utils";
 
-const marketing: MarketingCopy = Object.fromEntries(
-  Object.entries(MARKETING_COPY).map(([k, v]) => [k, v.en]),
-);
+const marketing = copyForLocale("en");
 const copy = getFulfillCopy("en");
 
 function content(overrides: Partial<FulfillContent> = {}): FulfillContent {

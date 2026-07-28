@@ -7,27 +7,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
 
 import { LeadFormDialog } from "@/shared/ui/lead-form-dialog";
-import { MARKETING_COPY } from "@/shared/i18n/marketing-copy";
-import type { Locale } from "@/shared/i18n";
-import type { MarketingCopy } from "@/shared/i18n/marketing";
+import { copyForLocale, mockLeadsFetch, lastLeadBody } from "../support/lead-test-utils";
 
-function copyFor(locale: Locale): MarketingCopy {
-  return Object.fromEntries(Object.entries(MARKETING_COPY).map(([k, v]) => [k, v[locale]]));
-}
-const copy = copyFor("en");
-
-function mockLeadsFetch() {
-  const fn = vi.fn(
-    async () =>
-      ({ ok: true, status: 201, json: async () => ({ ok: true, id: 1 }) }) as unknown as Response,
-  );
-  vi.stubGlobal("fetch", fn);
-  return fn;
-}
-function lastBody(fetchMock: ReturnType<typeof mockLeadsFetch>) {
-  const call = fetchMock.mock.calls.at(-1) as unknown as [string, { body: string }];
-  return JSON.parse(call[1].body);
-}
+const copy = copyForLocale("en");
 
 function open(initialService?: "fulfill" | "express") {
   render(
@@ -68,7 +50,7 @@ describe("global multi-intent LeadFormDialog", () => {
     fillRequired();
     fireEvent.click(submitBtn());
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const body = lastBody(fetchMock);
+    const body = lastLeadBody(fetchMock);
     expect(body.primary_service).toBeUndefined();
     expect(body.service_interests).toBeUndefined();
     expect(body.surface).toBe("global-services-dialog");
@@ -91,7 +73,7 @@ describe("global multi-intent LeadFormDialog", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: "THG Warehouse" }));
     fireEvent.click(submitBtn());
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const body = lastBody(fetchMock);
+    const body = lastLeadBody(fetchMock);
     expect(body.primary_service).toBe("fulfill");
     expect(body.service_interests).toEqual(["fulfill", "warehouse"]);
     expect(body.service_details).toEqual({ fulfill: { product_type: "apparel" } });
@@ -116,7 +98,7 @@ describe("global multi-intent LeadFormDialog", () => {
 
     fireEvent.click(submitBtn());
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const body = lastBody(fetchMock);
+    const body = lastLeadBody(fetchMock);
     expect(body.primary_service).toBe("express");
     expect(body.service_interests).toEqual(["express", "warehouse"]);
     expect(body.service_details).toBeUndefined(); // no fulfill details leaked

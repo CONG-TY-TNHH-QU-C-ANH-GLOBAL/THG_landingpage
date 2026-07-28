@@ -8,27 +8,10 @@ import { render, screen, fireEvent, cleanup, waitFor, within } from "@testing-li
 
 import FulfillConsultationForm from "@/features/fulfill/ui/fulfill-consultation-form";
 import { LeadFormDialog } from "@/shared/ui/lead-form-dialog";
-import { MARKETING_COPY } from "@/shared/i18n/marketing-copy";
-import type { Locale } from "@/shared/i18n";
-import type { MarketingCopy } from "@/shared/i18n/marketing";
+import { copyForLocale, mockLeadsFetch, lastLeadBody } from "../support/lead-test-utils";
 
-function copyFor(locale: Locale): MarketingCopy {
-  return Object.fromEntries(Object.entries(MARKETING_COPY).map(([k, v]) => [k, v[locale]]));
-}
-const copy = copyFor("en");
+const copy = copyForLocale("en");
 
-function mockLeadsFetch() {
-  const fn = vi.fn(
-    async () =>
-      ({ ok: true, status: 201, json: async () => ({ ok: true, id: 1 }) }) as unknown as Response,
-  );
-  vi.stubGlobal("fetch", fn);
-  return fn;
-}
-function lastBody(fetchMock: ReturnType<typeof mockLeadsFetch>) {
-  const call = fetchMock.mock.calls.at(-1) as unknown as [string, { body: string }];
-  return JSON.parse(call[1].body);
-}
 function fill(scope: HTMLElement, name = "Jane", email = "jane@example.com") {
   fireEvent.change(within(scope).getByLabelText(/Full name/), { target: { value: name } });
   fireEvent.change(within(scope).getByLabelText(/^Email/), { target: { value: email } });
@@ -56,7 +39,7 @@ describe("Fulfill inline consultation form (multi-intent, fixed primary)", () =>
     });
     fireEvent.submit(form);
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const body = lastBody(fetchMock);
+    const body = lastLeadBody(fetchMock);
     expect(body.primary_service).toBe("fulfill");
     expect(body.service_interests).toEqual(["fulfill"]);
     expect(body.surface).toBe("fulfill-inline");
@@ -72,7 +55,7 @@ describe("Fulfill inline consultation form (multi-intent, fixed primary)", () =>
     fireEvent.click(within(form).getByRole("checkbox", { name: "THG Warehouse" }));
     fireEvent.submit(form);
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const body = lastBody(fetchMock);
+    const body = lastLeadBody(fetchMock);
     expect(body.primary_service).toBe("fulfill");
     expect(body.service_interests).toEqual(["fulfill", "warehouse"]);
     expect(body.service_details).toBeUndefined(); // warehouse secondary carries no details
@@ -120,6 +103,6 @@ describe("Fulfill inline consultation form (multi-intent, fixed primary)", () =>
     });
     fireEvent.submit(inlineForm);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
-    expect(lastBody(fetchMock).surface).toBe("fulfill-inline");
+    expect(lastLeadBody(fetchMock).surface).toBe("fulfill-inline");
   });
 });

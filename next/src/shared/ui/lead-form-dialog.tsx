@@ -18,7 +18,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { Label } from "@/shared/ui/label";
 import type { Locale } from "@/shared/i18n";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
-import { useLeadSubmission, type LeadErrorCode } from "@/shared/ui/use-lead-submission";
+import { useLeadSubmission, LEAD_ERROR_COPY_KEY } from "@/shared/ui/use-lead-submission";
 import { ServiceSelector } from "@/shared/ui/service-selector";
 import { AdditionalInterests } from "@/shared/ui/additional-interests";
 import { LeadServiceDetailFields, buildDetailsByService } from "@/shared/ui/lead-service-detail-fields";
@@ -34,12 +34,6 @@ interface Props {
   lang: Locale;
   copy: MarketingCopy;
 }
-
-const ERROR_COPY_KEY: Readonly<Record<LeadErrorCode, string>> = {
-  required: "lead_form.err_required",
-  captcha: "lead_form.err_captcha",
-  generic: "lead_form.err_generic",
-};
 
 export function LeadFormDialog({ trigger, sourcePage, defaultMessage, initialService, lang, copy }: Readonly<Props>) {
   const t = tFrom(copy);
@@ -86,7 +80,7 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, initialSer
       detailsByService: buildDetailsByService(primaryKey, productType),
     });
     if (result.ok) toast.success(t("lead_form.success_toast"));
-    else if (result.error) toast.error(t(ERROR_COPY_KEY[result.error]));
+    else if (result.error) toast.error(t(LEAD_ERROR_COPY_KEY[result.error]));
   }
 
   function fullReset() {

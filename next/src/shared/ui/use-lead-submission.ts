@@ -29,6 +29,14 @@ export function isEmailish(value: string): boolean {
 
 export type LeadErrorCode = "required" | "captcha" | "generic";
 
+/** Maps a submission error code to its localized `lead_form.*` copy key. Owned here (the shared
+ *  foundation) so every lead surface presents identical errors from one source. */
+export const LEAD_ERROR_COPY_KEY: Readonly<Record<LeadErrorCode, string>> = {
+  required: "lead_form.err_required",
+  captcha: "lead_form.err_captcha",
+  generic: "lead_form.err_generic",
+};
+
 interface CommonForm {
   name: string;
   email: string;

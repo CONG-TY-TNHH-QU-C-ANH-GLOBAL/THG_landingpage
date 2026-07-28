@@ -13,7 +13,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 
 import type { Locale } from "@/shared/i18n";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
-import { useLeadSubmission, type LeadErrorCode } from "@/shared/ui/use-lead-submission";
+import { useLeadSubmission, LEAD_ERROR_COPY_KEY } from "@/shared/ui/use-lead-submission";
 import { buildDetailsByService } from "@/shared/ui/lead-service-detail-fields";
 import { AdditionalInterests } from "@/shared/ui/additional-interests";
 import {
@@ -23,12 +23,6 @@ import {
   type FulfillProductType,
   type LeadServiceKey,
 } from "@/shared/ui/lead-services";
-
-const ERROR_COPY_KEY: Readonly<Record<LeadErrorCode, string>> = {
-  required: "lead_form.err_required",
-  captcha: "lead_form.err_captcha",
-  generic: "lead_form.err_generic",
-};
 
 const FIELD =
   "w-full min-h-[44px] rounded-xl px-4 py-3 text-sm text-white bg-white/[0.04] border border-white/12 " +
@@ -64,7 +58,7 @@ export default function FulfillConsultationForm({
     if (result.ok) {
       setStatus({ tone: "ok", text: t("lead_form.success_toast") });
     } else if (result.error) {
-      setStatus({ tone: "error", text: t(ERROR_COPY_KEY[result.error]) });
+      setStatus({ tone: "error", text: t(LEAD_ERROR_COPY_KEY[result.error]) });
     }
   }
 
