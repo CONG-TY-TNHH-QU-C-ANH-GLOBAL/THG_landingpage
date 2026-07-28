@@ -67,17 +67,57 @@ describe("JourneyStepper", () => {
     expect(stage(container).getAttribute("data-step")).toBe("2");
   });
 
-  it("ArrowDown advances selection and wraps at the end", () => {
+  // Key handling lives on the focusable tabs (roving tabindex), so keys are fired on the tab that
+  // currently holds focus — the pattern a real keyboard user exercises.
+  it("ArrowRight/ArrowLeft/Home/End navigate with wraparound and move focus with the active tab", () => {
     const { container } = renderStepper();
-    const tablist = screen.getByRole("tablist");
+    const tabs = screen.getAllByRole("tab");
 
-    fireEvent.keyDown(tablist, { key: "ArrowDown" });
+    fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
     expect(stage(container).getAttribute("data-step")).toBe("1");
+    expect(document.activeElement).toBe(tabs[1]);
+    expect(tabs[1].getAttribute("tabindex")).toBe("0");
+    expect(tabs[0].getAttribute("tabindex")).toBe("-1");
 
-    fireEvent.keyDown(tablist, { key: "End" });
+    fireEvent.keyDown(tabs[1], { key: "ArrowLeft" });
+    expect(stage(container).getAttribute("data-step")).toBe("0");
+    expect(document.activeElement).toBe(tabs[0]);
+
+    fireEvent.keyDown(tabs[0], { key: "ArrowLeft" }); // wrap to last
     expect(stage(container).getAttribute("data-step")).toBe("3");
 
-    fireEvent.keyDown(tablist, { key: "ArrowDown" });
+    fireEvent.keyDown(tabs[3], { key: "Home" });
     expect(stage(container).getAttribute("data-step")).toBe("0");
+
+    fireEvent.keyDown(tabs[0], { key: "End" });
+    expect(stage(container).getAttribute("data-step")).toBe("3");
+
+    fireEvent.keyDown(tabs[3], { key: "ArrowRight" }); // wrap to first
+    expect(stage(container).getAttribute("data-step")).toBe("0");
+  });
+
+  it("ArrowDown/ArrowUp also navigate (vertical orientation) with wraparound", () => {
+    const { container } = renderStepper();
+    const tabs = screen.getAllByRole("tab");
+
+    fireEvent.keyDown(tabs[0], { key: "ArrowUp" }); // wrap up to last
+    expect(stage(container).getAttribute("data-step")).toBe("3");
+    fireEvent.keyDown(tabs[3], { key: "ArrowDown" }); // wrap down to first
+    expect(stage(container).getAttribute("data-step")).toBe("0");
+  });
+
+  it("ignores keys that are not tab navigation", () => {
+    const { container } = renderStepper();
+    fireEvent.keyDown(screen.getAllByRole("tab")[0], { key: "a" });
+    expect(stage(container).getAttribute("data-step")).toBe("0");
+  });
+
+  it("keeps a labelled tablist with exactly one focusable tab (tabIndex 0) and the rest -1", () => {
+    renderStepper();
+    expect(screen.getByRole("tablist").getAttribute("aria-label")).toBe("Steps");
+    const tabs = screen.getAllByRole("tab");
+    expect(tabs.filter((t) => t.getAttribute("tabindex") === "0")).toHaveLength(1);
+    expect(tabs[0].getAttribute("tabindex")).toBe("0");
+    expect(tabs.slice(1).every((t) => t.getAttribute("tabindex") === "-1")).toBe(true);
   });
 });

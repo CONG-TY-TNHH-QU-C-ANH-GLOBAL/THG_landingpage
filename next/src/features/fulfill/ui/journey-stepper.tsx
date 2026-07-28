@@ -26,6 +26,39 @@ interface Props {
   stepsLabel: string;
 }
 
+/** Roving-tabindex key handling: the next active tab index for a navigation key (with wraparound),
+ *  or null when the key is not a tab-navigation key. */
+function nextActiveIndex(key: string, active: number, last: number): number | null {
+  switch (key) {
+    case "ArrowDown":
+    case "ArrowRight":
+      return active === last ? 0 : active + 1;
+    case "ArrowUp":
+    case "ArrowLeft":
+      return active === 0 ? last : active - 1;
+    case "Home":
+      return 0;
+    case "End":
+      return last;
+    default:
+      return null;
+  }
+}
+
+/** Hub-panel marker for a stage relative to the viewed step: done ✓ / current ● / upcoming —. */
+function hubStatusMarker(index: number, active: number): string {
+  if (index < active) return "✓";
+  if (index === active) return "●";
+  return "—";
+}
+
+/** The operational icon shown on a step's index rail (QC step → shield, processing step → scan). */
+function stepRailIcon(index: number) {
+  if (index === 2) return <ShieldCheck className="w-4 h-4" aria-hidden="true" />;
+  if (index === 1) return <ScanLine className="w-4 h-4" aria-hidden="true" />;
+  return null;
+}
+
 // Focused client island: the journey's interactive state (WEB-002). The 4 step buttons form a
 // keyboard-operable tablist; the visual stage is a decorative illustration (aria-hidden) that
 // reflects the selected step through a data-attribute the scoped CSS reads — the textual steps
@@ -43,17 +76,15 @@ export default function JourneyStepper({
   const baseId = useId();
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
-  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
-    const last = steps.length - 1;
-    let next = active;
-    if (e.key === "ArrowDown" || e.key === "ArrowRight") next = active === last ? 0 : active + 1;
-    else if (e.key === "ArrowUp" || e.key === "ArrowLeft") next = active === 0 ? last : active - 1;
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = last;
-    else return;
+  // Handler lives on each tab button (the naturally-focusable, roving-tabindex targets) rather than
+  // on the tablist container — the focused tab owns key handling, and the container stays a plain
+  // structural role with no extra keyboard tab stop.
+  function onTabKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
+    const target = nextActiveIndex(e.key, active, steps.length - 1);
+    if (target === null) return;
     e.preventDefault();
-    setActive(next);
-    btnRefs.current[next]?.focus();
+    setActive(target);
+    btnRefs.current[target]?.focus();
   }
 
   return (
@@ -134,7 +165,7 @@ export default function JourneyStepper({
                     }`}
                     style={i === active ? undefined : { color: "var(--fx-gray)" }}
                   >
-                    {i < active ? "✓" : i === active ? "●" : "—"}
+                    {hubStatusMarker(i, active)}
                   </span>
                 </div>
               ))}
@@ -146,22 +177,15 @@ export default function JourneyStepper({
         </p>
       </div>
 
-      {/* Step controls — keyboard-operable tablist. */}
+      {/* Step controls — keyboard-operable tablist. Key handling lives on the focusable tabs. */}
       <div
         className="lg:col-span-5 space-y-2"
         role="tablist"
         aria-label={stepsLabel}
         aria-orientation="vertical"
-        onKeyDown={onKeyDown}
       >
         {steps.map((step, i) => {
           const selected = i === active;
-          const stepIcon =
-            i === 2 ? (
-              <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-            ) : i === 1 ? (
-              <ScanLine className="w-4 h-4" aria-hidden="true" />
-            ) : null;
           return (
             <button
               key={step.title}
@@ -174,6 +198,7 @@ export default function JourneyStepper({
               aria-selected={selected}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(i)}
+              onKeyDown={onTabKeyDown}
               className={`${styles.stepBtn} ${selected ? styles.stepBtnActive : ""} py-6`}
             >
               <span
@@ -181,7 +206,7 @@ export default function JourneyStepper({
                 style={{ color: "var(--fx-blue)" }}
               >
                 {step.index}
-                {stepIcon}
+                {stepRailIcon(i)}
               </span>
               <span className="block text-2xl md:text-3xl font-bold mb-2 tracking-tight">
                 {step.title}

@@ -77,7 +77,7 @@ describe("Fulfill inline consultation form (multi-intent, fixed primary)", () =>
     const { getByTestId } = render(<FulfillConsultationForm lang="en" copy={copy} />);
     fill(getByTestId("fulfill-consult-form"));
     fireEvent.submit(getByTestId("fulfill-consult-form"));
-    await waitFor(() => expect(screen.getByTestId("fulfill-consult-success")).toBeTruthy());
+    expect(await screen.findByTestId("fulfill-consult-success")).toBeTruthy();
   });
 
   it("coexists with the global dialog: independent state, unique IDs, no cross-submit", async () => {
