@@ -180,11 +180,13 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
   const tone = getNavbarTone(variant, scrolled);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+    <nav data-nav="site" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
       ? "bg-background/90 backdrop-blur-2xl shadow-[0_4px_30px_hsl(36_45%_42%/0.08)] border-b border-border/40"
       : "bg-transparent"
       }`}>
-      <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
+      {/* data-nav-inner is a stable styling hook: a route's scoped CSS may reshape this bar (e.g.
+          the THG Fulfill floating-glass pill) without duplicating the Navbar or changing its logic. */}
+      <div data-nav-inner="true" className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
         <Link prefetch={false} href={`/${lang}`} className="flex items-center gap-3 group">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5 ${tone.logoBox}`}>
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
