@@ -22,9 +22,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 
 import type { Locale } from "@/shared/i18n";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
-import { postLead } from "@/shared/ui/lead-api";
-import { useTurnstile } from "@/shared/ui/use-turnstile";
-import { getUtmPayload } from "@/shared/ui/utm";
+import { useLeadSubmission } from "@/shared/ui/use-lead-submission";
 import styles from "./conversion.module.css";
 
 const FIELD_CLASS =
@@ -33,19 +31,6 @@ const FIELD_CLASS =
   "focus-visible:ring-[hsl(var(--gold-light))] focus-visible:border-[hsl(var(--gold-light))] " +
   "aria-[invalid=true]:border-red-400/80";
 const LABEL_CLASS = "block text-[11px] uppercase tracking-[0.05em] text-white/55 mb-1.5 font-medium";
-
-// Deterministic linear-time email shape check (Sonar S5852: the previous single
-// regex backtracked super-linearly on hostile input). Same accept/reject set as
-// /^[^\s@]+@[^\s@]+\.[^\s@]+$/: exactly one "@", non-empty local part, a domain
-// dot with characters on both sides, and no whitespace anywhere.
-function isEmailish(value: string): boolean {
-  const s = value.trim();
-  const at = s.indexOf("@");
-  if (at <= 0 || at !== s.lastIndexOf("@") || at === s.length - 1) return false;
-  if (/\s/.test(s)) return false;
-  const dot = s.lastIndexOf(".");
-  return dot > at + 1 && dot < s.length - 1;
-}
 
 /** Reserved-space field error: always occupies its line so a field never shifts
  *  layout when it turns invalid (IMPLEMENTATION_BASELINE.md consultation rules). */
@@ -175,64 +160,24 @@ interface ConversionSectionProps {
 
 const ConversionSection = ({ lang, copy }: ConversionSectionProps) => {
   const t = tFrom(copy);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
-  const [touched, setTouched] = useState<{ name?: boolean; email?: boolean }>({});
-  const [pending, setPending] = useState(false);
-  const [done, setDone] = useState(false);
   const [status, setStatus] = useState("");
-  const {
-    widgetRef,
-    siteKey,
-    enabled: captchaEnabled,
-    onSuccess,
-    onError,
-    onExpire,
-    resolveSubmitToken,
-    resetForRetry,
-  } = useTurnstile();
-
-  function set<K extends keyof typeof form>(key: K, value: string) {
-    setForm((f) => ({ ...f, [key]: value }));
-  }
-
-  const nameInvalid = Boolean(touched.name) && !form.name.trim();
-  const emailInvalid = Boolean(touched.email) && !isEmailish(form.email);
+  // General consultation — a legacy (serviceless) surface: it is not tied to one service, so it
+  // submits no service/surface and persists unclassified (never defaulted). Engine is shared.
+  const lead = useLeadSubmission({ lang });
+  const { form, setField, markTouched, nameInvalid, emailInvalid, pending, done, turnstile } = lead;
+  const { widgetRef, siteKey, enabled: captchaEnabled, onSuccess, onError, onExpire } = turnstile;
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!form.name.trim() || !isEmailish(form.email)) {
-      setTouched({ name: true, email: true });
-      setStatus(t("lead_form.err_required"));
-      return;
-    }
-    const token = resolveSubmitToken();
-    if (!token) {
-      setStatus(t("lead_form.err_captcha"));
-      return;
-    }
-    setPending(true);
-    setStatus(t("lead_form.submitting"));
-    try {
-      const utm = getUtmPayload();
-      await postLead({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim() || undefined,
-        message: form.message.trim() || undefined,
-        source_page: typeof window !== "undefined" ? window.location.pathname : "/",
-        locale: lang,
-        utm: Object.keys(utm).length > 0 ? utm : undefined,
-        turnstile_token: token,
-      });
-      setDone(true);
+    const result = await lead.submit({ primaryService: null, serviceInterests: [], surface: null });
+    if (result.ok) {
       setStatus(t("lead_form.success_title"));
-    } catch {
-      // Application-owned copy only — CMS response bodies/diagnostics never
-      // reach the public UI (owner-accepted CodeRabbit security finding).
+    } else if (result.error === "required") {
+      setStatus(t("lead_form.err_required"));
+    } else if (result.error === "captcha") {
+      setStatus(t("lead_form.err_captcha"));
+    } else if (result.error) {
       setStatus(t("lead_form.err_generic"));
-      resetForRetry();
-    } finally {
-      setPending(false);
     }
   }
 
@@ -279,7 +224,7 @@ const ConversionSection = ({ lang, copy }: ConversionSectionProps) => {
             </div>
 
             <p className="sr-only" role="status" aria-live="polite" data-testid="consult-status">
-              {status}
+              {pending ? t("lead_form.submitting") : status}
             </p>
 
             {done ? (
@@ -317,8 +262,8 @@ const ConversionSection = ({ lang, copy }: ConversionSectionProps) => {
                       autoComplete="name"
                       required
                       value={form.name}
-                      onChange={(e) => set("name", e.target.value)}
-                      onBlur={() => setTouched((s) => ({ ...s, name: true }))}
+                      onChange={(e) => setField("name", e.target.value)}
+                      onBlur={() => markTouched("name")}
                       placeholder={t("lead_form.name_placeholder")}
                       disabled={pending}
                       aria-invalid={nameInvalid || undefined}
@@ -337,7 +282,7 @@ const ConversionSection = ({ lang, copy }: ConversionSectionProps) => {
                       autoComplete="tel"
                       maxLength={40}
                       value={form.phone}
-                      onChange={(e) => set("phone", e.target.value)}
+                      onChange={(e) => setField("phone", e.target.value)}
                       placeholder={t("lead_form.phone_placeholder")}
                       disabled={pending}
                     />
@@ -356,8 +301,8 @@ const ConversionSection = ({ lang, copy }: ConversionSectionProps) => {
                     autoComplete="email"
                     required
                     value={form.email}
-                    onChange={(e) => set("email", e.target.value)}
-                    onBlur={() => setTouched((s) => ({ ...s, email: true }))}
+                    onChange={(e) => setField("email", e.target.value)}
+                    onBlur={() => markTouched("email")}
                     placeholder={t("lead_form.email_placeholder")}
                     disabled={pending}
                     aria-invalid={emailInvalid || undefined}
@@ -374,7 +319,7 @@ const ConversionSection = ({ lang, copy }: ConversionSectionProps) => {
                     className={`${FIELD_CLASS} min-h-[72px] resize-y`}
                     rows={3}
                     value={form.message}
-                    onChange={(e) => set("message", e.target.value)}
+                    onChange={(e) => setField("message", e.target.value)}
                     placeholder={t("lead_form.message_placeholder")}
                     disabled={pending}
                   />

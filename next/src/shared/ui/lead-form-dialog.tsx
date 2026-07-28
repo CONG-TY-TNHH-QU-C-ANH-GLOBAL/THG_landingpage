@@ -1,7 +1,9 @@
-// Parity source: src/components/lead/LeadFormDialog.tsx
-// Modal lead form — replaces "Get Started" → facebook.com CTA (audit P0.6).
-// POSTs to CMS /api/v1/leads with a Cloudflare Turnstile token. Falls back to
-// DEV_BYPASS only when NEXT_PUBLIC_TURNSTILE_SITE_KEY is unset (local dev).
+// Global multi-intent lead dialog (WEB-002 land-and-expand). The website's global lead-entry
+// surface: the user picks a PRIMARY need (or "need guidance"), optionally flags ADJACENT service
+// interests, and the submission carries the full intent set + surface="global-services-dialog" to
+// the real /leads contract. Behavior (validation, Turnstile, dup-submit, transport, envelope) is
+// owned by the shared useLeadSubmission foundation. A trigger may preselect a primary via
+// `initialService` (still changeable). Generic "need guidance" leads submit no service intent.
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
@@ -16,25 +18,42 @@ import { Textarea } from "@/shared/ui/textarea";
 import { Label } from "@/shared/ui/label";
 import type { Locale } from "@/shared/i18n";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
-import { postLead } from "@/shared/ui/lead-api";
-import { useTurnstile } from "@/shared/ui/use-turnstile";
-import { getUtmPayload } from "@/shared/ui/utm";
+import { useLeadSubmission, type LeadErrorCode } from "@/shared/ui/use-lead-submission";
+import { ServiceSelector } from "@/shared/ui/service-selector";
+import { AdditionalInterests } from "@/shared/ui/additional-interests";
+import { LeadServiceDetailFields, buildDetailsByService } from "@/shared/ui/lead-service-detail-fields";
+import { LEAD_SERVICE_KEYS, type LeadServiceKey, type FulfillProductType } from "@/shared/ui/lead-services";
 import { DELAYS } from "@/shared/ui/constants";
 
 interface Props {
   trigger: ReactNode;
-  /** Source page for analytics — defaults to current pathname */
   sourcePage?: string;
-  /** Pre-fills the message textarea (e.g. a pricing quote context). */
   defaultMessage?: string;
+  /** Preselect the primary need (e.g. the Fulfill page CTA). Still changeable by the user. */
+  initialService?: LeadServiceKey;
   lang: Locale;
   copy: MarketingCopy;
 }
 
-export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy }: Readonly<Props>) {
+const ERROR_COPY_KEY: Readonly<Record<LeadErrorCode, string>> = {
+  required: "lead_form.err_required",
+  captcha: "lead_form.err_captcha",
+  generic: "lead_form.err_generic",
+};
+
+export function LeadFormDialog({ trigger, sourcePage, defaultMessage, initialService, lang, copy }: Readonly<Props>) {
   const t = tFrom(copy);
   const [open, setOpen] = useState(false);
-  // The delayed post-close reset must not fire into a reopened dialog.
+  // Multi-intent state: a primary (or "" = need guidance) + adjacent secondary interests +
+  // the primary's captured details. Secondaries never include the primary.
+  const [primary, setPrimary] = useState<LeadServiceKey | "">(initialService ?? "");
+  const [secondary, setSecondary] = useState<LeadServiceKey[]>([]);
+  const [productType, setProductType] = useState<FulfillProductType | "">("");
+
+  const lead = useLeadSubmission({ lang, sourcePage, defaultMessage });
+  const { form, setField, markTouched, nameInvalid, emailInvalid, pending, done, turnstile } = lead;
+  const { widgetRef, siteKey, enabled: captchaEnabled, onSuccess, onError, onExpire } = turnstile;
+
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
@@ -42,75 +61,42 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy
     },
     [],
   );
-  const [pending, setPending] = useState(false);
-  const [done, setDone] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: defaultMessage ?? "" });
-  // Track which fields the user already touched so we only highlight invalid
-  // ones after they've had a chance to enter something (avoids red borders
-  // on initial render).
-  const [touched, setTouched] = useState<{ name?: boolean; email?: boolean }>({});
-  const {
-    widgetRef,
-    siteKey,
-    enabled: captchaEnabled,
-    onSuccess,
-    onError,
-    onExpire,
-    resolveSubmitToken,
-    resetForRetry,
-  } = useTurnstile();
 
-  function set<K extends keyof typeof form>(key: K, value: string) {
-    setForm((f) => ({ ...f, [key]: value }));
+  // Changing the primary preserves common fields AND the secondary interests. It only: removes the
+  // new primary from the secondary set (it is now the primary) and clears orphaned Fulfill details
+  // when Fulfill is no longer the primary.
+  function changePrimary(next: LeadServiceKey | "") {
+    setPrimary(next);
+    setSecondary((prev) => prev.filter((s) => s !== next));
+    if (next !== "fulfill") setProductType("");
   }
 
-  const nameInvalid = touched.name && !form.name.trim();
-  const emailInvalid = touched.email && !form.email.trim();
+  function toggleSecondary(service: LeadServiceKey, checked: boolean) {
+    setSecondary((prev) => (checked ? [...prev, service] : prev.filter((s) => s !== service)));
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim()) {
-      setTouched({ name: true, email: true });
-      toast.error(t("lead_form.err_required"));
-      return;
-    }
-    const token = resolveSubmitToken();
-    if (!token) {
-      toast.error(t("lead_form.err_captcha"));
-      return;
-    }
-    setPending(true);
-    try {
-      const path = sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : "/");
-      const utm = getUtmPayload();
-      await postLead({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim() || undefined,
-        message: form.message.trim() || undefined,
-        source_page: path,
-        locale: lang,
-        utm: Object.keys(utm).length > 0 ? utm : undefined,
-        turnstile_token: token,
-      });
-      setDone(true);
-      toast.success(t("lead_form.success_toast"));
-    } catch {
-      // Application-owned copy only — postLead never exposes CMS diagnostics,
-      // and this boundary must not either (timeouts/network errors included).
-      toast.error(t("lead_form.err_generic"));
-      resetForRetry();
-    } finally {
-      setPending(false);
-    }
+    const primaryKey = primary === "" ? null : primary;
+    const serviceInterests = primaryKey ? [primaryKey, ...secondary] : [...secondary];
+    const result = await lead.submit({
+      primaryService: primaryKey,
+      serviceInterests,
+      surface: "global-services-dialog",
+      detailsByService: buildDetailsByService(primaryKey, productType),
+    });
+    if (result.ok) toast.success(t("lead_form.success_toast"));
+    else if (result.error) toast.error(t(ERROR_COPY_KEY[result.error]));
   }
 
-  function reset() {
-    setForm({ name: "", email: "", phone: "", message: defaultMessage ?? "" });
-    setDone(false);
-    setTouched({});
-    resetForRetry();
+  function fullReset() {
+    lead.reset();
+    setPrimary(initialService ?? "");
+    setSecondary([]);
+    setProductType("");
   }
+
+  const secondaryOptions = LEAD_SERVICE_KEYS.filter((s) => s !== primary);
 
   return (
     <Dialog
@@ -118,7 +104,7 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy
       onOpenChange={(o) => {
         setOpen(o);
         if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-        if (!o) resetTimerRef.current = setTimeout(reset, DELAYS.DIALOG_RESET_AFTER_CLOSE_MS);
+        if (!o) resetTimerRef.current = setTimeout(fullReset, DELAYS.DIALOG_RESET_AFTER_CLOSE_MS);
       }}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -141,14 +127,22 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy
           </div>
         ) : (
           <form onSubmit={onSubmit} className="space-y-3">
+            <ServiceSelector
+              value={primary}
+              onChange={changePrimary}
+              copy={copy}
+              label={t("lead_form.service_label")}
+              noneLabel={t("lead_form.guidance_option")}
+              disabled={pending}
+            />
             <div>
               <Label htmlFor="lead-name">{t("lead_form.name_label")} *</Label>
               <Input
                 id="lead-name"
                 required
                 value={form.name}
-                onChange={(e) => set("name", e.target.value)}
-                onBlur={() => setTouched((s) => ({ ...s, name: true }))}
+                onChange={(e) => setField("name", e.target.value)}
+                onBlur={() => markTouched("name")}
                 placeholder={t("lead_form.name_placeholder")}
                 disabled={pending}
                 aria-invalid={nameInvalid || undefined}
@@ -162,8 +156,8 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy
                 type="email"
                 required
                 value={form.email}
-                onChange={(e) => set("email", e.target.value)}
-                onBlur={() => setTouched((s) => ({ ...s, email: true }))}
+                onChange={(e) => setField("email", e.target.value)}
+                onBlur={() => markTouched("email")}
                 placeholder={t("lead_form.email_placeholder")}
                 disabled={pending}
                 aria-invalid={emailInvalid || undefined}
@@ -176,17 +170,38 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, lang, copy
                 id="lead-phone"
                 type="tel"
                 value={form.phone}
-                onChange={(e) => set("phone", e.target.value)}
+                onChange={(e) => setField("phone", e.target.value)}
                 placeholder={t("lead_form.phone_placeholder")}
                 disabled={pending}
               />
             </div>
+
+            {primary === "fulfill" && (
+              <LeadServiceDetailFields
+                service="fulfill"
+                lang={lang}
+                label={t("lead_form.product_type_label")}
+                productType={productType}
+                onProductTypeChange={setProductType}
+                disabled={pending}
+              />
+            )}
+
+            <AdditionalInterests
+              legend={t("lead_form.also_interested")}
+              services={secondaryOptions}
+              selected={secondary}
+              onToggle={toggleSecondary}
+              copy={copy}
+              disabled={pending}
+            />
+
             <div>
               <Label htmlFor="lead-message">{t("lead_form.message_label")}</Label>
               <Textarea
                 id="lead-message"
                 value={form.message}
-                onChange={(e) => set("message", e.target.value)}
+                onChange={(e) => setField("message", e.target.value)}
                 placeholder={t("lead_form.message_placeholder")}
                 rows={4}
                 disabled={pending}
