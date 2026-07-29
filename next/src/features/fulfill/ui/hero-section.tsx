@@ -27,7 +27,7 @@ export default function HeroSection({ lang, marketingCopy, copy, content }: Read
   const eyebrow = content.serviceLabel || copy.heroBadge;
 
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden" id="top">
+    <section className="relative pt-28 pb-20 overflow-hidden" id="top">
       <div className={`${styles.blueprint} absolute inset-0 opacity-70 z-0 pointer-events-none`} />
       <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-16 items-center relative z-10">
         <div>

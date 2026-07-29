@@ -5,32 +5,9 @@
    promotion). `--font-mono-face` is supplied by next/font on the page wrapper; the stack falls
    back to platform mono so the layer never depends on the font having loaded. */
 
-/* Fulfill route navbar appearance (approved prototype: floating glass pill). Scoped via :has() so
-   it applies ONLY when the fulfill page marker is in the DOM — the global Navbar on every other
-   route is untouched (the selector doesn't match there). No Navbar duplication, no client pathname
-   check, no layout change, no global-token change; just a reshape of the shared bar's inner
-   container into a centered rounded glass surface, separated from the blueprint field. */
-:global(body:has([data-fulfill-route]) [data-nav="site"]) {
-  /* Keep the outer bar transparent even when scrolled, so only the pill reads. */
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-:global(body:has([data-fulfill-route]) [data-nav-inner]) {
-  width: calc(100% - 2rem);
-  max-width: 64rem;
-  margin: 0.75rem auto 0;
-  padding: 0 1.25rem;
-  height: 3.75rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow:
-    0 24px 48px -12px rgba(0, 0, 0, 0.08),
-    inset 0 1px 1px rgba(255, 255, 255, 0.8);
-}
+/* The floating-glass Navbar is now the shared global default (owned by the shared Navbar
+   component), so this route no longer reshapes the bar — the former :has() pill rules were
+   removed along with the [data-fulfill-route] marker. */
 
 .root {
   /* Operational palette — approved prototype roles, scoped to this route. */
