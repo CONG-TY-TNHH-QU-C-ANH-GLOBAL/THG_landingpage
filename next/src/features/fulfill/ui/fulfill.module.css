@@ -1,0 +1,265 @@
+/* Scoped THG Fulfill experience layer (WEB-002). Every rule is nested under `.root`, and the
+   operational tokens live on `.root` — nothing here touches global design tokens. The shared
+   system has no operational blue/cyan/orange roles, no blueprint field, no glass-surface
+   language and no mono face, so these are documented scoped extensions (candidates for later
+   promotion). `--font-mono-face` is supplied by next/font on the page wrapper; the stack falls
+   back to platform mono so the layer never depends on the font having loaded. */
+
+/* Fulfill route navbar appearance (approved prototype: floating glass pill). Scoped via :has() so
+   it applies ONLY when the fulfill page marker is in the DOM — the global Navbar on every other
+   route is untouched (the selector doesn't match there). No Navbar duplication, no client pathname
+   check, no layout change, no global-token change; just a reshape of the shared bar's inner
+   container into a centered rounded glass surface, separated from the blueprint field. */
+:global(body:has([data-fulfill-route]) [data-nav="site"]) {
+  /* Keep the outer bar transparent even when scrolled, so only the pill reads. */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+:global(body:has([data-fulfill-route]) [data-nav-inner]) {
+  width: calc(100% - 2rem);
+  max-width: 64rem;
+  margin: 0.75rem auto 0;
+  padding: 0 1.25rem;
+  height: 3.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.root {
+  /* Operational palette — approved prototype roles, scoped to this route. */
+  --fx-bg: #fafafa;
+  --fx-surface: #ffffff;
+  --fx-ink: #0a0a0b;
+  --fx-gray: #8a8f98;
+  --fx-border: rgba(0, 0, 0, 0.08);
+  --fx-blue: #0066ff;
+  --fx-cyan: #0891b2;
+  --fx-orange: #ff5c00;
+  --fx-green: #00a344;
+  --fx-mono: var(--font-mono-face), ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code",
+    monospace;
+  --fx-apple: cubic-bezier(0.16, 1, 0.3, 1);
+
+  position: relative;
+  background: var(--fx-bg);
+  color: var(--fx-ink);
+}
+
+/* 4% film grain (data-URI, no network) — fixed, non-interactive. */
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.mono {
+  font-family: var(--fx-mono);
+}
+
+.sectionIndex {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fx-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fx-gray);
+}
+.sectionIndex::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  background: var(--fx-orange);
+}
+
+/* Blueprint field — 32px grid faded by a radial mask. */
+.blueprint {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 38%, transparent 82%);
+  mask-image: radial-gradient(ellipse at center, black 38%, transparent 82%);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.floaty {
+  animation: fx-floaty 4.5s ease-in-out infinite;
+}
+.floatyDelayed {
+  animation: fx-floaty 4.5s ease-in-out infinite 1.4s;
+}
+@keyframes fx-floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+/* ── Journey stage ── */
+.stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.stateImg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  opacity: 0;
+  transition:
+    transform 0.6s var(--fx-apple),
+    opacity 0.6s var(--fx-apple);
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.1));
+  mix-blend-mode: multiply;
+}
+.stage[data-step="0"] .stateImg[data-step="0"],
+.stage[data-step="1"] .stateImg[data-step="1"],
+.stage[data-step="2"] .stateImg[data-step="2"],
+.stage[data-step="3"] .stateImg[data-step="3"] {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  z-index: 10;
+}
+
+.laser {
+  position: absolute;
+  top: 22%;
+  left: 18%;
+  width: 64%;
+  height: 2px;
+  background: var(--fx-blue);
+  box-shadow: 0 0 15px var(--fx-blue);
+  opacity: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+.stage[data-step="1"] .laser {
+  opacity: 1;
+  animation: fx-scan 2s var(--fx-apple) infinite alternate;
+}
+@keyframes fx-scan {
+  0% {
+    transform: translateY(-70px);
+  }
+  100% {
+    transform: translateY(90px);
+  }
+}
+
+.reticle {
+  position: absolute;
+  top: 30%;
+  left: 35%;
+  width: 30%;
+  height: 40%;
+  border: 1px solid rgba(0, 163, 68, 0.5);
+  opacity: 0;
+  transition: opacity 0.5s var(--fx-apple);
+  z-index: 20;
+}
+.stage[data-step="2"] .reticle {
+  opacity: 1;
+}
+.reticleCorner {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--fx-green);
+}
+
+.packLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(3deg);
+  width: 11rem;
+  height: 15rem;
+  background: #eae6df;
+  border: 1px solid var(--fx-border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 0.5s var(--fx-apple);
+  z-index: 20;
+}
+.stage[data-step="3"] .packLabel {
+  opacity: 1;
+}
+
+.hub {
+  position: absolute;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  width: 14rem;
+  z-index: 30;
+}
+.hubStage {
+  transition: color 0.3s var(--fx-apple);
+}
+.hubStageActive {
+  color: var(--fx-blue);
+  font-weight: 700;
+}
+
+/* ── Stepper list ── */
+.stepBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-left: 2px solid transparent;
+  padding-left: 1rem;
+  transition:
+    border-color 0.3s var(--fx-apple),
+    padding-left 0.3s var(--fx-apple),
+    opacity 0.5s var(--fx-apple);
+  opacity: 0.4;
+}
+.stepBtn:hover {
+  border-left-color: #e5e7eb;
+}
+.stepBtnActive {
+  border-left-color: var(--fx-ink);
+  padding-left: 1.5rem;
+  opacity: 1;
+}
+
+/* ── Dark consultation inputs handled by shared components; only the shell is scoped here ── */
+.consult {
+  background: var(--fx-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root *,
+  .root *::before,
+  .root *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .laser {
+    display: none !important;
+  }
+}

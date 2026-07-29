@@ -18,3 +18,25 @@ export function JsonLdScript({ data }: Readonly<{ data: unknown }>) {
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }} />
   );
 }
+
+/** schema.org FAQPage emitter — the single owner of the FAQ JSON-LD shape shared by every scope
+ *  (home, fulfill, …). Emits nothing for an empty list (no eligible FAQ → no FAQPage). Accepts any
+ *  landing FAQ model with question/answer strings. */
+export function FaqPageJsonLd({
+  faqs,
+}: Readonly<{ faqs: readonly { question: string; answer: string }[] }>) {
+  if (faqs.length === 0) return null;
+  return (
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: { "@type": "Answer", text: f.answer },
+        })),
+      }}
+    />
+  );
+}

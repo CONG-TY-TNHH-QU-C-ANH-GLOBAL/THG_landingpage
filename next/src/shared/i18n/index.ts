@@ -14,3 +14,5 @@ export { decodeLocaleRoute, LOCALE_REDIRECT_STATUS, type LocaleRouteDecision } f
 
 export type { LocaleRouteParams } from "./model/locale";
 export type { Dictionary, ReadonlyDictionary } from "./model/dictionary";
+
+export { tr, localize, type LocalizedText } from "./localized-text";

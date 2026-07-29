@@ -4,15 +4,18 @@
 // The server-only "@/shared/cms" transport is off-limits in client islands.
 import type { Locale } from "@/shared/i18n";
 import { resolvePublicCmsApiUrl } from "@/shared/config/env.public";
+import type { LeadServiceKey, LeadSurfaceKey } from "@/shared/ui/lead-services";
 
 // Build-time-resolved, normalized public CMS base (env.public policy: localhost only for
 // dev/test; production builds require an explicit NEXT_PUBLIC_CMS_API_URL — never localhost).
 export const CMS_BASE = resolvePublicCmsApiUrl();
 
-// Mirrors the verified POST /api/v1/leads contract (CMS routes/api/v1/(public)/leads):
-// name + email + turnstile_token required; phone/message/source_page/locale/utm optional.
-// The contract has NO region/primary-market and NO service-interest field — do not add
-// fields here without re-verifying the CMS schema.
+// Mirrors the verified POST /api/v1/leads contract (CMS routes/api/v1/(public)/leads +
+// lead-request.ts): name + email + turnstile_token required; phone/message/source_page/locale/utm
+// optional. MULTI-INTENT (migration 0038, land-and-expand): a lead has an optional primary_service
+// plus service_interests[] (primary must be a member), with service_details keyed by service and
+// validated per-service by the backend. surface is a SEPARATE attribution dimension. Legacy callers
+// omit all intent fields and persist unclassified.
 export interface LeadInput {
   name: string;
   email: string;
@@ -21,6 +24,14 @@ export interface LeadInput {
   source_page: string;
   locale: Locale;
   utm?: Record<string, string>;
+  /** Highest-priority intent at capture; omit for a generic lead. When set, include it in `service_interests`. */
+  primary_service?: LeadServiceKey;
+  /** All service interests (primary + secondaries), de-duplicated. Omit/empty for a generic lead. */
+  service_interests?: LeadServiceKey[];
+  /** Per-service validated details, keyed by service key (subset of service_interests). */
+  service_details?: Record<string, Record<string, unknown>>;
+  /** Canonical UI-surface key (the form that produced the lead). */
+  surface?: LeadSurfaceKey;
   turnstile_token: string;
 }
 

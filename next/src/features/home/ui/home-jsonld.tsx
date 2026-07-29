@@ -1,7 +1,7 @@
 // Parity source: src/components/seo/JsonLd.tsx (JsonLdOrganization defaults + JsonLdFaqPage).
 // Server Components emitting structured data through the FND-003 safe serializer; the FAQ
 // input is the same FND-005 model array the page loads — never a raw DTO.
-import { JsonLdScript } from "@/shared/seo";
+import { JsonLdScript, FaqPageJsonLd } from "@/shared/seo";
 import type { Faq } from "../models/faq";
 
 const ORGANIZATION = {
@@ -35,17 +35,8 @@ export function HomeOrganizationJsonLd() {
   return <JsonLdScript data={ORGANIZATION} />;
 }
 
-/** Emitted only when home-scope FAQs exist (parity: Index.tsx conditional FaqPage). */
+/** Emitted only when home-scope FAQs exist (parity: Index.tsx conditional FaqPage). Delegates to
+ *  the shared FAQPage emitter. */
 export function HomeFaqJsonLd({ faqs }: Readonly<{ faqs: readonly Faq[] }>) {
-  if (faqs.length === 0) return null;
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
-    })),
-  };
-  return <JsonLdScript data={data} />;
+  return <FaqPageJsonLd faqs={faqs} />;
 }
