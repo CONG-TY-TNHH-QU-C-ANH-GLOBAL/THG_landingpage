@@ -13,7 +13,7 @@ import {
 } from "@/shared/ui/accordion";
 import type { Locale } from "@/shared/i18n";
 import type { FulfillFaq } from "../models/faq";
-import type { FulfillCopy } from "../copy";
+import type { FulfillCopy } from "../localized-content";
 import styles from "./fulfill.module.css";
 
 interface Props {

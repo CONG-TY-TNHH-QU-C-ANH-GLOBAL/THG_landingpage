@@ -5,7 +5,7 @@
 import type { ReactNode } from "react";
 import { Globe, ScanLine, Package, LayoutGrid, Tag, Printer, MessageCircle } from "lucide-react";
 
-import type { FulfillCopy, FulfillCapabilityCopy } from "../copy";
+import type { FulfillCopy, FulfillCapabilityCopy } from "../localized-content";
 import styles from "./fulfill.module.css";
 
 function Icon({ children, tone }: Readonly<{ children: ReactNode; tone: string }>) {

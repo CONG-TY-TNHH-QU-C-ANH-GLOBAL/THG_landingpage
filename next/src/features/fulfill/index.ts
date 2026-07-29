@@ -4,7 +4,7 @@
 
 export type { FulfillContent, FulfillCatalogItem } from "./models/fulfill";
 export type { FulfillFaq } from "./models/faq";
-export type { FulfillCopy, FulfillStepCopy, FulfillCapabilityCopy } from "./copy";
+export type { FulfillCopy, FulfillStepCopy, FulfillCapabilityCopy } from "./localized-content";
 
-export { getFulfillCopy } from "./copy";
+export { getFulfillContent } from "./localized-content";
 export { loadFulfillContent, loadFulfillFaqs } from "./server/loaders";

@@ -8,7 +8,7 @@ import { BadgeCheck, ShieldCheck } from "lucide-react";
 import type { Locale } from "@/shared/i18n";
 import type { MarketingCopy } from "@/shared/i18n/marketing";
 import type { FulfillContent } from "../models/fulfill";
-import type { FulfillCopy } from "../copy";
+import type { FulfillCopy } from "../localized-content";
 import { ConsultCta } from "./consult-cta";
 import styles from "./fulfill.module.css";
 

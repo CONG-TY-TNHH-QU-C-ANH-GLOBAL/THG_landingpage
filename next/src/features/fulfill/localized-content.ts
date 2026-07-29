@@ -12,11 +12,11 @@ import { tr, localize, type LocalizedText } from "@/shared/i18n";
 // dictionary only if a second route needs it.
 //
 // Modelled by DOMAIN, not by locale: the Fulfill copy tree is defined ONCE, with each field a
-// LocalizedText (tr(vi, en, zh)); getFulfillCopy(locale) resolves it to the flat FulfillCopy the
+// LocalizedText (tr(vi, en, zh)); getFulfillContent(locale) resolves it to the flat FulfillCopy the
 // components consume. Stable structural values that are the same in every locale — the operations
 // badge, the "STEP nn / 04" index rail, catalog image paths — are plain invariant strings, keeping
 // domain structure (ordering, IDs, assets) separate from localized presentation. The consumer API
-// (FulfillCopy + getFulfillCopy) is unchanged.
+// (FulfillCopy + getFulfillContent) is unchanged.
 
 export interface FulfillStepCopy {
   /** e.g. "STEP 01 / 04" — the mono index rail. */
@@ -335,7 +335,7 @@ const SOURCE: FulfillCopySource = {
 };
 
 /** Resolve the localized Fulfill source to a single locale's flat FulfillCopy (consumer shape). */
-export function getFulfillCopy(locale: Locale): FulfillCopy {
+export function getFulfillContent(locale: Locale): FulfillCopy {
   const L = (text: LocalizedText) => localize(locale, text);
   const step = (s: FulfillStepSource): FulfillStepCopy => ({
     index: s.index,

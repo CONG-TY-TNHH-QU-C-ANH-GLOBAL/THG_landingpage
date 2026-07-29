@@ -5,7 +5,7 @@ import { JetBrains_Mono } from "next/font/google";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { buildPageMetadata, resolveSiteOrigin, localeUrl } from "@/shared/seo";
-import { loadFulfillContent, loadFulfillFaqs, getFulfillCopy } from "@/features/fulfill";
+import { loadFulfillContent, loadFulfillFaqs, getFulfillContent } from "@/features/fulfill";
 import HeroSection from "@/features/fulfill/ui/hero-section";
 import JourneySection from "@/features/fulfill/ui/journey-section";
 import CapabilitiesSection from "@/features/fulfill/ui/capabilities-section";
@@ -73,7 +73,7 @@ export default async function FulfillPage({ params }: PageProps) {
     loadFulfillContent(lang),
     loadFulfillFaqs(lang),
   ]);
-  const copy = getFulfillCopy(lang);
+  const copy = getFulfillContent(lang);
   const canonical = localeUrl(lang, "/thg-fulfill");
 
   return (

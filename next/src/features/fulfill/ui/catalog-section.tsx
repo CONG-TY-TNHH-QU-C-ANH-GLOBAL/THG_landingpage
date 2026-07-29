@@ -5,7 +5,7 @@
 import Image from "next/image";
 
 import type { FulfillContent } from "../models/fulfill";
-import type { FulfillCopy } from "../copy";
+import type { FulfillCopy } from "../localized-content";
 import styles from "./fulfill.module.css";
 
 function CatalogCard({

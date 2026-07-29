@@ -1,7 +1,7 @@
 // Journey section (WEB-002) — Server Component shell around the JourneyStepper client island.
 // The section chrome (heading, intro) renders on the server; only the interactive stepper is a
 // client boundary, and it receives minimal serializable props (copy + local asset paths).
-import type { FulfillCopy } from "../copy";
+import type { FulfillCopy } from "../localized-content";
 import JourneyStepper from "./journey-stepper";
 import styles from "./fulfill.module.css";
 

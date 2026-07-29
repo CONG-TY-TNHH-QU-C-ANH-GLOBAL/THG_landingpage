@@ -4,7 +4,7 @@ import { useId, useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { ScanLine, ShieldCheck, Package } from "lucide-react";
 
-import type { FulfillStepCopy } from "../copy";
+import type { FulfillStepCopy } from "../localized-content";
 import styles from "./fulfill.module.css";
 
 interface StepImage {

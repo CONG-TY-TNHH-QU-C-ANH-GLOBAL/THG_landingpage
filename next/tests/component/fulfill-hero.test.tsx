@@ -9,12 +9,12 @@ import { render, screen, cleanup, within } from "@testing-library/react";
 vi.mock("next/image", () => ({ default: () => null }));
 
 import HeroSection from "@/features/fulfill/ui/hero-section";
-import { getFulfillCopy } from "@/features/fulfill";
+import { getFulfillContent } from "@/features/fulfill";
 import type { FulfillContent } from "@/features/fulfill";
 import { copyForLocale } from "../support/lead-test-utils";
 
 const marketing = copyForLocale("en");
-const copy = getFulfillCopy("en");
+const copy = getFulfillContent("en");
 
 function content(overrides: Partial<FulfillContent> = {}): FulfillContent {
   return {
