@@ -77,7 +77,7 @@ export default async function FulfillPage({ params }: PageProps) {
   const canonical = localeUrl(lang, "/thg-fulfill");
 
   return (
-    <div className={`${styles.root} ${monoFont.variable}`} data-fulfill-route>
+    <div className={`${styles.root} ${monoFont.variable}`}>
       <div className={styles.noise} aria-hidden="true" />
       <FulfillServiceJsonLd
         name={FULFILL_SEO[lang].title}

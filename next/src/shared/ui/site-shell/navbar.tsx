@@ -1,7 +1,10 @@
-// Parity source: src/components/Navbar.tsx
+// The global site navigation — one shared floating-glass pill used on every public route
+// (Home, THG Fulfill, and all future routes). The <nav> is a fixed, transparent positioning
+// layer; the inner element is a centered, contained glass pill that provides its own contrast
+// over any page background (light or dark hero), so no per-route variant or scroll tone is needed.
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
@@ -12,9 +15,15 @@ import type { Locale } from "@/shared/i18n";
 import { tFrom, type MarketingCopy } from "@/shared/i18n/marketing";
 import { LeadFormDialog } from "@/shared/ui/lead-form-dialog";
 import LocaleSwitcher from "@/shared/ui/site-shell/locale-switcher";
-import { DELAYS, SCROLL } from "@/shared/ui/constants";
+import { DELAYS } from "@/shared/ui/constants";
 
 const thgLogo = "/assets/thg-logo.png";
+
+// The floating pill surface — a translucent light glass card, centered and contained, sitting
+// clear of the page content. Shared by the closed desktop and mobile bars so both read as one
+// product. bg-card is white; /78 keeps it legible over dark heroes while staying glassy.
+const PILL_SURFACE =
+  "border border-white/60 bg-[hsl(var(--card)/0.78)] backdrop-blur-xl shadow-[0_16px_40px_-12px_hsl(220_25%_12%/0.16)]";
 
 interface NavMenuItem {
   icon: LucideIcon;
@@ -74,82 +83,77 @@ function MobileNavItem({ item, lang, t, onClick }: Readonly<{ item: NavMenuItem;
   );
 }
 
-type NavbarVariant = "default" | "darkHero";
-
-interface NavbarProps {
-  lang: Locale;
-  copy: MarketingCopy;
-  /**
-   * "darkHero" makes the pre-scroll (transparent) navbar readable over pages
-   * whose hero is dark (e.g. /catalog's navy gradient). Pages that own a dark
-   * hero pass it explicitly; the scrolled state is identical for both variants.
-   */
-  variant?: NavbarVariant;
+/** Shared desktop dropdown trigger + hover panel. */
+function DesktopDropdown({
+  label,
+  open,
+  panelWidth,
+  onEnter,
+  onLeave,
+  children,
+}: Readonly<{
+  label: string;
+  open: boolean;
+  panelWidth: string;
+  onEnter: () => void;
+  onLeave: () => void;
+  children: ReactNode;
+}>) {
+  return (
+    <div className="relative" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <button type="button" className="flex items-center gap-1 px-3 py-2 text-sm font-medium whitespace-nowrap rounded-lg text-foreground/80 hover:text-foreground hover:bg-secondary/50 transition-colors">
+        <span translate="no">{label}</span>
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+      </button>
+      <div
+        className={`absolute top-full left-0 pt-3 transition-all duration-300 ${open ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"}`}
+        style={{ transitionTimingFunction: "var(--motion-spring)" }}
+      >
+        <div className={`bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 ${panelWidth}`}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-/** Tone class sets for the transparent (pre-scroll) navbar state. */
-interface NavbarTone {
-  navItem: string;
-  mutedLink: string;
-  brandText: string;
-  brandSub: string;
-  logoBox: string;
-  toggleBg: string;
-  toggleIcon: string;
-}
-
-const DEFAULT_TONE: NavbarTone = {
-  navItem: "text-foreground/80 hover:text-foreground hover:bg-secondary/50",
-  mutedLink: "text-muted-foreground hover:text-foreground",
-  brandText: "text-navy",
-  brandSub: "text-muted-foreground",
-  logoBox: "bg-navy",
-  toggleBg: "bg-secondary/30 hover:bg-secondary/60",
-  toggleIcon: "text-navy",
-};
-
-const DARK_HERO_TONE: NavbarTone = {
-  navItem: "text-white/85 hover:text-white hover:bg-white/10",
-  mutedLink: "text-white/70 hover:text-white",
-  brandText: "text-white",
-  brandSub: "text-white/60",
-  logoBox: "bg-white/15 backdrop-blur-sm",
-  toggleBg: "bg-white/10 hover:bg-white/20",
-  toggleIcon: "text-white",
-};
-
-// Once scrolled, the navbar gets its opaque light background and the default
-// tones apply for both variants.
-function getNavbarTone(variant: NavbarVariant, scrolled: boolean): NavbarTone {
-  return variant === "darkHero" && !scrolled ? DARK_HERO_TONE : DEFAULT_TONE;
-}
-
-const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
+const Navbar = ({ lang, copy }: Readonly<{ lang: Locale; copy: MarketingCopy }>) => {
   const t = tFrom(copy);
   /** Prefix any absolute path with the current language. */
   const lp = (path: string) => `/${lang}${path}`;
   const [isOpen, setIsOpen] = useState(false);
   // One open dropdown at a time (hover-driven), shared close timeout.
   const [openMenu, setOpenMenu] = useState<"services" | "pricing" | "community" | null>(null);
-  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const menuTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > SCROLL.NAVBAR_OPAQUE_THRESHOLD_PX);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
-
-
-  // Close menus when the route changes — derived-state-during-render form (the effect
-  // variant trips react-hooks/set-state-in-effect under the React compiler lint).
+  // Close menus when the route changes — derived-state-during-render form (the effect variant
+  // trips react-hooks/set-state-in-effect under the React compiler lint).
   const [lastPathname, setLastPathname] = useState(pathname);
   if (pathname !== lastPathname) {
     setLastPathname(pathname);
     setOpenMenu(null);
     setIsOpen(false);
   }
+
+  // Mobile menu a11y: lock body scroll, close on Escape, and return focus to the toggle on close.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [isOpen]);
 
   const menuEnter = (menu: "services" | "pricing" | "community") => {
     if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current);
@@ -159,8 +163,8 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
     menuTimeoutRef.current = setTimeout(() => setOpenMenu(null), DELAYS.NAVBAR_DROPDOWN_CLOSE_MS);
   };
 
-  // The static FAQ lives on the homepage as an anchor section; smooth-scroll
-  // when already there, otherwise navigate to the homepage hash.
+  // The static FAQ lives on the homepage as an anchor section; smooth-scroll when already there,
+  // otherwise navigate to the homepage hash.
   const goToFaq = () => {
     setOpenMenu(null);
     setIsOpen(false);
@@ -177,116 +181,69 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
     { label: t("nav.careers"), href: "/careers" },
   ];
 
-  const tone = getNavbarTone(variant, scrolled);
-
   return (
-    <nav data-nav="site" className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-      ? "bg-background/90 backdrop-blur-2xl shadow-[0_4px_30px_hsl(36_45%_42%/0.08)] border-b border-border/40"
-      : "bg-transparent"
-      }`}>
-      {/* data-nav-inner is a stable styling hook: a route's scoped CSS may reshape this bar (e.g.
-          the THG Fulfill floating-glass pill) without duplicating the Navbar or changing its logic. */}
-      <div data-nav-inner="true" className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
-        <Link prefetch={false} href={`/${lang}`} className="flex items-center gap-3 group">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5 ${tone.logoBox}`}>
+    <nav aria-label="Primary" className="fixed top-0 left-0 right-0 z-50">
+      {/* Floating glass pill — centered, contained, clear of page content. */}
+      <div className={`mx-auto mt-3 flex items-center justify-between h-14 xl:h-16 w-[calc(100%-1.5rem)] max-w-6xl rounded-full px-3 xl:px-5 ${PILL_SURFACE}`}>
+        <Link prefetch={false} href={`/${lang}`} className="flex items-center gap-2.5 group shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-navy flex items-center justify-center group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1.5">
             <img src={thgLogo} alt="THG" className="w-full h-full object-contain brightness-0 invert" />
           </div>
-          <div>
-            <span className={`font-display text-base font-bold leading-tight tracking-tight block ${tone.brandText}`}>THG Fulfill</span>
-            <span className={`text-[9px] tracking-[0.15em] uppercase block ${tone.brandSub}`}>Transport Happiness Group</span>
-          </div>
+          {/* Single-line lockup keeps the logo compact so menu labels never wrap; the descriptor
+              (Transport Happiness Group) lives in the footer, not the constrained pill. */}
+          <span className="font-display text-base font-bold tracking-tight text-navy whitespace-nowrap">THG Fulfill</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-1">
-          {/* Services Dropdown */}
-          <div className="relative" onMouseEnter={() => menuEnter("services")} onMouseLeave={menuLeave}>
-            <button type="button" className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
-              <span translate="no">{t("nav.services")}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "services" ? "rotate-180" : ""}`} />
-            </button>
+        {/* Desktop nav — shown only at xl+, where the pill has room for the full menu on one line.
+            Below xl the compact pill + hamburger carry the same full navigation. */}
+        <div className="hidden xl:flex items-center gap-0.5">
+          <DesktopDropdown label={t("nav.services")} open={openMenu === "services"} panelWidth="w-[480px] grid grid-cols-2 gap-2" onEnter={() => menuEnter("services")} onLeave={menuLeave}>
+            {serviceItems.map((item) => (
+              <DesktopDropdownItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setOpenMenu(null)} />
+            ))}
+          </DesktopDropdown>
 
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${openMenu === "services" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
-              }`}
-              style={{ transitionTimingFunction: "var(--motion-spring)" }}
+          <DesktopDropdown label={t("nav.pricing")} open={openMenu === "pricing"} panelWidth="w-[320px] space-y-1" onEnter={() => menuEnter("pricing")} onLeave={menuLeave}>
+            {pricingItems.map((item) => (
+              <DesktopDropdownItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setOpenMenu(null)} />
+            ))}
+          </DesktopDropdown>
+
+          <DesktopDropdown label={t("nav.community")} open={openMenu === "community"} panelWidth="w-[340px] space-y-1" onEnter={() => menuEnter("community")} onLeave={menuLeave}>
+            {communityItems.map((item) => (
+              <DesktopDropdownItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setOpenMenu(null)} />
+            ))}
+            <button
+              type="button"
+              onClick={goToFaq}
+              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 border-t border-border/40 mt-1 pt-3 text-left"
             >
-              <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-5 w-[480px] grid grid-cols-2 gap-2">
-                {serviceItems.map((item) => (
-                  <DesktopDropdownItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setOpenMenu(null)} />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing Dropdown */}
-          <div className="relative" onMouseEnter={() => menuEnter("pricing")} onMouseLeave={menuLeave}>
-            <button type="button" className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
-              <span translate="no">{t("nav.pricing")}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "pricing" ? "rotate-180" : ""}`} />
+              <HelpCircle className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+              <span>
+                <span className="text-sm font-semibold text-foreground block">{t("nav.faq")}</span>
+                <span className="text-xs text-muted-foreground">{t("nav.faq_desc")}</span>
+              </span>
             </button>
-
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${openMenu === "pricing" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
-              }`}
-              style={{ transitionTimingFunction: "var(--motion-spring)" }}
-            >
-              <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 w-[320px] space-y-1">
-                {pricingItems.map((item) => (
-                  <DesktopDropdownItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setOpenMenu(null)} />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Community Dropdown — interactive hub (Q&A + verified reviews) plus
-              a link to the static homepage FAQ, kept clearly separate. */}
-          <div className="relative" onMouseEnter={() => menuEnter("community")} onMouseLeave={menuLeave}>
-            <button type="button" className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}>
-              <span translate="no">{t("nav.community")}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${openMenu === "community" ? "rotate-180" : ""}`} />
-            </button>
-
-            <div className={`absolute top-full left-0 pt-3 transition-all duration-300 ${openMenu === "community" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-3 pointer-events-none"
-              }`}
-              style={{ transitionTimingFunction: "var(--motion-spring)" }}
-            >
-              <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-4 w-[340px] space-y-1">
-                {communityItems.map((item) => (
-                  <DesktopDropdownItem key={item.titleKey} item={item} lang={lang} t={t} onClick={() => setOpenMenu(null)} />
-                ))}
-                <button
-                  type="button"
-                  onClick={goToFaq}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 border-t border-border/40 mt-1 pt-3 text-left"
-                >
-                  <HelpCircle className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
-                  <span>
-                    <span className="text-sm font-semibold text-foreground block">{t("nav.faq")}</span>
-                    <span className="text-xs text-muted-foreground">{t("nav.faq_desc")}</span>
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
+          </DesktopDropdown>
 
           {navItems.map((item) => (
             <Link prefetch={false}
               key={item.label}
               href={lp(item.href)}
-              className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${pathname === lp(item.href) ? "text-primary" : tone.navItem
-                }`}
+              className={`px-3 py-2 text-sm font-medium whitespace-nowrap rounded-lg transition-colors ${pathname === lp(item.href) ? "text-primary" : "text-foreground/80 hover:text-foreground hover:bg-secondary/50"}`}
             >
               <span translate="no">{item.label}</span>
             </Link>
           ))}
         </div>
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-2 shrink-0">
           <LocaleSwitcher lang={lang} />
           <a
             href="https://hub.thgfulfill.com"
             target="_blank"
             rel="noopener noreferrer"
-            className={`text-sm font-medium transition-colors ${tone.mutedLink}`}
+            className="text-sm font-medium whitespace-nowrap text-muted-foreground hover:text-foreground transition-colors"
           >
             Hub System
           </a>
@@ -295,10 +252,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
             copy={copy}
             sourcePage="navbar-desktop"
             trigger={
-              // rounded-lg binds to the semantic --radius token (12px, IMPLEMENTATION_BASELINE.md
-              // "Restraint on rounding" — rounded-full is a measured anti-pattern outside true
-              // circular controls); rounded-xl/2xl elsewhere in this file already equal 12px/16px.
-              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-lg px-6 py-5 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0">
+              <Button className="bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white rounded-full px-5 py-4 text-sm font-bold shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 border-0 whitespace-nowrap">
                 {t("nav.consult")}
               </Button>
             }
@@ -306,23 +260,28 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
         </div>
 
         {/* Mobile toggle */}
-        <div className="flex lg:hidden items-center gap-2">
+        <div className="flex xl:hidden items-center">
           <button
+            ref={toggleRef}
             type="button"
-            className={`p-3 rounded-xl transition-colors ${tone.toggleBg}`}
+            className="p-2.5 rounded-xl bg-secondary/40 hover:bg-secondary/70 text-navy transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
+            aria-controls="mobile-nav-menu"
           >
-            {isOpen ? <X size={22} className={tone.toggleIcon} /> : <Menu size={22} className={tone.toggleIcon} />}
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — a floating glass panel dropping below the pill (same surface language). */}
       {isOpen && (
-        <div className="lg:hidden bg-card/95 backdrop-blur-2xl border-t border-border/40 px-4 py-6 space-y-1 animate-fade-in shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.1)] h-[calc(100vh-64px)] overflow-y-auto">
-          <div className="flex justify-center mb-6 pb-4 border-b border-border/50">
+        <div
+          id="mobile-nav-menu"
+          className={`xl:hidden mx-3 mt-2 rounded-2xl px-4 py-5 space-y-1 max-h-[calc(100vh-6rem)] overflow-y-auto animate-fade-in ${PILL_SURFACE}`}
+        >
+          <div className="flex justify-center mb-5 pb-4 border-b border-border/50">
             <LocaleSwitcher lang={lang} />
           </div>
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2"><span translate="no">{t("nav.services")}</span></p>
@@ -371,7 +330,7 @@ const Navbar = ({ lang, copy, variant = "default" }: NavbarProps) => {
               copy={copy}
               sourcePage="navbar-mobile"
               trigger={
-                <Button className="w-full bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-5 py-6 text-base font-bold shadow-md rounded-xl mt-4">
+                <Button className="w-full bg-[hsl(var(--gold))] hover:bg-[hsl(var(--gold-dark))] text-white px-5 py-6 text-base font-bold shadow-md rounded-xl">
                   {t("nav.consult")}
                 </Button>
               }

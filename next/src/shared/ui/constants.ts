@@ -16,8 +16,6 @@ export const DELAYS = {
 } as const;
 
 export const SCROLL = {
-  /** Pixels scrolled before the navbar collapses into its "scrolled" state. */
-  NAVBAR_OPAQUE_THRESHOLD_PX: 20,
   /** Pixels scrolled before the floating back-to-top button appears. */
   BACK_TO_TOP_THRESHOLD_PX: 600,
 } as const;

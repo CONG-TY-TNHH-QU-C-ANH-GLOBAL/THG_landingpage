@@ -6,7 +6,7 @@
 // form (a newsletter field, a search box in the shell), the dropdown triggers and the
 // mobile toggle would start submitting it. The attribute is the guarantee; this pins it.
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, act } from "@testing-library/react";
 
 import Navbar from "@/shared/ui/site-shell/navbar";
 import { MARKETING_COPY } from "@/shared/i18n/marketing-copy";
@@ -50,6 +50,27 @@ describe("navbar controls", () => {
     // handler or the aria wiring.
     const opened = screen.getByLabelText("Close menu");
     expect(opened.getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("exposes the primary nav landmark and wires the mobile toggle to the menu it controls", () => {
+    render(<Navbar lang="vi" copy={copy} />);
+
+    expect(screen.getByRole("navigation", { name: "Primary" })).toBeTruthy();
+    const toggle = screen.getByLabelText("Open menu");
+    expect(toggle.getAttribute("aria-controls")).toBe("mobile-nav-menu");
+    expect(document.getElementById("mobile-nav-menu")).toBeNull();
+
+    fireEvent.click(toggle);
+    expect(document.getElementById("mobile-nav-menu")).not.toBeNull();
+    // The open menu locks body scroll; Escape closes it and hands focus back to the toggle.
+    expect(document.body.style.overflow).toBe("hidden");
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    });
+    expect(screen.getByLabelText("Open menu").getAttribute("aria-expanded")).toBe("false");
+    expect(document.getElementById("mobile-nav-menu")).toBeNull();
+    expect(document.body.style.overflow).toBe("");
   });
 
   it("still renders the community destinations the migrated routes serve", () => {
