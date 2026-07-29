@@ -1,5 +1,4 @@
-import { type Locale } from "@/shared/i18n";
-import { tr, localize, type LocalizedText } from "@/shared/i18n";
+import { tr, localize, type Locale, type LocalizedText } from "@/shared/i18n";
 
 // Feature-scoped, localized PRESENTATION copy for the THG Fulfill route (WEB-002). This is the
 // section chrome — eyebrows, section titles, journey/capability labels, empty-state and CTA
