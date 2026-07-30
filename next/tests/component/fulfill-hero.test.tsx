@@ -59,6 +59,19 @@ describe("Fulfill hero H1 ownership", () => {
     expect(screen.getByText(copy.heroBadge)).toBeTruthy();
   });
 
+  it("prefers the CMS hero_eyebrow over the service label when the editor set one", () => {
+    render(
+      <HeroSection
+        lang="en"
+        marketingCopy={marketing}
+        copy={copy}
+        content={content({ heroEyebrow: "Fulfillment Operations", serviceLabel: "THG Fulfill" })}
+      />,
+    );
+    // hero_eyebrow wins; the eyebrow field is now consumed, not dropped.
+    expect(screen.getByText("Fulfillment Operations")).toBeTruthy();
+  });
+
   it("renders the CMS subtitle and the operational rail points", () => {
     render(<HeroSection lang="en" marketingCopy={marketing} copy={copy} content={content()} />);
     expect(screen.getByText("CMS subtitle here.")).toBeTruthy();

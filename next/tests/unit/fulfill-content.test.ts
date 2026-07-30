@@ -108,20 +108,21 @@ describe("fulfillContentFromDto", () => {
     expect(fulfillContentFromDto(dto).present).toBe(false);
   });
 
-  it("maps products to catalog items, dropping nameless ones and joining price/time", () => {
+  it("maps products to catalog items, dropping nameless ones and joining price/time/origin", () => {
     const dto = fullServicesResponseSchema.parse(
       servicesDto({
         products: [
-          { name: "  Premium Tee  ", price: "$3.20", time: "48h", image: "https://cdn/x.png" },
+          { name: "  Premium Tee  ", price: "$3.20", time: "48h", origin: "VN", image: "https://cdn/x.png" },
           { name: "", price: "$1.00" },
-          { name: "Mug" },
+          { name: "Mug", origin: "US" },
         ],
       }),
     );
     const { catalog } = fulfillContentFromDto(dto);
     expect(catalog).toEqual([
-      { name: "Premium Tee", image: "https://cdn/x.png", note: "$3.20 · 48h" },
-      { name: "Mug", image: "", note: "" },
+      // origin is surfaced in the operational note (previously validated but dropped).
+      { name: "Premium Tee", image: "https://cdn/x.png", note: "$3.20 · 48h · VN" },
+      { name: "Mug", image: "", note: "US" },
     ]);
   });
 

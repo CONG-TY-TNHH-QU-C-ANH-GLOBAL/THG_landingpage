@@ -54,7 +54,9 @@ export default function CapabilitiesSection({ copy }: Readonly<{ copy: FulfillCo
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Fixed row track (prototype parity) gives the bento its tight, uniform rhythm; the tall
+            network + hub panels span two columns, everything else fills one 220px cell. */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:auto-rows-[220px]">
           <Card
             cap={c.network}
             className="md:col-span-2"

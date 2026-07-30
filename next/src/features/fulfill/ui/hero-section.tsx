@@ -22,14 +22,15 @@ interface Props {
 export default function HeroSection({ lang, marketingCopy, copy, content }: Readonly<Props>) {
   const subtitle = content.heroSubtitle || copy.heroSubtitleFallback;
   const points = content.points.length > 0 ? content.points.slice(0, 3) : copy.pointsFallback;
-  // Eyebrow = the CMS service identity when present, else the localized default badge. The H1 is
-  // always the feature-owned art-directed headline (copy.heroHeadline) — CMS never supplies the H1.
-  const eyebrow = content.serviceLabel || copy.heroBadge;
+  // Eyebrow = CMS hero_eyebrow when the editor set one, else the CMS service identity (hero_title),
+  // else the localized default badge. The H1 is always the feature-owned art-directed headline
+  // (copy.heroHeadline) — CMS never supplies the H1.
+  const eyebrow = content.heroEyebrow || content.serviceLabel || copy.heroBadge;
 
   return (
     <section className="relative pt-28 pb-20 overflow-hidden" id="top">
       <div className={`${styles.blueprint} absolute inset-0 opacity-70 z-0 pointer-events-none`} />
-      <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-16 items-center lg:min-h-[68vh] relative z-10">
         <div>
           <div
             className={`${styles.mono} inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-white shadow-sm mb-8 text-[10px] uppercase tracking-widest`}
@@ -42,8 +43,10 @@ export default function HeroSection({ lang, marketingCopy, copy, content }: Read
             {eyebrow}
           </div>
 
+          {/* Mobile-first ramp: small enough not to dominate/overflow at 320px, scaling up to the
+              approved prototype scale (3.4rem / 5.3rem) on larger screens. */}
           <h1
-            className="text-[3rem] lg:text-[5rem] font-bold leading-[0.95] mb-6"
+            className="text-[2.4rem] sm:text-[3.4rem] lg:text-[5.3rem] font-bold leading-[0.95] mb-6 text-balance"
             style={{ letterSpacing: "-0.04em" }}
           >
             {copy.heroHeadline}
