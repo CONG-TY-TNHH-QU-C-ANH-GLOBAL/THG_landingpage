@@ -7,11 +7,12 @@ const FULFILL_SERVICE_ID = "thg-fulfill";
 
 /** A product only becomes a catalog card if it has a display name; a resolved `image` wins over
  *  the legacy direct `image` field, and a missing image ("") lets the UI show its local fallback.
- *  price/time collapse to one operational note — never invented, only surfaced when the CMS set it. */
+ *  price/time/origin collapse to one operational note — never invented, only surfaced when the CMS
+ *  set it (origin was previously validated but dropped, so a populated catalog lost it). */
 function catalogItemFromProduct(p: CmsServiceProduct): FulfillCatalogItem | null {
   const name = p.name.trim();
   if (!name) return null;
-  const note = [p.price?.trim(), p.time?.trim()].filter(Boolean).join(" · ");
+  const note = [p.price?.trim(), p.time?.trim(), p.origin?.trim()].filter(Boolean).join(" · ");
   return { name, image: p.image?.trim() ?? "", note };
 }
 
