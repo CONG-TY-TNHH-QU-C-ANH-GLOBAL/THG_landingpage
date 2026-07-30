@@ -20,6 +20,17 @@ export function logCmsFallback(path: string, err: CmsError): void {
   console.warn(`[CMS] fallback for ${path}:`, err.safeMeta());
 }
 
+/** Redaction-safe diagnostic for a service block dropped during role resolution (missing/duplicate
+ *  payload.key, or a malformed block). Logs ONLY the kind, reason and the code-owned key or numeric
+ *  row id — never a title/description or any editor content. Deduped like logCmsFallback so a
+ *  persistent bad block warns once per process. */
+export function logServiceBlockAnomaly(kind: string, reason: string, keyOrId: string | number): void {
+  const key = `sb|${kind}|${reason}|${keyOrId}`;
+  if (logged.has(key)) return;
+  logged.add(key);
+  console.warn(`[CMS] service-block ${reason}: kind=${kind} key=${keyOrId}`);
+}
+
 /** Test hook: clear the dedupe set between cases. */
 export function resetLoggedCmsFallbacks(): void {
   logged.clear();

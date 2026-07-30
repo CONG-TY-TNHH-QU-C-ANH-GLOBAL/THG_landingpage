@@ -5,6 +5,8 @@
 export type { FulfillContent, FulfillCatalogItem } from "./models/fulfill";
 export type { FulfillFaq } from "./models/faq";
 export type { FulfillCopy, FulfillStepCopy, FulfillCapabilityCopy } from "./localized-content";
+export type { FulfillServiceContent } from "./models/service-content";
 
 export { getFulfillContent } from "./localized-content";
-export { loadFulfillContent, loadFulfillFaqs } from "./server/loaders";
+export { applyServiceBlocks } from "./models/service-content";
+export { loadFulfillContent, loadFulfillFaqs, loadFulfillServiceBlocks } from "./server/loaders";

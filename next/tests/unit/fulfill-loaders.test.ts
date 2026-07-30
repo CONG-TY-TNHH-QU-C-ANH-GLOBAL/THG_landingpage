@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const { cmsFetch } = vi.hoisted(() => ({ cmsFetch: vi.fn() }));
 vi.mock("@/shared/cms", () => ({ cmsFetch }));
 
-import { loadFulfillContent, loadFulfillFaqs } from "@/features/fulfill/server/loaders";
+import { loadFulfillContent, loadFulfillFaqs, loadFulfillServiceBlocks } from "@/features/fulfill/server/loaders";
 import { CmsNetworkError } from "@/shared/cms/errors";
 
 /** A schema-valid `/services` response with a live, fully-populated fulfill service. */
@@ -95,5 +95,31 @@ describe("loadFulfillFaqs — empty vs populated vs failure", () => {
     expect(await loadFulfillFaqs("vi")).toEqual([]);
     cmsFetch.mockRejectedValueOnce(new CmsNetworkError("/faqs?lang=vi&scope=fulfill", "timeout"));
     expect(await loadFulfillFaqs("vi")).toEqual([]);
+  });
+});
+
+describe("loadFulfillServiceBlocks — CMS overlay vs empty vs failure", () => {
+  it("reads the correct page_slug + locale and resolves published blocks by role key", async () => {
+    cmsFetch.mockResolvedValueOnce({
+      locale: "vi",
+      page_slug: "thg-fulfill",
+      kind: null,
+      blocks: [{ id: 1, kind: "journey_step", position: 0, icon: null, title: "D1", description: "d1", payload: { key: "design-input" } }],
+    });
+    const content = await loadFulfillServiceBlocks("vi");
+    expect(cmsFetch.mock.calls[0][0]).toBe("/service-blocks?page_slug=thg-fulfill&lang=vi");
+    expect(content.journey.get("design-input")).toEqual({ title: "D1", description: "d1" });
+  });
+
+  it("returns the empty model for an empty block set (all roles fall back)", async () => {
+    cmsFetch.mockResolvedValueOnce({ locale: "vi", page_slug: "thg-fulfill", kind: null, blocks: [] });
+    const content = await loadFulfillServiceBlocks("vi");
+    expect(content.journey.size + content.capabilities.size + content.sections.size).toBe(0);
+  });
+
+  it("degrades to the empty model on a CMS transport failure (never partial CMS)", async () => {
+    cmsFetch.mockRejectedValueOnce(new CmsNetworkError("/service-blocks?page_slug=thg-fulfill&lang=vi", "timeout"));
+    const content = await loadFulfillServiceBlocks("vi");
+    expect(content.journey.size + content.capabilities.size + content.sections.size).toBe(0);
   });
 });
