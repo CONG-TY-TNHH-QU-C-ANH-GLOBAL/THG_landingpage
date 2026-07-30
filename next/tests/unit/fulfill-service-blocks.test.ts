@@ -152,7 +152,7 @@ describe("applyServiceBlocks overlay (CMS wins, else fallback; order stays code-
   });
 
   it("pins the journey registry length to the step tuple (index alignment invariant)", () => {
-    expect(FULFILL_JOURNEY_KEYS.length).toBe(base.steps.length);
+    expect(FULFILL_JOURNEY_KEYS).toHaveLength(base.steps.length);
   });
 });
 
