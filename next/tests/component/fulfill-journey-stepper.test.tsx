@@ -10,6 +10,9 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 vi.mock("next/image", () => ({ default: () => null }));
 
 import JourneyStepper from "@/features/fulfill/ui/journey-stepper";
+import { getFulfillContent, applyServiceBlocks } from "@/features/fulfill";
+import { fulfillServiceContentFromDto } from "@/features/fulfill/mappers/serviceBlocks";
+import { serviceBlocksResponseSchema } from "@/features/fulfill/schemas/service-blocks";
 
 afterEach(cleanup);
 
@@ -119,5 +122,35 @@ describe("JourneyStepper", () => {
     expect(tabs.filter((t) => t.getAttribute("tabindex") === "0")).toHaveLength(1);
     expect(tabs[0].getAttribute("tabindex")).toBe("0");
     expect(tabs.slice(1).every((t) => t.getAttribute("tabindex") === "-1")).toBe(true);
+  });
+
+  // Renders the real island with copy that has been overlaid by CMS service-blocks: an overlaid
+  // role shows the CMS title, a non-overlaid role keeps the localized fallback — proving the
+  // pipeline reaches the DOM without changing the tablist structure/order.
+  it("renders CMS-overlaid journey titles while keeping fallback titles for unmapped roles", () => {
+    const base = getFulfillContent("vi");
+    const content = fulfillServiceContentFromDto(
+      serviceBlocksResponseSchema.parse({
+        locale: "vi",
+        page_slug: "thg-fulfill",
+        kind: null,
+        blocks: [{ id: 1, kind: "journey_step", position: 0, icon: null, title: "Nhận thiết kế (CMS)", description: "desc", payload: { key: "design-input" } }],
+      }),
+    );
+    const merged = applyServiceBlocks(base, content);
+    render(
+      <JourneyStepper
+        steps={merged.steps}
+        images={IMAGES}
+        hubStages={merged.hubStages}
+        hubLabel="Hub System"
+        reference={merged.journeyReference}
+        stepsLabel={merged.journeyTitle}
+      />,
+    );
+    const tabs = screen.getAllByRole("tab");
+    expect(tabs).toHaveLength(4); // structure unchanged
+    expect(tabs[0].textContent).toContain("Nhận thiết kế (CMS)"); // CMS overlay
+    expect(tabs[1].textContent).toContain(base.steps[1].title); // fallback preserved
   });
 });

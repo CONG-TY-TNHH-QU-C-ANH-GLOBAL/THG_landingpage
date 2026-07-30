@@ -5,7 +5,13 @@ import { JetBrains_Mono } from "next/font/google";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { buildPageMetadata, resolveSiteOrigin, localeUrl } from "@/shared/seo";
-import { loadFulfillContent, loadFulfillFaqs, getFulfillContent } from "@/features/fulfill";
+import {
+  loadFulfillContent,
+  loadFulfillFaqs,
+  loadFulfillServiceBlocks,
+  getFulfillContent,
+  applyServiceBlocks,
+} from "@/features/fulfill";
 import HeroSection from "@/features/fulfill/ui/hero-section";
 import JourneySection from "@/features/fulfill/ui/journey-section";
 import CapabilitiesSection from "@/features/fulfill/ui/capabilities-section";
@@ -68,12 +74,15 @@ export default async function FulfillPage({ params }: PageProps) {
   const { lang } = await params;
   if (!isSupportedLocale(lang)) notFound();
 
-  const [marketingCopy, content, faqs] = await Promise.all([
+  const [marketingCopy, content, faqs, serviceBlocks] = await Promise.all([
     getMarketingCopy(lang),
     loadFulfillContent(lang),
     loadFulfillFaqs(lang),
+    loadFulfillServiceBlocks(lang),
   ]);
-  const copy = getFulfillContent(lang);
+  // Feature-local copy is the fallback; published CMS service-blocks overlay journey/capability/
+  // consult/hub text by stable role key. Empty blocks ⇒ value-identical copy (no visual change).
+  const copy = applyServiceBlocks(getFulfillContent(lang), serviceBlocks);
   const canonical = localeUrl(lang, "/thg-fulfill");
 
   return (
