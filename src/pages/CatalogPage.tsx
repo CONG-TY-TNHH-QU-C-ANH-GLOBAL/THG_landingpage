@@ -18,7 +18,7 @@ import {
   MessageCircle, Share2, Check, Package,
 } from "lucide-react";
 
-import { CATEGORIES, NO_SERIES_KEY, categoryIcons, categoryMeta } from "@/pages/catalog/data";
+import { CATEGORIES, NO_SERIES_KEY, categoryIcons } from "@/pages/catalog/data";
 import { DELAYS, LIMITS } from "@/lib/constants";
 
 const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
@@ -558,16 +558,16 @@ const CatalogPage = () => {
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && closeProduct()}>
         <DialogContent className="max-w-[900px] w-[96vw] max-h-[92vh] p-0 gap-0 overflow-hidden flex flex-col">
           {selectedProduct && (() => {
-            const fallback = categoryMeta[selectedProduct.category] || categoryMeta["Accessories"];
             const desc = selectedProduct.description;
-            // Per-field fallback: use admin value if present (array length > 0 or non-empty string),
-            // fallback to category default only when admin field is empty/missing
+            // Đọc thẳng từ dữ liệu sản phẩm — KHÔNG còn chữ cứng theo danh mục.
+            // Ô trống thì khối tự ẩn (mỗi khối đã có chốt `.length > 0`), thà thiếu
+            // một khối còn hơn tả sai chất liệu.
             const meta = {
-              material: desc?.material?.length ? desc.material : fallback.material,
-              features: desc?.features?.length ? desc.features : fallback.features,
-              care: desc?.care?.length ? desc.care : fallback.care,
-              prodTime: desc?.prodTime?.trim() ? desc.prodTime : fallback.prodTime,
-              shipTime: desc?.shipTime?.trim() ? desc.shipTime : fallback.shipTime,
+              material: desc?.material ?? [],
+              features: desc?.features ?? [],
+              care: desc?.care ?? [],
+              prodTime: desc?.prodTime?.trim() || "",
+              shipTime: desc?.shipTime?.trim() || "",
               moq: typeof desc?.moq === "number" && desc.moq > 0 ? desc.moq : 1,
             };
             const templateUrl = selectedProduct.templateUrl;
@@ -926,11 +926,12 @@ const CatalogPage = () => {
                         <div className="border border-border/40 rounded-lg overflow-hidden">
                           <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
                             <span className="text-muted-foreground font-medium flex items-center gap-1.5">⏱ Production time</span>
-                            <span className="text-green-600 font-semibold">{meta.prodTime} business days</span>
+                            {/* Chốt rỗng: chưa điền thì "—", không ra " business days" trơ. */}
+                            <span className="text-green-600 font-semibold">{meta.prodTime ? `${meta.prodTime} business days` : "—"}</span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
                             <span className="text-muted-foreground font-medium flex items-center gap-1.5">🚚 Shipping time</span>
-                            <span className="text-green-600 font-semibold">{meta.shipTime} business days</span>
+                            <span className="text-green-600 font-semibold">{meta.shipTime ? `${meta.shipTime} business days` : "—"}</span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40 text-sm">
                             <span className="text-muted-foreground font-medium flex items-center gap-1.5">🌍 Fulfillment location</span>

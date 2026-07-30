@@ -5,84 +5,14 @@
 
 import { Car, Coffee, Crown, Frame, Gem, Home, Package, Phone, Shirt, PawPrint, Snowflake, GraduationCap, Sticker, Zap } from "lucide-react";
 
-export interface CategoryDescription {
-  material: string[];
-  features: string[];
-  care: string[];
-  /** Production lead time in business days, e.g. "3 - 5". */
-  prodTime: string;
-  /** Shipping ETA in business days. */
-  shipTime: string;
-}
-
-/** Editorial copy per category — the catalog API has no description fields
- *  so we synthesize defaults here. Operator-editable replacement lives on
- *  the Sprint 6 roadmap. */
-export const categoryMeta: Record<string, CategoryDescription> = {
-  Apparel: {
-    material: ["Bird-Eye Pique (Polyester Blend)", "Lightweight, breathable", "Moisture-wicking", "Soft, flexible, easy to move"],
-    features: ["Full button front: classic baseball design", "Customizable: add name, number or logo", "Great for sports events, team uniforms, group outings or streetwear", "Easy to mix with jeans, leggings or shorts", "Bulk discount available for large orders"],
-    care: ["Machine wash inside out, cold water, same colors", "Gentle cycle", "Non-chlorine bleach only when needed", "Tumble dry low", "Cool iron if needed"],
-    prodTime: "3 - 5",
-    shipTime: "8 - 12",
-  },
-  "Phone Cases": {
-    material: ["Premium TPU / Polycarbonate", "Shockproof protection", "Slim profile, lightweight", "Precise cutouts for ports & buttons"],
-    features: ["All-over print with vivid colors", "Scratch-resistant surface", "Wireless charging compatible", "Supports most phone models"],
-    care: ["Wipe clean with damp cloth", "Avoid prolonged sun exposure"],
-    prodTime: "1 - 2",
-    shipTime: "5 - 8",
-  },
-  Drinkware: {
-    material: ["Stainless steel / Ceramic", "BPA-free, food-safe", "Double-wall insulation (tumblers)", "Durable sublimation print"],
-    features: ["Keeps drinks hot/cold for hours", "Dishwasher safe (top rack)", "Full wrap-around printing", "Perfect for gifts & merchandise"],
-    care: ["Hand wash recommended for printed items", "Do not microwave (metal items)", "Avoid abrasive cleaners"],
-    prodTime: "1 - 3",
-    shipTime: "5 - 8",
-  },
-  "Home & Living": {
-    material: ["Polyester / Cotton blend", "Soft-touch fabric", "Vibrant dye-sublimation print", "Durable construction"],
-    features: ["Full-color edge-to-edge printing", "Machine washable", "Multiple size options", "Perfect for home decor & gifts"],
-    care: ["Machine wash cold, gentle cycle", "Tumble dry low", "Do not bleach", "Iron on low heat if needed"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-  "Wall Art": {
-    material: ["Premium canvas / Metal / Acrylic", "High-resolution giclée printing", "UV-resistant inks", "Ready to hang"],
-    features: ["Gallery-quality finish", "Vibrant, long-lasting colors", "Multiple size options", "Frameless or framed options available"],
-    care: ["Dust with soft, dry cloth", "Avoid direct sunlight for extended periods", "Do not use harsh chemicals"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-  Jewelry: {
-    material: ["Stainless steel / Zinc alloy", "Tarnish-resistant finish", "Hypoallergenic", "Lightweight & comfortable"],
-    features: ["Custom engraving available", "High-detail photo printing", "Gift-ready packaging", "Multiple finish options"],
-    care: ["Store in dry place", "Avoid contact with water & chemicals", "Polish with soft cloth"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-  "Cap & Hat": {
-    material: ["Cotton twill / Polyester", "Structured front panel", "Adjustable strap closure", "Breathable eyelets"],
-    features: ["Embroidery or print customization", "One size fits most", "Available in multiple colors", "Pre-curved visor"],
-    care: ["Spot clean recommended", "Hand wash with mild detergent", "Air dry — do not machine dry", "Do not iron on decoration"],
-    prodTime: "2 - 3",
-    shipTime: "5 - 8",
-  },
-  "Car Accessories": {
-    material: ["Durable aluminum / Polyester", "Weather-resistant", "UV-protected print", "Rust-proof"],
-    features: ["Easy installation", "Custom full-color printing", "Fits standard sizes", "Great for personalization & gifts"],
-    care: ["Wipe clean with damp cloth", "Avoid abrasive cleaners"],
-    prodTime: "2 - 3",
-    shipTime: "5 - 8",
-  },
-  Accessories: {
-    material: ["Mixed materials (product-specific)", "Durable construction", "High-quality print finish"],
-    features: ["Full-color custom printing", "Multiple size/style options", "Great for gifts & merchandise"],
-    care: ["Follow product-specific care instructions", "Store in cool, dry place"],
-    prodTime: "2 - 4",
-    shipTime: "5 - 10",
-  },
-};
+/* THG-CAT-006 (2026-07-30): bảng `categoryMeta` (chữ cứng material/features/care/
+   prodTime/shipTime theo danh mục) ĐÃ BỎ. Chú thích cũ "the catalog API has no
+   description fields so we synthesize defaults here" nay đã sai — cột description
+   có sẵn cả 5 ô và API trả về nguyên vẹn.
+   Nội dung cũ đã được backfill vào DB (scripts/backfill-product-description.sql
+   ở repo Hub, chạy prod 2026-07-30, UPDATE 470) nên trang này không đổi một chữ,
+   nhưng từ nay ops sửa được ở Hub. Lý do phải bỏ: áo thun 100% cotton bị tả là
+   "Bird-Eye Pique (Polyester Blend)" — mô tả áo polo thể thao. */
 
 /* THG-CAT-005: originFlags (hardcode 3 nước) đã bỏ — thay bằng resolver động
    @/lib/country-flags (countryFlag/countryName) auto theo ISO cho mọi nước. */
