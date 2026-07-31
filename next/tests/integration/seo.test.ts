@@ -74,25 +74,43 @@ describe("robots.ts (public/robots.txt parity)", () => {
   });
 });
 
-describe("sitemap.ts (WEB-001: home is indexable)", () => {
-  it("lists exactly the home URL per locale with the full hreflang alternates", () => {
+describe("sitemap.ts (indexable routes that exist in next/)", () => {
+  // The listed set grows one slice at a time and is asserted EXACTLY on purpose: a route
+  // must not appear here before its page.tsx exists in next/ (SPEC §17), and this list is
+  // what would silently claim a not-yet-migrated route is live.
+  const EXPECTED_PATHS = ["/", "/thg-fulfill", "/policy", "/shipping-policy"] as const;
+
+  it("lists every migrated indexable route once per locale", () => {
     const entries = sitemap();
-    expect(entries.map((e) => e.url).sort()).toEqual([
-      `${ORIGIN}/en`,
-      `${ORIGIN}/vi`,
-      `${ORIGIN}/zh`,
-    ]);
-    for (const e of entries) {
+    const expected = EXPECTED_PATHS.flatMap((path) =>
+      SUPPORTED_LOCALES.map((lang) => `${ORIGIN}/${lang}${path === "/" ? "" : path}`),
+    );
+    expect(entries.map((e) => e.url).sort()).toEqual(expected.sort());
+  });
+
+  it("gives home its parity weekly/1.0 weighting", () => {
+    const home = sitemap().filter((e) => /\/(vi|en|zh)$/.test(e.url));
+    expect(home).toHaveLength(SUPPORTED_LOCALES.length);
+    for (const e of home) {
       expect(e.changeFrequency).toBe("weekly");
       expect(e.priority).toBe(1.0);
+    }
+  });
+
+  it("carries the full hreflang alternate set on every entry", () => {
+    for (const e of sitemap()) {
+      const suffix = e.url.replace(new RegExp(`^${ORIGIN}/(vi|en|zh)`), "");
       expect(e.alternates?.languages).toEqual({
-        vi: `${ORIGIN}/vi`,
-        en: `${ORIGIN}/en`,
-        "zh-CN": `${ORIGIN}/zh`,
-        "x-default": `${ORIGIN}/vi`,
+        vi: `${ORIGIN}/vi${suffix}`,
+        en: `${ORIGIN}/en${suffix}`,
+        "zh-CN": `${ORIGIN}/zh${suffix}`,
+        "x-default": `${ORIGIN}/vi${suffix}`,
       });
     }
-    // No duplicates, no noindex/placeholder routes, no localhost.
+  });
+
+  it("has no duplicates and no non-canonical origin", () => {
+    const entries = sitemap();
     expect(new Set(entries.map((e) => e.url)).size).toBe(entries.length);
     expect(entries.every((e) => e.url.startsWith(ORIGIN))).toBe(true);
   });

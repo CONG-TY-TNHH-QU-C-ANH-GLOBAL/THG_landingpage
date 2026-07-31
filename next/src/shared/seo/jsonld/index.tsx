@@ -19,6 +19,30 @@ export function JsonLdScript({ data }: Readonly<{ data: unknown }>) {
   );
 }
 
+/** schema.org BreadcrumbList emitter — the single owner of the breadcrumb shape for every
+ *  editorial route (parity: src/components/seo/JsonLd.tsx#JsonLdBreadcrumb). `url` values must
+ *  already be absolute locale URLs from shared/seo/site — this builder does not construct URLs.
+ *  A single-item trail is not a breadcrumb, so it emits nothing. */
+export function BreadcrumbJsonLd({
+  items,
+}: Readonly<{ items: readonly { name: string; url: string }[] }>) {
+  if (items.length < 2) return null;
+  return (
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: items.map((item, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: item.name,
+          item: item.url,
+        })),
+      }}
+    />
+  );
+}
+
 /** schema.org FAQPage emitter — the single owner of the FAQ JSON-LD shape shared by every scope
  *  (home, fulfill, …). Emits nothing for an empty list (no eligible FAQ → no FAQPage). Accepts any
  *  landing FAQ model with question/answer strings. */
