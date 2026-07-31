@@ -62,71 +62,92 @@ function hasAt(text: string, at: number, needle: string): boolean {
  * editor content stays literal text, so a malicious or mistaken href can never be rendered as
  * a live link.
  */
+/** A recognized inline construct and the offset to resume scanning from. `node` carries no id
+ *  — parseInline assigns it, so the readers stay pure and id-free. */
+interface InlineMatch {
+  node: { type: "strong"; value: string } | { type: "link"; label: string; href: string };
+  next: number;
+}
+
+/** `**bold**`. Requires non-empty content, so `****` stays literal. */
+function readBoldAt(text: string, at: number): InlineMatch | null {
+  if (!hasAt(text, at, BOLD)) return null;
+  const close = text.indexOf(BOLD, at + BOLD.length);
+  if (close <= at + BOLD.length) return null;
+  return {
+    node: { type: "strong", value: text.slice(at + BOLD.length, close) },
+    next: close + BOLD.length,
+  };
+}
+
+/** True only for an absolute http(s) target with no whitespace. A `javascript:`, `data:` or
+ *  relative target in editor content must stay literal text, so it can never become a live
+ *  link. */
+function isRenderableHref(href: string): boolean {
+  const absolute = href.startsWith(LINK_HTTPS) || href.startsWith(LINK_HTTP);
+  return absolute && !href.includes(" ");
+}
+
+/** `[label](https://…)`. */
+function readLinkAt(text: string, at: number): InlineMatch | null {
+  if (text[at] !== "[") return null;
+  const labelEnd = text.indexOf("]", at + 1);
+  if (labelEnd <= at + 1 || text[labelEnd + 1] !== "(") return null;
+  const hrefEnd = text.indexOf(")", labelEnd + 2);
+  if (hrefEnd <= labelEnd + 2) return null;
+
+  const href = text.slice(labelEnd + 2, hrefEnd);
+  if (!isRenderableHref(href)) return null;
+  return {
+    node: { type: "link", label: text.slice(at + 1, labelEnd), href },
+    next: hrefEnd + 1,
+  };
+}
+
+const INLINE_READERS = [readBoldAt, readLinkAt] as const;
+
+/** The first construct starting at `at`, or null when this position is ordinary text. */
+function readInlineAt(text: string, at: number): InlineMatch | null {
+  for (const read of INLINE_READERS) {
+    const match = read(text, at);
+    if (match) return match;
+  }
+  return null;
+}
+
+/** Short id discriminator per node type, preserving the existing `-t` / `-b` / `-a` scheme. */
+const INLINE_ID_TAG = { text: "t", strong: "b", link: "a" } as const;
+
+/**
+ * Parse inline `**bold**` and `[label](https://…)` in ONE forward pass.
+ *
+ * `scan` only ever moves forward: when no reader matches, the character is consumed as literal
+ * text and scanning resumes at the next position. That is what makes a pathological input like
+ * `"**".repeat(20_000)` linear — there is no position to backtrack to.
+ */
 export function parseInline(text: string, idPrefix: string): InlineNode[] {
   const nodes: InlineNode[] = [];
   let literalStart = 0;
   let scan = 0;
   let seq = 0;
 
+  const nextId = (type: InlineNode["type"]) => `${idPrefix}-${INLINE_ID_TAG[type]}${seq++}`;
+
   const flushLiteral = (upTo: number) => {
-    if (upTo > literalStart) {
-      nodes.push({
-        type: "text",
-        id: `${idPrefix}-t${seq++}`,
-        value: text.slice(literalStart, upTo),
-      });
-    }
+    if (upTo <= literalStart) return;
+    nodes.push({ type: "text", id: nextId("text"), value: text.slice(literalStart, upTo) });
   };
 
   while (scan < text.length) {
-    const ch = text[scan];
-
-    if (ch === "*" && hasAt(text, scan, BOLD)) {
-      const close = text.indexOf(BOLD, scan + BOLD.length);
-      // Require non-empty content; `****` is literal.
-      if (close > scan + BOLD.length) {
-        flushLiteral(scan);
-        nodes.push({
-          type: "strong",
-          id: `${idPrefix}-b${seq++}`,
-          value: text.slice(scan + BOLD.length, close),
-        });
-        scan = close + BOLD.length;
-        literalStart = scan;
-        continue;
-      }
-      // Unclosed opener: consume it as literal and move past, never re-examined.
-      scan += BOLD.length;
-      continue;
-    }
-
-    if (ch === "[") {
-      const labelEnd = text.indexOf("]", scan + 1);
-      if (labelEnd > scan + 1 && text[labelEnd + 1] === "(") {
-        const hrefEnd = text.indexOf(")", labelEnd + 2);
-        if (hrefEnd > labelEnd + 2) {
-          const href = text.slice(labelEnd + 2, hrefEnd);
-          const absolute = href.startsWith(LINK_HTTPS) || href.startsWith(LINK_HTTP);
-          // A target containing whitespace is malformed markdown, not a URL.
-          if (absolute && !href.includes(" ")) {
-            flushLiteral(scan);
-            nodes.push({
-              type: "link",
-              id: `${idPrefix}-a${seq++}`,
-              label: text.slice(scan + 1, labelEnd),
-              href,
-            });
-            scan = hrefEnd + 1;
-            literalStart = scan;
-            continue;
-          }
-        }
-      }
+    const match = readInlineAt(text, scan);
+    if (!match) {
       scan += 1;
       continue;
     }
-
-    scan += 1;
+    flushLiteral(scan);
+    nodes.push({ ...match.node, id: nextId(match.node.type) });
+    scan = match.next;
+    literalStart = scan;
   }
 
   flushLiteral(text.length);
@@ -214,9 +235,12 @@ function readHeading(line: string): { depth: number; text: string } | null {
   return { depth: hashes, text: line.slice(afterSpace) };
 }
 
-/** `-` or `*` followed by a space. */
+/** `-` or `*` followed by a space. Two markers, so Sonar reported two `startsWith` issues on
+ *  this line rather than one duplicated finding — both index comparisons are replaced. */
+const BULLET_MARKERS = ["-", "*"] as const;
+
 function readBullet(line: string): string | null {
-  if (line[0] !== "-" && line[0] !== "*") return null;
+  if (!BULLET_MARKERS.some((marker) => line.startsWith(marker))) return null;
   const afterSpace = skipSpaces(line, 1);
   if (afterSpace === 1) return null;
   return line.slice(afterSpace);
@@ -254,6 +278,114 @@ function readCallout(line: string): { tone: CalloutTone; text: string } | null {
  * `lineOffset` lets a caller that already split the document report source positions relative
  * to the whole body, which keeps node ids unique across sections.
  */
+/** Source range plus the id derived from it — the identity every node carries. */
+function nodeIdentity(type: string, start: number, end: number, lineOffset: number) {
+  return {
+    id: `${type}-${lineOffset + start}-${lineOffset + end}`,
+    sourceStart: lineOffset + start,
+    sourceEnd: lineOffset + end,
+  };
+}
+
+// ── Single-line block readers ───────────────────────────────────────────────────────────────
+// One responsibility each: recognize a kind, or return null. Order matters — the array below
+// is the precedence, and a paragraph is the fallback when every reader declines.
+
+type LineReader = (line: string, at: number, lineOffset: number) => BlockNode | null;
+
+const readCalloutLine: LineReader = (line, at, lineOffset) => {
+  const callout = readCallout(line);
+  if (!callout) return null;
+  return {
+    type: "callout",
+    ...nodeIdentity("callout", at, at, lineOffset),
+    tone: callout.tone,
+    text: callout.text,
+  };
+};
+
+const readRuleLine: LineReader = (line, at, lineOffset) =>
+  isRule(line) ? { type: "rule", ...nodeIdentity("rule", at, at, lineOffset) } : null;
+
+const readHeadingLine: LineReader = (line, at, lineOffset) => {
+  const heading = readHeading(line);
+  if (!heading) return null;
+  return {
+    type: "heading",
+    ...nodeIdentity("heading", at, at, lineOffset),
+    depth: heading.depth,
+    text: heading.text,
+  };
+};
+
+const readQuoteLine: LineReader = (line, at, lineOffset) =>
+  line.startsWith(">")
+    ? {
+        type: "quote",
+        ...nodeIdentity("quote", at, at, lineOffset),
+        text: line.slice(1).trim(),
+      }
+    : null;
+
+const LINE_READERS: readonly LineReader[] = [
+  readCalloutLine,
+  readRuleLine,
+  readHeadingLine,
+  readQuoteLine,
+];
+
+/** The block this line makes on its own. Falls back to a paragraph, which is what keeps
+ *  unsupported syntax readable instead of dropping it. */
+function readSingleLine(line: string, at: number, lineOffset: number): BlockNode {
+  for (const read of LINE_READERS) {
+    const node = read(line, at, lineOffset);
+    if (node) return node;
+  }
+  return { type: "paragraph", ...nodeIdentity("paragraph", at, at, lineOffset), text: line };
+}
+
+/**
+ * A run of consecutive same-kind list items starting at `at`, or null when this line is not a
+ * list item. Each item keeps its own SOURCE LINE as identity, so two identical bullets stay
+ * distinct.
+ */
+function readListRun(
+  lines: readonly string[],
+  at: number,
+  lineOffset: number,
+): { node: BlockNode; next: number } | null {
+  const firstBullet = readBullet(lines[at].trim());
+  const ordered = firstBullet === null && readOrdered(lines[at].trim()) !== null;
+  if (firstBullet === null && !ordered) return null;
+
+  const items: { id: string; text: string }[] = [];
+  let i = at;
+  while (i < lines.length) {
+    const candidate = lines[i].trim();
+    const text = ordered ? readOrdered(candidate) : readBullet(candidate);
+    if (text === null) break;
+    items.push({ id: `li-${lineOffset + i}`, text });
+    i += 1;
+  }
+
+  return {
+    node: {
+      type: "list",
+      ...nodeIdentity("list", at, i - 1, lineOffset),
+      ordered,
+      items,
+    },
+    next: i,
+  };
+}
+
+/**
+ * Parse a block of source lines into typed nodes.
+ *
+ * One forward pass; consecutive list items of the same kind merge into one `list` node.
+ * `lineOffset` lets a caller that already split the document report source positions relative
+ * to the whole body, which keeps node ids unique across sections.
+ */
 export function parseBlocks(
   lines: readonly string[],
   { lineOffset = 0 }: { lineOffset?: number } = {},
@@ -261,101 +393,21 @@ export function parseBlocks(
   const nodes: BlockNode[] = [];
   let i = 0;
 
-  const id = (type: string, start: number, end: number) =>
-    `${type}-${lineOffset + start}-${lineOffset + end}`;
-
   while (i < lines.length) {
     const line = lines[i].trim();
-
     if (line.length === 0) {
       i += 1;
       continue;
     }
 
-    const callout = readCallout(line);
-    if (callout) {
-      nodes.push({
-        type: "callout",
-        id: id("callout", i, i),
-        sourceStart: lineOffset + i,
-        sourceEnd: lineOffset + i,
-        tone: callout.tone,
-        text: callout.text,
-      });
-      i += 1;
+    const list = readListRun(lines, i, lineOffset);
+    if (list) {
+      nodes.push(list.node);
+      i = list.next;
       continue;
     }
 
-    if (isRule(line)) {
-      nodes.push({
-        type: "rule",
-        id: id("rule", i, i),
-        sourceStart: lineOffset + i,
-        sourceEnd: lineOffset + i,
-      });
-      i += 1;
-      continue;
-    }
-
-    const heading = readHeading(line);
-    if (heading) {
-      nodes.push({
-        type: "heading",
-        id: id("heading", i, i),
-        sourceStart: lineOffset + i,
-        sourceEnd: lineOffset + i,
-        depth: heading.depth,
-        text: heading.text,
-      });
-      i += 1;
-      continue;
-    }
-
-    if (line.startsWith(">")) {
-      nodes.push({
-        type: "quote",
-        id: id("quote", i, i),
-        sourceStart: lineOffset + i,
-        sourceEnd: lineOffset + i,
-        text: line.slice(1).trim(),
-      });
-      i += 1;
-      continue;
-    }
-
-    // Runs of same-kind list items become one list node; each item keeps its own source line
-    // as identity, so two identical bullets are still distinct.
-    const firstBullet = readBullet(line);
-    const firstOrdered = firstBullet === null ? readOrdered(line) : null;
-    if (firstBullet !== null || firstOrdered !== null) {
-      const ordered = firstOrdered !== null;
-      const start = i;
-      const items: { id: string; text: string }[] = [];
-      while (i < lines.length) {
-        const candidate = lines[i].trim();
-        const text = ordered ? readOrdered(candidate) : readBullet(candidate);
-        if (text === null) break;
-        items.push({ id: `li-${lineOffset + i}`, text });
-        i += 1;
-      }
-      nodes.push({
-        type: "list",
-        id: id("list", start, i - 1),
-        sourceStart: lineOffset + start,
-        sourceEnd: lineOffset + i - 1,
-        ordered,
-        items,
-      });
-      continue;
-    }
-
-    nodes.push({
-      type: "paragraph",
-      id: id("paragraph", i, i),
-      sourceStart: lineOffset + i,
-      sourceEnd: lineOffset + i,
-      text: line,
-    });
+    nodes.push(readSingleLine(line, i, lineOffset));
     i += 1;
   }
 
