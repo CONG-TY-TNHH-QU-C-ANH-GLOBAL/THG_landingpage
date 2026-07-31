@@ -53,8 +53,8 @@ export function BlogArticleView({
           <>
             {sections.length > 0 && (
               <div className="mt-8 text-[15px] leading-relaxed text-foreground/90">
-                {sections.map((section, i) => (
-                  <div key={i}>
+                {sections.map((section) => (
+                  <div key={section.id}>
                     {section.heading && (
                       <h2 className="mt-6 mb-2 text-lg font-semibold text-navy">
                         {section.heading}
@@ -62,7 +62,11 @@ export function BlogArticleView({
                     )}
                     {/* baseHeadingLevel 3: a `#` inside the body sits under the section h2,
                         so the document outline stays valid under the page h1. */}
-                    <MarkdownLines lines={section.lines} baseHeadingLevel={3} />
+                    <MarkdownLines
+                      lines={section.lines}
+                      baseHeadingLevel={3}
+                      lineOffset={section.lineOffset}
+                    />
                   </div>
                 ))}
               </div>

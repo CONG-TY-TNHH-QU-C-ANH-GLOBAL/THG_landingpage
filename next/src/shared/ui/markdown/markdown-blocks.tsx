@@ -1,219 +1,476 @@
 import type { ReactNode } from "react";
 
-// Server-side markdown → React for CMS editorial bodies.
+// Server-side markdown → React for CMS editorial bodies (policies, shipping routes, blog
+// articles, job posts). ONE implementation — promoted here when blog and careers became the
+// second and third consumers; there is no second copy under features/.
 //
-// Promoted to shared/ when blog and careers became its second and third consumers; it was
-// written for WEB-007 policy and shipping-route bodies. It is NOT a markdown framework and
-// must not become one — the supported subset is what the CMS and legacy data actually
-// contain, and everything else degrades to readable prose rather than disappearing.
+// TWO structural guarantees, both deliberate:
 //
-// Why not react-markdown + remark-gfm: they are the natural reach, and this deliberately does
-// not reach for them. The renderer never produces an HTML string, so there is nothing to
-// sanitize and no dangerouslySetInnerHTML anywhere in the path — React escapes editor text
-// itself. That is a structural guarantee rather than trust in a filter list, and it costs no
-// dependency. The Vite renderer built HTML and pushed it through a sanitizer
-// [FACT: src/components/shipping-policy/RouteRenderer.tsx + src/lib/sanitizeHtml].
+// 1. NO HTML IS EVER PRODUCED. The Vite renderer built an HTML string and pushed it through a
+//    sanitizer [FACT: src/components/shipping-policy/RouteRenderer.tsx + src/lib/sanitizeHtml].
+//    This emits React elements, so there is nothing to sanitize and no dangerouslySetInnerHTML
+//    anywhere in the path. Editor text is escaped by React itself — a structural guarantee
+//    rather than trust in a filter list (WEB-007 §14).
 //
-// Supported, and nothing else:
-//   `#`..`######`  headings (rendered at a caller-chosen base level so page structure stays
-//                  semantic — a body heading must never outrank the page h1)
-//   `-` / `*`      unordered list items
-//   `1.`           ordered list items
-//   `>`            blockquote
-//   `---`          thematic break
-//   `**bold**`     inline strong
-//   `[a](https://) inline link, ABSOLUTE http(s) only
-//   🚨 / ⚠ / 📌     callout lines
+// 2. NO REGEX, ANYWHERE. Every construct is recognized by a small forward scanner over the
+//    line. The previous version used alternation and `\s+`-then-`.*` patterns, which are
+//    backtracking-prone: a long malformed line (`"#".repeat(50_000)`, `"**".repeat(20_000)`)
+//    could cost super-linear time on a SERVER render, which is a denial-of-service surface on
+//    operator-supplied content. Scanning gives an O(n) bound per line that is provable by
+//    inspection — each character is examined a bounded number of times and no position is ever
+//    revisited. Replacing one regex with a cleverer regex would not have that property.
 //
-// ponytail: no tables, images, code fences, or nested lists. If a CMS body starts using one,
-// add that single construct here — do not swap in a general parser. Unknown syntax already
-// renders as its literal text, so the failure mode is "plain but readable", never blank.
+// PARSING PRODUCES NODES, NOT ELEMENTS. Every node carries its source range and a
+// parser-owned `id` derived from it, so React keys come from parser identity rather than array
+// position. Two identical paragraphs in one document are distinct nodes because their source
+// ranges differ.
 //
-// Server-compatible: no hooks, no browser API, no "use client".
+// The supported subset is what the CMS bodies actually contain: `#`..`######` headings,
+// `-`/`*` bullets, `1.` ordered items, `>` quotes, `---` rules, `**bold**`,
+// `[text](https://…)` links, and the 🚨 / ⚠ / 📌 callout prefixes. Anything else renders as
+// its literal text — an unsupported construct degrades to readable prose, never to blank.
+// This is intentionally narrow and must not become a general markdown framework.
 
-const CALLOUTS = [
-  { prefix: "🚨", tone: "danger" as const },
-  { prefix: "⚠", tone: "warn" as const },
-  { prefix: "📌", tone: "note" as const },
+// ── Inline nodes ────────────────────────────────────────────────────────────────────────────
+
+export type InlineNode =
+  | { type: "text"; id: string; value: string }
+  | { type: "strong"; id: string; value: string }
+  | { type: "link"; id: string; label: string; href: string };
+
+const BOLD = "**";
+const LINK_HTTPS = "https://";
+const LINK_HTTP = "http://";
+
+/** True when `text` has `needle` at `at`. Bounded, allocation-free. */
+function hasAt(text: string, at: number, needle: string): boolean {
+  if (at + needle.length > text.length) return false;
+  for (let i = 0; i < needle.length; i++) {
+    if (text[at + i] !== needle[i]) return false;
+  }
+  return true;
+}
+
+/**
+ * Parse inline `**bold**` and `[label](https://…)` in ONE forward pass.
+ *
+ * `scan` only ever moves forward: when a candidate does not close, the opener is consumed as
+ * literal text and scanning resumes AFTER it. That is what makes a pathological input like
+ * `"**".repeat(20_000)` linear — there is no position to backtrack to.
+ *
+ * Only absolute http(s) targets become anchors. A `javascript:`, `data:` or relative target in
+ * editor content stays literal text, so a malicious or mistaken href can never be rendered as
+ * a live link.
+ */
+export function parseInline(text: string, idPrefix: string): InlineNode[] {
+  const nodes: InlineNode[] = [];
+  let literalStart = 0;
+  let scan = 0;
+  let seq = 0;
+
+  const flushLiteral = (upTo: number) => {
+    if (upTo > literalStart) {
+      nodes.push({
+        type: "text",
+        id: `${idPrefix}-t${seq++}`,
+        value: text.slice(literalStart, upTo),
+      });
+    }
+  };
+
+  while (scan < text.length) {
+    const ch = text[scan];
+
+    if (ch === "*" && hasAt(text, scan, BOLD)) {
+      const close = text.indexOf(BOLD, scan + BOLD.length);
+      // Require non-empty content; `****` is literal.
+      if (close > scan + BOLD.length) {
+        flushLiteral(scan);
+        nodes.push({
+          type: "strong",
+          id: `${idPrefix}-b${seq++}`,
+          value: text.slice(scan + BOLD.length, close),
+        });
+        scan = close + BOLD.length;
+        literalStart = scan;
+        continue;
+      }
+      // Unclosed opener: consume it as literal and move past, never re-examined.
+      scan += BOLD.length;
+      continue;
+    }
+
+    if (ch === "[") {
+      const labelEnd = text.indexOf("]", scan + 1);
+      if (labelEnd > scan + 1 && text[labelEnd + 1] === "(") {
+        const hrefEnd = text.indexOf(")", labelEnd + 2);
+        if (hrefEnd > labelEnd + 2) {
+          const href = text.slice(labelEnd + 2, hrefEnd);
+          const absolute = href.startsWith(LINK_HTTPS) || href.startsWith(LINK_HTTP);
+          // A target containing whitespace is malformed markdown, not a URL.
+          if (absolute && !href.includes(" ")) {
+            flushLiteral(scan);
+            nodes.push({
+              type: "link",
+              id: `${idPrefix}-a${seq++}`,
+              label: text.slice(scan + 1, labelEnd),
+              href,
+            });
+            scan = hrefEnd + 1;
+            literalStart = scan;
+            continue;
+          }
+        }
+      }
+      scan += 1;
+      continue;
+    }
+
+    scan += 1;
+  }
+
+  flushLiteral(text.length);
+  return nodes;
+}
+
+/** Render inline nodes. Keys are parser-owned ids, never the array index. */
+export function renderInline(text: string, idPrefix: string): ReactNode[] {
+  return parseInline(text, idPrefix).map((node) => {
+    if (node.type === "strong") return <strong key={node.id}>{node.value}</strong>;
+    if (node.type === "link") {
+      return (
+        <a
+          key={node.id}
+          href={node.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="break-all text-primary underline"
+        >
+          {node.label}
+        </a>
+      );
+    }
+    return <span key={node.id}>{node.value}</span>;
+  });
+}
+
+// ── Block nodes ─────────────────────────────────────────────────────────────────────────────
+
+export type CalloutTone = "danger" | "warn" | "note";
+
+interface NodeBase {
+  /** Stable, parser-owned identity: type plus the source line range it came from. Unique
+   *  because block source ranges never overlap. */
+  id: string;
+  /** 0-based index of the first source line this node was built from. */
+  sourceStart: number;
+  /** 0-based index of the last source line, inclusive. */
+  sourceEnd: number;
+}
+
+export type BlockNode =
+  | (NodeBase & { type: "heading"; depth: number; text: string })
+  | (NodeBase & { type: "paragraph"; text: string })
+  | (NodeBase & { type: "quote"; text: string })
+  | (NodeBase & { type: "callout"; tone: CalloutTone; text: string })
+  | (NodeBase & { type: "rule" })
+  | (NodeBase & {
+      type: "list";
+      ordered: boolean;
+      items: readonly { id: string; text: string }[];
+    });
+
+const CALLOUTS: readonly { prefix: string; tone: CalloutTone }[] = [
+  { prefix: "🚨", tone: "danger" },
+  { prefix: "⚠", tone: "warn" },
+  { prefix: "📌", tone: "note" },
 ];
 
-const CALLOUT_STYLE: Readonly<Record<"danger" | "warn" | "note", string>> = {
+const CALLOUT_STYLE: Readonly<Record<CalloutTone, string>> = {
   danger: "border-red-300 bg-red-50 text-red-900",
   warn: "border-amber-300 bg-amber-50 text-amber-900",
   note: "border-sky-300 bg-sky-50 text-sky-900",
 };
 
-/** Split inline `**bold**` and `[label](https://…)` into React nodes.
- *
- *  Only absolute http(s) links are turned into anchors — a `javascript:` or relative target
- *  in editor content stays literal text, so a malicious or mistaken href can never be
- *  rendered as a live link. */
-export function renderInline(text: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  const pattern = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
-  let last = 0;
-  let match: RegExpExecArray | null;
-  let key = 0;
+/** Count the leading run of `ch`, capped at `max`. Linear and bounded. */
+function leadingRun(line: string, ch: string, max = line.length): number {
+  let n = 0;
+  while (n < line.length && n < max && line[n] === ch) n += 1;
+  return n;
+}
 
-  while ((match = pattern.exec(text)) !== null) {
-    if (match.index > last) nodes.push(text.slice(last, match.index));
-    if (match[1] !== undefined) {
-      nodes.push(<strong key={key++}>{match[1]}</strong>);
-    } else {
-      nodes.push(
-        <a
-          key={key++}
-          href={match[3]}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="break-all text-primary underline"
-        >
-          {match[2]}
-        </a>,
-      );
-    }
-    last = pattern.lastIndex;
+function skipSpaces(line: string, from: number): number {
+  let i = from;
+  while (i < line.length && (line[i] === " " || line[i] === "\t")) i += 1;
+  return i;
+}
+
+/** `#`..`######` followed by at least one space. Returns null for `#nospace` or a bare run. */
+function readHeading(line: string): { depth: number; text: string } | null {
+  const hashes = leadingRun(line, "#", 7);
+  if (hashes === 0 || hashes > 6) return null;
+  const afterSpace = skipSpaces(line, hashes);
+  if (afterSpace === hashes) return null; // no separating space
+  return { depth: hashes, text: line.slice(afterSpace) };
+}
+
+/** `-` or `*` followed by a space. */
+function readBullet(line: string): string | null {
+  if (line[0] !== "-" && line[0] !== "*") return null;
+  const afterSpace = skipSpaces(line, 1);
+  if (afterSpace === 1) return null;
+  return line.slice(afterSpace);
+}
+
+/** `<digits>.` followed by a space. Digit run is bounded so a 10k-digit line cannot be slow. */
+function readOrdered(line: string): string | null {
+  let i = 0;
+  while (i < line.length && i < 9 && line[i] >= "0" && line[i] <= "9") i += 1;
+  if (i === 0 || line[i] !== ".") return null;
+  const afterSpace = skipSpaces(line, i + 1);
+  if (afterSpace === i + 1) return null;
+  return line.slice(afterSpace);
+}
+
+/** Three or more `-` and nothing else. */
+function isRule(line: string): boolean {
+  if (line.length < 3) return false;
+  return leadingRun(line, "-") === line.length;
+}
+
+function readCallout(line: string): { tone: CalloutTone; text: string } | null {
+  for (const { prefix, tone } of CALLOUTS) {
+    if (line.startsWith(prefix)) return { tone, text: line.slice(prefix.length).trim() };
   }
-  if (last < text.length) nodes.push(text.slice(last));
-  return nodes;
+  return null;
 }
 
-interface Section {
-  /** null for the lead-in lines that precede the first `##` heading. */
-  heading: string | null;
-  lines: string[];
-}
-
-/** Split a markdown body into `##`-delimited sections, preserving the untitled lead-in. */
-export function splitSections(markdown: string): Section[] {
-  const sections: Section[] = [{ heading: null, lines: [] }];
-  for (const raw of markdown.split("\n")) {
-    const line = raw.trimEnd();
-    const heading = /^##\s+(.*)$/.exec(line);
-    if (heading) {
-      sections.push({ heading: heading[1].trim(), lines: [] });
-    } else {
-      sections[sections.length - 1].lines.push(line);
-    }
-  }
-  // Drop the lead-in when the body starts with a heading (its `lines` are all blank).
-  return sections.filter((s) => s.heading !== null || s.lines.some((l) => l.trim().length > 0));
-}
-
-/** Render one section's lines: list items grouped, callouts boxed, the rest prose.
+/**
+ * Parse a block of source lines into typed nodes.
  *
- *  `baseHeadingLevel` is the level a single `#` maps to — 2 under a page h1, 3 inside a
- *  section that already has its own h2. Deeper markdown headings step down from there and
- *  clamp at h6, so a body can never break the page outline. */
-export function MarkdownLines({
-  lines,
-  baseHeadingLevel = 3,
-}: Readonly<{ lines: readonly string[]; baseHeadingLevel?: 2 | 3 | 4 }>) {
-  const out: ReactNode[] = [];
-  let bullets: string[] = [];
-  let numbered: string[] = [];
+ * One forward pass; consecutive list items of the same kind are merged into one `list` node.
+ * `baseHeadingLevel` is the level a single `#` maps to — deeper headings step down and clamp
+ * at h6, so a CMS body can never outrank the page's own h1 or break the document outline.
+ * `lineOffset` lets a caller that already split the document report source positions relative
+ * to the whole body, which keeps node ids unique across sections.
+ */
+export function parseBlocks(
+  lines: readonly string[],
+  { lineOffset = 0 }: { lineOffset?: number } = {},
+): BlockNode[] {
+  const nodes: BlockNode[] = [];
+  let i = 0;
 
-  const flushBullets = () => {
-    if (bullets.length === 0) return;
-    out.push(
-      <ul key={`ul-${out.length}`} className="my-1.5 list-disc space-y-1 pl-5">
-        {bullets.map((b, i) => (
-          <li key={i}>{renderInline(b)}</li>
-        ))}
-      </ul>,
-    );
-    bullets = [];
-  };
+  const id = (type: string, start: number, end: number) =>
+    `${type}-${lineOffset + start}-${lineOffset + end}`;
 
-  const flushNumbered = () => {
-    if (numbered.length === 0) return;
-    out.push(
-      <ol key={`ol-${out.length}`} className="my-1.5 list-decimal space-y-1 pl-5">
-        {numbered.map((b, i) => (
-          <li key={i}>{renderInline(b)}</li>
-        ))}
-      </ol>,
-    );
-    numbered = [];
-  };
+  while (i < lines.length) {
+    const line = lines[i].trim();
 
-  for (const raw of lines) {
-    const line = raw.trim();
     if (line.length === 0) {
-      flushBullets();
-      flushNumbered();
+      i += 1;
       continue;
     }
 
-    const callout = CALLOUTS.find((c) => line.startsWith(c.prefix));
+    const callout = readCallout(line);
     if (callout) {
-      flushBullets();
-      out.push(
-        <p
-          key={`c-${out.length}`}
-          className={`my-2 rounded-lg border px-3 py-2 text-[13px] ${CALLOUT_STYLE[callout.tone]}`}
-        >
-          {renderInline(line.slice(callout.prefix.length).trim())}
-        </p>,
-      );
+      nodes.push({
+        type: "callout",
+        id: id("callout", i, i),
+        sourceStart: lineOffset + i,
+        sourceEnd: lineOffset + i,
+        tone: callout.tone,
+        text: callout.text,
+      });
+      i += 1;
       continue;
     }
 
-    const heading = /^(#{1,6})\s+(.*)$/.exec(line);
+    if (isRule(line)) {
+      nodes.push({
+        type: "rule",
+        id: id("rule", i, i),
+        sourceStart: lineOffset + i,
+        sourceEnd: lineOffset + i,
+      });
+      i += 1;
+      continue;
+    }
+
+    const heading = readHeading(line);
     if (heading) {
-      flushBullets();
-      // Depth is relative to the caller's base so a body can never emit a heading that
-      // outranks the page's own h1, and the document outline stays valid.
-      const level = Math.min(6, baseHeadingLevel + heading[1].length - 1);
-      const Tag = `h${level}` as "h2" | "h3" | "h4" | "h5" | "h6";
-      out.push(
-        <Tag key={`h-${out.length}`} className="mt-4 mb-1 font-semibold text-navy">
-          {renderInline(heading[2])}
-        </Tag>,
-      );
-      continue;
-    }
-
-    if (/^---+$/.test(line)) {
-      flushBullets();
-      out.push(<hr key={`hr-${out.length}`} className="my-5 border-border/60" />);
+      nodes.push({
+        type: "heading",
+        id: id("heading", i, i),
+        sourceStart: lineOffset + i,
+        sourceEnd: lineOffset + i,
+        depth: heading.depth,
+        text: heading.text,
+      });
+      i += 1;
       continue;
     }
 
     if (line.startsWith(">")) {
-      flushBullets();
-      out.push(
-        <blockquote
-          key={`q-${out.length}`}
-          className="my-3 border-l-4 border-[#d4b96a] pl-4 text-foreground/80 italic"
-        >
-          {renderInline(line.replace(/^>\s?/, ""))}
-        </blockquote>,
-      );
+      nodes.push({
+        type: "quote",
+        id: id("quote", i, i),
+        sourceStart: lineOffset + i,
+        sourceEnd: lineOffset + i,
+        text: line.slice(1).trim(),
+      });
+      i += 1;
       continue;
     }
 
-    const ordered = /^(\d+)\.\s+(.*)$/.exec(line);
-    if (ordered) {
-      flushBullets();
-      numbered.push(ordered[2]);
+    // Runs of same-kind list items become one list node; each item keeps its own source line
+    // as identity, so two identical bullets are still distinct.
+    const firstBullet = readBullet(line);
+    const firstOrdered = firstBullet === null ? readOrdered(line) : null;
+    if (firstBullet !== null || firstOrdered !== null) {
+      const ordered = firstOrdered !== null;
+      const start = i;
+      const items: { id: string; text: string }[] = [];
+      while (i < lines.length) {
+        const candidate = lines[i].trim();
+        const text = ordered ? readOrdered(candidate) : readBullet(candidate);
+        if (text === null) break;
+        items.push({ id: `li-${lineOffset + i}`, text });
+        i += 1;
+      }
+      nodes.push({
+        type: "list",
+        id: id("list", start, i - 1),
+        sourceStart: lineOffset + start,
+        sourceEnd: lineOffset + i - 1,
+        ordered,
+        items,
+      });
       continue;
     }
-    flushNumbered();
 
-    if (/^[-*]\s+/.test(line)) {
-      bullets.push(line.replace(/^[-*]\s+/, ""));
-      continue;
-    }
-
-    flushBullets();
-    out.push(
-      <p key={`p-${out.length}`} className="my-1.5">
-        {renderInline(line)}
-      </p>,
-    );
+    nodes.push({
+      type: "paragraph",
+      id: id("paragraph", i, i),
+      sourceStart: lineOffset + i,
+      sourceEnd: lineOffset + i,
+      text: line,
+    });
+    i += 1;
   }
-  flushBullets();
-  flushNumbered();
-  return <>{out}</>;
+
+  return nodes;
+}
+
+/** Render parsed blocks. Every key is a parser-owned node id. */
+export function MarkdownLines({
+  lines,
+  baseHeadingLevel = 3,
+  lineOffset = 0,
+}: Readonly<{
+  lines: readonly string[];
+  baseHeadingLevel?: 2 | 3 | 4;
+  lineOffset?: number;
+}>) {
+  return (
+    <>
+      {parseBlocks(lines, { lineOffset }).map((node) => {
+        switch (node.type) {
+          case "heading": {
+            const level = Math.min(6, baseHeadingLevel + node.depth - 1);
+            const Tag = `h${level}` as "h2" | "h3" | "h4" | "h5" | "h6";
+            return (
+              <Tag key={node.id} className="mt-4 mb-1 font-semibold text-navy">
+                {renderInline(node.text, node.id)}
+              </Tag>
+            );
+          }
+          case "rule":
+            return <hr key={node.id} className="my-5 border-border/60" />;
+          case "quote":
+            return (
+              <blockquote
+                key={node.id}
+                className="my-3 border-l-4 border-[#d4b96a] pl-4 text-foreground/80 italic"
+              >
+                {renderInline(node.text, node.id)}
+              </blockquote>
+            );
+          case "callout":
+            return (
+              <p
+                key={node.id}
+                className={`my-2 rounded-lg border px-3 py-2 text-[13px] ${CALLOUT_STYLE[node.tone]}`}
+              >
+                {renderInline(node.text, node.id)}
+              </p>
+            );
+          case "list": {
+            const items = node.items.map((item) => (
+              <li key={item.id}>{renderInline(item.text, item.id)}</li>
+            ));
+            return node.ordered ? (
+              <ol key={node.id} className="my-1.5 list-decimal space-y-1 pl-5">
+                {items}
+              </ol>
+            ) : (
+              <ul key={node.id} className="my-1.5 list-disc space-y-1 pl-5">
+                {items}
+              </ul>
+            );
+          }
+          default:
+            return (
+              <p key={node.id} className="my-1.5">
+                {renderInline(node.text, node.id)}
+              </p>
+            );
+        }
+      })}
+    </>
+  );
+}
+
+// ── Document sectioning ─────────────────────────────────────────────────────────────────────
+
+export interface MarkdownSection {
+  /** null for the lead-in lines that precede the first `##` heading. */
+  heading: string | null;
+  lines: string[];
+  /** 0-based index of this section's first line in the original body. Feeds `lineOffset` so
+   *  node ids stay unique across sections of the same document. */
+  lineOffset: number;
+  /** Stable identity for React, derived from the source position rather than the heading text
+   *  — two sections may legitimately share a heading. */
+  id: string;
+}
+
+/** Split a body into `##`-delimited sections, preserving the untitled lead-in. */
+export function splitSections(markdown: string): MarkdownSection[] {
+  const all = markdown.split("\n");
+  const sections: MarkdownSection[] = [
+    { heading: null, lines: [], lineOffset: 0, id: "section-0" },
+  ];
+
+  for (let index = 0; index < all.length; index++) {
+    const line = all[index].trimEnd();
+    // A section break is exactly `##` + space; `###` is a sub-heading and stays inside.
+    const isSectionHeading =
+      leadingRun(line, "#", 3) === 2 && skipSpaces(line, 2) > 2 && line.length > 2;
+    if (isSectionHeading) {
+      sections.push({
+        heading: line.slice(skipSpaces(line, 2)).trim(),
+        lines: [],
+        lineOffset: index + 1,
+        id: `section-${index}`,
+      });
+    } else {
+      sections.at(-1)!.lines.push(line);
+    }
+  }
+
+  // Drop the lead-in when the body starts with a heading (its lines are all blank).
+  return sections.filter(
+    (s) => s.heading !== null || s.lines.some((l) => l.trim().length > 0),
+  );
 }

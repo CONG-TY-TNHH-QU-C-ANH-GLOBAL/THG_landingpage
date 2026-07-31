@@ -1,3 +1,5 @@
+import { withStableIds, withStableStringIds } from "@/shared/model/stable-id";
+
 import type { JobResponseDto, JobsResponseDto } from "../schemas/jobs";
 import type { JobDetail, JobSummary } from "../models/job";
 
@@ -52,14 +54,30 @@ export function jobDetailFromDto(dto: JobResponseDto): JobDetail {
     lead: j.lead,
     // Object key order is not a contract, so the map is flattened into an explicit ordered
     // list here — the renderer must never depend on Object.entries ordering.
-    responsibilities: Object.entries(j.responsibilities)
-      .map(([heading, items]) => ({
-        heading,
-        items: items.filter((i) => i.trim().length > 0),
-      }))
-      .filter((g) => g.items.length > 0),
-    requirements: j.requirements.filter((r) => r.trim().length > 0),
-    benefits: j.benefits.map((b) => ({ icon: b.i, title: b.t, description: b.d })),
-    bonuses: j.bonuses.filter((b) => b.trim().length > 0),
+    responsibilities: withStableIds(
+      `${j.slug}:resp`,
+      Object.entries(j.responsibilities)
+        .map(([heading, items]) => ({ heading, items: items.filter((i) => i.trim().length > 0) }))
+        .filter((g) => g.items.length > 0),
+      (g) => g.heading,
+    ).map(({ id, value: g }) => ({
+      id,
+      heading: g.heading,
+      items: withStableStringIds(id, g.items).map(({ id: itemId, value }) => ({
+        id: itemId,
+        text: value,
+      })),
+    })),
+    requirements: withStableStringIds(
+      `${j.slug}:req`,
+      j.requirements.filter((r) => r.trim().length > 0),
+    ).map(({ id, value }) => ({ id, text: value })),
+    benefits: withStableIds(`${j.slug}:benefit`, j.benefits, (b) => b.t).map(
+      ({ id, value: b }) => ({ id, icon: b.i, title: b.t, description: b.d }),
+    ),
+    bonuses: withStableStringIds(
+      `${j.slug}:bonus`,
+      j.bonuses.filter((b) => b.trim().length > 0),
+    ).map(({ id, value }) => ({ id, text: value })),
   };
 }
