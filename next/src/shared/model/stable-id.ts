@@ -14,16 +14,52 @@
 // occurrence gets a `~2` suffix instead of being dropped or silently colliding. Removing
 // business content to obtain a React key would be the wrong trade.
 
-/** Lowercase, collapse whitespace, strip anything that is not alphanumeric or a separator, and
- *  bound the length. Not a slug for a URL — only for local key stability, so the transform
- *  only has to be deterministic and collision-resistant enough within one small list. */
+/** Longest id fragment kept from an item's content. */
+const MAX_LENGTH = 64;
+
+/** Single-character alphanumeric test. A class with NO quantifier cannot backtrack, so this is
+ *  O(1) per call and keeps the exact Unicode semantics of the previous `\p{Letter}\p{Number}`
+ *  classes — an accented or CJK heading normalizes the same way it did before. */
+const ALPHANUMERIC_CHAR = /[\p{Letter}\p{Number}]/u;
+
+/**
+ * Lowercase, collapse every run of non-alphanumeric characters to a single `-`, drop leading
+ * and trailing separators, and bound the length. Not a URL slug — only local key stability, so
+ * it just has to be deterministic and collision-resistant within one small list.
+ *
+ * Written as ONE forward pass. It replaces
+ * `.replace(/[^\p{Letter}\p{Number}]+/gu, "-").replace(/^-+|-+$/g, "")`, whose second pattern
+ * is polynomial: `-+$` is a greedy quantifier anchored to the end, so a global scan retries it
+ * at every position of a long dash run. The scanner never revisits a position, so it is linear
+ * by construction rather than a re-tuned regex.
+ *
+ * Output is byte-identical to the previous implementation — a differential test in
+ * tests/unit/stable-id.test.ts asserts that over generated inputs.
+ */
 function normalize(value: string): string {
-  return value
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 64);
+  const lower = value.normalize("NFKD").toLowerCase();
+  const out: string[] = [];
+  let separatorPending = false;
+
+  // Iterating the string yields CODE POINTS, matching the `u`-flagged patterns this replaces.
+  for (const ch of lower) {
+    if (!ALPHANUMERIC_CHAR.test(ch)) {
+      // A run of separators collapses to one, and a leading run is dropped because nothing has
+      // been emitted yet. A trailing run is dropped by never being flushed.
+      separatorPending = true;
+      continue;
+    }
+    if (separatorPending && out.length > 0) out.push("-");
+    separatorPending = false;
+    out.push(ch);
+    // Everything past the cap would be discarded anyway, so the scan can stop — which also
+    // bounds the work on a very long paragraph. One iteration can emit a separator AND a
+    // character, so this may overshoot by one; the slice below is what actually enforces the
+    // cap, exactly as the previous `.slice(0, 64)` did.
+    if (out.length >= MAX_LENGTH) break;
+  }
+
+  return out.join("").slice(0, MAX_LENGTH);
 }
 
 export interface Identified<T> {
