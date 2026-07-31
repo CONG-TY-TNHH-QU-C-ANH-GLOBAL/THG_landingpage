@@ -1,3 +1,5 @@
+import { withStableStringIds } from "@/shared/model/stable-id";
+
 import type {
   FaqsResponseDto,
   ServiceBlocksResponseDto,
@@ -110,7 +112,11 @@ export function serviceBlocksFromDto(
         tag: payloadString(raw.payload, "tag"),
         time: payloadString(raw.payload, "time"),
         // shipping_lane uses `features`, policy uses `items` — one model field, both sources.
-        items: [...payloadList(raw.payload, "features"), ...payloadList(raw.payload, "items")],
+        // Scoped to the block's own id so two lanes with the same feature line never collide.
+        items: withStableStringIds(`${raw.kind}-${raw.id}`, [
+          ...payloadList(raw.payload, "features"),
+          ...payloadList(raw.payload, "items"),
+        ]).map(({ id: itemId, value }) => ({ id: itemId, text: value })),
         note: payloadString(raw.payload, "note"),
         value,
       },

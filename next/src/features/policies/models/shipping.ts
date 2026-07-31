@@ -2,10 +2,13 @@
 
 /** A rate/coverage table attached to a route. Cells render as TEXT — never as markup. */
 export interface ShippingTable {
+  /** Mapper-owned stable identity (route slug + normalized caption). */
+  id: string;
   caption: string | null;
   columns: readonly { key: string; label: string }[];
-  /** One row per shipment band; keys correspond to `columns[].key`. */
-  rows: readonly Record<string, string>[];
+  /** One row per shipment band; `cells` keys correspond to `columns[].key`. Each row carries a
+   *  stable id because rate tables legitimately contain repeated values. */
+  rows: readonly { id: string; cells: Record<string, string> }[];
 }
 
 export interface ShippingRouteSummary {
@@ -20,7 +23,7 @@ export interface ShippingRouteSummary {
 export interface ShippingRouteDetail extends ShippingRouteSummary {
   /** Markdown body. Parsed into typed sections by the renderer — never injected as HTML. */
   bodyMarkdown: string;
-  notes: readonly string[];
+  notes: readonly { id: string; text: string }[];
   tables: readonly ShippingTable[];
 }
 

@@ -190,14 +190,38 @@ describe("careers mappers", () => {
       },
     });
     const detail = jobDetailFromDto(dto);
-    expect(detail.responsibilities).toEqual([{ heading: "Daily ops", items: ["Pick"] }]);
-    expect(detail.requirements).toEqual(["3y experience"]);
-    expect(detail.bonuses).toEqual(["Quarterly"]);
-    expect(detail.benefits[0]).toEqual({
+    expect(detail.responsibilities).toHaveLength(1);
+    expect(detail.responsibilities[0].heading).toBe("Daily ops");
+    expect(detail.responsibilities[0].items.map((i) => i.text)).toEqual(["Pick"]);
+    expect(detail.requirements.map((r) => r.text)).toEqual(["3y experience"]);
+    expect(detail.bonuses.map((b) => b.text)).toEqual(["Quarterly"]);
+    expect(detail.benefits[0]).toMatchObject({
       icon: "heart",
       title: "Insurance",
       description: "Full cover",
     });
+    // Mapper-owned identity, scoped to the job slug — never the render-loop index.
+    expect(detail.responsibilities[0].id).toBe("ops-lead:resp:daily-ops");
+    expect(detail.requirements[0].id).toContain("ops-lead:req");
+  });
+
+  it("keeps duplicate requirement lines, numbering the key instead of dropping one", () => {
+    // Repeated wording in a job post is legitimate business content.
+    const dto = jobResponseSchema.parse({
+      locale: "vi",
+      job: {
+        ...job(),
+        body_md: "",
+        lead: null,
+        responsibilities: {},
+        requirements: ["Teamwork", "Teamwork"],
+        benefits: [],
+        bonuses: [],
+      },
+    });
+    const requirements = jobDetailFromDto(dto).requirements;
+    expect(requirements.map((r) => r.text)).toEqual(["Teamwork", "Teamwork"]);
+    expect(new Set(requirements.map((r) => r.id)).size).toBe(2);
   });
 
   it("treats an unparseable or absent deadline as NOT expired", () => {

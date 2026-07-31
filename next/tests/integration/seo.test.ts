@@ -1,9 +1,17 @@
 import { describe, it, expect } from "vitest";
 
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { generateMetadata } from "../../src/app/[lang]/page";
 import robots from "../../src/app/robots";
 import sitemap from "../../src/app/sitemap";
 import { SUPPORTED_LOCALES } from "../../src/shared/i18n";
+import {
+  INDEXABLE_ROUTES,
+  NON_INDEXABLE_ROUTES,
+} from "../../src/shared/seo/indexable-routes";
 
 // FND-003 integration matrix (TEST_PLAN T-03): the [lang] route emits the full metadata set
 // through the FND-003 boundary, and the robots/sitemap app files produce the approved output.
@@ -74,37 +82,53 @@ describe("robots.ts (public/robots.txt parity)", () => {
   });
 });
 
-describe("sitemap.ts (indexable routes that exist in next/)", () => {
-  // The listed set grows one slice at a time and is asserted EXACTLY on purpose: a route
-  // must not appear here before its page.tsx exists in next/ (SPEC §17), and this list is
-  // what would silently claim a not-yet-migrated route is live.
-  const EXPECTED_PATHS = [
-    "/",
-    "/thg-fulfill",
-    "/policy",
-    "/shipping-policy",
-    "/blog",
-    "/careers",
-    "/thg-express",
-    "/thg-warehouse",
-    "/thg-order",
-    "/tracking",
-  ] as const;
+describe("sitemap.ts — expanded from the indexable-route registry", () => {
+  // The registry (shared/seo/indexable-routes) is the contract; this asserts the exact
+  // expansion rather than a row count, so a blocked route cannot slip in and a removed route
+  // cannot slip out.
 
-  it("lists every migrated indexable route once per locale", () => {
+  it("lists exactly registry x locales, with no duplicates and no non-canonical origin", () => {
     const entries = sitemap();
-    const expected = EXPECTED_PATHS.flatMap((path) =>
-      SUPPORTED_LOCALES.map((lang) => `${ORIGIN}/${lang}${path === "/" ? "" : path}`),
+    const expected = INDEXABLE_ROUTES.flatMap((route) =>
+      SUPPORTED_LOCALES.map(
+        (lang) => `${ORIGIN}/${lang}${route.path === "/" ? "" : route.path}`,
+      ),
     );
+
     expect(entries.map((e) => e.url).sort()).toEqual(expected.sort());
+    expect(new Set(entries.map((e) => e.url)).size).toBe(entries.length);
+    expect(entries.every((e) => e.url.startsWith(ORIGIN))).toBe(true);
+    expect(entries.some((e) => e.url.includes("localhost"))).toBe(false);
   });
 
-  it("gives home its parity weekly/1.0 weighting", () => {
-    const home = sitemap().filter((e) => /\/(vi|en|zh)$/.test(e.url));
-    expect(home).toHaveLength(SUPPORTED_LOCALES.length);
-    for (const e of home) {
-      expect(e.changeFrequency).toBe("weekly");
-      expect(e.priority).toBe(1.0);
+  it("covers every supported locale for every template", () => {
+    const entries = sitemap();
+    for (const route of INDEXABLE_ROUTES) {
+      const suffix = route.path === "/" ? "" : route.path;
+      for (const lang of SUPPORTED_LOCALES) {
+        expect(entries.map((e) => e.url)).toContain(`${ORIGIN}/${lang}${suffix}`);
+      }
+    }
+    expect(entries).toHaveLength(INDEXABLE_ROUTES.length * SUPPORTED_LOCALES.length);
+  });
+
+  it("keeps ordering stable: templates in registry order, locales in SUPPORTED_LOCALES order", () => {
+    // Stable output keeps the generated XML diffable between deploys.
+    const expected = INDEXABLE_ROUTES.flatMap((route) =>
+      SUPPORTED_LOCALES.map(
+        (lang) => `${ORIGIN}/${lang}${route.path === "/" ? "" : route.path}`,
+      ),
+    );
+    expect(sitemap().map((e) => e.url)).toEqual(expected);
+  });
+
+  it("carries the per-template weighting from the registry", () => {
+    for (const entry of sitemap()) {
+      const suffix = entry.url.replace(new RegExp(`^${ORIGIN}/(vi|en|zh)`), "") || "/";
+      const route = INDEXABLE_ROUTES.find((r) => r.path === suffix);
+      expect(route).toBeDefined();
+      expect(entry.priority).toBe(route!.priority);
+      expect(entry.changeFrequency).toBe(route!.changeFrequency);
     }
   });
 
@@ -119,10 +143,39 @@ describe("sitemap.ts (indexable routes that exist in next/)", () => {
       });
     }
   });
+});
 
-  it("has no duplicates and no non-canonical origin", () => {
-    const entries = sitemap();
-    expect(new Set(entries.map((e) => e.url)).size).toBe(entries.length);
-    expect(entries.every((e) => e.url.startsWith(ORIGIN))).toBe(true);
+describe("indexable-route registry", () => {
+  it("admits only routes whose page.tsx exists in next/", () => {
+    // The rule the registry exists to enforce: listing a route that is not implemented tells a
+    // crawler a URL is live when it 404s.
+    const appDir = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "src", "app", "[lang]");
+    for (const route of INDEXABLE_ROUTES) {
+      const file =
+        route.path === "/"
+          ? join(appDir, "page.tsx")
+          : join(appDir, ...route.path.slice(1).split("/"), "page.tsx");
+      expect(existsSync(file), `${route.path} has no page.tsx at ${file}`).toBe(true);
+    }
+  });
+
+  it("keeps blocked and deferred routes OUT, each with a recorded reason", () => {
+    const listed = new Set(INDEXABLE_ROUTES.map((r) => r.path));
+    for (const [path, reason] of Object.entries(NON_INDEXABLE_ROUTES)) {
+      expect(listed.has(path), `${path} must not be in the sitemap registry`).toBe(false);
+      expect(reason.length).toBeGreaterThan(10);
+    }
+  });
+
+  it("has no duplicate template and a sane priority for each", () => {
+    const paths = INDEXABLE_ROUTES.map((r) => r.path);
+    expect(new Set(paths).size).toBe(paths.length);
+    for (const route of INDEXABLE_ROUTES) {
+      expect(route.priority).toBeGreaterThan(0);
+      expect(route.priority).toBeLessThanOrEqual(1);
+      expect(route.path.startsWith("/")).toBe(true);
+      // Locale prefixes are added at expansion time; a template must not carry one.
+      expect(/^\/(vi|en|zh)(\/|$)/.test(route.path)).toBe(false);
+    }
   });
 });

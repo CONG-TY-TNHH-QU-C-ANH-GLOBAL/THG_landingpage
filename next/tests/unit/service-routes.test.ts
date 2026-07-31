@@ -180,7 +180,9 @@ describe("service block mapper", () => {
     });
     const [mapped] = serviceBlocksFromDto(dto).shipping_lane!;
     // Non-string list entries are dropped, not String()'d into "[object Object]".
-    expect(mapped.extras.items).toEqual(["Tracked"]);
+    expect(mapped.extras.items.map((i) => i.text)).toEqual(["Tracked"]);
+    // Identity is scoped to the block, never the render-loop index.
+    expect(mapped.extras.items[0].id).toContain("shipping_lane-1");
     // A finite number is a legitimate display value.
     expect(mapped.extras.note).toBe("42");
   });
@@ -192,7 +194,24 @@ describe("service block mapper", () => {
       kind: null,
       blocks: [block({ kind: "policy", payload: { items: ["A", "B"] } })],
     });
-    expect(serviceBlocksFromDto(dto).policy![0].extras.items).toEqual(["A", "B"]);
+    expect(serviceBlocksFromDto(dto).policy![0].extras.items.map((i) => i.text)).toEqual([
+      "A",
+      "B",
+    ]);
+  });
+
+  it("keeps duplicate lane features, numbering the key instead of dropping one", () => {
+    // A lane may legitimately list the same assurance twice; removing business content to
+    // obtain a React key would be the wrong trade.
+    const dto = serviceBlocksResponseSchema.parse({
+      locale: "vi",
+      page_slug: "thg-express",
+      kind: null,
+      blocks: [block({ kind: "shipping_lane", payload: { features: ["Tracked", "Tracked"] } })],
+    });
+    const items = serviceBlocksFromDto(dto).shipping_lane![0].extras.items;
+    expect(items.map((i) => i.text)).toEqual(["Tracked", "Tracked"]);
+    expect(new Set(items.map((i) => i.id)).size).toBe(2);
   });
 
   it("keeps a stat block that has only a value", () => {

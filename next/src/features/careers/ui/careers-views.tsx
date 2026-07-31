@@ -167,12 +167,16 @@ export function JobDetailView({
 
         {job.bodyMarkdown.trim().length > 0 && (
           <div className="text-[15px] leading-relaxed text-foreground/90">
-            {splitSections(job.bodyMarkdown).map((section, i) => (
-              <div key={i}>
+            {splitSections(job.bodyMarkdown).map((section) => (
+              <div key={section.id}>
                 {section.heading && (
                   <h2 className="mt-6 mb-2 text-lg font-semibold text-navy">{section.heading}</h2>
                 )}
-                <MarkdownLines lines={section.lines} baseHeadingLevel={3} />
+                <MarkdownLines
+                  lines={section.lines}
+                  baseHeadingLevel={3}
+                  lineOffset={section.lineOffset}
+                />
               </div>
             ))}
           </div>
@@ -182,11 +186,11 @@ export function JobDetailView({
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold text-navy">{t("careers.modal_resp_title")}</h2>
             {job.responsibilities.map((group) => (
-              <div key={group.heading} className="mb-4">
+              <div key={group.id} className="mb-4">
                 <h3 className="mb-1 text-[15px] font-semibold text-navy">{group.heading}</h3>
                 <ul className="list-disc space-y-1 pl-5 text-[14px] text-foreground/90">
-                  {group.items.map((item, i) => (
-                    <li key={i}>{item}</li>
+                  {group.items.map((item) => (
+                    <li key={item.id}>{item.text}</li>
                   ))}
                 </ul>
               </div>
@@ -198,8 +202,8 @@ export function JobDetailView({
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold text-navy">{t("careers.modal_req")}</h2>
             <ul className="list-disc space-y-1 pl-5 text-[14px] text-foreground/90">
-              {job.requirements.map((item, i) => (
-                <li key={i}>{item}</li>
+              {job.requirements.map((item) => (
+                <li key={item.id}>{item.text}</li>
               ))}
             </ul>
           </section>
@@ -210,7 +214,7 @@ export function JobDetailView({
             <h2 className="mb-3 text-lg font-semibold text-navy">{t("careers.modal_ben_title")}</h2>
             <div className="grid gap-3 sm:grid-cols-2">
               {job.benefits.map((benefit) => (
-                <div key={benefit.title} className="rounded-xl border border-border/60 bg-card p-4">
+                <div key={benefit.id} className="rounded-xl border border-border/60 bg-card p-4">
                   <p className="mb-1 text-[14px] font-semibold text-navy">{benefit.title}</p>
                   <p className="text-[13px] text-muted-foreground">{benefit.description}</p>
                 </div>
@@ -223,8 +227,8 @@ export function JobDetailView({
           <section className="mt-8">
             <h2 className="mb-3 text-lg font-semibold text-navy">{t("careers.modal_bonus_title")}</h2>
             <ul className="list-disc space-y-1 pl-5 text-[14px] text-foreground/90">
-              {job.bonuses.map((item, i) => (
-                <li key={i}>{item}</li>
+              {job.bonuses.map((item) => (
+                <li key={item.id}>{item.text}</li>
               ))}
             </ul>
           </section>

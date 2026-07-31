@@ -56,8 +56,8 @@ function BlockCard({ block }: Readonly<{ block: ServiceBlock }>) {
       )}
       {block.extras.items.length > 0 && (
         <ul className="mt-2 list-disc space-y-1 pl-5 text-[13px] text-foreground/90">
-          {block.extras.items.map((item, i) => (
-            <li key={i}>{item}</li>
+          {block.extras.items.map((item) => (
+            <li key={item.id}>{item.text}</li>
           ))}
         </ul>
       )}
@@ -221,14 +221,18 @@ export function ServicePageView({
           <>
             {service?.bodyMarkdown && service.bodyMarkdown.trim().length > 0 && (
               <section className="mb-12 text-[15px] leading-relaxed text-foreground/90">
-                {splitSections(service.bodyMarkdown).map((section, i) => (
-                  <div key={i}>
+                {splitSections(service.bodyMarkdown).map((section) => (
+                  <div key={section.id}>
                     {section.heading && (
                       <h2 className="mt-6 mb-2 text-lg font-semibold text-navy">
                         {section.heading}
                       </h2>
                     )}
-                    <MarkdownLines lines={section.lines} baseHeadingLevel={3} />
+                    <MarkdownLines
+                      lines={section.lines}
+                      baseHeadingLevel={3}
+                      lineOffset={section.lineOffset}
+                    />
                   </div>
                 ))}
               </section>

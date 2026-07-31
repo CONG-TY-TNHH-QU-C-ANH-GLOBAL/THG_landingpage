@@ -4,6 +4,8 @@
 // application flow (CONV-002) owns its own request types and does not reuse these.
 
 export interface Benefit {
+  /** Mapper-owned stable identity (job slug + normalized title). */
+  id: string;
   /** Icon name from the CMS `i` field. Presentation hint; the renderer may ignore it. */
   icon: string;
   title: string;
@@ -13,8 +15,10 @@ export interface Benefit {
 /** `responsibilities` is a CMS map of group heading → bullet lines. Flattened to an ordered
  *  list so the renderer never iterates object keys (whose order is not a contract). */
 export interface ResponsibilityGroup {
+  /** Mapper-owned stable identity (job slug + normalized heading). */
+  id: string;
   heading: string;
-  items: readonly string[];
+  items: readonly { id: string; text: string }[];
 }
 
 export interface JobSummary {
@@ -41,9 +45,11 @@ export interface JobDetail extends JobSummary {
   bodyMarkdown: string;
   lead: string | null;
   responsibilities: readonly ResponsibilityGroup[];
-  requirements: readonly string[];
+  /** Text-only CMS arrays, given mapper-owned identity so the renderer never keys by index.
+   *  Duplicate lines are legitimate and are numbered, not deduplicated. */
+  requirements: readonly { id: string; text: string }[];
   benefits: readonly Benefit[];
-  bonuses: readonly string[];
+  bonuses: readonly { id: string; text: string }[];
 }
 
 /** True when the deadline has passed. Unparseable or absent → NOT expired: refusing to show a

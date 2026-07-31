@@ -44,8 +44,10 @@ export interface ServiceBlock {
     tag: string | null;
     /** shipping_lane transit time. */
     time: string | null;
-    /** shipping_lane feature bullets, or policy items. */
-    items: readonly string[];
+    /** shipping_lane feature bullets, or policy items. Each carries a mapper-owned stable id
+     *  (block id + normalized text) — a lane may legitimately repeat a feature line, so
+     *  duplicates are numbered rather than deduplicated. */
+    items: readonly { id: string; text: string }[];
     /** shipping_lane footnote. */
     note: string | null;
     /** stat value. */
