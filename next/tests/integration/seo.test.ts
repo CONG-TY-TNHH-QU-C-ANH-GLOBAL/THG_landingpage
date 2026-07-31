@@ -78,7 +78,14 @@ describe("sitemap.ts (indexable routes that exist in next/)", () => {
   // The listed set grows one slice at a time and is asserted EXACTLY on purpose: a route
   // must not appear here before its page.tsx exists in next/ (SPEC §17), and this list is
   // what would silently claim a not-yet-migrated route is live.
-  const EXPECTED_PATHS = ["/", "/thg-fulfill", "/policy", "/shipping-policy"] as const;
+  const EXPECTED_PATHS = [
+    "/",
+    "/thg-fulfill",
+    "/policy",
+    "/shipping-policy",
+    "/blog",
+    "/careers",
+  ] as const;
 
   it("lists every migrated indexable route once per locale", () => {
     const entries = sitemap();

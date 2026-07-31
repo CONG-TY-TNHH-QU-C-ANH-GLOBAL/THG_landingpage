@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import type { PolicyDetail, PolicyTextBlock } from "../models/policy";
 import { isPolicyContentEmpty } from "../models/policy";
-import { MarkdownLines, splitSections } from "./markdown-blocks";
+import { MarkdownLines, splitSections } from "@/shared/ui/markdown";
 
 // One policy rendered in full. Server Component — no state, no client island.
 
@@ -124,7 +124,10 @@ export function PolicySection({
                 {section.heading && (
                   <h3 className="mt-4 mb-1 text-[15px] font-semibold text-navy">{section.heading}</h3>
                 )}
-                <MarkdownLines lines={section.lines} />
+                {/* base 2: splitSections already consumed the `##` section headings, so the
+                    shallowest construct left in these bodies is `###`, which lands at h4 —
+                    directly under the h3 section heading above it. */}
+                <MarkdownLines lines={section.lines} baseHeadingLevel={2} />
               </div>
             ))}
         </>

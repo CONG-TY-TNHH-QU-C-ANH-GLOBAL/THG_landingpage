@@ -242,6 +242,40 @@ export const MARKETING_COPY: Readonly<Record<string, CopyEntry>> = {
   // Breadcrumb root label. The Vite JsonLdBreadcrumb hardcoded the English "Home" in every
   // locale; a localized trail is the correct schema.org value.
   "nav.home": { en: "Home", vi: "Trang chủ", zh: "首页" },
+  // --- WEB-005 blog ---
+  // blog.ts keys ported verbatim. The two `*.unavailable` / `*.no_content` strings are new:
+  // the Vite page had no way to distinguish a CMS outage from an empty list, and no state at
+  // all for an article published without a body in the requested locale.
+  "blog.title": { en: "News & Insights", vi: "Tin tức & Kiến thức", zh: "新闻与见解" },
+  "blog.subtitle": { en: "Stay updated with the latest from THG", vi: "Cập nhật tin tức mới nhất từ THG", zh: "关注THG的最新动态" },
+  "blog.back": { en: "Back to Blog", vi: "Quay lại Tin tức", zh: "返回博客" },
+  "blog.list_empty": { en: "No articles yet. Please check back later.", vi: "Chưa có bài viết nào. Vui lòng quay lại sau.", zh: "暂无文章，请稍后再来。" },
+  "blog.slides": { en: "slides", vi: "slide", zh: "张幻灯片" },
+  "blog.categories_label": { en: "Article categories", vi: "Chuyên mục bài viết", zh: "文章分类" },
+  "blog.no_content": { en: "This article has no published content in this language yet.", vi: "Bài viết này chưa có nội dung công bố cho ngôn ngữ này.", zh: "该文章尚未发布此语言的内容。" },
+  "blog.unavailable": { en: "Articles cannot be loaded right now. Please try again shortly.", vi: "Hiện chưa tải được bài viết. Vui lòng thử lại sau ít phút.", zh: "暂时无法加载文章，请稍后再试。" },
+  // --- WEB-006 careers ---
+  // careers.ts keys ported verbatim EXCEPT `careers.apply_desc`, which replaces the legacy
+  // `careers.modal_apply_desc`: that value embeds raw `<strong>`/`<br />` markup, and nothing
+  // in next/ renders HTML from copy. Same two facts (address, interview location), as text.
+  "careers.hero_title_1": { en: "Join the team of", vi: "Gia nhập đội ngũ", zh: "加入" },
+  "careers.hero_desc": { en: "THG Fulfill — cross-border E-commerce fulfillment ecosystem Vietnam · China · US. We are looking for passionate, proactive talents who share our mission of bringing local products to the global stage.", vi: "THG Fulfill — hệ sinh thái fulfillment E-commerce xuyên biên giới Việt Nam · Trung Quốc · Hoa Kỳ. Chúng tôi đang tìm kiếm những con người nhiệt huyết, chủ động và khát khao phát triển cùng sứ mệnh đưa sản phẩm Việt ra toàn cầu.", zh: "THG Fulfill — 跨境电子商务履约生态系统：越南·中国·美国。我们正在寻找充满热情、主动且渴望与我们共同成长的人才，帮助本土产品走向全球。" },
+  "careers.list_empty": { en: "No open positions right now. Please check back later.", vi: "Hiện chưa có vị trí tuyển dụng nào. Vui lòng quay lại sau.", zh: "目前暂无职位空缺，请稍后再来。" },
+  "careers.all_positions": { en: "All positions", vi: "Tất cả vị trí", zh: "全部职位" },
+  "careers.hot": { en: "HOT · NEW", vi: "HOT · MỚI", zh: "最热 · 新增" },
+  "careers.expired": { en: "This position is no longer accepting applications", vi: "Vị trí này đã hết hạn nộp hồ sơ", zh: "此职位已停止招聘" },
+  "careers.expired_badge": { en: "Closed", vi: "Đã hết hạn", zh: "已截止" },
+  "careers.deadline": { en: "Application deadline", vi: "Hạn nộp hồ sơ", zh: "截止日期" },
+  "careers.modal_loc": { en: "Location", vi: "Địa điểm", zh: "工作地点" },
+  "careers.modal_type": { en: "Job Type", vi: "Hình thức", zh: "工作性质" },
+  "careers.modal_salary": { en: "Salary", vi: "Mức lương", zh: "薪资" },
+  "careers.modal_exp": { en: "Experience", vi: "Kinh nghiệm", zh: "经验" },
+  "careers.modal_req": { en: "Requirements", vi: "Yêu cầu ứng viên", zh: "任职要求" },
+  "careers.modal_resp_title": { en: "Job Description", vi: "Mô tả công việc", zh: "职位描述" },
+  "careers.modal_ben_title": { en: "Attractive Benefits", vi: "Quyền lợi hấp dẫn", zh: "丰厚福利" },
+  "careers.modal_bonus_title": { en: "Bonus & Commission System", vi: "Hệ thống thưởng & hoa hồng", zh: "奖金与佣金制度" },
+  "careers.modal_apply_desc": { en: "Send your CV to careers@thgfulfill.com. Interview location: 121/5 Kenh 19/05, Tay Thanh Ward, HCMC. Prefer to talk first?", vi: "Gửi CV về careers@thgfulfill.com. Địa điểm phỏng vấn: 121/5 Kênh 19/05, Phường Tây Thạnh, TP.HCM. Muốn trao đổi trước?", zh: "请将简历发送至 careers@thgfulfill.com。面试地点：胡志明市新富郡西盛坊19/05渠街121/5号。想先聊聊？" },
+  "careers.unavailable": { en: "Positions cannot be loaded right now. Please try again shortly.", vi: "Hiện chưa tải được vị trí tuyển dụng. Vui lòng thử lại sau ít phút.", zh: "暂时无法加载职位，请稍后再试。" },
   // --- WEB-007 policies + shipping routes ---
   // shipping.ts keys ported verbatim; the three `*.unavailable` / `*.no_content` strings are
   // new because the Vite pages had no way to say them: they rendered a CMS outage as

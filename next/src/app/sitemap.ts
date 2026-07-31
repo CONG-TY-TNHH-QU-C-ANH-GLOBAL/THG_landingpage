@@ -15,6 +15,12 @@ const INDEXABLE_ROUTES = [
   { path: "/thg-fulfill", changeFrequency: "weekly", priority: 0.9 },
   { path: "/policy", changeFrequency: "monthly", priority: 0.5 },
   { path: "/shipping-policy", changeFrequency: "monthly", priority: 0.5 },
+  // WEB-005 / WEB-006 index routes. Article and job DETAIL URLs are not listed here: their
+  // slugs are CMS-owned and change without a build, so enumerating them in a static sitemap
+  // would go stale. They are reachable from these indexes, which is what a crawler follows.
+  // A CMS-driven detail sitemap is the M9 job (GET /sitemap already exposes the blog feed).
+  { path: "/blog", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/careers", changeFrequency: "weekly", priority: 0.6 },
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
