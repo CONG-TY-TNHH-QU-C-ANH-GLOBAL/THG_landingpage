@@ -85,6 +85,10 @@ describe("sitemap.ts (indexable routes that exist in next/)", () => {
     "/shipping-policy",
     "/blog",
     "/careers",
+    "/thg-express",
+    "/thg-warehouse",
+    "/thg-order",
+    "/tracking",
   ] as const;
 
   it("lists every migrated indexable route once per locale", () => {

@@ -21,6 +21,11 @@ const INDEXABLE_ROUTES = [
   // A CMS-driven detail sitemap is the M9 job (GET /sitemap already exposes the blog feed).
   { path: "/blog", changeFrequency: "weekly", priority: 0.7 },
   { path: "/careers", changeFrequency: "weekly", priority: 0.6 },
+  // WEB-002 service routes + WEB-008 tracking.
+  { path: "/thg-express", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/thg-warehouse", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/thg-order", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/tracking", changeFrequency: "monthly", priority: 0.4 },
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
