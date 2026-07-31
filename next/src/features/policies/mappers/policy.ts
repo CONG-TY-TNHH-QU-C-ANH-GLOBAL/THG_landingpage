@@ -1,3 +1,5 @@
+import { withStableIds, withStableStringIds } from "@/shared/model/stable-id";
+
 import type { PoliciesResponseDto, PolicyResponseDto } from "../schemas/policies";
 import type { PolicyDetail, PolicySummary } from "../models/policy";
 
@@ -27,12 +29,19 @@ export function policyDetailFromDto(dto: PolicyResponseDto): PolicyDetail {
     icon: p.icon,
     mode: p.mode,
     images: p.image_list,
-    blocks: p.text_blocks.map((b) => ({
+    // Identity is scoped to the policy slug and derived from the heading, so a block keeps
+    // its key when the operator reorders the document. Two blocks may legitimately share a
+    // heading; withStableIds numbers the repeat rather than dropping it.
+    blocks: withStableIds(p.slug, p.text_blocks, (b) => b.heading).map(({ id, value: b }) => ({
+      id,
       tone: b.type,
       heading: b.heading,
       // Drop blank strings: an editor's trailing empty paragraph is not content, and an
       // empty <p> would open a gap in the rendered document.
-      paragraphs: b.content.filter((line) => line.trim().length > 0),
+      paragraphs: withStableStringIds(
+        id,
+        b.content.filter((line) => line.trim().length > 0),
+      ).map(({ id: paragraphId, value }) => ({ id: paragraphId, text: value })),
     })),
     bodyMarkdown: p.body_md ?? "",
     summary: p.summary,

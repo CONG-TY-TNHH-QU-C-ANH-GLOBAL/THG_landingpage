@@ -6,9 +6,14 @@
 /** A typed paragraph group inside a text-mode policy. `tone` drives the callout style —
  *  it is presentation intent from the editor, not arbitrary markup. */
 export interface PolicyTextBlock {
+  /** Mapper-owned stable identity (policy slug + normalized heading). Two blocks may share a
+   *  heading, so repeats are disambiguated rather than deduplicated. */
+  id: string;
   tone: "normal" | "warn" | "info";
   heading: string;
-  paragraphs: readonly string[];
+  /** Each paragraph carries its own stable id — the array index is positional and would
+   *  re-key every later paragraph when one is inserted above it. */
+  paragraphs: readonly { id: string; text: string }[];
 }
 
 /** In-page navigation entry. `anchor` is the fragment this section is reachable at. */

@@ -69,7 +69,31 @@ describe("policy mappers", () => {
     );
     const [block] = policyDetailFromDto(dto).blocks;
     expect(block.tone).toBe("warn");
-    expect(block.paragraphs).toEqual(["real"]);
+    expect(block.paragraphs.map((p) => p.text)).toEqual(["real"]);
+    // Mapper-owned identity, scoped to the policy slug — never the render-loop index.
+    expect(block.id).toBe("shipping:h");
+    expect(block.paragraphs[0].id).toBe("shipping:h:real");
+  });
+
+  it("keeps duplicate business content, disambiguating the key instead of dropping it", () => {
+    // A legal document may legitimately repeat a sentence. Deduplicating to obtain a React key
+    // would delete business content; the second occurrence gets a numbered id instead.
+    const dto = policyResponseSchema.parse(
+      policyDetailDto({
+        text_blocks: [
+          { type: "normal", heading: "Terms", content: ["same line", "other", "same line"] },
+          { type: "normal", heading: "Terms", content: ["x"] },
+        ],
+      }),
+    );
+    const blocks = policyDetailFromDto(dto).blocks;
+
+    expect(blocks).toHaveLength(2);
+    expect(blocks[0].id).not.toBe(blocks[1].id);
+
+    const paragraphs = blocks[0].paragraphs;
+    expect(paragraphs.map((p) => p.text)).toEqual(["same line", "other", "same line"]);
+    expect(new Set(paragraphs.map((p) => p.id)).size).toBe(3);
   });
 
   it("recognizes a policy with no readable content in this locale (OQ-P-001 state)", () => {
@@ -137,7 +161,9 @@ describe("shipping mappers", () => {
     );
     const [table] = shippingRouteDetailFromDto(dto).tables;
     // Numbers are stringified in the mapper so the renderer never picks a number format.
-    expect(table.rows[0]).toEqual({ w: "1", p: "—" });
+    expect(table.rows[0].cells).toEqual({ w: "1", p: "—" });
+    expect(table.id).toBe("vn-us:table:rates");
+    expect(table.rows[0].id).toContain("vn-us:table:rates");
   });
 
   it("drops a column-less table (the CMS degradation for malformed columns_json)", () => {
@@ -155,6 +181,7 @@ describe("shipping mappers", () => {
       shippingRouteResponseSchema.parse(routeDetailDto({ notes: ["Customs delay applies"] })),
     );
     expect(isRouteContentEmpty(withNotes)).toBe(false);
+    expect(withNotes.notes[0]).toMatchObject({ text: "Customs delay applies" });
   });
 
   it("rejects a payload missing a documented field (contract violation fails loud)", () => {

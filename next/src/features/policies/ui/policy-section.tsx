@@ -34,12 +34,15 @@ export function PolicyIcon({ icon }: Readonly<{ icon: string | null }>) {
 function TextBlocks({ blocks }: Readonly<{ blocks: readonly PolicyTextBlock[] }>) {
   return (
     <div className="space-y-4">
-      {blocks.map((block, i) => (
-        <section key={`${block.heading}-${i}`} className={`rounded-xl border p-4 ${TONE_STYLE[block.tone]}`}>
+      {blocks.map((block) => (
+        <section key={block.id} className={`rounded-xl border p-4 ${TONE_STYLE[block.tone]}`}>
           <h3 className="mb-2 text-[15px] font-semibold text-navy">{block.heading}</h3>
-          {block.paragraphs.map((line, j) => (
-            <p key={j} className="my-1.5 text-[13px] leading-relaxed text-foreground/90">
-              {line}
+          {block.paragraphs.map((paragraph) => (
+            <p
+              key={paragraph.id}
+              className="my-1.5 text-[13px] leading-relaxed text-foreground/90"
+            >
+              {paragraph.text}
             </p>
           ))}
         </section>
@@ -119,12 +122,22 @@ export function PolicySection({
           {/* body_md renders only when there are no structured blocks — the CMS populates
               one or the other, and showing both would duplicate the same terms. */}
           {policy.blocks.length === 0 &&
-            bodySections.map((section, i) => (
-              <div key={i} className="text-[13px] leading-relaxed text-foreground/90">
+            bodySections.map((section) => (
+              <div key={section.id} className="text-[13px] leading-relaxed text-foreground/90">
                 {section.heading && (
-                  <h3 className="mt-4 mb-1 text-[15px] font-semibold text-navy">{section.heading}</h3>
+                  <h3 className="mt-4 mb-1 text-[15px] font-semibold text-navy">
+                    {section.heading}
+                  </h3>
                 )}
-                <MarkdownLines lines={section.lines} />
+                {/* base 2: splitSections already consumed the `##` section headings, so the
+                    shallowest construct left in these bodies is `###`, which lands at h4 —
+                    directly under the h3 section heading above it. lineOffset keeps parsed-node
+                    ids unique across sections of the same document. */}
+                <MarkdownLines
+                  lines={section.lines}
+                  baseHeadingLevel={2}
+                  lineOffset={section.lineOffset}
+                />
               </div>
             ))}
         </>
