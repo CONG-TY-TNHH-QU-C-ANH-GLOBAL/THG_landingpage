@@ -1,11 +1,14 @@
 import { z } from "zod";
 
+import { SUPPORTED_LOCALES } from "@/shared/i18n";
+
 // Transport DTOs for GET /jobs and GET /jobs/{slug}.
 // Mirrors the frozen CMS contract [FACT: CMS src/features/careers/careers.schemas.ts].
 // The four parsed-from-JSON detail fields are ALWAYS present on the wire (the handler falls
 // back to {} / []), so they are required here rather than optional.
 
-const localeSchema = z.enum(["en", "vi", "zh"]);
+// Derived from the canonical locale list rather than restating it (shared/i18n owns the set).
+const localeSchema = z.enum(SUPPORTED_LOCALES);
 
 const jobSummaryDtoSchema = z.object({
   slug: z.string(),
@@ -41,7 +44,17 @@ const jobBenefitDtoSchema = z.object({
   d: z.string(),
 });
 
-const jobDetailDtoSchema = jobSummaryDtoSchema.extend({
+// The detail projection is the summary MINUS `position`, plus six fields. `position` is the
+// operator's ordering for the LIST and the detail endpoint does not send it
+// [FACT: CMS careers.schemas.ts:74-95 — jobDetailSchema declares no position].
+//
+// This was a plain `.extend()`, which made `position` a REQUIRED field of the detail contract.
+// Every /jobs/{slug} response therefore failed shape validation, so every job detail page in
+// production rendered the "temporarily unavailable" fallback — silently, because that fallback
+// is indistinguishable from a real outage. Verified against the live CMS: 6 of 7 postings,
+// in all three locales. `.omit()` keeps the fourteen shared fields tied to one definition
+// while stating the one documented difference, rather than re-typing them and inviting drift.
+const jobDetailDtoSchema = jobSummaryDtoSchema.omit({ position: true }).extend({
   body_md: z.string(),
   lead: z.string().nullable(),
   responsibilities: z.record(z.string(), z.array(z.string())),

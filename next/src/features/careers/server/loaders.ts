@@ -3,13 +3,9 @@ import "server-only";
 import { cache } from "react";
 
 import { cmsFetch } from "@/shared/cms";
-import {
-  CmsError,
-  CmsHttpError,
-  CmsParseError,
-  CmsShapeError,
-  isCmsNotFound,
-} from "@/shared/cms/errors";
+import { CmsError, isCmsNotFound } from "@/shared/cms/errors";
+import { unavailableReason } from "@/shared/cms/degraded";
+import { isRoutableSlug } from "@/shared/cms/slug";
 import { logCmsFallback } from "@/shared/cms/log-fallback";
 import { SUPPORTED_LOCALES, type Locale } from "@/shared/i18n";
 
@@ -19,14 +15,6 @@ import type { JobDetailResult, JobListResult } from "../models/job";
 
 // Server-only WEB-006 loaders: cmsFetch → feature schema → pure mapper → model.
 // The CMS filters to status='open' server-side; the landing never re-derives publish state.
-
-type UnavailableReason = "http" | "contract" | "network";
-
-function unavailableReason(err: CmsError): UnavailableReason {
-  if (err instanceof CmsHttpError) return "http";
-  if (err instanceof CmsShapeError || err instanceof CmsParseError) return "contract";
-  return "network";
-}
 
 export const loadJobs = cache(async (lang: Locale): Promise<JobListResult> => {
   const path = `/jobs?lang=${lang}`;
@@ -65,7 +53,11 @@ export async function jobStaticParams(): Promise<{ lang: string; slug: string }[
   const perLocale = await Promise.all(
     SUPPORTED_LOCALES.map(async (lang) => {
       const result = await loadJobs(lang);
-      return result.jobs.map((job) => ({ lang, slug: job.slug }));
+      // Same slug contract as blog: an out-of-contract value is skipped rather than failing the
+      // locale, and dynamicParams still covers it if the CMS is corrected.
+      return result.jobs
+        .filter((job) => isRoutableSlug(job.slug))
+        .map((job) => ({ lang, slug: job.slug }));
     }),
   );
   return perLocale.flat();

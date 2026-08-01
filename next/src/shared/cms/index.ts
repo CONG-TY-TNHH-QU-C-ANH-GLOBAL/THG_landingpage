@@ -12,3 +12,6 @@ export {
   CmsNetworkError,
   isCmsNotFound,
 } from "./errors";
+export type { UnavailableReason, CmsResultStatus } from "./degraded";
+export { unavailableReason, isDegradedResult, applyCmsCachePolicy } from "./degraded";
+export { isRoutableSlug } from "./slug";

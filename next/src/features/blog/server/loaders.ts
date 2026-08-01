@@ -3,15 +3,11 @@ import "server-only";
 import { cache } from "react";
 
 import { cmsFetch } from "@/shared/cms";
-import {
-  CmsError,
-  CmsHttpError,
-  CmsParseError,
-  CmsShapeError,
-  isCmsNotFound,
-} from "@/shared/cms/errors";
+import { CmsError, isCmsNotFound } from "@/shared/cms/errors";
+import { unavailableReason } from "@/shared/cms/degraded";
+import { isRoutableSlug } from "@/shared/cms/slug";
 import { logCmsFallback } from "@/shared/cms/log-fallback";
-import { SUPPORTED_LOCALES, type Locale } from "@/shared/i18n";
+import { isSupportedLocale, type Locale } from "@/shared/i18n";
 
 import {
   blogCategoriesResponseSchema,
@@ -32,14 +28,6 @@ import type { BlogArticleResult, BlogListResult } from "../models/blog";
 // surfaces an explicit `unavailable` state instead of a fabricated fallback. The critical
 // distinction on detail is 404 vs outage — a 404 becomes a real HTTP 404, an outage must NOT,
 // because a crawler that sees 404 for a transient failure drops a live URL from the index.
-
-type UnavailableReason = "http" | "contract" | "network";
-
-function unavailableReason(err: CmsError): UnavailableReason {
-  if (err instanceof CmsHttpError) return "http";
-  if (err instanceof CmsShapeError || err instanceof CmsParseError) return "contract";
-  return "network";
-}
 
 /** Posts plus the category filter set for one locale.
  *
@@ -109,7 +97,11 @@ export async function blogStaticParams(): Promise<{ lang: string; slug: string }
     for (const row of dto.blog) {
       // The feed carries every locale; keep only the ones this app serves, and de-duplicate —
       // the same slug appears once per locale row.
-      if (!SUPPORTED_LOCALES.includes(row.locale as Locale)) continue;
+      if (!isSupportedLocale(row.locale)) continue;
+      // A slug that is not a safe single path segment must not become a route param. Dropping
+      // the row is deliberate: with dynamicParams the route still answers if the CMS later
+      // serves a corrected value, whereas failing the feed would blank the whole prerender set.
+      if (!isRoutableSlug(row.slug)) continue;
       const set = byLocale.get(row.locale) ?? new Set<string>();
       set.add(row.slug);
       byLocale.set(row.locale, set);

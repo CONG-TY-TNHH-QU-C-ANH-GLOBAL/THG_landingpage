@@ -1,7 +1,10 @@
-// Landing-domain careers models (WEB-006 §Model). Plain data, zero imports (FND-005).
+// Landing-domain careers models (WEB-006 §Model). Plain data (FND-005); the one import is the
+// shared CMS result vocabulary, so blog and careers cannot drift on what a failure is called.
 //
 // Applicant PII never appears here: this is the READ model for published job posts. The
 // application flow (CONV-002) owns its own request types and does not reuse these.
+
+import type { UnavailableReason } from "@/shared/cms/degraded";
 
 export interface Benefit {
   /** Mapper-owned stable identity (job slug + normalized title). */
@@ -34,7 +37,13 @@ export interface JobSummary {
   /** Pre-formatted by the CMS (`salary` + `salary_unit` + `salary_note`); never computed here. */
   salaryText: string | null;
   /** ISO `YYYY-MM-DD` or whatever the operator typed. Compared as a date only when parseable. */
+  /** As the operator wrote it — free text, shown as-is. Never a machine value. */
   deadline: string | null;
+  /** The deadline as a machine-readable ISO date, or null when it is not one. Separate for the
+   *  same reason as the blog's publication date: `Date.parse` accepts "01/01/2030" and then
+   *  `new Date(...).toISOString()` shifts it a day back in a positive-offset timezone, which
+   *  advertised a JobPosting as closed before it was. */
+  deadlineIso: string | null;
   experience: string | null;
   /** Unix SECONDS (CMS units, kept) — JobPosting.datePosted input. */
   postedAt: number;
@@ -64,9 +73,9 @@ export function isExpired(deadline: string | null, now: Date = new Date()): bool
 export type JobListResult =
   | { status: "ready"; jobs: readonly JobSummary[] }
   | { status: "empty"; jobs: readonly JobSummary[] }
-  | { status: "unavailable"; jobs: readonly JobSummary[]; reason: "http" | "contract" | "network" };
+  | { status: "unavailable"; jobs: readonly JobSummary[]; reason: UnavailableReason };
 
 export type JobDetailResult =
   | { status: "ready"; job: JobDetail }
   | { status: "not-found" }
-  | { status: "unavailable"; reason: "http" | "contract" | "network" };
+  | { status: "unavailable"; reason: UnavailableReason };
