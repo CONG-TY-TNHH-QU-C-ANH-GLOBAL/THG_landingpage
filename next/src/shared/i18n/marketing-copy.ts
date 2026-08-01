@@ -239,6 +239,25 @@ export const MARKETING_COPY: Readonly<Record<string, CopyEntry>> = {
   "common.loading": { en: "Loading...", vi: "Đang tải...", zh: "加载中…" },
   "policy.loading": { en: "Loading policies...", vi: "Đang tải chính sách...", zh: "正在加载政策…" },
   "policy.empty": { en: "No policies available yet.", vi: "Chưa có chính sách nào.", zh: "暂无政策。" },
+  // Breadcrumb root label. The Vite JsonLdBreadcrumb hardcoded the English "Home" in every
+  // locale; a localized trail is the correct schema.org value.
+  "nav.home": { en: "Home", vi: "Trang chủ", zh: "首页" },
+  // --- WEB-007 policies + shipping routes ---
+  // shipping.ts keys ported verbatim; the three `*.unavailable` / `*.no_content` strings are
+  // new because the Vite pages had no way to say them: they rendered a CMS outage as
+  // "No policies available yet" and had no per-section empty state at all.
+  "policy.nav_label": { en: "Policy sections", vi: "Các mục chính sách", zh: "政策目录" },
+  "policy.pages": { en: "pages", vi: "trang", zh: "页" },
+  "policy.no_content": { en: "This policy has no published content in this language yet.", vi: "Chính sách này chưa có nội dung công bố cho ngôn ngữ này.", zh: "该政策尚未发布此语言的内容。" },
+  "policy.unavailable": { en: "Policies cannot be loaded right now. Please try again shortly.", vi: "Hiện chưa tải được chính sách. Vui lòng thử lại sau ít phút.", zh: "暂时无法加载政策，请稍后再试。" },
+  "spolicy.title": { en: "Shipping Policy", vi: "Chính Sách Vận Chuyển", zh: "运输政策" },
+  "spolicy.subtitle": { en: "Organized by shipping route — select a route below to view its terms", vi: "Phân loại theo tuyến vận chuyển — chọn tuyến bên dưới để xem điều khoản", zh: "按运输路线分类 — 选择下方路线查看条款" },
+  "spolicy.empty": { en: "No shipping routes available yet.", vi: "Chưa có tuyến vận chuyển nào.", zh: "暂无运输路线。" },
+  "spolicy.nav_label": { en: "Shipping routes", vi: "Tuyến vận chuyển", zh: "运输路线" },
+  "spolicy.table_label": { en: "Table", vi: "Bảng", zh: "表格" },
+  "spolicy.notes": { en: "Notes", vi: "Lưu ý", zh: "注意事项" },
+  "spolicy.no_detail": { en: "This route has no detailed content yet.", vi: "Tuyến này chưa có nội dung chi tiết.", zh: "该路线暂无详细内容。" },
+  "spolicy.unavailable": { en: "Shipping routes cannot be loaded right now. Please try again shortly.", vi: "Hiện chưa tải được tuyến vận chuyển. Vui lòng thử lại sau ít phút.", zh: "暂时无法加载运输路线，请稍后再试。" },
   // --- express.ts (only key rendered on the homepage) ---
   "express_page.marquee_label": { en: "Real-world processing capacity at our hub", vi: "Năng lực xử lý thực tế tại trung tâm", zh: "枢纽实际处理能力" },
   // --- WEB-001B homepage redesign (Open Design baseline) ---
