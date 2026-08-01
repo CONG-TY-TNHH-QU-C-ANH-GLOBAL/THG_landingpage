@@ -8,6 +8,8 @@ export type {
   BlogListResult,
   BlogArticleResult,
 } from "./models/blog";
+export type { CategoryAnchor } from "./models/category-anchor";
+export { allocateCategoryAnchors } from "./models/category-anchor";
 
 export { loadBlogList, loadBlogArticle, blogStaticParams } from "./server/loaders";
 export { BlogList } from "./ui/blog-list";

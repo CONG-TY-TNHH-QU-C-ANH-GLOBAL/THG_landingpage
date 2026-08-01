@@ -1,3 +1,4 @@
+import { isoDateOrNull } from "@/shared/cms/iso-date";
 import { withStableIds, withStableStringIds } from "@/shared/model/stable-id";
 
 import type { JobResponseDto, JobsResponseDto } from "../schemas/jobs";
@@ -20,7 +21,11 @@ function salaryText(
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
-function summaryFrom(j: JobsResponseDto["jobs"][number]): JobSummary {
+/** The fields both projections share. `position` is list-only, so it is excluded here rather
+ *  than required of a detail payload that never carries it. */
+type JobCommonDto = Omit<JobsResponseDto["jobs"][number], "position">;
+
+function summaryFrom(j: JobCommonDto): JobSummary {
   return {
     slug: j.slug,
     title: j.title,
@@ -32,6 +37,7 @@ function summaryFrom(j: JobsResponseDto["jobs"][number]): JobSummary {
     employmentType: j.employment_type,
     salaryText: salaryText(j.salary, j.salary_unit, j.salary_note),
     deadline: j.deadline,
+    deadlineIso: isoDateOrNull(j.deadline),
     experience: j.experience,
     postedAt: j.posted_at,
   };

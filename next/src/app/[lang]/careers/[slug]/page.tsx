@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { applyCmsCachePolicy } from "@/shared/cms/degraded";
 import { isSupportedLocale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { tFrom } from "@/shared/i18n/marketing";
@@ -17,6 +18,7 @@ import {
   isExpired,
   jobStaticParams,
   loadJob,
+  schemaEmploymentType,
 } from "@/features/careers";
 
 // WEB-006 — /{lang}/careers/{slug}.
@@ -55,7 +57,11 @@ export default async function JobPage({ params }: PageProps) {
   const t = tFrom(copy);
 
   if (result.status === "not-found") notFound();
-  if (result.status === "unavailable") return <JobUnavailable copy={copy} lang={lang} />;
+  if (result.status === "unavailable") {
+    // A transient outage must not be committed to the 300s route cache with its noindex.
+    await applyCmsCachePolicy(result.status);
+    return <JobUnavailable copy={copy} lang={lang} />;
+  }
 
   const { job } = result;
   const canonical = localeUrl(lang, `/careers/${slug}`);
@@ -81,13 +87,14 @@ export default async function JobPage({ params }: PageProps) {
             title: job.title,
             description: job.lead ?? job.tagline ?? job.title,
             datePosted: new Date(job.postedAt * 1000).toISOString().slice(0, 10),
-            // Only when the operator's deadline actually parses as a date — an invalid
-            // validThrough is worse than an absent one.
-            validThrough:
-              job.deadline && !Number.isNaN(Date.parse(job.deadline))
-                ? new Date(job.deadline).toISOString().slice(0, 10)
-                : undefined,
-            employmentType: job.employmentType ?? undefined,
+            // The mapper already decided whether the operator's deadline is a real date; the
+            // route no longer re-parses it. `Date.parse` here accepted "01/01/2030" and the
+            // toISOString round-trip then emitted 2029-12-31 in a positive-offset timezone.
+            validThrough: job.deadlineIso ?? undefined,
+            // The CMS stores this as free text an operator types; schema.org expects one of a
+            // controlled set. Unrecognized phrasing is omitted rather than mapped to OTHER,
+            // which would be a positive claim about the employment mode that nobody made.
+            employmentType: schemaEmploymentType(job.employmentType) ?? undefined,
             hiringOrganization: {
               "@type": "Organization",
               name: "THG Fulfill",

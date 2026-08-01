@@ -5,6 +5,7 @@ import type { MarketingCopy } from "@/shared/i18n/marketing";
 import { tFrom } from "@/shared/i18n/marketing";
 import type { Locale } from "@/shared/i18n";
 
+import { allocateCategoryAnchors } from "../models/category-anchor";
 import type { BlogListResult, BlogPostSummary } from "../models/blog";
 
 // Composed /{lang}/blog body. Server Component throughout.
@@ -42,9 +43,12 @@ function PostCard({
           <h3 className="mb-1 text-[15px] font-semibold text-navy group-hover:underline">
             {post.title}
           </h3>
-          {/* Machine-readable date next to the human one; the card is the only place the
-              published date appears in the list. */}
-          <time dateTime={post.displayDate} className="text-[12px] text-muted-foreground">
+          {/* `dateTime` is omitted unless the CMS gave a real date: an invalid machine value is
+              worse than none, and the visible text is whatever the operator wrote either way. */}
+          <time
+            dateTime={post.publishedDateIso ?? undefined}
+            className="text-[12px] text-muted-foreground"
+          >
             {post.displayDate}
           </time>
           {post.excerpt && (
@@ -72,7 +76,11 @@ export function BlogList({
     bucket.push(post);
     groups.set(post.category, bucket);
   }
-  const nonEmpty = [...groups.entries()].filter(([, posts]) => posts.length > 0);
+  // Anchors are allocated once for the whole list, so the nav href and the section id are the
+  // same string by construction instead of two encodings that have to agree.
+  const sections = allocateCategoryAnchors(
+    [...groups.entries()].filter(([, posts]) => posts.length > 0),
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,12 +101,12 @@ export function BlogList({
 
         {result.status === "ready" && (
           <>
-            {nonEmpty.length > 1 && (
+            {sections.length > 1 && (
               <nav aria-label={t("blog.categories_label")} className="mb-8 flex flex-wrap gap-2">
-                {nonEmpty.map(([category]) => (
+                {sections.map(({ category, anchorId }) => (
                   <a
-                    key={category}
-                    href={`#${encodeURIComponent(category)}`}
+                    key={anchorId}
+                    href={`#${anchorId}`}
                     className="rounded-lg border-[1.5px] border-[#d4b96a] bg-white px-4 py-2 text-[13px] font-medium text-navy transition-colors hover:bg-[#fdf6e8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     {category}
@@ -107,8 +115,8 @@ export function BlogList({
               </nav>
             )}
 
-            {nonEmpty.map(([category, posts], groupIndex) => (
-              <section key={category} id={encodeURIComponent(category)} className="mb-12 scroll-mt-28">
+            {sections.map(({ category, anchorId, items: posts }, groupIndex) => (
+              <section key={anchorId} id={anchorId} className="mb-12 scroll-mt-28">
                 <h2 className="mb-4 text-lg font-semibold text-navy">{category}</h2>
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {posts.map((post, i) => (

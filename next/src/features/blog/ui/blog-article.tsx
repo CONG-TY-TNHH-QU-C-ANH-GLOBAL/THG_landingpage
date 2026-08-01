@@ -36,7 +36,11 @@ export function BlogArticleView({
 
         <p className="mb-1 text-[12px] font-medium text-primary">{article.category}</p>
         <h1 className="mb-2 text-2xl font-semibold text-navy">{article.title}</h1>
-        <time dateTime={article.displayDate} className="text-[12px] text-muted-foreground">
+        {/* `dateTime` omitted unless the CMS gave a real date — see BlogPostSummary. */}
+        <time
+          dateTime={article.publishedDateIso ?? undefined}
+          className="text-[12px] text-muted-foreground"
+        >
           {article.displayDate}
         </time>
         {article.excerpt && (
