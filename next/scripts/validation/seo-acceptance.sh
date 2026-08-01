@@ -89,13 +89,80 @@ hasi "${BASE}/robots.txt" "User-agent: *" "robots.txt default rule"
 hasi "${BASE}/robots.txt" "User-agent: GPTBot" "robots.txt AI-bot rule"
 
 [[ "$(st "${BASE}/sitemap.xml")" == "200" ]] || fail "/sitemap.xml status"
-# WEB-001: exactly the home rows, on the canonical origin only.
+# The sitemap invariant is NOT a row count. It is:
+#
+#     approved static indexable route templates  x  supported locales
+#
+# This block used to assert `LOCS == 3` ("the home rows"), which was correct only while the
+# homepage was the sole migrated route. It was a second, hand-maintained source of truth and it
+# broke on the first route slice that legitimately added rows. The expectation now comes from
+# the SAME canonical registry the app builds its sitemap from (shared/seo/indexable-routes), so
+# a slice that adds an approved route updates both sides at once.
+#
+# The registry's own correctness — every template resolves to a real page.tsx, blocked routes
+# stay out, no duplicate templates — is proven independently by tests/integration/seo.test.ts,
+# which never reads the sitemap. What THIS adds is that the packaged standalone artifact
+# actually serves it, plus the structural checks below that need no knowledge of the count.
+SITEMAP_BODY="$(body "${BASE}/sitemap.xml")"
+SERVED_LOCS="$(printf '%s' "${SITEMAP_BODY}" | grep -oE "<loc>[^<]*</loc>" | sed -e 's#</\?loc>##g' | LC_ALL=C sort)"
+EXPECTED_LOCS="$(SITE_ORIGIN="${SITE}" bun run --silent scripts/validation/expected-sitemap-urls.ts | LC_ALL=C sort)"
+
 lacks "${BASE}/sitemap.xml" "localhost" "sitemap has no localhost URLs"
-has "${BASE}/sitemap.xml" "<loc>${SITE}/vi</loc>" "sitemap lists /vi"
-has "${BASE}/sitemap.xml" "<loc>${SITE}/en</loc>" "sitemap lists /en"
-has "${BASE}/sitemap.xml" "<loc>${SITE}/zh</loc>" "sitemap lists /zh"
-LOCS=$(body "${BASE}/sitemap.xml" | grep -oF "<loc>" | wc -l | tr -d " ")
-[[ "${LOCS}" == "3" ]] || fail "sitemap must list exactly the 3 home rows (got ${LOCS})"
-ok "sitemap lists exactly 3 URLs"
+
+# 1. Exact set equality with the approved registry — no missing row, no extra row.
+if [[ "${SERVED_LOCS}" != "${EXPECTED_LOCS}" ]]; then
+  echo "--- served ---"   >&2; printf '%s
+' "${SERVED_LOCS}"   >&2
+  echo "--- expected ---" >&2; printf '%s
+' "${EXPECTED_LOCS}" >&2
+  fail "sitemap does not match the approved indexable-route registry"
+fi
+ok "sitemap matches the approved indexable-route registry exactly"
+
+# 2. No duplicate URL.
+SERVED_COUNT="$(printf '%s
+' "${SERVED_LOCS}" | grep -c . || true)"
+UNIQUE_COUNT="$(printf '%s
+' "${SERVED_LOCS}" | LC_ALL=C sort -u | grep -c . || true)"
+[[ "${SERVED_COUNT}" == "${UNIQUE_COUNT}" ]] || fail "sitemap contains duplicate URLs"
+ok "sitemap has no duplicate URLs"
+
+# 3. Every URL is on the production origin (never the probe BASE_URL).
+NON_CANONICAL="$(printf '%s
+' "${SERVED_LOCS}" | grep -vc "^${SITE}/" || true)"
+[[ "${NON_CANONICAL}" == "0" ]] || fail "sitemap contains ${NON_CANONICAL} URL(s) off the canonical origin"
+ok "sitemap uses the canonical origin for every URL"
+
+# 4. Locale symmetry — every template expands to every locale, so each locale must appear the
+#    same number of times. Independent of how many templates there are.
+HOME_ROWS=0
+for lang in vi en zh; do
+  printf '%s
+' "${SERVED_LOCS}" | grep -qxF "${SITE}/${lang}"     || fail "sitemap is missing the home row for /${lang}"
+  HOME_ROWS=$((HOME_ROWS + 1))
+  COUNT_THIS="$(printf '%s
+' "${SERVED_LOCS}" | grep -c "^${SITE}/${lang}\(/\|$\)" || true)"
+  if [[ -z "${PER_LOCALE:-}" ]]; then PER_LOCALE="${COUNT_THIS}"; fi
+  [[ "${COUNT_THIS}" == "${PER_LOCALE}" ]]     || fail "locale /${lang} has ${COUNT_THIS} rows but /vi has ${PER_LOCALE} — templates must expand to every locale"
+done
+ok "home is present exactly once per locale (${HOME_ROWS} locales)"
+ok "every template expands to all ${HOME_ROWS} locales (${PER_LOCALE} rows each)"
+
+# 5. Routes that are deliberately NOT indexable must never appear — a registry mistake that
+#    admitted one would pass set-equality above, so this is asserted against the product
+#    decision directly rather than against the registry.
+for blocked in /catalog /international-pricing /domestic-pricing /community; do
+  printf '%s
+' "${SERVED_LOCS}" | grep -q "${blocked}"     && fail "sitemap lists ${blocked}, which is not approved for indexing"
+done
+ok "sitemap excludes every blocked route"
+
+# 6. CMS-owned detail URLs stay out until their approved migration phase (M9): their slugs
+#    change without a build, so a static sitemap must not enumerate them.
+for dynamic in "/blog/" "/careers/" "/community/"; do
+  printf '%s
+' "${SERVED_LOCS}" | grep -q "${dynamic}"     && fail "sitemap lists a CMS-owned detail URL (${dynamic}) — those are excluded until M9"
+done
+ok "sitemap excludes CMS-owned detail URLs"
 
 echo "SEO acceptance: all checks passed"
