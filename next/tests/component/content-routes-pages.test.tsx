@@ -13,6 +13,20 @@ vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) => <img {...(props as Record<string, string>)} />,
 }));
 // notFound() stays real so the 404 assertions exercise Next's actual signal.
+// connection() IS replaced: it throws outside a request scope, and a spy additionally lets
+// these tests assert that the degraded-cache policy was actually applied rather than just
+// that the page rendered.
+const { connection } = vi.hoisted(() => ({ connection: vi.fn(async () => {}) }));
+vi.mock("next/server", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  connection,
+}));
+
+/** The Next signal notFound() raises. Asserting on it — rather than on `rejects.toThrow()` —
+ *  is what makes these tests prove a 404 instead of proving that SOMETHING threw; a TypeError
+ *  from a mapper bug satisfies the bare form. Matches the convention already used by the
+ *  community suite (tests/component/community-pages.test.tsx:287). */
+const NEXT_NOT_FOUND = /NEXT_HTTP_ERROR_FALLBACK;404|NEXT_NOT_FOUND/;
 
 import BlogPage, { generateMetadata as blogMetadata } from "@/app/[lang]/blog/page";
 import BlogArticlePage, {
@@ -103,10 +117,14 @@ const jobsList = {
   ],
   total: 1,
 };
+// `position` is deliberately absent: the CMS detail projection does not send it
+// [FACT: CMS careers.schemas.ts:74-95]. The fixture used to spread it in from the summary,
+// which is why the suite stayed green while every real job detail failed shape validation.
+const { position: _listOnlyPosition, ...jobDetailBase } = jobsList.jobs[0];
 const jobDetail = {
   locale: "vi",
   job: {
-    ...jobsList.jobs[0],
+    ...jobDetailBase,
     body_md: "## Mô tả\n- việc một",
     lead: "Tóm tắt vai trò",
     responsibilities: { "Hằng ngày": ["Kiểm hàng"] },
@@ -118,6 +136,7 @@ const jobDetail = {
 
 beforeEach(() => {
   cmsFetch.mockReset();
+  connection.mockClear();
   resetLoggedCmsFallbacks();
 });
 afterEach(cleanup);
@@ -159,6 +178,55 @@ describe("/[lang]/blog", () => {
     const { container } = render(await BlogPage({ params: params("vi") }));
     const times = [...container.querySelectorAll("time")].map((t) => t.getAttribute("dateTime"));
     expect(times).toEqual(["2026-05-01", "2026-04-01"]);
+  });
+
+  it("omits dateTime when the CMS date is not a real date, keeping the visible text", async () => {
+    routeCms({
+      "/translations": translations,
+      "/blog/categories": blogCategories,
+      "/blog": {
+        locale: "vi",
+        total: 1,
+        posts: [
+          {
+            slug: "soon",
+            title: "Sắp ra mắt",
+            excerpt: null,
+            thumbnail_url: null,
+            category: "Báo cáo",
+            published_date: "sắp ra mắt",
+            updated_at: 1_700_000_000,
+          },
+        ],
+      },
+    });
+    const { container } = render(await BlogPage({ params: params("vi") }));
+    const time = container.querySelector("time");
+    // A machine value the CMS never supplied must not be invented for a crawler...
+    expect(time?.getAttribute("dateTime")).toBeNull();
+    // ...but the operator's own text still shows, so the CMS does not look broken.
+    expect(time?.textContent).toBe("sắp ra mắt");
+  });
+
+  it("gives every category section an anchor its nav link actually resolves to", async () => {
+    routeCms({
+      "/translations": translations,
+      "/blog/categories": blogCategories,
+      "/blog": blogList,
+    });
+    const { container } = render(await BlogPage({ params: params("vi") }));
+
+    const hrefs = [...container.querySelectorAll("nav a")].map((a) => a.getAttribute("href"));
+    const ids = [...container.querySelectorAll("section[id]")].map((s) => s.getAttribute("id"));
+
+    // ASCII-folded, so a browser decoding the fragment finds the element. The previous
+    // encodeURIComponent pair produced href="#B%C3%A1o%20c%C3%A1o" against id="B%C3%A1o%20c%C3%A1o",
+    // and the browser looked for the DECODED "Báo cáo" — every jump link was dead.
+    expect(ids).toContain("bao-cao");
+    expect(hrefs).toEqual(ids.map((id) => `#${id}`));
+    for (const href of hrefs) {
+      expect(container.querySelector(`section[id="${href?.slice(1)}"]`), href ?? "").toBeTruthy();
+    }
   });
 
   it("keeps the list usable when only the category read fails", async () => {
@@ -239,7 +307,11 @@ describe("/[lang]/blog/[slug]", () => {
       "/translations": translations,
       "/blog/missing": new CmsHttpError("/blog/missing", 404, "not found"),
     });
-    await expect(BlogArticlePage({ params: params("vi", "missing") })).rejects.toThrow();
+    await expect(BlogArticlePage({ params: params("vi", "missing") })).rejects.toThrow(
+      NEXT_NOT_FOUND,
+    );
+    // A 404 is a cacheable answer from a healthy CMS, so it must NOT opt out of the cache.
+    expect(connection).not.toHaveBeenCalled();
   });
 
   it("does NOT 404 on an outage — a transient failure must not drop a live URL", async () => {
@@ -251,6 +323,10 @@ describe("/[lang]/blog/[slug]", () => {
     render(await BlogArticlePage({ params: params("vi", "post-a") }));
 
     expect(screen.getByText(/Hiện chưa tải được bài viết/)).toBeTruthy();
+    // And the apology must not be committed to the 3600s success cache together with the
+    // noindex generateMetadata pairs with it — a blip would otherwise hide a live article for
+    // an hour, with nothing to invalidate the entry.
+    expect(connection).toHaveBeenCalled();
   });
 
   it("emits Article JSON-LD with a valid datePublished and the featured image", async () => {
@@ -275,6 +351,34 @@ describe("/[lang]/blog/[slug]", () => {
     const meta = await articleMetadata({ params: params("vi", "post-a") });
     expect(meta.openGraph).toMatchObject({ type: "article", publishedTime: "2026-05-01" });
   });
+
+  it("lets the operator's CMS SEO fields override the derived metadata", async () => {
+    // The CMS validates seo_title / seo_description, but the mapper dropped them, so an
+    // operator override could never reach generateMetadata — a silent migration-parity gap.
+    routeCms({
+      ...wired,
+      "/blog/post-a": {
+        ...blogPost,
+        post: { ...blogPost.post, seo_title: "Tiêu đề SEO", seo_description: "Mô tả SEO" },
+      },
+    });
+    const meta = await articleMetadata({ params: params("vi", "post-a") });
+    expect(meta.title).toBe("Tiêu đề SEO");
+    expect(meta.description).toBe("Mô tả SEO");
+  });
+
+  it("falls back to the derived metadata when the override is blank, not to an empty title", async () => {
+    routeCms({
+      ...wired,
+      "/blog/post-a": {
+        ...blogPost,
+        post: { ...blogPost.post, seo_title: "   ", seo_description: "" },
+      },
+    });
+    const meta = await articleMetadata({ params: params("vi", "post-a") });
+    expect(meta.title).toBe("Bài viết A — THG Fulfill");
+    expect(meta.description).toBe("Tóm tắt A");
+  });
 });
 
 describe("/[lang]/careers", () => {
@@ -289,17 +393,50 @@ describe("/[lang]/careers", () => {
     expect(screen.getByText("15-20 triệu")).toBeTruthy();
   });
 
+  it("renders the uncategorized group LAST even when it comes first from the CMS", async () => {
+    // Map insertion order used to decide this, so a leading uncategorized job put the fallback
+    // group at the top — contradicting what the code claimed. Ordering it explicitly also stops
+    // a real CMS category named like the translated label from merging into the fallback.
+    routeCms({
+      "/translations": translations,
+      "/jobs": {
+        locale: "vi",
+        total: 3,
+        jobs: [
+          { ...jobsList.jobs[0], slug: "loose-1", category: null, title: "Không phân loại 1" },
+          { ...jobsList.jobs[0], slug: "ops-1", category: "Vận hành", title: "Vận hành 1" },
+          { ...jobsList.jobs[0], slug: "loose-2", category: null, title: "Không phân loại 2" },
+        ],
+      },
+    });
+    const { container } = render(await CareersPage({ params: params("vi") }));
+
+    const headings = [...container.querySelectorAll("h2")].map((h) => h.textContent);
+    expect(headings).toEqual(["Vận hành", "Tất cả vị trí"]);
+    // Both uncategorized jobs land in that one trailing group, in CMS order.
+    const last = container.querySelectorAll("section")[headings.length - 1];
+    expect([...last.querySelectorAll("h3")].map((h) => h.textContent)).toEqual([
+      "Không phân loại 1",
+      "Không phân loại 2",
+    ]);
+  });
+
   it("distinguishes an outage from no open positions", async () => {
     routeCms({ "/translations": translations });
     render(await CareersPage({ params: params("vi") }));
     expect(screen.getByText(/Hiện chưa tải được vị trí/)).toBeTruthy();
+    expect(connection).toHaveBeenCalled();
 
     cleanup();
     cmsFetch.mockReset();
     resetLoggedCmsFallbacks();
+    connection.mockClear();
     routeCms({ "/translations": translations, "/jobs": { locale: "vi", jobs: [], total: 0 } });
     render(await CareersPage({ params: params("vi") }));
     expect(screen.getByText(/Hiện chưa có vị trí tuyển dụng nào/)).toBeTruthy();
+    // A CONFIRMED empty list is a healthy answer and keeps the normal 300s window; only the
+    // outage above opts out. This is the pair that makes the policy meaningful.
+    expect(connection).not.toHaveBeenCalled();
   });
 });
 
@@ -359,7 +496,19 @@ describe("/[lang]/careers/[slug]", () => {
       "/translations": translations,
       "/jobs/gone": new CmsHttpError("/jobs/gone", 404, "closed"),
     });
-    await expect(JobPage({ params: params("vi", "gone") })).rejects.toThrow();
+    await expect(JobPage({ params: params("vi", "gone") })).rejects.toThrow(NEXT_NOT_FOUND);
+    expect(connection).not.toHaveBeenCalled();
+  });
+
+  it("a non-notFound throw does NOT satisfy the 404 assertion", async () => {
+    // The control for the two tests above. They used to assert a bare `rejects.toThrow()`,
+    // which any TypeError from a mapper bug would have passed — so they proved nothing about
+    // notFound(). This pins that the matcher actually discriminates.
+    const boom = Promise.reject(new TypeError("mapper blew up"));
+    await expect(boom).rejects.toThrow();
+    await expect(
+      expect(Promise.reject(new TypeError("mapper blew up"))).rejects.toThrow(NEXT_NOT_FOUND),
+    ).rejects.toThrow();
   });
 
   it("does NOT 404 on an outage", async () => {
@@ -369,5 +518,6 @@ describe("/[lang]/careers/[slug]", () => {
     });
     render(await JobPage({ params: params("vi", "ops-lead") }));
     expect(screen.getByText(/Hiện chưa tải được vị trí/)).toBeTruthy();
+    expect(connection).toHaveBeenCalled();
   });
 });

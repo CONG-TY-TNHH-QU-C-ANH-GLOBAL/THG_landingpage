@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { isSupportedLocale, type Locale } from "@/shared/i18n";
+import { applyCmsCachePolicy } from "@/shared/cms/degraded";
+import { isSupportedLocale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { tFrom } from "@/shared/i18n/marketing";
 import { BreadcrumbJsonLd, buildPageMetadata, localeUrl } from "@/shared/seo";
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!isSupportedLocale(lang)) return {};
   const copy = await getMarketingCopy(lang);
   const t = tFrom(copy);
-  const result = await loadBlogList(lang as Locale);
+  // isSupportedLocale is a type guard, so lang is already Locale here.
+  const result = await loadBlogList(lang);
 
   return buildPageMetadata({
     lang,
