@@ -1,0 +1,433 @@
+import { describe, it, expect } from "vitest";
+
+import { isRoutableSlug } from "../../src/shared/cms/slug";
+import { isDegradedResult, unavailableReason } from "../../src/shared/cms/degraded";
+import {
+  CmsHttpError,
+  CmsNetworkError,
+  CmsParseError,
+  CmsShapeError,
+} from "../../src/shared/cms/errors";
+import { allocateCategoryAnchors } from "../../src/features/blog/models/category-anchor";
+import { schemaEmploymentType } from "../../src/features/careers/models/employment-type";
+import { blogSummariesFromDto, blogArticleFromDto } from "../../src/features/blog/mappers/blog";
+import {
+  blogListResponseSchema,
+  blogPostResponseSchema,
+} from "../../src/features/blog/schemas/blog";
+import { jobResponseSchema, jobsResponseSchema } from "../../src/features/careers/schemas/jobs";
+import { jobSummariesFromDto } from "../../src/features/careers/mappers/job";
+import { SUPPORTED_LOCALES } from "../../src/shared/i18n";
+
+// Contracts that the WEB-005 / WEB-006 closure pass made explicit. Each block pins one
+// invariant that was previously either implicit, duplicated, or wrong.
+
+// ── Slug / static-param safety ──────────────────────────────────────────────────────────────
+
+describe("routable slug contract", () => {
+  it("accepts what the CMS write contract produces", () => {
+    // [FACT: CMS blog.actions.ts:41 / careers.actions.ts:62 — /^[a-z0-9-]+$/]
+    for (const slug of ["post-a", "bcnh-06-2026", "a", "0", "kham-pha-dich-vu"]) {
+      expect(isRoutableSlug(slug), slug).toBe(true);
+    }
+  });
+
+  it("accepts an ugly but path-safe slug — bad CMS data is not a routing problem", () => {
+    // Observed in production data: a URL pasted into the slug field. It is in-contract and
+    // routes correctly, so dropping it would hide a real job posting to fix a content issue.
+    expect(isRoutableSlug("httpsthgfulfillcomvicareers")).toBe(true);
+  });
+
+  it("rejects anything that cannot be one path segment", () => {
+    for (const slug of [
+      "",
+      "   ",
+      "a/b",
+      "a\\b",
+      "a?b",
+      "a#b",
+      "a%2Fb",
+      ".",
+      "..",
+      "../secret",
+      "a b",
+      "\u0000",
+      "Post-A",
+      "bài-viết",
+      "x".repeat(201),
+    ]) {
+      expect(isRoutableSlug(slug), JSON.stringify(slug)).toBe(false);
+    }
+  });
+});
+
+// ── Degraded-result classification (one owner, previously duplicated per feature) ───────────
+
+describe("CMS degraded classification", () => {
+  it("classifies every transport error exactly once", () => {
+    expect(unavailableReason(new CmsHttpError("/p", 503, "down"))).toBe("http");
+    expect(unavailableReason(new CmsShapeError("/p"))).toBe("contract");
+    expect(unavailableReason(new CmsParseError("/p"))).toBe("contract");
+    expect(unavailableReason(new CmsNetworkError("/p", "timeout"))).toBe("network");
+  });
+
+  it("treats ONLY unavailable as degraded", () => {
+    // `empty` and `not-found` are answers from a healthy CMS: caching them normally is correct.
+    expect(isDegradedResult("unavailable")).toBe(true);
+    expect(isDegradedResult("ready")).toBe(false);
+    expect(isDegradedResult("empty")).toBe(false);
+    expect(isDegradedResult("not-found")).toBe(false);
+  });
+});
+
+// ── Locale contract derives from the canonical source ───────────────────────────────────────
+
+describe("locale schema ownership", () => {
+  it("accepts all and only the supported locales, in both features", () => {
+    const base = { jobs: [], total: 0 };
+    for (const locale of SUPPORTED_LOCALES) {
+      expect(jobsResponseSchema.safeParse({ ...base, locale }).success, locale).toBe(true);
+      expect(
+        blogListResponseSchema.safeParse({ locale, posts: [], total: 0 }).success,
+        locale,
+      ).toBe(true);
+    }
+    for (const locale of ["", "fr", "EN", "vi-VN"]) {
+      expect(jobsResponseSchema.safeParse({ ...base, locale }).success, locale).toBe(false);
+      expect(
+        blogListResponseSchema.safeParse({ locale, posts: [], total: 0 }).success,
+        locale,
+      ).toBe(false);
+    }
+  });
+});
+
+// ── Blog publication date: display text vs machine value ────────────────────────────────────
+
+const post = (over: Record<string, unknown> = {}) => ({
+  slug: "s",
+  title: "T",
+  excerpt: null,
+  thumbnail_url: null,
+  category: null,
+  published_date: null,
+  updated_at: 1_700_000_000,
+  ...over,
+});
+
+const summaryOf = (over: Record<string, unknown> = {}) =>
+  blogSummariesFromDto(
+    blogListResponseSchema.parse({ locale: "vi", posts: [post(over)], total: 1 }),
+  )[0];
+
+describe("blog publication date", () => {
+  it("uses a valid published_date for both the display text and the machine value", () => {
+    const s = summaryOf({ published_date: "2026-03-04" });
+    expect(s.displayDate).toBe("2026-03-04");
+    expect(s.publishedDateIso).toBe("2026-03-04");
+  });
+
+  it("falls back to updated_at when the editor set nothing at all", () => {
+    // null, "" and whitespace are the same statement: no publication date was entered.
+    for (const published_date of [null, "", "   ", "\t\n"]) {
+      const s = summaryOf({ published_date, updated_at: 1_700_000_000 });
+      expect(s.displayDate, JSON.stringify(published_date)).toBe("2023-11-14");
+      expect(s.publishedDateIso, JSON.stringify(published_date)).toBe("2023-11-14");
+    }
+  });
+
+  it("shows malformed operator text but refuses to call it a date", () => {
+    // Substituting updated_at here would FABRICATE a publication date nobody stated; the
+    // approved fallback covers "unset", not "invalid".
+    for (const bad of ["sắp ra mắt", "04/03/2026", "2026-3-4", "2026-02-30", "not a date"]) {
+      const s = summaryOf({ published_date: bad });
+      expect(s.displayDate, bad).toBe(bad);
+      expect(s.publishedDateIso, bad).toBeNull();
+    }
+  });
+
+  it("sorts on the machine value, placing undated posts last and deterministically", () => {
+    const dto = blogListResponseSchema.parse({
+      locale: "vi",
+      posts: [
+        post({ slug: "broken", published_date: "sắp ra mắt" }),
+        post({ slug: "old", published_date: "2024-01-01" }),
+        post({ slug: "new", published_date: "2026-01-01" }),
+      ],
+      total: 3,
+    });
+    // Sorting on display text would file "sắp ra mắt" alphabetically among real dates.
+    expect(blogSummariesFromDto(dto).map((p) => p.slug)).toEqual(["new", "old", "broken"]);
+  });
+});
+
+// ── Blog category normalization ─────────────────────────────────────────────────────────────
+
+describe("blog category normalization", () => {
+  it("trims a post category and keeps the operator's casing", () => {
+    expect(summaryOf({ category: "  Case Study  " }).category).toBe("Case Study");
+    // Not lowercased: these are human labels, and folding them would merge two real sections.
+    expect(summaryOf({ category: "case study" }).category).toBe("case study");
+  });
+
+  it("treats a whitespace-only category as absent", () => {
+    expect(summaryOf({ category: "   " }).category).toBe("Báo cáo");
+  });
+});
+
+// ── Blog SEO overrides survive the mapper ───────────────────────────────────────────────────
+
+const articleOf = (over: Record<string, unknown> = {}) =>
+  blogArticleFromDto(
+    blogPostResponseSchema.parse({
+      locale: "vi",
+      post: {
+        ...post(),
+        seo_title: null,
+        seo_description: null,
+        body_md: "x",
+        slides: [],
+        ...over,
+      },
+    }),
+  );
+
+describe("blog SEO overrides", () => {
+  it("carries an operator override through to the model", () => {
+    const a = articleOf({ seo_title: "  Custom title  ", seo_description: "Custom description" });
+    expect(a.seoTitle).toBe("Custom title");
+    expect(a.seoDescription).toBe("Custom description");
+  });
+
+  it("treats a cleared override as no override, not as an empty title", () => {
+    // Otherwise an operator emptying the field would blank the page title instead of restoring
+    // the default — the fallback must still win.
+    for (const blank of [null, "", "   "]) {
+      const a = articleOf({ seo_title: blank, seo_description: blank });
+      expect(a.seoTitle, JSON.stringify(blank)).toBeNull();
+      expect(a.seoDescription, JSON.stringify(blank)).toBeNull();
+    }
+  });
+});
+
+// ── Category anchor identity ────────────────────────────────────────────────────────────────
+
+const anchorFor = (label: string) => allocateCategoryAnchors([[label, []]])[0].anchorId;
+
+describe("blog category anchors", () => {
+  it("produces a readable ASCII fragment for ASCII, spaced and Vietnamese labels", () => {
+    expect(anchorFor("Blog")).toBe("blog");
+    expect(anchorFor("Case Study")).toBe("case-study");
+    // Diacritics are FOLDED, not split: withStableIds would have produced "ba-o-ca-o".
+    expect(anchorFor("Báo cáo")).toBe("bao-cao");
+    expect(anchorFor("Tin tức")).toBe("tin-tuc");
+    expect(anchorFor("Đơn hàng")).toBe("don-hang");
+  });
+
+  it("collapses punctuation and trims separators", () => {
+    expect(anchorFor("Logistics & Vận chuyển")).toBe("logistics-van-chuyen");
+    expect(anchorFor("  --Hot!!  ")).toBe("hot");
+  });
+
+  it("falls back to a stable hash when a label has no ASCII content", () => {
+    const zh = anchorFor("新闻");
+    expect(zh).toMatch(/^c-[a-z0-9]+$/);
+    // Deterministic across calls, and distinct labels do not share a fallback.
+    expect(anchorFor("新闻")).toBe(zh);
+    expect(anchorFor("公告")).not.toBe(zh);
+  });
+
+  it("numbers a collision instead of pointing two sections at one anchor", () => {
+    const anchors = allocateCategoryAnchors([
+      ["Tin tức", []],
+      ["Tin tuc", []],
+      ["tin  tuc", []],
+    ]);
+    expect(anchors.map((a) => a.anchorId)).toEqual(["tin-tuc", "tin-tuc-2", "tin-tuc-3"]);
+    expect(new Set(anchors.map((a) => a.anchorId)).size).toBe(3);
+  });
+
+  it("trims boundary hyphens without touching interior ones", () => {
+    // The linear replacement for `/^-+|-+$/g`, which is boundary trimming written as an
+    // end-anchored greedy alternation and retried from every position of a hyphen run.
+    expect(anchorFor("-abc")).toBe("abc");
+    expect(anchorFor("abc-")).toBe("abc");
+    expect(anchorFor("--abc--")).toBe("abc");
+    expect(anchorFor("a-b-c")).toBe("a-b-c");
+    // All-separator labels collapse to "" and take the hash fallback rather than an empty id.
+    for (const allSeparators of ["-", "----", "", "   ", "!!!"]) {
+      expect(anchorFor(allSeparators), JSON.stringify(allSeparators)).toMatch(/^c-[a-z0-9]+$/);
+    }
+    // A long hyphen run is handled in linear time and still yields nothing.
+    expect(anchorFor(`${"-".repeat(5000)}x${"-".repeat(5000)}`)).toBe("x");
+  });
+
+  it("hashes by code point, so supplementary-plane labels are not split into surrogates", () => {
+    // charCodeAt walked UTF-16 units, so an emoji was hashed as its two surrogate halves.
+    const rocket = anchorFor("🚀");
+    const crab = anchorFor("🦀");
+    for (const id of [rocket, crab]) expect(id).toMatch(/^c-[a-z0-9]+$/);
+    // Distinct non-BMP labels must not collide, and the same label must be stable across calls.
+    expect(rocket).not.toBe(crab);
+    expect(anchorFor("🚀")).toBe(rocket);
+    // A surrogate pair is one character, so it cannot hash the same as its lone high surrogate.
+    // Built with fromCharCode: an unpaired surrogate written as a literal is not encodable as
+    // UTF-8, which makes git treat the whole test file as binary.
+    expect(anchorFor(String.fromCharCode(0xd83d))).not.toBe(rocket);
+  });
+
+  it("never yields an empty or whitespace anchor", () => {
+    for (const label of ["", "   ", "---", "!!!", "🙂"]) {
+      const id = anchorFor(label);
+      expect(id.length, JSON.stringify(label)).toBeGreaterThan(0);
+      expect(id, JSON.stringify(label)).not.toMatch(/\s/);
+    }
+  });
+
+  it("keeps the operator label and the items alongside the anchor", () => {
+    const [group] = allocateCategoryAnchors([["Báo cáo", ["a", "b"]]]);
+    expect(group.category).toBe("Báo cáo");
+    expect(group.items).toEqual(["a", "b"]);
+  });
+});
+
+// ── Careers detail contract: summary MINUS position ─────────────────────────────────────────
+
+describe("careers detail contract", () => {
+  const detailPayload = {
+    slug: "sales-pod",
+    category: "Kinh doanh",
+    hot: false,
+    badge: null,
+    tagline: null,
+    title: "Sales POD",
+    body_md: "## Mô tả",
+    location: null,
+    employment_type: "Full-time",
+    salary: null,
+    salary_unit: null,
+    salary_note: null,
+    deadline: null,
+    experience: null,
+    posted_at: 1_700_000_000,
+    lead: null,
+    responsibilities: {},
+    requirements: [],
+    benefits: [],
+    bonuses: [],
+  };
+
+  it("parses a detail payload that carries no position", () => {
+    // The exact shape the live CMS returns [FACT: CMS careers.schemas.ts:74-95 — jobDetailSchema
+    // declares no position]. The landing schema used `.extend()` on the summary, making
+    // `position` required, so EVERY job detail failed validation and rendered the outage
+    // fallback in production — indistinguishable from a real CMS failure.
+    expect(jobResponseSchema.safeParse({ locale: "vi", job: detailPayload }).success).toBe(true);
+  });
+
+  it("still enforces the fields the detail projection does send", () => {
+    for (const missing of ["slug", "title", "body_md", "posted_at", "requirements"]) {
+      const { [missing]: _dropped, ...partial } = detailPayload as Record<string, unknown>;
+      expect(
+        jobResponseSchema.safeParse({ locale: "vi", job: partial }).success,
+        missing,
+      ).toBe(false);
+    }
+  });
+});
+
+// ── Careers deadline: the same display-vs-machine split ─────────────────────────────────────
+
+describe("careers deadline", () => {
+  const jobWith = (deadline: string | null) =>
+    jobSummariesFromDto(
+      jobsResponseSchema.parse({
+        locale: "vi",
+        total: 1,
+        jobs: [
+          {
+            slug: "s",
+            position: 1,
+            category: null,
+            hot: false,
+            badge: null,
+            tagline: null,
+            title: "T",
+            location: null,
+            employment_type: null,
+            salary: null,
+            salary_unit: null,
+            salary_note: null,
+            deadline,
+            experience: null,
+            posted_at: 1_700_000_000,
+          },
+        ],
+      }),
+    )[0];
+
+  it("reads the DAY-FIRST formats operators actually use", () => {
+    // Every deadline in the live CMS is DD/MM/YYYY — "30/08/2026", "30/07/2026". An ISO-only
+    // rule produced deadlineIso=null for all of them, so validThrough was omitted from every
+    // posting. Accepted set comes from the parity source [FACT: legacy src/lib/deadline.ts:1-3].
+    expect(jobWith("30/08/2026").deadlineIso).toBe("2026-08-30");
+    expect(jobWith("30-08-2026").deadlineIso).toBe("2026-08-30");
+    expect(jobWith("30.08.2026").deadlineIso).toBe("2026-08-30");
+    expect(jobWith("1/9/2026").deadlineIso).toBe("2026-09-01");
+    expect(jobWith("2026-08-30").deadlineIso).toBe("2026-08-30");
+  });
+
+  it("keeps the operator's own text untouched for display", () => {
+    // The raw value is what the detail page shows; only deadlineIso is machine-readable.
+    expect(jobWith("30/08/2026").deadline).toBe("30/08/2026");
+    expect(jobWith("liên hệ để biết thêm").deadline).toBe("liên hệ để biết thêm");
+  });
+
+  it("day-first is never re-read as month-first, in either direction", () => {
+    // "01/02/2030" is 1 February, not 2 January. A Date round-trip would also shift the result
+    // a day back in a positive-offset timezone; the ISO string is composed from the digits.
+    expect(jobWith("01/02/2030").deadlineIso).toBe("2030-02-01");
+    expect(jobWith("13/01/2030").deadlineIso).toBe("2030-01-13");
+  });
+
+  it("returns null for free text and impossible dates", () => {
+    for (const bad of ["Jan 1 2030", "sắp hết hạn", "2030-02-30", "30/02/2026", "13/13/2026", "", "   ", null]) {
+      expect(jobWith(bad).deadlineIso, JSON.stringify(bad)).toBeNull();
+    }
+  });
+});
+
+// ── JobPosting employmentType ───────────────────────────────────────────────────────────────
+
+describe("schema.org employmentType", () => {
+  it.each([
+    ["Full time", "FULL_TIME"],
+    ["Full-time", "FULL_TIME"],
+    ["FULL_TIME", "FULL_TIME"],
+    ["fulltime", "FULL_TIME"],
+    ["Toàn thời gian", "FULL_TIME"],
+    ["Part time", "PART_TIME"],
+    ["Bán thời gian", "PART_TIME"],
+    ["Contract", "CONTRACTOR"],
+    ["Contractor", "CONTRACTOR"],
+    ["Freelance", "CONTRACTOR"],
+    ["Temporary", "TEMPORARY"],
+    ["Thời vụ", "TEMPORARY"],
+    ["Intern", "INTERN"],
+    ["Internship", "INTERN"],
+    ["Thực tập sinh", "INTERN"],
+    ["Volunteer", "VOLUNTEER"],
+    ["Per diem", "PER_DIEM"],
+  ])("maps %j to %s", (input, expected) => {
+    expect(schemaEmploymentType(input)).toBe(expected);
+  });
+
+  it("omits an unrecognized value rather than claiming OTHER", () => {
+    // OTHER is a positive claim that the role uses a non-standard employment mode. A phrasing
+    // this mapper does not know is not that claim, so the property is left out.
+    for (const unknown of ["Remote", "Hybrid", "Thực tập sinh part-time", "???", "", "  "]) {
+      expect(schemaEmploymentType(unknown), JSON.stringify(unknown)).toBeNull();
+    }
+    expect(schemaEmploymentType(null)).toBeNull();
+  });
+});

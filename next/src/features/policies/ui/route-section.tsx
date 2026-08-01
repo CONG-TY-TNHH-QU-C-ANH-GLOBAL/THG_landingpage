@@ -1,6 +1,6 @@
 import type { ShippingRouteDetail, ShippingTable } from "../models/shipping";
 import { isRouteContentEmpty } from "../models/shipping";
-import { MarkdownLines, renderInline, splitSections } from "./markdown-blocks";
+import { MarkdownLines, renderInline, splitSections } from "@/shared/ui/markdown";
 
 // One shipping route rendered in full. Server Component.
 

@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
-// Server-side markdown → React for CMS policy/route bodies.
+// Server-side markdown → React for CMS editorial bodies (policies, shipping routes, blog
+// articles, job posts). ONE implementation — promoted here when blog and careers became the
+// second and third consumers; there is no second copy under features/.
 //
 // TWO structural guarantees, both deliberate:
 //

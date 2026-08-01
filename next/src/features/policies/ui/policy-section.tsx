@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import type { PolicyDetail, PolicyTextBlock } from "../models/policy";
 import { isPolicyContentEmpty } from "../models/policy";
-import { MarkdownLines, splitSections } from "./markdown-blocks";
+import { MarkdownLines, splitSections } from "@/shared/ui/markdown";
 
 // One policy rendered in full. Server Component — no state, no client island.
 

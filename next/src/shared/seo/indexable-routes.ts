@@ -37,6 +37,10 @@ export const INDEXABLE_ROUTES: readonly IndexableRoute[] = [
   { path: "/thg-fulfill", changeFrequency: "weekly", priority: 0.9 },
   { path: "/policy", changeFrequency: "monthly", priority: 0.5 },
   { path: "/shipping-policy", changeFrequency: "monthly", priority: 0.5 },
+  // WEB-005 / WEB-006 INDEX routes only. Article and job detail URLs are CMS-owned and change
+  // without a build, so they are not static templates — see the header note.
+  { path: "/blog", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/careers", changeFrequency: "weekly", priority: 0.6 },
 ];
 
 /** Routes deliberately NOT in the registry, and why. Asserted by the sitemap test so a blocked

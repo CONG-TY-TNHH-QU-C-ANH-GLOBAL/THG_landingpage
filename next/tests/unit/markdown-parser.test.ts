@@ -4,7 +4,7 @@ import {
   parseBlocks,
   parseInline,
   splitSections,
-} from "../../src/features/policies/ui/markdown-blocks";
+} from "../../src/shared/ui/markdown";
 
 // The parser is regex-free by design: every construct is recognized by a forward scanner that
 // never revisits a position. These tests cover the supported subset, the fail-safe behavior on
