@@ -40,6 +40,13 @@ export default async function BlogPage({ params }: PageProps) {
   if (!isSupportedLocale(lang)) notFound();
 
   const [copy, result] = await Promise.all([getMarketingCopy(lang), loadBlogList(lang)]);
+  // The one route that was still missing the degraded-cache policy its three siblings apply.
+  // Without it a CMS outage was committed to the 300s window together with the noindex
+  // generateMetadata emits for a non-ready list. `generateMetadata` needs no separate call:
+  // metadata and the page body are one route render, so opting THIS render out covers both —
+  // verified by building with the CMS unreachable and seeing /[lang]/blog leave the prerender
+  // set. Success and confirmed-empty are untouched, so the 300s ISR still applies to them.
+  await applyCmsCachePolicy(result.status);
   const t = tFrom(copy);
 
   return (

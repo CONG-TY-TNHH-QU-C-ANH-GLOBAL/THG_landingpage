@@ -62,8 +62,9 @@ function lookupKey(value: string): string {
   return value
     .normalize("NFD")
     .replace(/\p{Mark}/gu, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
+    // Single code points NFD does not decompose; both cases handled before lowercasing.
+    .replaceAll("đ", "d")
+    .replaceAll("Đ", "D")
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 }

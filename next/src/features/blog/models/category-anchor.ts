@@ -31,12 +31,35 @@ const COMBINING_MARKS = /\p{Mark}/gu;
 /** Runs of anything that is not an unaccented ASCII letter or digit. */
 const NON_SLUG_RUN = /[^a-z0-9]+/g;
 
-/** FNV-1a. Only needs to be deterministic and well-spread over a handful of category labels —
- *  this is an anchor, not a checksum. */
+/**
+ * Strip leading and trailing `-` in one pass.
+ *
+ * This replaces `.replace(/^-+|-+$/g, "")`. That pattern is boundary trimming written as a
+ * global alternation: `-+$` is a greedy quantifier anchored to the end, so a global scan retries
+ * it from every position of a long hyphen run, which is quadratic in that run. Two index walks
+ * and one slice cannot backtrack — each character is examined at most once from each end, so the
+ * work is bounded by the string length by construction rather than by a re-tuned pattern.
+ */
+function trimBoundaryHyphens(value: string): string {
+  let start = 0;
+  let end = value.length;
+  while (start < end && value[start] === "-") start += 1;
+  while (end > start && value[end - 1] === "-") end -= 1;
+  return value.slice(start, end);
+}
+
+/** FNV-1a over CODE POINTS. Only needs to be deterministic and well-spread over a handful of
+ *  category labels — this is an anchor, not a checksum, so no dependency and no crypto.
+ *
+ *  Iterating the string yields code points, so an emoji or any other supplementary-plane
+ *  character is hashed as the single character it is. Indexing with `charCodeAt` walked UTF-16
+ *  units instead, splitting such a character into its two surrogate halves. */
 function hashLabel(label: string): string {
   let hash = 0x811c9dc5;
-  for (let i = 0; i < label.length; i += 1) {
-    hash ^= label.charCodeAt(i);
+  for (const char of label) {
+    // `codePointAt(0)` on a non-empty character is always defined; `?? 0` states that without
+    // an assertion, and iteration never yields an empty string.
+    hash ^= char.codePointAt(0) ?? 0;
     hash = Math.imul(hash, 0x01000193) >>> 0;
   }
   return hash.toString(36);
@@ -44,14 +67,17 @@ function hashLabel(label: string): string {
 
 /** The readable part of an anchor for one label, or "" when the label has none. */
 function slugify(label: string): string {
-  return label
+  const folded = label
     .normalize("NFD")
     .replace(COMBINING_MARKS, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
+    // `đ`/`Đ` are single code points that NFD does not decompose, so they need naming. Both
+    // cases are handled before lowercasing, because lowercasing `Đ` would produce a `đ` the
+    // earlier pass has already gone by.
+    .replaceAll("đ", "d")
+    .replaceAll("Đ", "D")
     .toLowerCase()
-    .replace(NON_SLUG_RUN, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(NON_SLUG_RUN, "-");
+  return trimBoundaryHyphens(folded);
 }
 
 export interface CategoryAnchor<T> {

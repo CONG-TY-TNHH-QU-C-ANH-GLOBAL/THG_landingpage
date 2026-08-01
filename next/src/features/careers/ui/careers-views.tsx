@@ -33,7 +33,7 @@ function JobCard({
   copy,
 }: Readonly<{ job: JobSummary; href: string; copy: MarketingCopy }>) {
   const t = tFrom(copy);
-  const expired = isExpired(job.deadline);
+  const expired = isExpired(job.deadlineIso);
   return (
     <article className="rounded-2xl border border-border/60 bg-card p-5 transition-shadow hover:shadow-md">
       <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -145,7 +145,7 @@ export function JobDetailView({
   lang,
 }: Readonly<{ job: JobDetail; copy: MarketingCopy; lang: Locale }>) {
   const t = tFrom(copy);
-  const expired = isExpired(job.deadline);
+  const expired = isExpired(job.deadlineIso);
 
   return (
     <div className="min-h-screen bg-background">

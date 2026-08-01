@@ -264,6 +264,69 @@ describe("/[lang]/blog", () => {
     routeCms({ "/translations": translations });
     expect((await blogMetadata({ params: params("en") })).robots).toMatchObject({ index: false });
   });
+
+  it("applies the degraded-cache policy on outage and on nothing else", async () => {
+    // The blog list was the one route of the four that imported the shared policy without
+    // calling it, so a CMS outage was committed to the 300s window along with the noindex.
+    // ready → normal ISR.
+    routeCms({
+      "/translations": translations,
+      "/blog/categories": blogCategories,
+      "/blog": blogList,
+    });
+    render(await BlogPage({ params: params("vi") }));
+    expect(connection).not.toHaveBeenCalled();
+
+    // empty → a confirmed CMS answer, still normally cacheable.
+    cleanup();
+    cmsFetch.mockReset();
+    resetLoggedCmsFallbacks();
+    connection.mockClear();
+    routeCms({
+      "/translations": translations,
+      "/blog/categories": { locale: "vi", categories: [] },
+      "/blog": { locale: "vi", posts: [], total: 0 },
+    });
+    render(await BlogPage({ params: params("vi") }));
+    expect(connection).not.toHaveBeenCalled();
+
+    // unavailable → transient, must not persist under the success window.
+    cleanup();
+    cmsFetch.mockReset();
+    resetLoggedCmsFallbacks();
+    connection.mockClear();
+    routeCms({ "/translations": translations });
+    render(await BlogPage({ params: params("vi") }));
+    expect(connection).toHaveBeenCalled();
+    // ...and the metadata paired with that render stays noindex. One route render covers both,
+    // so generateMetadata needs no separate opt-out.
+    expect((await blogMetadata({ params: params("vi") })).robots).toMatchObject({ index: false });
+  });
+
+  it("serves fresh content once the CMS recovers", async () => {
+    // What the unit harness can prove about recovery: the loader is not pinned to the failed
+    // result, so the next render returns real posts. Not persisting the degraded render is what
+    // lets that next render happen before the 300s window would have elapsed; the route-level
+    // half of that is proven by the build (a degraded list leaves the prerender set).
+    routeCms({ "/translations": translations });
+    render(await BlogPage({ params: params("vi") }));
+    expect(screen.getByText(/Hiện chưa tải được bài viết/)).toBeTruthy();
+
+    cleanup();
+    cmsFetch.mockReset();
+    resetLoggedCmsFallbacks();
+    connection.mockClear();
+    routeCms({
+      "/translations": translations,
+      "/blog/categories": blogCategories,
+      "/blog": blogList,
+    });
+    render(await BlogPage({ params: params("vi") }));
+    expect(screen.getByRole("heading", { level: 3, name: "Bài viết A" })).toBeTruthy();
+    expect(connection).not.toHaveBeenCalled();
+    // The noindex the outage produced does not survive with it.
+    expect((await blogMetadata({ params: params("vi") })).robots).toMatchObject({ index: true });
+  });
 });
 
 describe("/[lang]/blog/[slug]", () => {

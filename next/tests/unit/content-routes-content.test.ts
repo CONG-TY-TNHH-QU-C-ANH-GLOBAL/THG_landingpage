@@ -224,13 +224,37 @@ describe("careers mappers", () => {
     expect(new Set(requirements.map((r) => r.id)).size).toBe(2);
   });
 
-  it("treats an unparseable or absent deadline as NOT expired", () => {
+  it("treats an absent machine deadline as NOT expired", () => {
     const now = new Date("2026-07-31T00:00:00Z");
-    // Hiding a live vacancy because an operator typed free text would be the worse failure.
+    // isExpired takes deadlineIso, never the display text. Free text maps to null upstream, and
+    // hiding a live vacancy because an operator typed prose would be the worse failure.
     expect(isExpired(null, now)).toBe(false);
-    expect(isExpired("liên hệ để biết thêm", now)).toBe(false);
     expect(isExpired("2026-12-31", now)).toBe(false);
     expect(isExpired("2026-01-01", now)).toBe(true);
+  });
+
+  it("keeps a posting open THROUGH its deadline date, expiring the day after", () => {
+    // Parity boundary: legacy compares the deadline against today's MIDNIGHT, not against the
+    // current instant [FACT: legacy src/lib/deadline.ts:21-27], so the final day is still open.
+    // Comparing timestamps would have closed the vacancy at the start of its last day.
+    expect(isExpired("2026-08-30", new Date("2026-08-30T00:00:00Z"))).toBe(false);
+    expect(isExpired("2026-08-30", new Date("2026-08-30T23:59:59Z"))).toBe(false);
+    expect(isExpired("2026-08-30", new Date("2026-08-31T00:00:00Z"))).toBe(true);
+  });
+
+  it("does not re-parse day-first text — the defect that made every posting immortal", () => {
+    // The live CMS stores "30/07/2026". Date.parse of that is NaN (no month 30), NaN was read
+    // as "not a date", and "not a date" meant "not expired" — so NO posting ever expired.
+    const now = new Date("2026-08-01T00:00:00Z");
+    const past = jobSummariesFromDto(
+      jobsResponseSchema.parse({
+        locale: "vi",
+        total: 1,
+        jobs: [job({ deadline: "30/07/2026" })],
+      }),
+    )[0];
+    expect(past.deadlineIso).toBe("2026-07-30");
+    expect(isExpired(past.deadlineIso, now)).toBe(true);
   });
 
   it("rejects a payload missing a documented field", () => {

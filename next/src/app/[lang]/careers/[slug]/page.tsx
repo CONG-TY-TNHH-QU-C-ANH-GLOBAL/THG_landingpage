@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: job.tagline ?? job.lead ?? `${job.title} — THG Fulfill`,
     // An expired vacancy stays reachable (its URL may be indexed and a silent 404 would be
     // worse) but must not keep competing in search as though it were open.
-    indexable: !isExpired(job.deadline),
+    indexable: !isExpired(job.deadlineIso),
   });
 }
 
@@ -65,7 +65,7 @@ export default async function JobPage({ params }: PageProps) {
 
   const { job } = result;
   const canonical = localeUrl(lang, `/careers/${slug}`);
-  const expired = isExpired(job.deadline);
+  const expired = isExpired(job.deadlineIso);
 
   return (
     <>

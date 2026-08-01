@@ -1,6 +1,6 @@
-import { isoDateOrNull } from "@/shared/cms/iso-date";
 import { withStableIds, withStableStringIds } from "@/shared/model/stable-id";
 
+import { deadlineIsoFrom } from "../models/deadline";
 import type { JobResponseDto, JobsResponseDto } from "../schemas/jobs";
 import type { JobDetail, JobSummary } from "../models/job";
 
@@ -37,7 +37,7 @@ function summaryFrom(j: JobCommonDto): JobSummary {
     employmentType: j.employment_type,
     salaryText: salaryText(j.salary, j.salary_unit, j.salary_note),
     deadline: j.deadline,
-    deadlineIso: isoDateOrNull(j.deadline),
+    deadlineIso: deadlineIsoFrom(j.deadline),
     experience: j.experience,
     postedAt: j.posted_at,
   };

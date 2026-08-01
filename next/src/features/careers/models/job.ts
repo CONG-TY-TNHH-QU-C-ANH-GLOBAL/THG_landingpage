@@ -36,13 +36,12 @@ export interface JobSummary {
   employmentType: string | null;
   /** Pre-formatted by the CMS (`salary` + `salary_unit` + `salary_note`); never computed here. */
   salaryText: string | null;
-  /** ISO `YYYY-MM-DD` or whatever the operator typed. Compared as a date only when parseable. */
-  /** As the operator wrote it — free text, shown as-is. Never a machine value. */
+  /** As the operator wrote it — free text ("30/08/2026"), shown as-is. Never a machine value:
+   *  nothing downstream parses this. Use `deadlineIso`. */
   deadline: string | null;
-  /** The deadline as a machine-readable ISO date, or null when it is not one. Separate for the
-   *  same reason as the blog's publication date: `Date.parse` accepts "01/01/2030" and then
-   *  `new Date(...).toISOString()` shifts it a day back in a positive-offset timezone, which
-   *  advertised a JobPosting as closed before it was. */
+  /** The deadline as a machine-readable ISO date, or null when the operator did not state one.
+   *  The ONLY value eligible for expiry logic and for `validThrough` — see models/deadline.ts
+   *  for the accepted formats and why they are careers-owned. */
   deadlineIso: string | null;
   experience: string | null;
   /** Unix SECONDS (CMS units, kept) — JobPosting.datePosted input. */
@@ -61,13 +60,31 @@ export interface JobDetail extends JobSummary {
   bonuses: readonly { id: string; text: string }[];
 }
 
-/** True when the deadline has passed. Unparseable or absent → NOT expired: refusing to show a
- *  post because an operator typed a free-text deadline would hide a live vacancy. */
-export function isExpired(deadline: string | null, now: Date = new Date()): boolean {
-  if (!deadline) return false;
-  const parsed = Date.parse(deadline);
-  if (Number.isNaN(parsed)) return false;
-  return parsed < now.getTime();
+/**
+ * True when the application deadline has passed.
+ *
+ * Takes the MACHINE value. It used to take the display string and run `Date.parse` on it, which
+ * is what made every live posting immortal: the CMS stores day-first text and
+ * `Date.parse("30/07/2026")` is NaN, NaN was read as "not a date", and "not a date" means not
+ * expired. Two postings past their deadline were still open, indexable and emitting JobPosting.
+ *
+ * A posting stays open THROUGH its deadline date and expires the day after — a date-only
+ * comparison, matching the parity source, which compares against midnight rather than "now"
+ * [FACT: legacy src/lib/deadline.ts:21-27]. Comparing timestamps instead would close a vacancy
+ * at the START of its final day.
+ *
+ * Absent machine value → NOT expired. Refusing to show a post because an operator typed free
+ * text would hide a live vacancy, which is the worse failure.
+ *
+ * The rollover is evaluated in UTC. Legacy used the viewer's local midnight, which server
+ * rendering has no access to; in Vietnam (UTC+7) that makes a posting close up to seven hours
+ * LATER than it used to — the conservative direction, and never earlier. Pinning
+ * Asia/Ho_Chi_Minh is a product decision, not one to make silently here.
+ */
+export function isExpired(deadlineIso: string | null, now: Date = new Date()): boolean {
+  if (!deadlineIso) return false;
+  // Both sides are YYYY-MM-DD, so a lexicographic compare IS a chronological one.
+  return deadlineIso < now.toISOString().slice(0, 10);
 }
 
 export type JobListResult =
