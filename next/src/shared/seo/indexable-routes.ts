@@ -41,6 +41,14 @@ export const INDEXABLE_ROUTES: readonly IndexableRoute[] = [
   // without a build, so they are not static templates — see the header note.
   { path: "/blog", changeFrequency: "weekly", priority: 0.7 },
   { path: "/careers", changeFrequency: "weekly", priority: 0.6 },
+  // WEB-002 service routes.
+  { path: "/thg-express", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/thg-warehouse", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/thg-order", changeFrequency: "weekly", priority: 0.9 },
+  // WEB-008. Listed because the route's own content — where tracking lives and how to reach
+  // it — is complete and true regardless of the Hub link, unlike a CMS-backed page with no
+  // content. The Hub itself is not indexed from here.
+  { path: "/tracking", changeFrequency: "monthly", priority: 0.4 },
 ];
 
 /** Routes deliberately NOT in the registry, and why. Asserted by the sitemap test so a blocked

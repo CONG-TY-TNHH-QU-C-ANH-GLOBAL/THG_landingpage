@@ -276,6 +276,30 @@ export const MARKETING_COPY: Readonly<Record<string, CopyEntry>> = {
   "careers.modal_bonus_title": { en: "Bonus & Commission System", vi: "Hệ thống thưởng & hoa hồng", zh: "奖金与佣金制度" },
   "careers.modal_apply_desc": { en: "Send your CV to careers@thgfulfill.com. Interview location: 121/5 Kenh 19/05, Tay Thanh Ward, HCMC. Prefer to talk first?", vi: "Gửi CV về careers@thgfulfill.com. Địa điểm phỏng vấn: 121/5 Kênh 19/05, Phường Tây Thạnh, TP.HCM. Muốn trao đổi trước?", zh: "请将简历发送至 careers@thgfulfill.com。面试地点：胡志明市新富郡西盛坊19/05渠街121/5号。想先聊聊？" },
   "careers.unavailable": { en: "Positions cannot be loaded right now. Please try again shortly.", vi: "Hiện chưa tải được vị trí tuyển dụng. Vui lòng thử lại sau ít phút.", zh: "暂时无法加载职位，请稍后再试。" },
+  // --- WEB-002 generic service pages (Express / Warehouse / Order) ---
+  // Section headings for the CMS block kinds. New keys: the Vite pages hardcoded a bespoke
+  // heading per page, and these three pages now share one renderer whose sections are named by
+  // block kind. No business claim is made by a heading.
+  "service.pain_points": { en: "Common problems", vi: "Vấn đề thường gặp", zh: "常见问题" },
+  "service.solutions": { en: "How we solve it", vi: "Cách chúng tôi giải quyết", zh: "我们的解决方案" },
+  "service.process": { en: "How it works", vi: "Quy trình", zh: "服务流程" },
+  "service.lanes": { en: "Shipping lanes", vi: "Tuyến vận chuyển", zh: "运输线路" },
+  "service.policies": { en: "Service policies", vi: "Chính sách dịch vụ", zh: "服务政策" },
+  "service.catalog": { en: "Products", vi: "Sản phẩm", zh: "产品" },
+  "service.gallery": { en: "Gallery", vi: "Hình ảnh", zh: "图片" },
+  "service.empty": { en: "This service has no published content in this language yet.", vi: "Dịch vụ này chưa có nội dung công bố cho ngôn ngữ này.", zh: "该服务尚未发布此语言的内容。" },
+  "service.unavailable": { en: "Service details cannot be loaded right now. Please try again shortly.", vi: "Hiện chưa tải được thông tin dịch vụ. Vui lòng thử lại sau ít phút.", zh: "暂时无法加载服务信息，请稍后再试。" },
+  // Heading fallbacks used only when the CMS service record itself is absent — the page still
+  // needs an h1. They are the product names, never a description of what the service does.
+  "service.thg-express.fallback_title": { en: "THG Express", vi: "THG Express", zh: "THG Express" },
+  "service.thg-warehouse.fallback_title": { en: "THG Warehouse", vi: "THG Warehouse", zh: "THG Warehouse" },
+  "service.thg-order.fallback_title": { en: "THG Dropship", vi: "THG Dropship", zh: "THG 代发" },
+  // --- WEB-008 tracking (Hub deep-link) ---
+  // All new: the Vite page's copy described an on-page lookup form that no longer exists.
+  "tracking.hub_explainer": { en: "Order and delivery status is kept in the THG Hub, the order and tracking management system for sellers. Sign in there to see your orders and their shipment status.", vi: "Trạng thái đơn hàng và giao hàng được lưu trong THG Hub — hệ thống quản lý đơn hàng và vận đơn dành cho seller. Đăng nhập tại đó để xem đơn và trạng thái vận chuyển.", zh: "订单与配送状态保存在 THG Hub — 面向卖家的订单与物流管理系统。请在该系统登录查看订单及其运输状态。" },
+  "tracking.open_hub": { en: "Open THG Hub", vi: "Mở THG Hub", zh: "打开 THG Hub" },
+  "tracking.hub_unavailable": { en: "The Hub link is not available right now. Please contact your account manager for order status.", vi: "Hiện chưa có liên kết tới Hub. Vui lòng liên hệ quản lý tài khoản để biết trạng thái đơn hàng.", zh: "目前暂无 Hub 链接，请联系您的客户经理查询订单状态。" },
+  "tracking.no_public_lookup": { en: "For your security, orders cannot be looked up on this public page.", vi: "Vì lý do bảo mật, không thể tra cứu đơn hàng trên trang công khai này.", zh: "出于安全考虑，本公开页面不提供订单查询。" },
   // --- WEB-007 policies + shipping routes ---
   // shipping.ts keys ported verbatim; the three `*.unavailable` / `*.no_content` strings are
   // new because the Vite pages had no way to say them: they rendered a CMS outage as
