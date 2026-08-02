@@ -17,6 +17,7 @@ import {
   serviceFaqsFromDto,
   serviceRecordFromDto,
 } from "../mappers/service-page";
+import { isServicePageEmpty } from "../models/service-page";
 import type { ServicePageResult, ServicePageSlug } from "../models/service-page";
 
 // Server-only WEB-002 loaders for the generic service pages.
@@ -77,8 +78,13 @@ export const loadServicePage = cache(
       faqs: faqsSettled.status === "fulfilled" ? serviceFaqsFromDto(faqsSettled.value) : [],
     };
 
-    const hasBlocks = Object.values(content.blocksByKind).some((g) => (g?.length ?? 0) > 0);
-    const anything = content.service !== null || hasBlocks || content.faqs.length > 0;
-    return anything ? { status: "ready", content } : { status: "empty", content };
+    // One owner for "is there anything on this page". This was a second, hand-written copy of
+    // the same three-term rule, and the route ALREADY guards with
+    // `status === "ready" && !isServicePageEmpty(...)` — belt and braces that only makes sense
+    // if the two could disagree. They cannot now: a page cannot be `ready` here and empty (and
+    // therefore noindex) downstream, because both answers come from this function.
+    return isServicePageEmpty(content)
+      ? { status: "empty", content }
+      : { status: "ready", content };
   },
 );

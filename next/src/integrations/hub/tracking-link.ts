@@ -55,7 +55,19 @@ export function buildHubTrackingLink(
   if (!(ALLOWED_HUB_HOSTS as readonly string[]).includes(origin.hostname.toLowerCase())) {
     return null;
   }
+  // `hostname` excludes the port, so the allowlist alone accepted
+  // `https://hub.thgfulfill.com:8443` — the approved name on an origin nobody approved, which
+  // is a different server as far as the browser's origin model is concerned. The approved
+  // policy is the default HTTPS origin only.
+  //
+  // The test is `port === ""`, not `port === "" || port === "443"`: WHATWG canonicalizes the
+  // scheme's default port away, so `new URL("https://host:443").port` is already the empty
+  // string. Pinned in tests rather than assumed — an explicit `:443` must still be accepted.
+  if (origin.port !== "") return null;
 
+  // `origin` is used as the base, never `href`: URL.origin is scheme + host + port only, so any
+  // credentials, path, query or fragment on the configured value are dropped here rather than
+  // leaking into a link we publish. Also covered by tests.
   const url = new URL(TRACKING_PATH, origin.origin);
   url.searchParams.set("lang", lang);
   return { url: url.toString(), lang };

@@ -183,6 +183,87 @@ describe("/[lang]/thg-express", () => {
     expect(connection).toHaveBeenCalled();
   });
 
+  // The loader used to carry its own hand-written copy of the emptiness rule while the route
+  // asked the model's isServicePageEmpty. Both now come from the model, so `ready` and
+  // "indexable" cannot disagree. Each case asserts the rendered state AND the metadata
+  // together — that pairing is what would break if the two rules ever drifted again.
+  const emptyish = { locale: "vi", page_slug: "thg-express", kind: null, blocks: [] };
+  const readyCases: [string, Record<string, unknown>][] = [
+    ["a live service record only", { "/services": services }],
+    ["one meaningful block only", { "/service-blocks": blocks }],
+    ["one FAQ only", { "/faqs": faqs }],
+  ];
+
+  it.each(readyCases)("is ready and indexable with %s", async (_label, partial) => {
+    routeCms({
+      "/translations": translations,
+      "/services": { locale: "vi", services: [] },
+      "/service-blocks": emptyish,
+      "/faqs": { locale: "vi", scope: "express", faqs: [] },
+      ...partial,
+    });
+    render(await ThgExpressPage({ params: params("vi") }));
+    expect(screen.queryByText(/chưa có nội dung công bố/)).toBeNull();
+    expect((await expressMetadata({ params: params("vi") })).robots).toMatchObject({ index: true });
+  });
+
+  it("is empty and noindex when the record, blocks and FAQs are all absent", async () => {
+    routeCms({
+      "/translations": translations,
+      "/services": { locale: "vi", services: [] },
+      "/service-blocks": emptyish,
+      "/faqs": { locale: "vi", scope: "express", faqs: [] },
+    });
+    render(await ThgExpressPage({ params: params("vi") }));
+    expect(screen.getByText(/chưa có nội dung công bố/)).toBeTruthy();
+    expect((await expressMetadata({ params: params("vi") })).robots).toMatchObject({
+      index: false,
+    });
+  });
+
+  it("blocks that were ALL dropped as malformed do not make the page ready", async () => {
+    // The case A1 makes reachable: reads succeed, blocks arrive, every one is discarded. The
+    // page has nothing to show, so it must be empty and noindex — not `ready` with a bare hero.
+    routeCms({
+      "/translations": translations,
+      "/services": { locale: "vi", services: [] },
+      "/service-blocks": {
+        locale: "vi",
+        page_slug: "thg-express",
+        kind: null,
+        blocks: [
+          { id: 1, kind: "pain_point", position: 1, icon: null, title: "  ", description: null, payload: {} },
+          { id: 2, kind: "some_future_kind", position: 2, icon: null, title: "x", description: null, payload: {} },
+        ],
+      },
+      "/faqs": { locale: "vi", scope: "express", faqs: [] },
+    });
+    render(await ThgExpressPage({ params: params("vi") }));
+    expect(screen.getByText(/chưa có nội dung công bố/)).toBeTruthy();
+    expect((await expressMetadata({ params: params("vi") })).robots).toMatchObject({
+      index: false,
+    });
+  });
+
+  it("names the umbrella organization as provider and links it to the site identity", async () => {
+    // THG Express is a SERVICE of THG Fulfill, not a separate company: the site declares one
+    // Organization. `url` makes that identity resolvable instead of a bare matching name.
+    routeCms(wired);
+    const { container } = render(await ThgExpressPage({ params: params("vi") }));
+    const service = [...container.querySelectorAll('script[type="application/ld+json"]')]
+      .map((s) => JSON.parse(s.textContent ?? "{}"))
+      .find((d) => d["@type"] === "Service");
+    expect(service).toMatchObject({
+      name: "THG Express",
+      url: "https://thgfulfill.com/vi/thg-express",
+      provider: {
+        "@type": "Organization",
+        name: "THG Fulfill",
+        url: "https://thgfulfill.com",
+      },
+    });
+  });
+
   it("keeps the normal ISR window when the page is ready", async () => {
     routeCms({
       "/translations": translations,

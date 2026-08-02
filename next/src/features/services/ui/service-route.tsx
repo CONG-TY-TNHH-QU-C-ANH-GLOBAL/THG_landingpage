@@ -5,7 +5,13 @@ import { applyCmsCachePolicy } from "@/shared/cms/degraded";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { tFrom } from "@/shared/i18n/marketing";
-import { BreadcrumbJsonLd, JsonLdScript, buildPageMetadata, localeUrl } from "@/shared/seo";
+import {
+  BreadcrumbJsonLd,
+  JsonLdScript,
+  buildPageMetadata,
+  localeUrl,
+  resolveSiteOrigin,
+} from "@/shared/seo";
 
 import { loadServicePage } from "../server/loaders";
 import { isServicePageEmpty, type ServicePageSlug } from "../models/service-page";
@@ -87,7 +93,25 @@ export async function ServiceRoute({
             "@type": "Service",
             name: result.content.service?.name ?? seo[lang].title,
             description: seo[lang].description,
-            provider: { "@type": "Organization", name: "THG Fulfill" },
+            // THG Fulfill is the PROVIDER ORGANIZATION, not a sibling of the service being
+            // described, and it stays the provider on every one of these routes. Express,
+            // Warehouse and Order are service names in one company's ecosystem, not separate
+            // legal entities: the site declares exactly one Organization — one address, one
+            // phone, one email, one set of social profiles [FACT: features/home/ui/home-jsonld
+            // .tsx:7-30] — and the ecosystem copy lists "THG Fulfill — POD & Sourcing"
+            // alongside Express and Warehouse as peer SERVICES of that company
+            // [FACT: shared/i18n/marketing-copy.ts, ecosystem.step1..step3_title]. Naming the
+            // provider after the service would invent three organizations that do not exist.
+            //
+            // What WAS missing is the link back to that one organization: a bare `name` is not
+            // resolvable, so a consumer could not tell this provider is the same entity the
+            // home page declares rather than a different company with a matching name. `url`
+            // supplies that, matching how blog author/publisher already identify it.
+            provider: {
+              "@type": "Organization",
+              name: "THG Fulfill",
+              url: resolveSiteOrigin(),
+            },
             url: canonical,
           }}
         />

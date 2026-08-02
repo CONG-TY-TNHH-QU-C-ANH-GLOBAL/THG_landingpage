@@ -75,12 +75,40 @@ export function serviceRecordFromDto(
 export type BlockAnomaly = "unregistered-kind" | "malformed";
 export type BlockAnomalyLogger = (kind: string, reason: BlockAnomaly, id: number) => void;
 
+/**
+ * Would this normalized block render anything a visitor can read?
+ *
+ * The rule is derived from what the two renderers actually output, not from a guess. BlockCard
+ * renders `num`, `tag`, `time`, `title`, `description`, `items` and `note`; StatCard renders
+ * `value` and `title` [FACT: ui/service-page-view.tsx:34-81]. Every one of those eight fields
+ * therefore counts, and a block carrying any of them is real content.
+ *
+ * The previous guard tested only title/description/value, and it ran BEFORE the extras were
+ * extracted, so it could not have consulted them. That dropped legitimate blocks: a
+ * shipping_lane whose card is a tag, a transit time and a feature list; a policy that is a
+ * heading-less list of items with a footnote; a process_step that is just its step number. All
+ * of those render correctly and all of them were being discarded as malformed.
+ *
+ * `icon` is deliberately NOT counted. It renders `aria-hidden="true"`, so a block carrying only
+ * an icon is an empty card with a decorative glyph — visible, but nothing a reader can read.
+ */
+function hasMeaningfulServiceBlockContent(block: ServiceBlock): boolean {
+  const { num, tag, time, items, note, value } = block.extras;
+  return (
+    items.length > 0 ||
+    Boolean(block.title ?? block.description ?? num ?? tag ?? time ?? note ?? value)
+  );
+}
+
 /** Group blocks by kind, each group in CMS position order.
  *
  *  A block whose `kind` is not in the code-owned registry is DROPPED, not guessed at: rendering
  *  an unknown kind through some default template would present content in a shape the operator
- *  did not choose. A block with neither title nor description nor a stat value is malformed and
- *  is dropped too — a half-rendered card reads as a broken page. Both emit a diagnostic. */
+ *  did not choose. A registered block that would render nothing readable is malformed and is
+ *  dropped too — a half-rendered card reads as a broken page. Both emit a diagnostic.
+ *
+ *  The block is normalized ONCE and then judged, so the guard sees exactly the fields the
+ *  renderer will see. Extracting the payload before and after a guard is how the two drifted. */
 export function serviceBlocksFromDto(
   dto: ServiceBlocksResponseDto,
   log?: BlockAnomalyLogger,
@@ -92,21 +120,14 @@ export function serviceBlocksFromDto(
       log?.(raw.kind, "unregistered-kind", raw.id);
       continue;
     }
-    const title = raw.title?.trim() || null;
-    const description = raw.description?.trim() || null;
-    const value = payloadString(raw.payload, "val");
-    if (!title && !description && !value) {
-      log?.(raw.kind, "malformed", raw.id);
-      continue;
-    }
 
     const block: ServiceBlock = {
       id: raw.id,
       kind: raw.kind,
       position: raw.position,
       icon: raw.icon,
-      title,
-      description,
+      title: raw.title?.trim() || null,
+      description: raw.description?.trim() || null,
       extras: {
         num: payloadString(raw.payload, "num"),
         tag: payloadString(raw.payload, "tag"),
@@ -118,9 +139,14 @@ export function serviceBlocksFromDto(
           ...payloadList(raw.payload, "items"),
         ]).map(({ id: itemId, value }) => ({ id: itemId, text: value })),
         note: payloadString(raw.payload, "note"),
-        value,
+        value: payloadString(raw.payload, "val"),
       },
     };
+
+    if (!hasMeaningfulServiceBlockContent(block)) {
+      log?.(raw.kind, "malformed", raw.id);
+      continue;
+    }
     grouped[raw.kind] = [...(grouped[raw.kind] ?? []), block];
   }
 
