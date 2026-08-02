@@ -33,7 +33,7 @@ function JobCard({
   copy,
 }: Readonly<{ job: JobSummary; href: string; copy: MarketingCopy }>) {
   const t = tFrom(copy);
-  const expired = isExpired(job.deadline);
+  const expired = isExpired(job.deadlineIso);
   return (
     <article className="rounded-2xl border border-border/60 bg-card p-5 transition-shadow hover:shadow-md">
       <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -81,12 +81,25 @@ export function CareersList({
 }: Readonly<{ result: JobListResult; copy: MarketingCopy; lang: Locale }>) {
   const t = tFrom(copy);
 
-  // Group by category in CMS order; jobs with no category fall into one trailing group.
-  const groups = new Map<string, JobSummary[]>();
+  // Group by category in CMS order; jobs with no category fall into one TRAILING group.
+  //
+  // Two things were wrong with keying that group by the translated label. Order: a Map keeps
+  // insertion order, so if the first job in the CMS response happened to be uncategorized the
+  // "all positions" group rendered FIRST, contradicting what the code claimed. Identity: a real
+  // CMS category whose name matched the translation would have silently merged into it. The
+  // uncategorized jobs are therefore collected separately — display copy is never a domain key —
+  // and appended once at the end.
+  const categorized = new Map<string, JobSummary[]>();
+  const uncategorized: JobSummary[] = [];
   for (const job of result.jobs) {
-    const key = job.category ?? t("careers.all_positions");
-    groups.set(key, [...(groups.get(key) ?? []), job]);
+    if (job.category === null) {
+      uncategorized.push(job);
+      continue;
+    }
+    categorized.set(job.category, [...(categorized.get(job.category) ?? []), job]);
   }
+  const groups: [string, JobSummary[]][] = [...categorized.entries()];
+  if (uncategorized.length > 0) groups.push([t("careers.all_positions"), uncategorized]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,7 +119,7 @@ export function CareersList({
         )}
 
         {result.status === "ready" &&
-          [...groups.entries()].map(([category, jobs]) => (
+          groups.map(([category, jobs]) => (
             <section key={category} className="mb-10">
               <h2 className="mb-4 text-lg font-semibold text-navy">{category}</h2>
               <div className="grid gap-4 md:grid-cols-2">
@@ -132,7 +145,7 @@ export function JobDetailView({
   lang,
 }: Readonly<{ job: JobDetail; copy: MarketingCopy; lang: Locale }>) {
   const t = tFrom(copy);
-  const expired = isExpired(job.deadline);
+  const expired = isExpired(job.deadlineIso);
 
   return (
     <div className="min-h-screen bg-background">

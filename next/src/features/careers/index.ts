@@ -11,6 +11,8 @@ export type {
   JobDetailResult,
 } from "./models/job";
 export { isExpired } from "./models/job";
+export type { SchemaEmploymentType } from "./models/employment-type";
+export { schemaEmploymentType } from "./models/employment-type";
 
 export { loadJobs, loadJob, jobStaticParams } from "./server/loaders";
 export { CareersList, JobDetailView, JobUnavailable } from "./ui/careers-views";

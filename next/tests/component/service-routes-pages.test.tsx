@@ -8,6 +8,13 @@ vi.mock("@/shared/cms", () => ({ cmsFetch }));
 vi.mock("next/image", () => ({
   default: (props: Record<string, unknown>) => <img {...(props as Record<string, string>)} />,
 }));
+// connection() throws outside a request scope; spying it also lets these assert that the
+// degraded-cache policy actually fired, the same way the blog/careers suite does.
+const { connection } = vi.hoisted(() => ({ connection: vi.fn(async () => {}) }));
+vi.mock("next/server", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  connection,
+}));
 
 import ThgExpressPage, {
   generateMetadata as expressMetadata,
@@ -89,6 +96,7 @@ const faqs = {
 
 beforeEach(() => {
   cmsFetch.mockReset();
+  connection.mockClear();
   resetLoggedCmsFallbacks();
 });
 afterEach(cleanup);
@@ -169,6 +177,35 @@ describe("/[lang]/thg-express", () => {
     routeCms({ "/translations": translations });
     render(await ThgExpressPage({ params: params("vi") }));
     expect(screen.getByText(/Hiện chưa tải được thông tin dịch vụ/)).toBeTruthy();
+    // These four routes carry the same 300s revalidate and the same non-ready noindex as the
+    // blog/careers routes, so they need the same opt-out: without it a transient outage is
+    // committed to the success window together with its noindex and never self-heals.
+    expect(connection).toHaveBeenCalled();
+  });
+
+  it("keeps the normal ISR window when the page is ready", async () => {
+    routeCms({
+      "/translations": translations,
+      "/services": services,
+      "/service-blocks": blocks,
+      "/faqs": faqs,
+    });
+    render(await ThgExpressPage({ params: params("vi") }));
+    expect(screen.getByRole("heading", { level: 1, name: "THG Express" })).toBeTruthy();
+    expect(connection).not.toHaveBeenCalled();
+  });
+
+  it("keeps the normal ISR window for a confirmed-empty page", async () => {
+    // Every read SUCCEEDS and returns nothing. That is a healthy CMS answer, not an outage, so
+    // it stays normally cacheable — the distinction the policy exists to make.
+    routeCms({
+      "/translations": translations,
+      "/services": { locale: "vi", services: [] },
+      "/service-blocks": { locale: "vi", page_slug: "thg-express", kind: null, blocks: [] },
+      "/faqs": { locale: "vi", scope: "express", faqs: [] },
+    });
+    render(await ThgExpressPage({ params: params("vi") }));
+    expect(connection).not.toHaveBeenCalled();
   });
 
   it("is noindex when nothing is published for the locale", async () => {

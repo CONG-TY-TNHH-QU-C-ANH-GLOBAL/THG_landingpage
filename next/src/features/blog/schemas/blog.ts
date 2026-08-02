@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { SUPPORTED_LOCALES } from "@/shared/i18n";
+
 // Transport DTOs for GET /blog, /blog/{slug} and /blog/categories.
 // Mirrors the frozen CMS contract [FACT: CMS src/features/blog/blog.schemas.ts].
 //
@@ -9,7 +11,9 @@ import { z } from "zod";
 //
 // Unknown keys are stripped by Zod, so an additive CMS change never breaks this consumer.
 
-const localeSchema = z.enum(["en", "vi", "zh"]);
+// Derived from the canonical locale list rather than restating it: a fourth locale must not be
+// something this file can silently disagree with (shared/i18n owns the set).
+const localeSchema = z.enum(SUPPORTED_LOCALES);
 
 const blogPostSummaryDtoSchema = z.object({
   slug: z.string(),
@@ -37,17 +41,13 @@ const blogSlideDtoSchema = z.object({
   alt_text: z.string(),
 });
 
-const blogPostDetailDtoSchema = z.object({
-  slug: z.string(),
-  title: z.string(),
-  excerpt: z.string().nullable(),
-  thumbnail_url: z.string().nullable(),
-  category: z.string().nullable(),
-  published_date: z.string().nullable(),
+// The detail projection IS the summary plus four fields [FACT: CMS blog.schemas.ts:59-63 — "Adds
+// seo_title / seo_description over the summary"]. Extending states that relationship instead of
+// re-typing seven shared fields that must never drift apart from the list's copy of them.
+const blogPostDetailDtoSchema = blogPostSummaryDtoSchema.extend({
   seo_title: z.string().nullable(),
   seo_description: z.string().nullable(),
   body_md: z.string().nullable(),
-  updated_at: z.number().int(),
   slides: z.array(blogSlideDtoSchema),
 });
 

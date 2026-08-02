@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { applyCmsCachePolicy } from "@/shared/cms/degraded";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { tFrom } from "@/shared/i18n/marketing";
@@ -50,6 +51,8 @@ export default async function CareersPage({ params }: PageProps) {
   if (!isSupportedLocale(lang)) notFound();
 
   const [copy, result] = await Promise.all([getMarketingCopy(lang), loadJobs(lang)]);
+  // A CMS outage must not be baked into the 300s route cache together with its noindex.
+  await applyCmsCachePolicy(result.status);
   const t = tFrom(copy);
 
   return (

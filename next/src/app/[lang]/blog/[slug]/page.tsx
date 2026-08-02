@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { applyCmsCachePolicy } from "@/shared/cms/degraded";
 import { isSupportedLocale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { tFrom } from "@/shared/i18n/marketing";
@@ -41,12 +42,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (result.status !== "ready") return { robots: { index: false, follow: false } };
 
   const { article } = result;
+  // Precedence: operator override → the article's own field → the existing default. The
+  // overrides are normalized to null in the mapper, so a CMS field the operator cleared falls
+  // through to the fallback instead of erasing the title with an empty string.
   const metadata = buildPageMetadata({
     lang,
     routeId: `/blog/${slug}`,
     // Parity: BlogDetailPage.tsx:91.
-    title: `${article.title} — THG Fulfill`,
-    description: article.excerpt || `${article.title} — THG Fulfill`,
+    title: article.seoTitle ?? `${article.title} — THG Fulfill`,
+    description:
+      article.seoDescription ?? (article.excerpt || `${article.title} — THG Fulfill`),
     image: article.featuredSrc ?? undefined,
     indexable: true,
   });
@@ -56,7 +61,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       ...metadata.openGraph,
       type: "article",
-      publishedTime: article.displayDate,
+      // Omitted unless the CMS supplied a real date — see BlogPostSummary.publishedDateIso.
+      publishedTime: article.publishedDateIso ?? undefined,
     },
   };
 }
@@ -75,6 +81,10 @@ export default async function BlogArticlePage({ params }: PageProps) {
   // for a transient failure gets a live URL dropped from the index.
   if (result.status === "not-found") notFound();
   if (result.status === "unavailable") {
+    // Without this the apology page — and the noindex generateMetadata pairs with it — would be
+    // committed to the 3600s route cache, so a one-second CMS blip could hide a live article
+    // from crawlers for an hour with nothing to invalidate it.
+    await applyCmsCachePolicy(result.status);
     return <BlogArticleUnavailable copy={copy} lang={lang} />;
   }
 
@@ -96,11 +106,9 @@ export default async function BlogArticlePage({ params }: PageProps) {
           "@type": "Article",
           headline: article.title,
           description: article.excerpt || undefined,
-          // Only emitted when the value is a real ISO date — an invalid datePublished is
-          // worse than an absent one (parity: JsonLd.tsx:342 gated the same way).
-          datePublished: /^\d{4}-\d{2}-\d{2}$/.test(article.displayDate)
-            ? article.displayDate
-            : undefined,
+          // The mapper already decided whether the CMS value is a real date; the route no
+          // longer re-guesses with its own regex (parity: JsonLd.tsx:342 gated the same way).
+          datePublished: article.publishedDateIso ?? undefined,
           image: article.featuredSrc ?? undefined,
           mainEntityOfPage: canonical,
           author: { "@type": "Organization", name: "THG Fulfill", url: resolveSiteOrigin() },

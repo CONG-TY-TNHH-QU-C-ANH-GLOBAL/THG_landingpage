@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { applyCmsCachePolicy } from "@/shared/cms/degraded";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { tFrom } from "@/shared/i18n/marketing";
@@ -58,6 +59,13 @@ export async function ServiceRoute({
     getMarketingCopy(lang),
     loadServicePage(slug, lang),
   ]);
+  // Same invariant the four blog/careers routes enforce on the canonical base, applied here
+  // because these four service routes have the identical shape: a 300s route-level revalidate
+  // plus a `noindex` that generateMetadata emits for any non-ready result. Without this a
+  // transient CMS outage is committed to the success-path window together with that noindex,
+  // and nothing invalidates an entry that was written successfully. Only `unavailable` opts
+  // out; `ready` and `empty` keep the approved ISR behaviour.
+  await applyCmsCachePolicy(result.status);
   const t = tFrom(copy);
   const canonical = localeUrl(lang, `/${slug}`);
   const hasContent = result.status === "ready" && !isServicePageEmpty(result.content);
