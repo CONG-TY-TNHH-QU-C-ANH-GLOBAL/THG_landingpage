@@ -2,16 +2,17 @@
 
 ## 1. Status
 
-**BLOCKED FOR IMPLEMENTATION** — P1 (Preview CMS mutation safety) is unresolved. §7 records the
-proof and the exact one-line owner decision that unblocks it.
+**READY FOR IMPLEMENTATION REVIEW** — P1 is closed by CMS-P1, production-verified (§7.3). P2 is
+closed by owner approval for Preview qualification only (§13). R1 is **not** implemented; no
+implementation branch exists yet.
 
 | Field | Value |
 |---|---|
 | Slice | R1 (repository-local; not a registered governance spec — see P2 in §13) |
-| Landing base | `migration/next-main` @ `6c14fb3` |
-| CMS evidence base | `CONG-TY-TNHH-QU-C-ANH-GLOBAL/CMS_management-` `origin/main` @ `5ca1750`; every cited CMS file verified byte-identical to `origin/main` |
+| Landing base | `migration/next-main` @ `6c14fb3` (unchanged since this spec was written) |
+| CMS evidence base | `CONG-TY-TNHH-QU-C-ANH-GLOBAL/CMS_management-` `origin/main` @ `d9a404d` (CMS-P1, PR #74). §3–§7 findings were captured at `5ca1750`; every cited file was byte-identical to `origin/main` then, and the boundary they describe is now enforced |
 | Spec branch | `spec/Anh/vercel-preview-baseline` |
-| Production impact | none — no DNS, no runtime change, no `main`, no `deploy.yml` |
+| Production impact | none — no DNS, no runtime change, no `main`, no `deploy.yml`. `production_runtime_changed` stays **false** |
 
 **Governance framing.** R1 qualifies Vercel as a **Preview environment for the migration line**.
 R1 does **not** replace the approved VPS standalone production runtime, does not cut production
@@ -178,31 +179,45 @@ preflighted — a browser blocks those when the preview Origin is absent from `C
 is a *browser-enforced* effect, not a server-side boundary, and it does not cover the
 non-preflighted path above.
 
-### 7.3 Conclusion
+### 7.3 Conclusion — CLOSED by CMS-P1, production-verified
 
-> **BLOCKED — SAFE PREVIEW CMS ORIGIN REQUIRED.**
->
-> CMS evidence proves the opposite of read-only: a Preview built with the production
-> `NEXT_PUBLIC_CMS_API_URL` **can and will mutate production data** without a preflight and
-> without Turnstile. Calling the production CMS URL "read-only Preview access" is not supportable.
+The original finding stands as written: at `5ca1750` a Preview carrying the production
+`NEXT_PUBLIC_CMS_API_URL` could mutate production data, without a preflight and without
+Turnstile. That was resolved in the CMS, by **option C** of the three recorded here — a
+server-side mutation boundary — not by a configuration workaround in this repository.
 
-**Server reads are separately safe.** `cmsFetch` sends only `Accept` and no credential
-(`next/src/shared/cms/cmsFetch.ts`); reads are unauthenticated `GET`s. Pointing **`CMS_API_URL`**
-at the production CMS is a load/exposure decision, not a mutation risk.
+**CMS-P1 — Public Browser Mutation Origin Boundary**, merged to CMS `origin/main` as `d9a404d`
+(PR #74). All eight public write endpoints now reject a disallowed browser Origin **before** rate
+limiting, body parsing, Turnstile, owner-token checks and any D1/R2/Telegram effect. Matching is
+exact after URL normalization; a missing, malformed or opaque Origin is refused; an empty
+`CORS_ORIGIN` fails closed. No Vercel origin is in the production allow-list, and none may be
+added.
 
-**Unblock condition — one owner decision, on `NEXT_PUBLIC_CMS_API_URL` in the Preview scope only:**
+**Runtime verification against the Production Worker** (`https://cms.thgfulfill.com`, deployed by
+`push:[main]` → `wrangler deploy`). Probes used `POST /community/questions/{slug}/same-issue` — a
+CORS-simple path that the boundary guards — with a deliberately non-existent random slug, so
+nothing could be written:
 
-| Option | Effect | Cost |
+| Probe Origin | Result | Meaning |
 |---|---|---|
-| **A. Non-production write origin** that does not resolve to production (must be a syntactically valid URL — `resolvePublicCmsApiUrl` only trims, the build gate only checks non-blank) | Writes fail closed at the network layer; forms show the existing generic error copy; reads unaffected via `CMS_API_URL` | Preview cannot exercise submit success paths |
-| **B. A real non-production CMS deployment** | Full parity including writes | New work in the CMS repository, outside R1; no such contract exists today (§7.1 #8) |
-| **C. Server-side mutation boundary in the CMS** (origin allow-list that rejects, or an environment mutation switch) | Production-safe for any preview origin | New work in the CMS repository, outside R1 |
+| `https://<probe>.vercel.app` | **403** `Nguồn gọi không được phép thực hiện thao tác này.` | boundary live; that message exists only in CMS-P1 |
+| `https://thgfulfill.com.evil.example`, `https://evil-thgfulfill.com` | **403**, same message | exact matching, no suffix/substring admission |
+| `https://thgfulfill.com`, `https://www.thgfulfill.com` | **404** `No published question with slug "…"` | passed the boundary, reached domain logic, wrote nothing |
+| read regression: `GET /site-settings`, `/homepage?lang=vi`, `/community/categories` | **200** JSON | reads unaffected |
 
-Option A is the only one implementable inside R1. It is a **configuration** boundary, not a
-server-side one: it stops the Preview application from reaching production, but it does not stop
-an arbitrary client from calling the CMS. That limitation must be accepted explicitly by the
-owner, and hiding or disabling mutation UI in the frontend is **not** an acceptable substitute
-for either A, B, or C.
+The 403-vs-404 split is the deployment proof: before CMS-P1 the preview Origin would have
+received the same 404. **No production record was created by any probe.**
+
+**Server reads remain separately safe.** `cmsFetch` sends only `Accept` and no credential
+(`next/src/shared/cms/cmsFetch.ts`). Pointing **`CMS_API_URL`** at the production CMS is a
+load/exposure decision, not a mutation risk.
+
+**Resulting Preview CMS strategy.** `NEXT_PUBLIC_CMS_API_URL` **may** point at the production CMS
+origin, because a Preview browser's writes are now refused server-side. Expected and accepted
+Preview behaviour: submit actions return 403 and the forms show their existing generic error
+copy. Standing prohibitions: do **not** add any Vercel Preview origin to production
+`CORS_ORIGIN`; do **not** give Preview mutation credentials; do **not** hide or disable mutation
+UI as a substitute for the server-side boundary.
 
 ---
 
@@ -226,7 +241,7 @@ Performed in Vercel project settings, not in this repository.
 | Variable | Value |
 |---|---|
 | `CMS_API_URL` | approved read origin (production CMS is acceptable for reads — §7.3) |
-| `NEXT_PUBLIC_CMS_API_URL` | **P1 — pending owner decision (§7.3)** |
+| `NEXT_PUBLIC_CMS_API_URL` | production CMS origin — permitted now that CMS-P1 refuses Preview-origin writes server-side (§7.3). Preview submits are expected to 403 |
 | `NEXT_PUBLIC_SITE_URL` | **unset** (C-4) |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | **unset** unless P1's resolution requires it |
 | `NODE_ENV`, `PORT` | never set manually |
@@ -317,16 +332,19 @@ unchanged. A half-configured Preview — reachable but unprotected, or able to w
 
 ## 13. Remaining Blockers / Preconditions
 
-**P1 — Preview CMS mutation safety. BLOCKING.**
-Proven mutable (§7.2). Unblocks on one recorded owner decision: option A, B or C in §7.3.
-Required evidence to close: the chosen `NEXT_PUBLIC_CMS_API_URL` Preview value, plus NT-5 and
-NT-6 confirmed CMS-side.
+**P1 — Preview CMS mutation safety. CLOSED.**
+Resolved in the CMS by CMS-P1 (`origin/main` @ `d9a404d`, PR #74) and verified live on the
+Production Worker: Preview and hostile-lookalike Origins receive a 403 from the mutation-origin
+boundary, both production landing Origins pass it, reads are unaffected, and no production record
+was created during verification (§7.3). NT-5 and NT-6 in §11 remain as the Preview-side
+confirmation of the same property once a Preview exists.
 
-**P2 — Governance authorization. OWNER DECISION (not an architecture blocker).**
-No ADR, registry or queue entry mentions Vercel. R1 is framed as Preview qualification and
-changes no production runtime (§1), so it does not contradict Q-023/MIG-010. The owner records
-either a governance entry for a Preview-qualification slice, or an accepted non-governed
-Preview-only exception. Vercel production hosting remains a separate, later decision.
+**P2 — Governance authorization. CLOSED by owner decision.**
+The owner approved proceeding with **Vercel Preview Qualification only**. That approval is
+explicitly **not** production DNS cutover, not final Vercel production-hosting approval, not a
+replacement of VPS deployment governance, and does not supersede Q-023/MIG-010.
+`production_runtime_changed` stays **false**. Vercel production hosting remains a separate,
+later owner decision, and this slice must not be cited as precedent for it.
 
 **Verification/configuration items — not blockers:**
 
@@ -341,7 +359,7 @@ Preview-only exception. Vercel production hosting remains a separate, later deci
 
 ## 14. Definition of Done
 
-1. P1 resolved and recorded in §7.3; P2 recorded in §13.
+1. P1 and P2 closed and recorded (§7.3, §13) — done.
 2. V1–V4 resolved and reported with evidence.
 3. AC-1..AC-14 each have a captured artefact.
 4. NT-1..NT-8 executed with expected outcomes; NT-5/NT-6 confirmed CMS-side.
@@ -355,7 +373,9 @@ Partial completion is not done — §12's partial-failure path applies. Do not m
 
 ## 15. Implementation-Agent Guardrails
 
-1. **Do not start while §1 reads BLOCKED.** P1 must carry a recorded owner decision first.
+1. **Do not start until this spec has been reviewed and approved.** §1 reads READY FOR
+   IMPLEMENTATION REVIEW, not approved-to-build; the implementation branch is created in a
+   separate session from the approved spec.
 2. `git fetch origin`; re-verify every §3 and §7 claim against **current** HEAD of both repos, not
    against `6c14fb3` / `5ca1750`. If repository evidence contradicts a contract, **stop and
    report** — the spec is wrong and must be amended by its owner. Never adapt code to fit a spec.
