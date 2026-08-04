@@ -4,6 +4,7 @@
 // intentionally never rendered.
 import Image from "next/image";
 
+import { ServiceSectionHeader } from "@/shared/service";
 import type { FulfillContent } from "../models/fulfill";
 import type { FulfillCopy } from "../localized-content";
 import styles from "./fulfill.module.css";
@@ -61,13 +62,13 @@ export default function CatalogSection({
       style={{ borderColor: "var(--fx-border)" }}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12">
-        <div className="mb-12">
-          <span className={styles.sectionIndex}>{copy.catalogEyebrow}</span>
-          <h2 className="text-2xl md:text-3xl font-bold mt-4 mb-2">{copy.catalogTitle}</h2>
-          <p className="text-sm" style={{ color: "var(--fx-gray)" }}>
-            {hasCmsCatalog ? copy.catalogIntro : copy.catalogEmpty}
-          </p>
-        </div>
+        <ServiceSectionHeader
+          eyebrow={copy.catalogEyebrow}
+          title={copy.catalogTitle}
+          intro={hasCmsCatalog ? copy.catalogIntro : copy.catalogEmpty}
+          introClassName="max-w-2xl text-sm"
+          className="mb-12"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {hasCmsCatalog

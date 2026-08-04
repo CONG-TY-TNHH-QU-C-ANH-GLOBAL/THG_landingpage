@@ -24,6 +24,21 @@
     monospace;
   --fx-apple: cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* R2: map this route's operational palette onto the shared Service Experience contract
+     (shared/service/service.module.css). The shared layer never learns the --fx-* names; this
+     single mapping is the whole theming surface, so a future service page themes the same
+     components by assigning its own tokens here. */
+  --svc-accent: var(--fx-blue);
+  --svc-accent-soft: var(--fx-cyan);
+  --svc-rule: var(--fx-orange);
+  --svc-ink: var(--fx-ink);
+  --svc-muted: var(--fx-gray);
+  --svc-border: var(--fx-border);
+  --svc-surface: var(--fx-surface);
+  --svc-canvas: var(--fx-bg);
+  --svc-mono: var(--fx-mono);
+  --svc-ease: var(--fx-apple);
+
   position: relative;
   background: var(--fx-bg);
   color: var(--fx-ink);
@@ -43,22 +58,8 @@
   font-family: var(--fx-mono);
 }
 
-.sectionIndex {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--fx-mono);
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--fx-gray);
-}
-.sectionIndex::before {
-  content: "";
-  width: 26px;
-  height: 2px;
-  background: var(--fx-orange);
-}
+/* Section eyebrows now come from shared/service (ServiceSectionHeader), themed through the
+   --svc-* mapping above — the local .sectionIndex rule it replaced is gone. */
 
 /* Blueprint field — 32px grid faded by a radial mask. */
 .blueprint {
@@ -194,35 +195,37 @@
   width: 14rem;
   z-index: 30;
 }
-.hubStage {
+/* Hub row markers track the viewed step entirely in CSS, so the stage stays a Server Component
+   and ships no JavaScript: upcoming "—", current "●", already-passed "✓". The ✓ rules come after
+   the ● rules and never target the current row, so specificity order needs no !important. */
+.hubMarker {
+  color: var(--fx-gray);
   transition: color 0.3s var(--fx-apple);
 }
-.hubStageActive {
+.hubMarker::after {
+  content: "—";
+}
+.stage[data-step="0"] .hubRow:nth-child(1) .hubMarker::after,
+.stage[data-step="1"] .hubRow:nth-child(2) .hubMarker::after,
+.stage[data-step="2"] .hubRow:nth-child(3) .hubMarker::after,
+.stage[data-step="3"] .hubRow:nth-child(4) .hubMarker::after {
+  content: "●";
+}
+.stage[data-step="0"] .hubRow:nth-child(1) .hubMarker,
+.stage[data-step="1"] .hubRow:nth-child(2) .hubMarker,
+.stage[data-step="2"] .hubRow:nth-child(3) .hubMarker,
+.stage[data-step="3"] .hubRow:nth-child(4) .hubMarker {
   color: var(--fx-blue);
   font-weight: 700;
 }
+.stage[data-step="1"] .hubRow:nth-child(1) .hubMarker::after,
+.stage[data-step="2"] .hubRow:nth-child(-n + 2) .hubMarker::after,
+.stage[data-step="3"] .hubRow:nth-child(-n + 3) .hubMarker::after {
+  content: "✓";
+}
 
-/* ── Stepper list ── */
-.stepBtn {
-  display: block;
-  width: 100%;
-  text-align: left;
-  border-left: 2px solid transparent;
-  padding-left: 1rem;
-  transition:
-    border-color 0.3s var(--fx-apple),
-    padding-left 0.3s var(--fx-apple),
-    opacity 0.5s var(--fx-apple);
-  opacity: 0.4;
-}
-.stepBtn:hover {
-  border-left-color: #e5e7eb;
-}
-.stepBtnActive {
-  border-left-color: var(--fx-ink);
-  padding-left: 1.5rem;
-  opacity: 1;
-}
+/* Step controls now live in shared/service (ServiceWorkflow); the local .stepBtn rules it
+   replaced are gone. */
 
 /* ── Dark consultation inputs handled by shared components; only the shell is scoped here ── */
 .consult {

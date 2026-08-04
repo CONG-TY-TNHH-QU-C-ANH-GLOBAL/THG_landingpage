@@ -9,7 +9,10 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 // on images, so the mock renders nothing.
 vi.mock("next/image", () => ({ default: () => null }));
 
-import JourneyStepper from "@/features/fulfill/ui/journey-stepper";
+// R2: the interaction contract moved to the shared Service Experience template. The Fulfill
+// journey now composes it, so this suite exercises the same behaviour through the real shared
+// island — the assertions are unchanged, only the module that owns them moved.
+import { ServiceWorkflow, type ServiceWorkflowStep } from "@/shared/service";
 import { getFulfillContent, applyServiceBlocks } from "@/features/fulfill";
 import { fulfillServiceContentFromDto } from "@/features/fulfill/mappers/serviceBlocks";
 import { serviceBlocksResponseSchema } from "@/features/fulfill/schemas/service-blocks";
@@ -30,15 +33,21 @@ const IMAGES = [
   { src: "/b.png", alt: "", step: 3, widthPct: 74 },
 ] as const;
 
+/** The journey's step shape as the shared template consumes it (positional ids, as the adapter
+ *  builds them — two steps may legitimately share a title). */
+const toSteps = (
+  steps: readonly { index: string; title: string; description: string }[],
+): ServiceWorkflowStep[] =>
+  steps.map((s, i) => ({ id: `step-${i}`, index: s.index, title: s.title, description: s.description }));
+
 function renderStepper() {
   return render(
-    <JourneyStepper
-      steps={STEPS}
-      images={IMAGES}
-      hubStages={["Received", "Processing", "QC", "Packed"]}
-      hubLabel="Hub System"
+    <ServiceWorkflow
+      steps={toSteps(STEPS)}
+      label="Steps"
       reference="ref"
-      stepsLabel="Steps"
+      stageClassName="stage"
+      stage={<div data-testid="stage-art">{IMAGES.length}</div>}
     />,
   );
 }
@@ -139,13 +148,12 @@ describe("JourneyStepper", () => {
     );
     const merged = applyServiceBlocks(base, content);
     render(
-      <JourneyStepper
-        steps={merged.steps}
-        images={IMAGES}
-        hubStages={merged.hubStages}
-        hubLabel="Hub System"
+      <ServiceWorkflow
+        steps={toSteps(merged.steps)}
+        label={merged.journeyTitle}
         reference={merged.journeyReference}
-        stepsLabel={merged.journeyTitle}
+        stageClassName="stage"
+        stage={<div />}
       />,
     );
     const tabs = screen.getAllByRole("tab");
