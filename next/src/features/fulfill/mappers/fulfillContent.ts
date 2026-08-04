@@ -12,8 +12,13 @@ const FULFILL_SERVICE_ID = "thg-fulfill";
 function catalogItemFromProduct(p: CmsServiceProduct): FulfillCatalogItem | null {
   const name = p.name.trim();
   if (!name) return null;
-  const note = [p.price?.trim(), p.time?.trim(), p.origin?.trim()].filter(Boolean).join(" · ");
-  return { name, image: p.image?.trim() ?? "", note };
+  const price = p.price?.trim() ?? "";
+  const leadTime = p.time?.trim() ?? "";
+  const origin = p.origin?.trim() ?? "";
+  // `note` stays the collapsed one-line form (unchanged consumers rely on it); the three fields
+  // are also surfaced individually so the card can label them the way the Vite page does.
+  const note = [price, leadTime, origin].filter(Boolean).join(" · ");
+  return { name, image: p.image?.trim() ?? "", note, price, leadTime, origin };
 }
 
 /** Select the live `thg-fulfill` service and normalize it to the landing view model. When the

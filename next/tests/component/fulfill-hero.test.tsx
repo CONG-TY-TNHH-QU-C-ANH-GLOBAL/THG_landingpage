@@ -9,6 +9,7 @@ import { render, screen, cleanup, within } from "@testing-library/react";
 vi.mock("next/image", () => ({ default: () => null }));
 
 import HeroSection from "@/features/fulfill/ui/hero-section";
+import { getFulfillParityContent } from "@/features/fulfill/parity-content";
 import { getFulfillContent } from "@/features/fulfill";
 import type { FulfillContent } from "@/features/fulfill";
 import { copyForLocale } from "../support/lead-test-utils";
@@ -32,7 +33,7 @@ afterEach(cleanup);
 
 describe("Fulfill hero H1 ownership", () => {
   it("renders exactly one H1 and it is the art-directed headline, not the CMS label", () => {
-    render(<HeroSection lang="en" marketingCopy={marketing} copy={copy} content={content()} />);
+    render(<HeroSection lang="en" parity={getFulfillParityContent("en")} marketingCopy={marketing} copy={copy} content={content()} />);
     const h1s = screen.getAllByRole("heading", { level: 1 });
     expect(h1s).toHaveLength(1);
     expect(h1s[0].textContent).toBe(copy.heroHeadline);
@@ -41,7 +42,7 @@ describe("Fulfill hero H1 ownership", () => {
 
   it("shows the CMS service label as the eyebrow when present", () => {
     const { container } = render(
-      <HeroSection lang="en" marketingCopy={marketing} copy={copy} content={content()} />,
+      <HeroSection lang="en" parity={getFulfillParityContent("en")} marketingCopy={marketing} copy={copy} content={content()} />,
     );
     const section = container.querySelector("section") as HTMLElement;
     expect(within(section).getByText("THG Fulfill")).toBeTruthy(); // eyebrow badge
@@ -51,7 +52,7 @@ describe("Fulfill hero H1 ownership", () => {
     render(
       <HeroSection
         lang="en"
-        marketingCopy={marketing}
+        parity={getFulfillParityContent("en")} marketingCopy={marketing}
         copy={copy}
         content={content({ serviceLabel: "" })}
       />,
@@ -63,7 +64,7 @@ describe("Fulfill hero H1 ownership", () => {
     render(
       <HeroSection
         lang="en"
-        marketingCopy={marketing}
+        parity={getFulfillParityContent("en")} marketingCopy={marketing}
         copy={copy}
         content={content({ heroEyebrow: "Fulfillment Operations", serviceLabel: "THG Fulfill" })}
       />,
@@ -73,7 +74,7 @@ describe("Fulfill hero H1 ownership", () => {
   });
 
   it("renders the CMS subtitle and the operational rail points", () => {
-    render(<HeroSection lang="en" marketingCopy={marketing} copy={copy} content={content()} />);
+    render(<HeroSection lang="en" parity={getFulfillParityContent("en")} marketingCopy={marketing} copy={copy} content={content()} />);
     expect(screen.getByText("CMS subtitle here.")).toBeTruthy();
     expect(screen.getByText("Item-level QC")).toBeTruthy();
   });

@@ -10,6 +10,14 @@ export interface FulfillCatalogItem {
   image: string;
   /** Optional operational note (basecost / lead time); "" renders nothing. */
   note: string;
+  /** Basecost as the CMS published it, e.g. "$7.5"; "" renders nothing. (R3 parity: the Vite
+   *  card shows basecost, lead time and origin as separate labelled facts, so the landing model
+   *  now carries them separately instead of only the collapsed `note`.) */
+  price: string;
+  /** In-house handling time, e.g. "2-4 days"; "" renders nothing. */
+  leadTime: string;
+  /** Production origin badge, e.g. "US"; "" renders nothing. */
+  origin: string;
 }
 
 export interface FulfillContent {

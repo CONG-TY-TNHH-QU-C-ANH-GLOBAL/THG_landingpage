@@ -1,6 +1,6 @@
 # R3 — THG Fulfill Content Parity (audit + progress)
 
-**Status:** PARTIAL — 2 of 11 missing sections restored. **Not done.**
+**Status:** PARITY REACHED except the logistics gallery — 10 of 11 restored.
 Base `migration/next-main` @ `d827066` · Branch `feat/Anh/r3-fulfill-premium-experience`
 
 Sources compared:
@@ -13,21 +13,21 @@ and `next/src/features/fulfill/**`.
 | # | Vite section | Content source | Next status |
 |---|---|---|---|
 | 1 | Hero headline / subtitle / CTA | `hero_subtitle`, `hero_tagline`, CMS | ✅ present (different art direction) |
-| 1a | Hero badge `POD & Dropship` | `pod_dropship_badge` | ❌ **missing** |
-| 1b | Platform logos (Shopify, Etsy, WooCommerce, Amazon, TikTok Shop) | `platforms_label` + 5 literals | ❌ **missing** |
-| 1c | POD illustration (blank → DTG/DTF → branded) | `pod_process`, `blank_tshirt`, `dtg_print`, `your_brand`, `branded_product` | ❌ **missing** (Next shows a different product stage) |
+| 1a | Hero badge `POD & Dropship` | `pod_dropship_badge` | ✅ hero eyebrow pill |
+| 1b | Platform logos | `platforms_label` + 5 literals | ✅ **restored** |
+| 1c | POD transformation | `pod_process`, `blank_tshirt`, `dtg_print`, `your_brand`, `branded_product` | ✅ **restored** as a text-first process strip |
 | 2 | YouTube Shorts ×2 | ids `AveVks7bdMM`, `UrnZpvRVb0U` | ✅ **restored (R3)** |
 | 3 | Overview films ×3 | ids `UwaZw5Eh-Yg`, `ZA37yjN-_x8`, `6GkUcZhun90` | ✅ **restored (R3)** |
 | 4 | Pain points ×4 | `pain_subtitle`, `pain_title`, `pain1–4_*` | ✅ **restored (R3)** |
-| 5 | POD advantages | `solution_subtitle/_highlight/_desc`, `adv1_*`, `adv3_*` + ladicdn image + video `2VEEFotO42I` | ❌ **missing** |
-| 6 | Featured products | CMS `products[]` + `products_subtitle/_title`, `basecost_label`, `time_label` | ⚠️ **partial** — Next renders name/image/note only; **price, time, origin are not in the Next model** (see Blocker B1) |
+| 5 | POD advantages | `solution_*`, `adv1_*`, `adv3_*` + image + video `2VEEFotO42I` | ✅ **restored** |
+| 6 | Featured products | CMS `products[]` + labels | ✅ **restored** — basecost / in-house time / origin now separate model fields (B1 resolved) |
 | 7 | Workflow / process ×4 | `process_title`, `step1–4_*` | ✅ present as the journey stepper (equivalent business steps) |
-| 8 | Ecount / order-placement guide | `fulfill_ecount.*` (~20 strings), video `AzlW2irPANQ`, Google-Sheets SKU link | ❌ **missing** |
-| 9 | HUB System guide (6 chapters) | `hub.*` (~25 strings) | ❌ **missing** |
-| 10 | HUB Fulfill System CTA | `hub_title`, `hub_desc`, `hub_cta` | ❌ **missing** |
-| 11 | Policy CTA | `policy_title`, `policy_desc`, `policy_cta` → `/{lang}/policy` | ❌ **missing** |
-| 12 | Logistics gallery (marquee) | `gallery_title` + CMS `gallery[]` | ❌ **missing** |
-| 13 | FAQ | Vite: 7 hardcoded `faq1–7_*`. Next: CMS-driven | ⚠️ **not comparable** — see Blocker B2 |
+| 8 | Order-placement guide | `fulfill_ecount.*`, video `AzlW2irPANQ`, SKU sheet link | ✅ **restored** |
+| 9 | HUB System guide (6 chapters) | `hub.*` | ✅ **restored** as an anchored document |
+| 10 | HUB Fulfill System CTA | `hub_title/_desc/_cta` | ✅ **restored** |
+| 11 | Policy CTA | `policy_*` → `/{lang}/policy` | ✅ **restored** |
+| 12 | Logistics gallery (marquee) | `gallery_title` + CMS `gallery[]` | ❌ **still missing** — the only gap |
+| 13 | FAQ | Vite 7 hardcoded; Next CMS-driven | ✅ **restored** — CMS first, localized 7-item fallback (B2 resolved) |
 | 14 | Contact section | global | ✅ in the shared layout |
 
 `fulfill.s1`–`s8` (warehouse fee table) are **not** on the Vite Fulfill page — they belong to

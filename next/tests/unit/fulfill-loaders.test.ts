@@ -51,7 +51,16 @@ describe("loadFulfillContent — CMS source vs fallback provenance", () => {
     expect(content.serviceLabel).toBe("THG Fulfill");
     expect(content.heroSubtitle).toBe("In ấn POD tại Việt Nam, Trung Quốc và Mỹ.");
     expect(content.points).toEqual(["Hỗ trợ dropship", "Chi phí gốc cạnh tranh"]);
-    expect(content.catalog).toEqual([{ name: "Áo thun", image: "https://cdn/x.png", note: "$3.2 · 48h · VN" }]);
+    expect(content.catalog).toEqual([
+      {
+        name: "Áo thun",
+        image: "https://cdn/x.png",
+        note: "$3.2 · 48h · VN",
+        price: "$3.2",
+        leadTime: "48h",
+        origin: "VN",
+      },
+    ]);
   });
 
   it("distinguishes an EMPTY collection (present=true, empty catalog) from a transport failure", async () => {

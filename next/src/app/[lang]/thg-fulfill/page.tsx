@@ -15,6 +15,13 @@ import {
 import HeroSection from "@/features/fulfill/ui/hero-section";
 import JourneySection from "@/features/fulfill/ui/journey-section";
 import PainPointsSection from "@/features/fulfill/ui/pain-points-section";
+import {
+  SolutionSection,
+  EcountGuideSection,
+  HubGuideSection,
+  ParityCtaSections,
+} from "@/features/fulfill/ui/parity-sections";
+import { getFulfillParityContent } from "@/features/fulfill/parity-content";
 import VideoSection from "@/features/fulfill/ui/video-section";
 import CapabilitiesSection from "@/features/fulfill/ui/capabilities-section";
 import CatalogSection from "@/features/fulfill/ui/catalog-section";
@@ -85,6 +92,7 @@ export default async function FulfillPage({ params }: PageProps) {
   // Feature-local copy is the fallback; published CMS service-blocks overlay journey/capability/
   // consult/hub text by stable role key. Empty blocks ⇒ value-identical copy (no visual change).
   const copy = applyServiceBlocks(getFulfillContent(lang), serviceBlocks);
+  const parity = getFulfillParityContent(lang);
   const canonical = localeUrl(lang, "/thg-fulfill");
 
   return (
@@ -98,16 +106,20 @@ export default async function FulfillPage({ params }: PageProps) {
       <FulfillFaqJsonLd faqs={faqs} />
 
       <main>
-        <HeroSection lang={lang} marketingCopy={marketingCopy} copy={copy} content={content} />
+        <HeroSection lang={lang} marketingCopy={marketingCopy} copy={copy} parity={parity} content={content} />
         {/* R3 parity: the Vite story opens on the seller's problem, then shows the service
             answering it. Videos follow the problem so the proof arrives before the mechanics. */}
         <PainPointsSection copy={copy} />
+        <SolutionSection copy={parity} />
         <VideoSection />
         <JourneySection copy={copy} />
         <CapabilitiesSection copy={copy} />
-        <CatalogSection content={content} copy={copy} />
+        <CatalogSection content={content} copy={copy} parity={parity} />
+        <EcountGuideSection copy={parity} />
+        <HubGuideSection copy={parity} />
+        <ParityCtaSections lang={lang} copy={parity} />
         <ConsultationSection lang={lang} marketingCopy={marketingCopy} copy={copy} content={content} />
-        <FaqSection lang={lang} copy={copy} faqs={faqs} />
+        <FaqSection lang={lang} copy={copy} parity={parity} faqs={faqs} />
       </main>
     </div>
   );
