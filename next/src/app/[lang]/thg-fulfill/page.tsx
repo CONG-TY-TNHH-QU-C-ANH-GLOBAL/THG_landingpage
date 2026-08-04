@@ -93,6 +93,11 @@ export default async function FulfillPage({ params }: PageProps) {
   // consult/hub text by stable role key. Empty blocks ⇒ value-identical copy (no visual change).
   const copy = applyServiceBlocks(getFulfillContent(lang), serviceBlocks);
   const parity = getFulfillParityContent(lang);
+  // ONE source of truth for the answers on this page. The CMS stays the authority; while its
+  // fulfill FAQ set is still being seeded an empty read falls back to the localized questions the
+  // Vite page shipped. Deriving it here — not inside the section — is what guarantees the visible
+  // accordion and the FAQPage structured data can never describe different content.
+  const displayedFaqs = faqs.length > 0 ? faqs : parity.faqFallback;
   const canonical = localeUrl(lang, "/thg-fulfill");
 
   return (
@@ -103,7 +108,7 @@ export default async function FulfillPage({ params }: PageProps) {
         description={FULFILL_SEO[lang].description}
         url={canonical}
       />
-      <FulfillFaqJsonLd faqs={faqs} />
+      <FulfillFaqJsonLd faqs={displayedFaqs} />
 
       <main>
         <HeroSection lang={lang} marketingCopy={marketingCopy} copy={copy} parity={parity} content={content} />
@@ -119,7 +124,7 @@ export default async function FulfillPage({ params }: PageProps) {
         <HubGuideSection copy={parity} />
         <ParityCtaSections lang={lang} copy={parity} />
         <ConsultationSection lang={lang} marketingCopy={marketingCopy} copy={copy} content={content} />
-        <FaqSection lang={lang} copy={copy} parity={parity} faqs={faqs} />
+        <FaqSection lang={lang} copy={copy} faqs={displayedFaqs} />
       </main>
     </div>
   );

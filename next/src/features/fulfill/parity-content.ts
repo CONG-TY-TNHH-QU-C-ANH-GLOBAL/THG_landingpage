@@ -26,14 +26,21 @@ export interface FulfillGuideSection {
   facts: readonly FulfillLabelledFact[];
 }
 
-export interface FulfillFaqFallbackItem {
+export interface FulfillAdvantage {
   id: string;
+  title: string;
+  description: string;
+}
+
+/** Shaped as the rendered FAQ model (numeric id) so the page can hand the SAME list to the
+ *  accordion and to the FAQPage JSON-LD — visible answers and structured data can never diverge. */
+export interface FulfillFaqFallbackItem {
+  id: number;
   question: string;
   answer: string;
 }
 
 export interface FulfillParityCopy {
-  heroBadge: string;
   platformsLabel: string;
   platforms: readonly string[];
   podProcess: string;
@@ -45,10 +52,10 @@ export interface FulfillParityCopy {
   solutionEyebrow: string;
   solutionTitle: string;
   solutionIntro: string;
-  advantages: readonly { id: string; title: string; description: string }[];
+  /** Exactly two advantages, in Vite order (ecosystem, then transparency). A tuple because the
+   *  renderer pairs each one with its own proof (a photo, then a film) and destructures both. */
+  advantages: readonly [FulfillAdvantage, FulfillAdvantage];
 
-  productsEyebrow: string;
-  productsTitle: string;
   basecostLabel: string;
   leadTimeLabel: string;
 
@@ -71,6 +78,9 @@ export interface FulfillParityCopy {
   policyDesc: string;
   policyCta: string;
 
+  /** RESERVED: the logistics-gallery section is the one Vite chapter still unmigrated (it needs
+   *  CMS `gallery[]` plumbed into the fulfill model plus a marquee). The copy is already ported
+   *  so that slice is content-complete on arrival; delete this field if the gallery is dropped. */
   galleryTitle: string;
 
   faqFallback: readonly FulfillFaqFallbackItem[];
@@ -92,7 +102,6 @@ interface GuideSectionSource {
 const PLATFORMS = ["Shopify", "Etsy", "WooCommerce", "Amazon", "TikTok Shop"] as const;
 
 const SOURCE = {
-  heroBadge: tr("POD & Dropship", "POD & Dropship", "POD & 代发"),
   platformsLabel: tr("Tích hợp mượt mà với", "Seamlessly integrates with", "无缝集成"),
   podProcess: tr("Quy trình POD", "POD Process", "POD流程"),
   blankTshirt: tr("Áo phôi", "Blank T-Shirt", "空白T恤"),
@@ -136,8 +145,6 @@ const SOURCE = {
     },
   ],
 
-  productsEyebrow: tr("Sản phẩm nổi bật", "Featured Products", "精选产品"),
-  productsTitle: tr("Các Sản Phẩm POD Nổi Bật", "Top POD Products", "热门POD产品"),
   basecostLabel: tr("Basecost từ", "Basecost from", "基本成本起"),
   leadTimeLabel: tr("Time in-house", "Time in-house", "内部处理时间"),
 
@@ -376,7 +383,7 @@ const SOURCE = {
 
   faqFallback: [
     {
-      id: "1",
+      id: 1,
       question: tr(
         "THG Fulfill cung cấp những dịch vụ nào?",
         "What services does THG Fulfill provide?",
@@ -389,7 +396,7 @@ const SOURCE = {
       ),
     },
     {
-      id: "2",
+      id: 2,
       question: tr("Lên đơn ở đâu?", "Where do I place orders?", "在哪里下单？"),
       answer: tr(
         "Khách hàng sẽ lên đơn trong file làm việc chung THG gửi.",
@@ -398,7 +405,7 @@ const SOURCE = {
       ),
     },
     {
-      id: "3",
+      id: 3,
       question: tr(
         "Khi phát sinh đơn sẽ làm thế nào để THG biết?",
         "How does THG know when there are new orders?",
@@ -411,7 +418,7 @@ const SOURCE = {
       ),
     },
     {
-      id: "4",
+      id: 4,
       question: tr(
         "Cách thức thanh toán như thế nào?",
         "What payment methods are available?",
@@ -424,7 +431,7 @@ const SOURCE = {
       ),
     },
     {
-      id: "5",
+      id: 5,
       question: tr(
         "Template các sản phẩm cụ thể?",
         "Where can I find product templates?",
@@ -437,7 +444,7 @@ const SOURCE = {
       ),
     },
     {
-      id: "6",
+      id: 6,
       question: tr(
         "THG có hỗ trợ refund khi đơn thất lạc?",
         "Does THG support refunds for lost or damaged orders?",
@@ -450,7 +457,7 @@ const SOURCE = {
       ),
     },
     {
-      id: "7",
+      id: 7,
       question: tr(
         "THG có thể mua trên AliExpress, SHEIN?",
         "Can THG purchase from AliExpress, SHEIN?",
@@ -469,7 +476,6 @@ const SOURCE = {
 export function getFulfillParityContent(locale: Locale): FulfillParityCopy {
   const L = (t: LocalizedText) => localize(locale, t);
   return {
-    heroBadge: L(SOURCE.heroBadge),
     platformsLabel: L(SOURCE.platformsLabel),
     platforms: PLATFORMS,
     podProcess: L(SOURCE.podProcess),
@@ -481,14 +487,11 @@ export function getFulfillParityContent(locale: Locale): FulfillParityCopy {
     solutionEyebrow: L(SOURCE.solutionEyebrow),
     solutionTitle: L(SOURCE.solutionTitle),
     solutionIntro: L(SOURCE.solutionIntro),
-    advantages: SOURCE.advantages.map((a) => ({
-      id: a.id,
-      title: L(a.title),
-      description: L(a.description),
-    })),
+    advantages: [
+      { id: SOURCE.advantages[0].id, title: L(SOURCE.advantages[0].title), description: L(SOURCE.advantages[0].description) },
+      { id: SOURCE.advantages[1].id, title: L(SOURCE.advantages[1].title), description: L(SOURCE.advantages[1].description) },
+    ],
 
-    productsEyebrow: L(SOURCE.productsEyebrow),
-    productsTitle: L(SOURCE.productsTitle),
     basecostLabel: L(SOURCE.basecostLabel),
     leadTimeLabel: L(SOURCE.leadTimeLabel),
 

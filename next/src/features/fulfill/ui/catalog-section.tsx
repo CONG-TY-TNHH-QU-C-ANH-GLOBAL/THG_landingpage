@@ -35,7 +35,11 @@ function CatalogCard({
 }>) {
   // R3 parity: the Vite card labels basecost and in-house time as separate facts and badges the
   // production origin. Each renders only when the CMS supplied it — never a fabricated figure.
-  const hasFacts = Boolean(price || leadTime);
+  //
+  // `note` is the collapsed "price · time · origin" line and is a FALLBACK for products whose CMS
+  // record carries none of the three structured fields. Origin counts here: a product with only an
+  // origin would otherwise show it twice — once as the badge and once as an identical note.
+  const hasStructuredMetadata = Boolean(price || leadTime || origin);
   return (
     <div
       className="border rounded-2xl p-6 flex flex-col items-center transition-transform duration-300 hover:-translate-y-1"
@@ -66,7 +70,7 @@ function CatalogCard({
       <div className="w-full">
         <div className="flex justify-between items-center gap-3">
           <span className="font-bold">{name}</span>
-          {!hasFacts && note ? (
+          {!hasStructuredMetadata && note ? (
             <span
               className={`${styles.mono} text-xs border px-2 py-1 rounded`}
               style={{ color: "var(--fx-gray)", borderColor: "var(--fx-border)" }}
@@ -75,7 +79,7 @@ function CatalogCard({
             </span>
           ) : null}
         </div>
-        {hasFacts ? (
+        {price || leadTime ? (
           <dl
             className="mt-4 space-y-2 border-t border-dashed pt-4 text-sm"
             style={{ borderColor: "var(--fx-border)" }}

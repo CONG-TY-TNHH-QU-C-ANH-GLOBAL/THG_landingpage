@@ -33,19 +33,19 @@ and `next/src/features/fulfill/**`.
 `fulfill.s1`–`s8` (warehouse fee table) are **not** on the Vite Fulfill page — they belong to
 another route and are correctly absent here.
 
-## Blockers found (need a decision — cannot be fixed inside R3's constraints)
+## Blockers — both RESOLVED
 
-**B1 — product price / time / origin.** Vite renders `product.price`, `product.time`,
-`product.origin`. The Next model `FulfillCatalogItem` is `{ name, image, note }`
-(`features/fulfill/models/fulfill.ts`), so those three fields do not exist in the landing model.
-Restoring them means editing the fulfill mapper/model — explicitly forbidden by this sprint
-("DO NOT touch CMS schema, DTO, mapper, loader"). Either the constraint is relaxed for the
-catalog mapper, or product parity stays open.
+**B1 — product price / time / origin. RESOLVED by view-model evolution.** The CMS schema already
+validated all three (`features/fulfill/schemas/services.ts`); the mapper was collapsing them into
+one `note` string. `FulfillCatalogItem` now also carries `price`, `leadTime` and `origin`, and
+`note` keeps its collapsed form as the fallback for products that carry none of them. No CMS
+schema, DTO or API change.
 
-**B2 — FAQ source of truth.** Vite ships 7 FAQs hardcoded in the i18n dictionary. Next reads
-published fulfill-scope FAQs from the CMS. "Do not reduce FAQ count" is only checkable against
-CMS content, and hardcoding the 7 back would bypass the CMS pipeline the migration exists to
-establish. Needs an owner decision: seed the 7 into the CMS, or accept CMS as the authority.
+**B2 — FAQ source of truth. RESOLVED by a graceful fallback.** The page reads the CMS first and
+falls back to the seven localized questions the Vite page shipped when the CMS set is empty. The
+decision lives in the page, which hands the SAME list to the accordion and to the FAQPage JSON-LD
+— so visible answers and structured data cannot diverge. When the CMS reaches parity the fallback
+simply stops being taken and can be deleted without touching the UI.
 
 ## Delivered in this branch
 
@@ -65,12 +65,21 @@ establish. Needs an owner decision: seed the 7 into the CMS, or accept CMS as th
 Architecture untouched: no CMS schema/DTO/mapper/loader change, no SEO/metadata/JSON-LD change,
 no route change, no change to any existing `shared/service` component's API (one additive export).
 
-## Remaining work, in dependency order
+## Remaining work
 
-1. Hero completion (1a, 1b, 1c) — copy exists, no CMS dependency.
-2. POD advantages (5) — copy exists; needs the ladicdn image and video `2VEEFotO42I`.
-3. Policy CTA (11) and HUB Fulfill CTA (10) — copy exists, no CMS dependency.
-4. Ecount guide (8) and HUB System guide (9) — ~45 strings to port; the largest remaining chunk.
-5. Logistics gallery (12) — needs a marquee component and the CMS `gallery[]` field.
-6. Products (6) — blocked on B1.
-7. FAQ (13) — blocked on B2.
+**Logistics gallery — the only outstanding chapter.** Needs the CMS `gallery[]` field plumbed into
+the fulfill model plus a marquee component. Its copy (`galleryTitle`) is already ported and is
+deliberately retained in `parity-content.ts` for that slice.
+
+## Architecture as implemented
+
+- Restored copy lives in `features/fulfill/parity-content.ts`, a domain-shaped `LocalizedText`
+  tree resolved once per locale — the same pattern as `localized-content.ts`.
+- Sections are Server Components composed from the R2 shared template
+  (`ServiceSectionHeader` / `ServiceFeatureGrid` / `ServiceVideo`). The only additive change to
+  `shared/service` is the new `ServiceVideo` export; no existing component API changed.
+- Every restored embed is a lazy iframe on the privacy-enhanced host, so full parity added **zero
+  client JavaScript**.
+- The FAQ decision is made once in the route and shared by the accordion and the JSON-LD.
+- `tr()` argument order differs between the repos (Vite `(en, vi, zh)`, Next `(vi, en, zh)`); every
+  ported value is swapped accordingly.

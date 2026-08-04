@@ -9,13 +9,20 @@
 // before the iframe resolves, so a slow YouTube response cannot shift layout on mobile.
 import { ServiceVideo } from "@/shared/service";
 
-/** Vertical Shorts — ids and titles verbatim from the Vite page. */
+ /** The pair the Vite page framed as Shorts — ids and titles verbatim from it.
+ *
+ *  KNOWN MISMATCH, deliberately left as-is: the oEmbed player reports these as 16:9 and 4:3,
+ *  i.e. both are LANDSCAPE, so the 9/16 card letterboxes them exactly as it does on production
+ *  today. Changing it was explicitly out of scope for this review; corrected together with the
+ *  Vite page so the two do not diverge mid-migration. */
 const SHORTS = [
   { id: "AveVks7bdMM", title: "THG Fulfill Short 1" },
   { id: "UrnZpvRVb0U", title: "THG Fulfill Short 2" },
 ] as const;
 
-/** Landscape overview films — ids and titles verbatim from the Vite page. */
+/** Overview films — ids and titles verbatim from the Vite page. These are LANDSCAPE recordings
+ *  (verified against the YouTube oEmbed player dimensions), so they take ServiceVideo's default
+ *  16/9 box; the Vite page framed them 9/16, which pillarboxed them inside a tall card. */
 const OVERVIEWS = [
   { id: "UwaZw5Eh-Yg", title: "THG Fulfill Overview 1" },
   { id: "ZA37yjN-_x8", title: "THG Fulfill Overview 2" },
@@ -46,7 +53,7 @@ export default function VideoSection() {
         {/* Overview films. */}
         <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
           {OVERVIEWS.map((v) => (
-            <ServiceVideo key={v.id} videoId={v.id} title={v.title} aspectRatio="9 / 16" />
+            <ServiceVideo key={v.id} videoId={v.id} title={v.title} />
           ))}
         </div>
       </div>
