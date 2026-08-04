@@ -23,7 +23,7 @@ genuinely different —
 that accept plain view props. Each feature maps its own model → view props. The content pipelines
 stay separate (the decision above holds); the presentation template becomes shared.
 
-```
+```text
 CMS → schema → mapper → feature model → feature adapter → shared/service view props → UI
 ```
 

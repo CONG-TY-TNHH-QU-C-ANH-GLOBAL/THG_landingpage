@@ -1,12 +1,13 @@
 // @vitest-environment happy-dom
-// WEB-002: the journey's interaction contract — the 4 steps form a keyboard-operable tablist,
-// selection is single, and the decorative stage reflects the selected step via data-step (the
-// hook the scoped CSS reads). Exercises the real exported island, no test-only replica.
+// WEB-002: the journey's interaction contract — the 4 steps form a keyboard-operable
+// radiogroup (there is no tabpanel to control), selection is single, and the decorative stage
+// reflects the selected step via data-step (the hook the scoped CSS reads). Exercises the real
+// exported island, no test-only replica.
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 
-// next/image needs the Next runtime; this DOM test asserts on the tablist + stage data-step, not
-// on images, so the mock renders nothing.
+// next/image needs the Next runtime; this DOM test asserts on the radiogroup + stage data-step,
+// not on images, so the mock renders nothing.
 vi.mock("next/image", () => ({ default: () => null }));
 
 // R2: the interaction contract moved to the shared Service Experience template. The Fulfill
@@ -60,30 +61,30 @@ function stage(container: HTMLElement): HTMLElement {
 }
 
 describe("JourneyStepper", () => {
-  it("renders 4 tabs with the first selected and only one roving-tabindex entry", () => {
+  it("renders 4 radios with the first selected and only one roving-tabindex entry", () => {
     renderStepper();
-    const tabs = screen.getAllByRole("tab");
+    const tabs = screen.getAllByRole("radio");
     expect(tabs).toHaveLength(4);
-    expect(tabs[0].getAttribute("aria-selected")).toBe("true");
+    expect(tabs[0].getAttribute("aria-checked")).toBe("true");
     expect(tabs[0].getAttribute("tabindex")).toBe("0");
     expect(tabs[1].getAttribute("tabindex")).toBe("-1");
   });
 
   it("click selects a step and moves the stage to that data-step", () => {
     const { container } = renderStepper();
-    fireEvent.click(screen.getByRole("tab", { name: /Quality Assurance/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /Quality Assurance/ }));
 
-    const tabs = screen.getAllByRole("tab");
-    expect(tabs[2].getAttribute("aria-selected")).toBe("true");
-    expect(tabs[0].getAttribute("aria-selected")).toBe("false");
+    const tabs = screen.getAllByRole("radio");
+    expect(tabs[2].getAttribute("aria-checked")).toBe("true");
+    expect(tabs[0].getAttribute("aria-checked")).toBe("false");
     expect(stage(container).getAttribute("data-step")).toBe("2");
   });
 
-  // Key handling lives on the focusable tabs (roving tabindex), so keys are fired on the tab that
-  // currently holds focus — the pattern a real keyboard user exercises.
-  it("ArrowRight/ArrowLeft/Home/End navigate with wraparound and move focus with the active tab", () => {
+  // Key handling lives on the focusable radios (roving tabindex), so keys are fired on the control
+  // that currently holds focus — the pattern a real keyboard user exercises.
+  it("ArrowRight/ArrowLeft/Home/End navigate with wraparound and move focus with the active step", () => {
     const { container } = renderStepper();
-    const tabs = screen.getAllByRole("tab");
+    const tabs = screen.getAllByRole("radio");
 
     fireEvent.keyDown(tabs[0], { key: "ArrowRight" });
     expect(stage(container).getAttribute("data-step")).toBe("1");
@@ -110,7 +111,7 @@ describe("JourneyStepper", () => {
 
   it("ArrowDown/ArrowUp also navigate (vertical orientation) with wraparound", () => {
     const { container } = renderStepper();
-    const tabs = screen.getAllByRole("tab");
+    const tabs = screen.getAllByRole("radio");
 
     fireEvent.keyDown(tabs[0], { key: "ArrowUp" }); // wrap up to last
     expect(stage(container).getAttribute("data-step")).toBe("3");
@@ -118,16 +119,16 @@ describe("JourneyStepper", () => {
     expect(stage(container).getAttribute("data-step")).toBe("0");
   });
 
-  it("ignores keys that are not tab navigation", () => {
+  it("ignores keys that are not step navigation", () => {
     const { container } = renderStepper();
-    fireEvent.keyDown(screen.getAllByRole("tab")[0], { key: "a" });
+    fireEvent.keyDown(screen.getAllByRole("radio")[0], { key: "a" });
     expect(stage(container).getAttribute("data-step")).toBe("0");
   });
 
-  it("keeps a labelled tablist with exactly one focusable tab (tabIndex 0) and the rest -1", () => {
+  it("keeps a labelled radiogroup with exactly one focusable control (tabIndex 0) and the rest -1", () => {
     renderStepper();
-    expect(screen.getByRole("tablist").getAttribute("aria-label")).toBe("Steps");
-    const tabs = screen.getAllByRole("tab");
+    expect(screen.getByRole("radiogroup").getAttribute("aria-label")).toBe("Steps");
+    const tabs = screen.getAllByRole("radio");
     expect(tabs.filter((t) => t.getAttribute("tabindex") === "0")).toHaveLength(1);
     expect(tabs[0].getAttribute("tabindex")).toBe("0");
     expect(tabs.slice(1).every((t) => t.getAttribute("tabindex") === "-1")).toBe(true);
@@ -135,7 +136,7 @@ describe("JourneyStepper", () => {
 
   // Renders the real island with copy that has been overlaid by CMS service-blocks: an overlaid
   // role shows the CMS title, a non-overlaid role keeps the localized fallback — proving the
-  // pipeline reaches the DOM without changing the tablist structure/order.
+  // pipeline reaches the DOM without changing the radiogroup structure/order.
   it("renders CMS-overlaid journey titles while keeping fallback titles for unmapped roles", () => {
     const base = getFulfillContent("vi");
     const content = fulfillServiceContentFromDto(
@@ -156,7 +157,7 @@ describe("JourneyStepper", () => {
         stage={<div />}
       />,
     );
-    const tabs = screen.getAllByRole("tab");
+    const tabs = screen.getAllByRole("radio");
     expect(tabs).toHaveLength(4); // structure unchanged
     expect(tabs[0].textContent).toContain("Nhận thiết kế (CMS)"); // CMS overlay
     expect(tabs[1].textContent).toContain(base.steps[1].title); // fallback preserved
