@@ -1,0 +1,162 @@
+/* Shared Service Experience presentation layer (R2).
+ *
+ * These are the presentation primitives every service page reuses. They are deliberately
+ * content-agnostic and palette-agnostic: colours come from a small `--svc-*` contract that the
+ * consuming feature maps onto its own tokens on the section wrapper. Defaults below are neutral
+ * so a feature that sets nothing still renders correctly rather than transparent.
+ *
+ * A feature themes the layer by setting the contract on any ancestor, e.g.
+ *   .fulfillRoot { --svc-accent: var(--fx-blue); --svc-muted: var(--fx-gray); }
+ *
+ * Feature-specific art (illustrations, stage animations) stays in the feature's own CSS and is
+ * passed in as a slot — it is not generalised here, because it is not shared. */
+
+.scope {
+  --svc-accent: #0066ff;
+  --svc-accent-soft: #0891b2;
+  --svc-rule: #ff5c00;
+  --svc-ink: #0a0a0b;
+  --svc-muted: #8a8f98;
+  --svc-border: rgba(0, 0, 0, 0.08);
+  --svc-surface: #ffffff;
+  --svc-canvas: #fafafa;
+  --svc-mono: var(--font-mono-face), ui-monospace, "SF Mono", monospace;
+  --svc-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mono {
+  font-family: var(--svc-mono);
+}
+
+/* Section eyebrow with its leading rule — the recurring "chapter marker" of the story. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--svc-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--svc-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  background: var(--svc-rule);
+}
+.eyebrowCentered {
+  justify-content: center;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+/* ── Workflow step controls ── */
+
+.stepBtn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding-left: 28px;
+  border-left: 2px solid var(--svc-border);
+  transition:
+    border-color 0.5s var(--svc-ease),
+    opacity 0.5s var(--svc-ease),
+    transform 0.5s var(--svc-ease);
+  opacity: 0.42;
+}
+.stepBtn:hover {
+  opacity: 0.75;
+}
+.stepBtn:focus-visible {
+  outline: 2px solid var(--svc-accent);
+  outline-offset: 4px;
+}
+.stepBtnActive {
+  border-left-color: var(--svc-accent);
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+/* ── Feature grid ── */
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  border-radius: 24px;
+  padding: 28px;
+}
+
+.featureIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--svc-icon-tone, var(--svc-accent)) 12%, transparent);
+  color: var(--svc-icon-tone, var(--svc-accent));
+}
+
+/* Business-value line — the "so what" under a feature description. */
+.featureValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--svc-accent);
+}
+
+.featureTag {
+  align-self: flex-start;
+  font-family: var(--svc-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--svc-border);
+  color: var(--svc-muted);
+}
+
+/* ── Integration flow ── */
+
+.flowRail {
+  display: grid;
+  gap: 12px;
+}
+
+.flowStage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: rgb(209 213 219);
+}
+
+.flowMarker {
+  font-family: var(--svc-mono);
+  font-size: 10px;
+  color: var(--svc-accent-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepBtn,
+  .stepBtnActive {
+    transition: none;
+    transform: none;
+  }
+}
