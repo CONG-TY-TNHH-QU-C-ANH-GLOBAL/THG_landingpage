@@ -17,6 +17,8 @@ interface Props {
 }
 
 export default function FaqSection({ lang, copy, faqs }: Readonly<Props>) {
+  // Pure renderer: the page decides WHICH answers are shown (CMS, else the localized fallback)
+  // and hands the same list to the FAQPage JSON-LD, so the two can never disagree.
   const items: ServiceFaqItem[] = faqs.map((faq) => ({
     id: String(faq.id),
     question: faq.question,

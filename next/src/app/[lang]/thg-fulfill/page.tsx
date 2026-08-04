@@ -14,6 +14,15 @@ import {
 } from "@/features/fulfill";
 import HeroSection from "@/features/fulfill/ui/hero-section";
 import JourneySection from "@/features/fulfill/ui/journey-section";
+import PainPointsSection from "@/features/fulfill/ui/pain-points-section";
+import {
+  SolutionSection,
+  EcountGuideSection,
+  HubGuideSection,
+  ParityCtaSections,
+} from "@/features/fulfill/ui/parity-sections";
+import { getFulfillParityContent } from "@/features/fulfill/parity-content";
+import VideoSection from "@/features/fulfill/ui/video-section";
 import CapabilitiesSection from "@/features/fulfill/ui/capabilities-section";
 import CatalogSection from "@/features/fulfill/ui/catalog-section";
 import ConsultationSection from "@/features/fulfill/ui/consultation-section";
@@ -83,6 +92,12 @@ export default async function FulfillPage({ params }: PageProps) {
   // Feature-local copy is the fallback; published CMS service-blocks overlay journey/capability/
   // consult/hub text by stable role key. Empty blocks ⇒ value-identical copy (no visual change).
   const copy = applyServiceBlocks(getFulfillContent(lang), serviceBlocks);
+  const parity = getFulfillParityContent(lang);
+  // ONE source of truth for the answers on this page. The CMS stays the authority; while its
+  // fulfill FAQ set is still being seeded an empty read falls back to the localized questions the
+  // Vite page shipped. Deriving it here — not inside the section — is what guarantees the visible
+  // accordion and the FAQPage structured data can never describe different content.
+  const displayedFaqs = faqs.length > 0 ? faqs : parity.faqFallback;
   const canonical = localeUrl(lang, "/thg-fulfill");
 
   return (
@@ -93,15 +108,23 @@ export default async function FulfillPage({ params }: PageProps) {
         description={FULFILL_SEO[lang].description}
         url={canonical}
       />
-      <FulfillFaqJsonLd faqs={faqs} />
+      <FulfillFaqJsonLd faqs={displayedFaqs} />
 
       <main>
-        <HeroSection lang={lang} marketingCopy={marketingCopy} copy={copy} content={content} />
+        <HeroSection lang={lang} marketingCopy={marketingCopy} copy={copy} parity={parity} content={content} />
+        {/* R3 parity: the Vite story opens on the seller's problem, then shows the service
+            answering it. Videos follow the problem so the proof arrives before the mechanics. */}
+        <PainPointsSection copy={copy} />
+        <SolutionSection copy={parity} />
+        <VideoSection />
         <JourneySection copy={copy} />
         <CapabilitiesSection copy={copy} />
-        <CatalogSection content={content} copy={copy} />
+        <CatalogSection content={content} copy={copy} parity={parity} />
+        <EcountGuideSection copy={parity} />
+        <HubGuideSection copy={parity} />
+        <ParityCtaSections lang={lang} copy={parity} />
         <ConsultationSection lang={lang} marketingCopy={marketingCopy} copy={copy} content={content} />
-        <FaqSection lang={lang} copy={copy} faqs={faqs} />
+        <FaqSection lang={lang} copy={copy} faqs={displayedFaqs} />
       </main>
     </div>
   );

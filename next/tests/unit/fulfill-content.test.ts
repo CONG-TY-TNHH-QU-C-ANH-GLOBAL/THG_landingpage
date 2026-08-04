@@ -121,8 +121,17 @@ describe("fulfillContentFromDto", () => {
     const { catalog } = fulfillContentFromDto(dto);
     expect(catalog).toEqual([
       // origin is surfaced in the operational note (previously validated but dropped).
-      { name: "Premium Tee", image: "https://cdn/x.png", note: "$3.20 · 48h · VN" },
-      { name: "Mug", image: "", note: "US" },
+      // R3: price/leadTime/origin are also surfaced individually for the product card; `note`
+      // keeps the collapsed one-line form for consumers that still use it.
+      {
+        name: "Premium Tee",
+        image: "https://cdn/x.png",
+        note: "$3.20 · 48h · VN",
+        price: "$3.20",
+        leadTime: "48h",
+        origin: "VN",
+      },
+      { name: "Mug", image: "", note: "US", price: "", leadTime: "", origin: "US" },
     ]);
   });
 
