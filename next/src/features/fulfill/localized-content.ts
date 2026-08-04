@@ -29,6 +29,14 @@ export interface FulfillCapabilityCopy {
   description: string;
 }
 
+/** One seller challenge: a numbered pain the service answers. */
+export interface FulfillPainCopy {
+  /** Stable rail number, e.g. "01" — structural, identical in every locale. */
+  num: string;
+  title: string;
+  description: string;
+}
+
 export interface FulfillCopy {
   /** Art-directed H1 (the prototype's visual contract); CMS hero_sub supplies the paragraph. */
   heroHeadline: string;
@@ -36,6 +44,11 @@ export interface FulfillCopy {
   heroBadge: string;
   /** Default operational rail chips when the CMS returned no bullets. */
   pointsFallback: readonly string[];
+
+  /** Seller-challenge chapter restored from the Vite page (R3 content parity). */
+  painEyebrow: string;
+  painTitle: string;
+  pains: readonly [FulfillPainCopy, FulfillPainCopy, FulfillPainCopy, FulfillPainCopy];
 
   journeyEyebrow: string;
   journeyTitle: string;
@@ -97,11 +110,20 @@ interface FulfillCatalogSource {
   alt: LocalizedText;
 }
 
+interface FulfillPainSource {
+  num: string;
+  title: LocalizedText;
+  description: LocalizedText;
+}
+
 interface FulfillCopySource {
   heroHeadline: LocalizedText;
   heroSubtitleFallback: LocalizedText;
   heroBadge: string;
   pointsFallback: readonly [LocalizedText, LocalizedText, LocalizedText];
+  painEyebrow: LocalizedText;
+  painTitle: LocalizedText;
+  pains: readonly [FulfillPainSource, FulfillPainSource, FulfillPainSource, FulfillPainSource];
   journeyEyebrow: LocalizedText;
   journeyTitle: LocalizedText;
   journeyIntro: LocalizedText;
@@ -145,6 +167,54 @@ const SOURCE: FulfillCopySource = {
     tr("VN/CN/US POD", "VN/CN/US POD", "VN/CN/US POD"),
     tr("Item-level QC", "Item-level QC", "逐单质检"),
     tr("Chuẩn TMĐT Mỹ", "US e-com standard", "美国电商标准"),
+  ],
+
+  // Seller-challenge chapter — copy ported VERBATIM from the Vite production dictionary
+  // (src/lib/i18n/translations/fulfill.ts, keys fulfill_page.pain*). Note the argument order
+  // differs between the repos: Vite's tr() is (en, vi, zh), this one is (vi, en, zh).
+  painEyebrow: tr("Nỗi đau của Seller", "Seller Challenges", "卖家的挑战"),
+  painTitle: tr(
+    "Seller Việt bán TMĐT Mỹ đang gặp vấn đề gì?",
+    "What challenges are Vietnamese sellers facing?",
+    "越南卖家面临什么挑战？",
+  ),
+  pains: [
+    {
+      num: "01",
+      title: tr("Vận chuyển", "Shipping", "运输"),
+      description: tr(
+        "Vận chuyển VN/CN → US mất 10-20 ngày, khách hủy đơn.",
+        "Shipping VN/CN → US takes 10-20 days, customers cancel orders.",
+        "越南/中国到美国需要10-20天，客户取消订单。",
+      ),
+    },
+    {
+      num: "02",
+      title: tr("Chi phí", "Cost", "成本"),
+      description: tr(
+        "Sản xuất chậm, basecost cao → khó cạnh tranh.",
+        "Slow production, high basecost → hard to compete.",
+        "生产慢，basecost高→难以竞争。",
+      ),
+    },
+    {
+      num: "03",
+      title: tr("Hệ thống", "System", "系统"),
+      description: tr(
+        "Quản lý đơn & SKU rối rắm, dễ sai sót.",
+        "Messy order & SKU management, easy errors.",
+        "订单和SKU管理混乱，容易出错。",
+      ),
+    },
+    {
+      num: "04",
+      title: tr("Kiểm soát", "Control", "控制"),
+      description: tr(
+        "Support chậm, nhiều phí ẩn → khó scale.",
+        "Slow support, hidden fees → hard to scale.",
+        "支持慢，隐藏费用→难以扩展。",
+      ),
+    },
   ],
 
   journeyEyebrow: tr("Hành trình", "The journey", "旅程"),
@@ -341,6 +411,11 @@ export function getFulfillContent(locale: Locale): FulfillCopy {
     title: L(s.title),
     description: L(s.description),
   });
+  const pain = (p: FulfillPainSource): FulfillPainCopy => ({
+    num: p.num,
+    title: L(p.title),
+    description: L(p.description),
+  });
   const cap = (c: FulfillCapabilitySource): FulfillCapabilityCopy => ({
     title: L(c.title),
     description: L(c.description),
@@ -352,6 +427,10 @@ export function getFulfillContent(locale: Locale): FulfillCopy {
     heroSubtitleFallback: L(SOURCE.heroSubtitleFallback),
     heroBadge: SOURCE.heroBadge,
     pointsFallback: SOURCE.pointsFallback.map(L),
+
+    painEyebrow: L(SOURCE.painEyebrow),
+    painTitle: L(SOURCE.painTitle),
+    pains: [pain(SOURCE.pains[0]), pain(SOURCE.pains[1]), pain(SOURCE.pains[2]), pain(SOURCE.pains[3])],
 
     journeyEyebrow: L(SOURCE.journeyEyebrow),
     journeyTitle: L(SOURCE.journeyTitle),

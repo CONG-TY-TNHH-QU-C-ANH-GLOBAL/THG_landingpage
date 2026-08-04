@@ -10,4 +10,5 @@ export { ServiceWorkflow, type ServiceWorkflowStep } from "./service-workflow";
 export { ServiceFeatureGrid, type ServiceFeature } from "./service-feature-grid";
 export { ServiceIntegrationFlow, type ServiceFlowStage } from "./service-integration-flow";
 export { ServiceFaq, type ServiceFaqItem, type ServiceCommunityLink } from "./service-faq";
+export { ServiceVideo } from "./service-video";
 export { default as serviceStyles } from "./service.module.css";

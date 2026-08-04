@@ -14,6 +14,8 @@ import {
 } from "@/features/fulfill";
 import HeroSection from "@/features/fulfill/ui/hero-section";
 import JourneySection from "@/features/fulfill/ui/journey-section";
+import PainPointsSection from "@/features/fulfill/ui/pain-points-section";
+import VideoSection from "@/features/fulfill/ui/video-section";
 import CapabilitiesSection from "@/features/fulfill/ui/capabilities-section";
 import CatalogSection from "@/features/fulfill/ui/catalog-section";
 import ConsultationSection from "@/features/fulfill/ui/consultation-section";
@@ -97,6 +99,10 @@ export default async function FulfillPage({ params }: PageProps) {
 
       <main>
         <HeroSection lang={lang} marketingCopy={marketingCopy} copy={copy} content={content} />
+        {/* R3 parity: the Vite story opens on the seller's problem, then shows the service
+            answering it. Videos follow the problem so the proof arrives before the mechanics. */}
+        <PainPointsSection copy={copy} />
+        <VideoSection />
         <JourneySection copy={copy} />
         <CapabilitiesSection copy={copy} />
         <CatalogSection content={content} copy={copy} />
