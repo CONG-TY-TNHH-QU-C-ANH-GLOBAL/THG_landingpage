@@ -867,7 +867,6 @@ export interface paths {
                                 contact_phone: string | null;
                                 contact_email: string | null;
                                 facebook_url: string | null;
-                                lead_form_destination: string | null;
                                 logo_media_id: number | null;
                                 default_og_image_id: number | null;
                                 about_video_url: string | null;
