@@ -191,7 +191,12 @@ export const cmsSiteSettingsSchema = z.object({
   contact_phone: z.string().nullable(),
   contact_email: z.string().nullable(),
   facebook_url: z.string().nullable(),
-  lead_form_destination: z.string().nullable(),
+  // `lead_form_destination` is deliberately NOT declared. The CMS removed it from
+  // GET /site-settings (operator config published on an unauthenticated endpoint,
+  // with no reader here). It was declared `.nullable()`, which in zod still REQUIRES
+  // the key — an absent key is `undefined`, not `null` — so the whole site-settings
+  // response stopped parsing and every consumer of this endpoint (glossary, remote
+  // area links, og image, contact info) silently fell back to empty.
   logo_media_id: z.number().nullable(),
   default_og_image_id: z.number().nullable(),
   about_video_url: z.string().nullable(),

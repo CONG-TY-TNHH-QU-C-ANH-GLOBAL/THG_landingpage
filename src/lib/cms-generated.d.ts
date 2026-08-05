@@ -867,7 +867,6 @@ export interface paths {
                                 contact_phone: string | null;
                                 contact_email: string | null;
                                 facebook_url: string | null;
-                                lead_form_destination: string | null;
                                 logo_media_id: number | null;
                                 default_og_image_id: number | null;
                                 about_video_url: string | null;
@@ -1215,7 +1214,88 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        /**
+         * Submit a community question for moderation
+         * @description Every submission enters moderation: the response `status` is always `pending` and the question is absent from the public list until an operator publishes it. `owner_token` is returned ONCE here and never again — the client stores it to enable self-service withdrawal. Protected by Turnstile and a 5-per-IP-per-hour rate limit.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                        category_slug?: string | null;
+                        author_name: string;
+                        /** Format: email */
+                        author_email: string;
+                        /** @enum {string|null} */
+                        locale?: "en" | "vi" | "zh" | null;
+                        utm?: {
+                            [key: string]: string;
+                        } | null;
+                        turnstile_token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Question accepted; awaiting moderation */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            id: number;
+                            slug: string;
+                            /** @enum {string} */
+                            status: "pending";
+                            owner_token: string;
+                        };
+                    };
+                };
+                /** @description Malformed JSON or field validation failure */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Turnstile verification failed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (5 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1384,7 +1464,91 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        /**
+         * Submit a community review for moderation
+         * @description Same moderation contract as question submission: `status` is always `pending`, and `owner_token` is returned only on this response. `private_evidence_note` and `private_order_reference` are accepted as operator-only context and are never echoed on a public read. Protected by Turnstile and a 5-per-IP-per-hour rate limit.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                        category_slug?: string | null;
+                        reviewer_name: string;
+                        /** Format: email */
+                        reviewer_email: string;
+                        rating?: number | null;
+                        /** @enum {string|null} */
+                        locale?: "en" | "vi" | "zh" | null;
+                        private_evidence_note?: string | null;
+                        private_order_reference?: string | null;
+                        utm?: {
+                            [key: string]: string;
+                        } | null;
+                        turnstile_token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Review accepted; awaiting moderation */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            id: number;
+                            slug: string;
+                            /** @enum {string} */
+                            status: "pending";
+                            owner_token: string;
+                        };
+                    };
+                };
+                /** @description Malformed JSON or field validation failure */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Turnstile verification failed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (5 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1453,6 +1617,902 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/service-blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List page blocks for one page and locale
+         * @description Returns generic blocks (pain_point, process_step, solution, shipping_lane, policy, stat, …) for one `page_slug` + locale, ordered by `position`. Omit `kind` to hydrate every section of a page in one request; the response echoes the filter as `kind` (null when omitted). VI reads `service_blocks`; EN/ZH JOIN `service_block_translations` filtered to `status='reviewed'` — no cross-locale fallback. FAIL-SAFE: a row whose `payload_json` is malformed is returned with `payload: {}` rather than being dropped or failing the request.
+         */
+        get: {
+            parameters: {
+                query: {
+                    page_slug: string;
+                    lang?: "en" | "vi" | "zh";
+                    kind?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Ordered block list for the page + locale */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            page_slug: string;
+                            kind: string | null;
+                            blocks: {
+                                id: number;
+                                kind: string;
+                                position: number;
+                                icon: string | null;
+                                title: string | null;
+                                description: string | null;
+                                payload: {
+                                    [key: string]: unknown;
+                                };
+                            }[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang`, or missing required `page_slug` */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blog/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List distinct blog categories for a locale
+         * @description Distinct non-null `category` values across live posts, sorted by the database. `lang` defaults to **vi** on this endpoint. An empty array is a valid response, not an error.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Category list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            categories: string[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/shipping-routes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List live shipping routes for a locale
+         * @description Unpaginated: returns every `status='live'` route for the locale, ordered by (position, slug). `total` is the length of `routes` in the same response — it is NOT a pagination total. EN/ZH require a `status='reviewed'` translation; there is no cross-locale fallback.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live shipping-route summaries */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            routes: {
+                                slug: string;
+                                position: number;
+                                title: string;
+                                origin: string | null;
+                                destination: string | null;
+                                kind: string | null;
+                            }[];
+                            total: number;
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/shipping-routes/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one live shipping route by slug
+         * @description 404 unless the route resolves in the requested locale AND its status is `live`. Rate tables are resolved by (slug, locale). FAIL-SAFE: a malformed `notes_json` / `columns_json` / `rows_json` blob degrades to an empty array instead of failing the request.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Shipping route detail with rate tables */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            route: {
+                                slug: string;
+                                position: number;
+                                title: string;
+                                origin: string | null;
+                                destination: string | null;
+                                kind: string | null;
+                                body_md: string | null;
+                                notes: string[];
+                                tables: {
+                                    caption: string | null;
+                                    columns: {
+                                        key: string;
+                                        label: string;
+                                    }[];
+                                    rows: {
+                                        [key: string]: string | number | null;
+                                    }[];
+                                }[];
+                                updated_at: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description No live shipping route with that slug in the locale */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sitemap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List live page routes and blog slugs for sitemap generation
+         * @description Feed for the landing's sitemap builder. Returns every `status='live'` row across ALL locales; the consumer groups by `locale`. Takes no parameters. `locale` is an unconstrained string here because the column carries no CHECK constraint in D1.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live routes and blog slugs across every locale */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            pages: {
+                                route: string;
+                                locale: string;
+                                updated_at: number;
+                            }[];
+                            blog: {
+                                slug: string;
+                                locale: string;
+                                published_date: string | null;
+                                updated_at: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit a multi-intent lead
+         * @description Multi-intent by design: an optional `primary_service`, zero or more `service_interests`, and per-service `service_details`. Cross-field rules enforced beyond the field schema: `service_interests` must not contain duplicates; `primary_service`, when set, must be a member of `service_interests`; each `service_details` key must be a selected interest and validates against that service's strict schema. Interests are persisted in a deterministic order (primary first, then canonical registry order) — never client submission order. Protected by Turnstile and a 10-per-IP-per-hour rate limit. No provider or database error is ever surfaced; failures use the bounded `{ error }` envelope.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /** Format: email */
+                        email: string;
+                        phone?: string | null;
+                        message?: string | null;
+                        source_page?: string | null;
+                        /** @enum {string|null} */
+                        locale?: "en" | "vi" | "zh" | null;
+                        utm?: {
+                            [key: string]: string;
+                        } | null;
+                        /** @enum {string|null} */
+                        primary_service?: "fulfill" | "express" | "warehouse" | "dropship" | null;
+                        service_interests?: ("fulfill" | "express" | "warehouse" | "dropship")[] | null;
+                        service_details?: {
+                            [key: string]: {
+                                [key: string]: unknown;
+                            };
+                        } | null;
+                        /** @enum {string|null} */
+                        surface?: "global-services-dialog" | "fulfill-inline" | "express-inline" | "warehouse-inline" | "dropship-inline" | "home-conversion-inline" | null;
+                        turnstile_token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Lead accepted and persisted */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            id: number;
+                        };
+                    };
+                };
+                /** @description Malformed JSON, or a field/cross-field validation failure */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Turnstile verification failed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (10 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applicants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit a job application
+         * @description Validates that the job exists and is open before accepting. A job whose deadline has passed is treated as closed (410) even when its status is still `open`. Protected by Turnstile and a stricter 5-per-IP-per-hour rate limit than leads. Upload the CV first via POST /api/v1/applicant-cv and pass the returned URL as `cv_url`. That URL requires an authenticated CMS session to read.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        job_slug: string;
+                        name: string;
+                        /** Format: email */
+                        email: string;
+                        phone?: string | null;
+                        /** Format: uri */
+                        cv_url?: string | null;
+                        cover_letter?: string | null;
+                        /** @enum {string} */
+                        locale: "en" | "vi" | "zh";
+                        source_page?: string | null;
+                        utm?: {
+                            [key: string]: string;
+                        } | null;
+                        turnstile_token: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Application accepted and persisted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            id: number;
+                        };
+                    };
+                };
+                /** @description Malformed JSON or field validation failure */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Turnstile verification failed */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Job does not exist or is not open */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Application deadline has passed */
+                410: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (5 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applicant-cv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload an applicant CV and get its URL
+         * @description Accepts `multipart/form-data` with a single `file` field: PDF, DOC or DOCX, at most 10MB. Returns an AUTHENTICATED retrieval URL to pass as `cv_url` on POST /api/v1/applicants — it is not a public link and not a bearer URL: reading the CV requires a CMS session, and the public media proxy refuses the applicant namespace. Rate limited to 5 uploads per IP per hour.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        file: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description CV stored; URL returned */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            url: string;
+                            filename: string;
+                            size: number;
+                        };
+                    };
+                };
+                /** @description Body is not multipart/form-data, or `file` is missing */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description File exceeds the 10MB limit */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Unsupported file type (only PDF, DOC, DOCX) */
+                415: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (5 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/questions/{slug}/same-issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * React same-issue to a published question
+         * @description Idempotent per client: the hashed client IP is the dedupe identity, so a repeat reaction answers 200 with `deduped: true` and an unchanged count. No Turnstile (one-click UX), so a request whose client IP cannot be determined is refused with 400 rather than pooled into a shared bucket. Rate limited to 30 per IP per hour. Takes no body.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Reaction recorded, or already present (`deduped: true`) */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            same_issue_count: number;
+                            deduped: boolean;
+                        };
+                    };
+                };
+                /** @description Client IP could not be determined */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description No published question with that slug */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (30 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/questions/{slug}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw your own question using its owner token
+         * @description The owner token issued at submission is the only authorization. An invalid token is answered with the SAME generic 404 as a missing slug — deliberately indistinguishable, so the endpoint cannot be used to probe which slugs exist. Rate limited to 20 per IP per hour.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        ownerToken: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Question withdrawn */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            /** @enum {boolean} */
+                            withdrawn: true;
+                        };
+                    };
+                };
+                /** @description Malformed JSON or missing `ownerToken` */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Unknown slug or wrong owner token (indistinguishable) */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (20 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/community/reviews/{slug}/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Withdraw your own review using its owner token
+         * @description Identical semantics to the question withdraw endpoint: owner token is the only authorization, and a wrong token is indistinguishable from a missing slug (generic 404). Rate limited to 20 per IP per hour.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        ownerToken: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Review withdrawn */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            ok: true;
+                            /** @enum {boolean} */
+                            withdrawn: true;
+                        };
+                    };
+                };
+                /** @description Malformed JSON or missing `ownerToken` */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Unknown slug or wrong owner token (indistinguishable) */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Rate limit exceeded (20 per IP per hour) */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
