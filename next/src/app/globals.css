@@ -76,6 +76,13 @@
     --radius-sm: 6px;
     --gold-dim: hsl(var(--gold) / 0.16);
 
+    /* Elevation ladder — three steps, tinted with the brand navy rather than neutral black, so a
+       raised surface reads as part of the palette. Lives here (not per-route) because every route's
+       surfaces share one ladder; a component may reference it without knowing which page it is on. */
+    --shadow-1: 0 1px 2px rgb(20 29 46 / 0.04), 0 2px 8px rgb(20 29 46 / 0.04);
+    --shadow-2: 0 2px 4px rgb(20 29 46 / 0.05), 0 8px 24px rgb(20 29 46 / 0.07);
+    --shadow-3: 0 4px 8px rgb(20 29 46 / 0.06), 0 24px 48px -12px rgb(20 29 46 / 0.14);
+
     /* 12-step type scale (IMPLEMENTATION_BASELINE.md "Typography rules"). Fluid clamp()
        steps consumed via Tailwind arbitrary values (e.g. text-[length:var(--step-h1)]) —
        no tailwind.config.ts change needed. */
@@ -103,6 +110,11 @@
       "Noto Sans SC", sans-serif;
     --font-body: var(--font-body-face), system-ui, -apple-system, BlinkMacSystemFont,
       "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+    /* The brand's registered mono stack. `--font-mono-face` is supplied per-route by next/font
+       (IBM Plex Mono on /thg-fulfill); the fallback chain stands on its own when it is absent, so
+       `font-mono` never resolves to Tailwind's generic default. */
+    --font-mono: var(--font-mono-face), ui-monospace, "IBM Plex Mono", SFMono-Regular, Menlo,
+      Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 }
 
@@ -140,6 +152,107 @@
 
   .font-body {
     font-family: var(--font-body);
+  }
+
+  /* ─── Type roles ───
+     One utility per role, binding the 12-step fluid scale above. Sections stop hand-rolling
+     `text-[2.4rem]` / `text-sm`, so the letter-spacing rules cannot drift: negative tracking above
+     32px, and ≥0.08em on every ALL-CAPS run (0.1em on the 11px mono labels). */
+  .type-display {
+    font-family: var(--font-display);
+    font-size: var(--step-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+  }
+
+  .type-h1 {
+    font-family: var(--font-display);
+    font-size: var(--step-h1);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+
+  .type-h2 {
+    font-family: var(--font-display);
+    font-size: var(--step-h2);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+  }
+
+  .type-h3 {
+    font-family: var(--font-display);
+    font-size: var(--step-h3);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+
+  .type-h4 {
+    font-family: var(--font-display);
+    font-size: var(--step-h4);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .type-lead {
+    font-size: var(--step-lead);
+    font-weight: 450;
+    line-height: 1.55;
+  }
+
+  .type-body {
+    font-size: var(--step-body);
+    line-height: 1.6;
+  }
+
+  .type-small {
+    font-size: var(--step-small);
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+  }
+
+  .type-label {
+    font-family: var(--font-mono);
+    font-size: var(--step-label);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .type-metric {
+    font-family: var(--font-mono);
+    font-size: var(--step-metric);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Skip link — visible only when focused. The public pages run 13 sections deep behind a fixed
+     navbar, so a keyboard user needs a way past the navigation. */
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius);
+    background: hsl(var(--navy));
+    color: hsl(var(--primary-foreground));
+    font-size: var(--step-nav);
+    font-weight: 600;
+    box-shadow: 0 8px 24px hsl(220 25% 12% / 0.18);
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid hsl(var(--gold));
+    outline-offset: 2px;
   }
 
   /* ─── Text Gradients ─── */

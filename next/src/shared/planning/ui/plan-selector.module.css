@@ -1,0 +1,130 @@
+/* PLAN SELECTOR — the two questions, and the narrowing they perform.
+ *
+ * THE NARROWING RULE is the interesting part. Each plan carries its own `data-situation` and
+ * `data-supply`; the stack carries whatever has been answered. A plan is hidden when it MISMATCHES
+ * an answer, so the two rules below intersect naturally:
+ *
+ *   nothing answered   → no attribute on the stack → every plan visible. This is also the server's
+ *                        markup and what a JS-disabled visitor keeps.
+ *   situation answered → six plans narrow to two
+ *   both answered      → one plan remains
+ *
+ * It scales linearly: a new seller situation adds one control, not a combination.
+ *
+ * Themed through the Tier 2 `--ui-*` contract with semantic fallbacks; no palette of its own.
+ */
+
+.selector {
+  --ps-ink: var(--ui-ink, hsl(var(--foreground)));
+  --ps-muted: var(--ui-muted, hsl(var(--muted-foreground)));
+  --ps-line: var(--ui-line, hsl(var(--border)));
+  --ps-accent: var(--ui-accent, hsl(var(--primary)));
+  --ps-surface: var(--ui-surface, hsl(var(--card)));
+  --ps-on-accent: var(--ui-on-accent, #fff);
+  --ps-ease: var(--ui-ease, cubic-bezier(0.16, 1, 0.3, 1));
+  --ps-fast: var(--ui-fast, 180ms);
+}
+
+.questions {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ps-line);
+  border-radius: var(--radius-lg);
+  background: var(--ps-surface);
+}
+
+@media (min-width: 768px) {
+  .questions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    padding: 1.75rem 2rem;
+  }
+}
+
+.group {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.legend {
+  margin: 0;
+  color: var(--ps-muted);
+  font-family: var(--font-mono);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.option {
+  min-height: 44px;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--ps-line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ps-ink);
+  font-size: var(--step-small);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--ps-fast) var(--ps-ease),
+    background-color var(--ps-fast) var(--ps-ease),
+    color var(--ps-fast) var(--ps-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .option:hover {
+    border-color: var(--ps-accent);
+  }
+}
+
+/* Selection is carried by fill AND weight, so it survives a monochrome rendering. */
+.optionOn {
+  border-color: var(--ps-accent);
+  background: var(--ps-accent);
+  color: var(--ps-on-accent);
+  font-weight: 600;
+}
+
+/* Narrowing is announced politely and focus is never moved: the plans are further down the page and
+   the reader decides when to go there. */
+.status {
+  margin: 1.25rem 0;
+  color: var(--ps-muted);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+}
+
+.statusValue {
+  color: var(--ps-ink);
+}
+
+.stack {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1280px) {
+  /* Unanswered, six plans read as a comparison grid; narrowed, the survivor takes the full width
+     because it is no longer being compared with anything. */
+  .stack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stack[data-situation][data-supply] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.stack[data-situation="starting"] > [data-situation]:not([data-situation="starting"]),
+.stack[data-situation="expanding"] > [data-situation]:not([data-situation="expanding"]),
+.stack[data-situation="operating"] > [data-situation]:not([data-situation="operating"]),
+.stack[data-supply="custom"] > [data-supply]:not([data-supply="custom"]),
+.stack[data-supply="sourced"] > [data-supply]:not([data-supply="sourced"]) {
+  display: none;
+}

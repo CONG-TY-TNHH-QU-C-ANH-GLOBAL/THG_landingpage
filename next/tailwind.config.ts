@@ -14,7 +14,14 @@ export default {
       },
     },
     extend: {
-      fontFamily: {},
+      // The brand type stacks resolve through the CSS variables declared in globals.css, so
+      // `font-mono` means IBM Plex Mono (the registered mono face) instead of Tailwind's generic
+      // default, and `font-sans` cannot silently diverge from the body face.
+      fontFamily: {
+        sans: ["var(--font-body)"],
+        display: ["var(--font-display)"],
+        mono: ["var(--font-mono)"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

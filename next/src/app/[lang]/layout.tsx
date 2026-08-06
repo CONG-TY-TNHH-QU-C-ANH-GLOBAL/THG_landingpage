@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Be_Vietnam_Pro, Inter } from "next/font/google";
 import "../globals.css";
-import { SUPPORTED_LOCALES, HTML_LANG, isSupportedLocale } from "@/shared/i18n";
+import { SUPPORTED_LOCALES, HTML_LANG, isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { pickCopy, NAVBAR_COPY, FLOATING_CONTACT_COPY } from "@/shared/i18n/shell-copy";
 // Direct shell-loader import (not the @/features/home barrel) so this shared layout — rendered
@@ -49,6 +49,15 @@ export const metadata: Metadata = {
   },
 };
 
+// Keyboard affordance, not marketing copy: the public pages run a dozen sections deep behind a
+// fixed navbar, so a keyboard user needs one stop that jumps past the navigation. Localized here
+// rather than in the marketing dictionary because it is shell scaffolding, not business content.
+const SKIP_LINK_LABEL: Readonly<Record<Locale, string>> = {
+  vi: "Bỏ qua điều hướng, đến nội dung chính",
+  en: "Skip to main content",
+  zh: "跳到主要内容",
+};
+
 export const dynamicParams = false; // unsupported locales are not rendered — they 404
 
 export function generateStaticParams() {
@@ -74,10 +83,15 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={HTML_LANG[lang]}>
       <body className={`${displayFont.variable} ${bodyFont.variable} min-h-screen bg-background`}>
         <UtmCapture />
+        <a href="#main-content" className="skip-link">
+          {SKIP_LINK_LABEL[lang]}
+        </a>
         {/* Client islands receive only the copy they render (Navbar/FloatingContact are
             "use client"); ContactSection is a Server Component and keeps the full map free. */}
         <Navbar lang={lang} copy={pickCopy(copy, NAVBAR_COPY)} />
-        {children}
+        <div id="main-content" tabIndex={-1} className="outline-none">
+          {children}
+        </div>
         <ContactSection
           lang={lang}
           copy={copy}

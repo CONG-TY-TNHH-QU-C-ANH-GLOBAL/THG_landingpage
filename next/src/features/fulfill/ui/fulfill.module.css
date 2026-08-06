@@ -1,245 +1,1203 @@
-/* Scoped THG Fulfill experience layer (WEB-002). Every rule is nested under `.root`, and the
-   operational tokens live on `.root` — nothing here touches global design tokens. The shared
-   system has no operational blue/cyan/orange roles, no blueprint field, no glass-surface
-   language and no mono face, so these are documented scoped extensions (candidates for later
-   promotion). `--font-mono-face` is supplied by next/font on the page wrapper; the stack falls
-   back to platform mono so the layer never depends on the font having loaded. */
-
-/* The floating-glass Navbar is now the shared global default (owned by the shared Navbar
-   component), so this route no longer reshapes the bar — the former :has() pill rules were
-   removed along with the [data-fulfill-route] marker. */
+/* THG FULFILL — the route's presentation layer.
+ *
+ * Governed by the THG Design System Specification. Two things it enforces that are visible here:
+ *
+ *   TOKEN PIPELINE.  Tier 0 primitives are DERIVED from the global brand tokens in globals.css
+ *   (`--navy`, `--gold`, `--cream`, `--border`, `--muted-foreground`) rather than restated as hex.
+ *   The route's hex palette used to duplicate those six values in a second format; a duplicated
+ *   token is a defect because the two copies drift. Components read only the Tier 2 `--ui-*`
+ *   contract below, so re-theming this route is one block of assignments and nothing else.
+ *
+ *   SURFACE INVERSION IS NOT DARK MODE.  `.inverted` reassigns the same Tier 2 names to their
+ *   on-dark values. No component knows which surface it is on, and no component implements
+ *   darkness itself.
+ *
+ * Everything is nested under `.root`; no global token is written from here.
+ */
 
 .root {
-  /* Operational palette — approved prototype roles, scoped to this route. */
-  --fx-bg: #fafafa;
-  --fx-surface: #ffffff;
-  --fx-ink: #0a0a0b;
-  --fx-gray: #8a8f98;
-  --fx-border: rgba(0, 0, 0, 0.08);
-  --fx-blue: #0066ff;
-  --fx-cyan: #0891b2;
-  --fx-orange: #ff5c00;
-  --fx-green: #00a344;
-  --fx-mono: var(--font-mono-face), ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code",
-    monospace;
-  --fx-apple: cubic-bezier(0.16, 1, 0.3, 1);
+  /* ── Tier 0 · brand primitives, derived (never re-authored) ───────────────────────────────── */
+  --t0-ink: hsl(var(--navy));
+  --t0-canvas: hsl(var(--cream));
+  --t0-surface: #fff;
+  --t0-muted: hsl(var(--muted-foreground));
+  --t0-accent: hsl(var(--gold));
+  --t0-line: hsl(var(--border));
 
-  /* R2: map this route's operational palette onto the shared Service Experience contract
-     (shared/service/service.module.css). The shared layer never learns the --fx-* names; this
-     single mapping is the whole theming surface, so a future service page themes the same
-     components by assigning its own tokens here. */
-  --svc-accent: var(--fx-blue);
-  --svc-accent-soft: var(--fx-cyan);
-  --svc-rule: var(--fx-orange);
-  --svc-ink: var(--fx-ink);
-  --svc-muted: var(--fx-gray);
-  --svc-border: var(--fx-border);
-  --svc-surface: var(--fx-surface);
-  --svc-canvas: var(--fx-bg);
-  --svc-mono: var(--fx-mono);
-  --svc-ease: var(--fx-apple);
+  /* Derived shades. Gold measures 4.2:1 on both white and navy — below the 4.5:1 body threshold —
+     so text under 18px uses a surface-specific shift. Raw accent is for fills, rules and icons. */
+  --t0-accent-ink: color-mix(in oklch, var(--t0-accent) 74%, black);
+  --t0-accent-lift: color-mix(in oklch, var(--t0-accent) 70%, white);
+  --t0-canvas-sunk: color-mix(in oklch, var(--t0-canvas) 88%, var(--t0-ink) 12%);
+  --t0-ink-raised: color-mix(in oklch, var(--t0-ink) 93%, white);
+
+  /* ── Tier 2 · the surface contract. The only names components may read. ───────────────────── */
+  --ui-canvas: var(--t0-canvas);
+  --ui-surface: var(--t0-surface);
+  --ui-sunk: var(--t0-canvas-sunk);
+  --ui-ink: var(--t0-ink);
+  --ui-muted: var(--t0-muted);
+  --ui-accent: var(--t0-accent);
+  --ui-accent-text: var(--t0-accent-ink);
+  --ui-line: var(--t0-line);
+  --ui-line-strong: color-mix(in oklch, var(--t0-ink) 20%, transparent);
+  --ui-on-accent: #fff;
+  --radius-full: 9999px;
+
+  /* ── Rhythm. Section padding is a token so no section decides its own vertical space. ─────── */
+  --ui-space-section: 4rem;
+  --ui-space-block: 2.5rem;
+  --ui-gutter: 1rem;
+  --ui-measure: 68ch;
+
+  /* ── Motion. One curve. Ceiling 260ms on this route. ─────────────────────────────────────── */
+  --ui-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ui-fast: 180ms;
+  --ui-base: 260ms;
 
   position: relative;
-  background: var(--fx-bg);
-  color: var(--fx-ink);
+  isolation: isolate;
+  background: var(--ui-canvas);
+  color: var(--ui-ink);
 }
 
-/* 4% film grain (data-URI, no network) — fixed, non-interactive. */
-.noise {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+@media (min-width: 768px) {
+  .root {
+    --ui-gutter: 1.5rem;
+    --ui-space-section: 5.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .root {
+    --ui-gutter: 2rem;
+    --ui-space-section: 6rem;
+    --ui-space-block: 3.5rem;
+  }
+}
+
+/* ── Surfaces ─────────────────────────────────────────────────────────────────────────────── */
+
+/* Every movement is an anchor target, so every movement clears the floating shell header when a
+   published link lands on it. */
+.section {
+  scroll-margin-top: 6rem;
+  padding-block: var(--ui-space-section);
+  background: var(--ui-canvas);
+  color: var(--ui-ink);
+}
+
+/* Adjacent sections on the same surface collapse their shared padding rather than summing it,
+   and take a hairline instead — the rule is what separates them, not 12rem of air. */
+.section + .section {
+  padding-block-start: 0;
+}
+
+.section + .section > .inner::before {
+  content: "";
+  display: block;
+  border-top: 1px solid var(--ui-line);
+  margin-block-end: var(--ui-space-section);
+}
+
+.surface {
+  background: var(--ui-surface);
+}
+
+/* Surface inversion: the same contract, on-dark values. Used where the page changes what it is
+   doing — mechanism becomes commitment — never for emphasis. */
+.inverted {
+  --ui-canvas: var(--t0-ink);
+  --ui-surface: var(--t0-ink-raised);
+  --ui-sunk: var(--t0-ink-raised);
+  --ui-ink: rgb(255 255 255 / 0.88);
+  --ui-muted: rgb(255 255 255 / 0.7);
+  --ui-accent-text: var(--t0-accent-lift);
+  --ui-line: rgb(255 255 255 / 0.12);
+  --ui-line-strong: rgb(255 255 255 / 0.28);
+}
+
+.inverted.section + .section > .inner::before,
+.section + .inverted.section > .inner::before {
+  border-top: 0;
+  margin-block-end: 0;
+}
+
+.inverted.section + .section,
+.section + .inverted.section {
+  padding-block-start: var(--ui-space-section);
+}
+
+/* ── Measure ──────────────────────────────────────────────────────────────────────────────── */
+
+.inner {
+  width: 100%;
+  max-width: calc(1080px + var(--ui-gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--ui-gutter);
+}
+
+.innerWide {
+  max-width: calc(1280px + var(--ui-gutter) * 2);
+}
+
+.prose {
+  max-width: var(--ui-measure);
+}
+
+/* ── Section chrome ───────────────────────────────────────────────────────────────────────── */
+
+.header {
+  display: grid;
+  gap: 0.75rem;
+  margin-block-end: var(--ui-space-block);
+}
+
+/* The movement index. The page reads as an operational dossier, and a dossier numbers its
+   sections — it is orientation, not decoration, so it is text and it is in the DOM. */
+.eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  color: var(--ui-muted);
+  font-family: var(--font-mono);
+}
+
+.eyebrowIndex {
+  color: var(--ui-accent-text);
+}
+
+.eyebrowIndex::after {
+  content: "—";
+  margin-inline-start: 0.75rem;
+  color: var(--ui-line-strong);
+}
+
+.title {
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 60ch;
+  color: var(--ui-muted);
+}
+
+.headerSplit {
+  display: grid;
+  gap: 1.5rem;
+  align-items: end;
+  margin-block-end: var(--ui-space-block);
+}
+
+@media (min-width: 1024px) {
+  .headerSplit {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: 3rem;
+  }
+}
+
+/* The split owns the spacing below the whole header group; the heading inside it owns none, so the
+   two cannot add up to a gap nobody chose. */
+.headerSplit .header {
+  margin-block-end: 0;
+}
+
+/* Retired but published anchor ids. A section that moves or is replaced leaves its id behind;
+   these are never garbage-collected. */
+.anchorAlias {
+  display: block;
+  position: relative;
+  top: -6rem;
+  height: 0;
+  visibility: hidden;
+}
+
+/* ── Type helpers bound to the route's contract ───────────────────────────────────────────── */
+
+/* ── Shared declarations. Composed rather than repeated, so a change to a mono term or a list
+   reset reaches every one of them instead of whichever copies the author remembered. ────────── */
+
+.muted {
+  color: var(--ui-muted);
+}
+
+/* A mono term: the small uppercase label that names a value. */
+.termMuted {
+  color: var(--ui-muted);
+  font-family: var(--font-mono);
+}
+
+.termAccent {
+  color: var(--ui-accent-text);
+  font-family: var(--font-mono);
+}
+
+/* A list that reads as a document section: no markers, a rule above it. */
+.ruledList {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ui-line);
+}
+
+/* A collection of equal cards. Column counts differ per collection and stay with each one. */
+.cardGrid {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .mono {
-  font-family: var(--fx-mono);
+  font-family: var(--font-mono);
 }
 
-/* Section eyebrows now come from shared/service (ServiceSectionHeader), themed through the
-   --svc-* mapping above — the local .sectionIndex rule it replaced is gone. */
-
-/* Blueprint field — 32px grid faded by a radial mask. */
-.blueprint {
-  background-size: 32px 32px;
-  background-image:
-    linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 38%, transparent 82%);
-  mask-image: radial-gradient(ellipse at center, black 38%, transparent 82%);
+.rule {
+  border: 0;
+  border-top: 1px solid var(--ui-line);
+  margin-block: var(--ui-space-block);
 }
 
-.glass {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow:
-    0 24px 48px -12px rgba(0, 0, 0, 0.08),
-    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+/* ── Actions ──────────────────────────────────────────────────────────────────────────────── */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
 }
 
-.floaty {
-  animation: fx-floaty 4.5s ease-in-out infinite;
+.linkQuiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ui-accent-text);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  text-decoration-color: var(--ui-line-strong);
+  transition: text-decoration-color var(--ui-fast) var(--ui-ease);
+  min-height: 44px;
 }
-.floatyDelayed {
-  animation: fx-floaty 4.5s ease-in-out infinite 1.4s;
-}
-@keyframes fx-floaty {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-9px);
+
+@media (hover: hover) and (pointer: fine) {
+  .linkQuiet:hover {
+    text-decoration-color: currentColor;
   }
 }
 
-/* ── Journey stage ── */
-.stage {
+.linkOut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 56px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--radius);
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  transition:
+    border-color var(--ui-fast) var(--ui-ease),
+    background-color var(--ui-fast) var(--ui-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .linkOut:hover {
+    border-color: var(--ui-line-strong);
+    background: var(--ui-sunk);
+  }
+}
+
+.linkOutMark {
+  color: var(--ui-accent-text);
+  flex: none;
+}
+
+/* ── S1 · Qualification ───────────────────────────────────────────────────────────────────── */
+
+.hero {
+  padding-block: calc(var(--ui-space-section) * 1.25) var(--ui-space-section);
+}
+
+.heroGrid {
+  display: grid;
+  gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .heroGrid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 4rem;
+    align-items: start;
+  }
+}
+
+.heroTitle {
+  margin-block-start: 1.5rem;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.heroLead {
+  margin-block-start: 1.5rem;
+  max-width: 46ch;
+  color: var(--ui-muted);
+}
+
+.heroRail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block-start: 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.heroRail li {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--radius-sm);
+  background: var(--ui-surface);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+}
+
+/* The scope panel. This is the page's first exit: a seller outside these three rows should be
+   able to leave in the first screenful, and that is a success, not a leak. */
+.scope {
+  padding: 1.5rem;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--shadow-1);
+}
+
+@media (min-width: 768px) {
+  .scope {
+    padding: 2rem;
+  }
+}
+
+.scopeList {
+  display: grid;
+  gap: 1.25rem;
+  margin: 1.25rem 0 0;
+}
+
+.scopeRow {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.scopeTerm {
+  composes: termMuted;
+}
+
+.scopeValue {
+  margin: 0;
+}
+
+.scopeNote {
+  margin-block-start: 1.5rem;
+  padding-block-start: 1.25rem;
+  border-top: 1px solid var(--ui-line);
+  color: var(--ui-muted);
+}
+
+/* ── S2 · Challenge ledger ────────────────────────────────────────────────────────────────── */
+
+.ledger {
+  composes: ruledList;
+}
+
+.ledgerRow {
+  display: grid;
+  gap: 0.25rem 1.5rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--ui-line);
+}
+
+@media (min-width: 768px) {
+  .ledgerRow {
+    grid-template-columns: 4rem minmax(0, 12rem) minmax(0, 1fr);
+    align-items: baseline;
+    padding-block: 1.75rem;
+  }
+}
+
+.ledgerNum {
+  composes: termAccent;
+}
+
+.ledgerTitle {
+  margin: 0;
+}
+
+.ledgerText {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--ui-muted);
+}
+
+/* ── S4 · Operational states ──────────────────────────────────────────────────────────────── */
+
+.states {
+  composes: cardGrid;
+}
+
+@media (min-width: 768px) {
+  .states {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .states {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--radius-lg);
+  background: var(--ui-surface);
+}
+
+.stateIndex {
+  composes: termMuted;
+}
+
+.stateTitle {
+  margin: 0;
+}
+
+.stateText {
+  margin: 0;
+  color: var(--ui-muted);
+}
+
+.stateFacts {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  padding-block-start: 1rem;
+  border-top: 1px solid var(--ui-line);
+}
+
+.stateFactTerm {
+  composes: termMuted;
+}
+
+.stateFactValue {
+  margin: 0.125rem 0 0;
+}
+
+/* An absence is displayed, never omitted and never filled. This is the only styling in the
+   system whose job is to make a gap legible rather than to hide it. */
+.absent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ui-muted);
+  font-style: normal;
+}
+
+.absent::before {
+  content: "";
+  width: 0.5rem;
+  height: 1px;
+  background: currentColor;
+  flex: none;
+}
+
+.visibilityRail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  list-style: none;
+  border-top: 1px solid var(--ui-line);
+}
+
+.visibilityRail li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+}
+
+/* The same rail without its own boundary, for use inside a group that already has one. */
+.railBare {
+  border-top: 0;
+  padding-block-start: 0;
+}
+
+.visibilityRail li:not(:last-child)::after {
+  content: "";
+  width: 1.25rem;
+  height: 1px;
+  background: var(--ui-line-strong);
+}
+
+/* ── S5 · Production scope ────────────────────────────────────────────────────────────────── */
+
+.catalog {
+  composes: cardGrid;
+}
+
+@media (min-width: 640px) {
+  .catalog {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .catalog {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+.product {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--radius-lg);
+  background: var(--ui-surface);
+}
+
+.productFigure {
   position: relative;
   aspect-ratio: 4 / 3;
+  background: var(--ui-sunk);
+}
+
+.productFigure img {
+  object-fit: cover;
+}
+
+.productBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  flex: 1;
+}
+
+.productName {
+  margin: 0;
+}
+
+.productFacts {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-block-start: 0.75rem;
+  border-top: 1px solid var(--ui-line);
+}
+
+.productFact {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+}
+
+.productFact dt {
+  color: var(--ui-muted);
+}
+
+.productFact dd {
+  margin: 0;
+  text-align: end;
+}
+
+.boundary {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ui-line);
+  border-inline-start: 2px solid var(--ui-accent);
+  border-radius: var(--radius);
+  background: var(--ui-surface);
+}
+
+.note {
+  padding: 1.5rem;
+  border: 1px dashed var(--ui-line-strong);
+  border-radius: var(--radius);
+  color: var(--ui-muted);
+}
+
+.noteBody {
+  margin: 0.5rem 0 0;
+  max-width: 72ch;
+}
+
+/* Block-level spacing utilities. Named, because an unnamed 2.5rem in a component is a value nobody
+   can review and nobody can change system-wide. */
+.spaceTop {
+  margin-block-start: var(--ui-space-block);
+}
+
+.spaceTopTight {
+  margin-block-start: 1.5rem;
+}
+
+/* ── S6 · Evidence ────────────────────────────────────────────────────────────────────────── */
+
+.evidenceGrid {
+  display: grid;
+  gap: 2rem;
+}
+
+/* Two peers of equal weight — used where neither side may read as subordinate to the other. */
+.pairGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .pairGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .evidenceGrid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 3rem;
+    align-items: center;
+  }
+}
+
+.figure {
+  margin: 0;
   overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--ui-line);
+  background: var(--ui-sunk);
 }
-.stateImg {
+
+.figureFrame {
+  position: relative;
+  aspect-ratio: 3 / 2;
+}
+
+.figureFrame img {
+  object-fit: cover;
+}
+
+.figureCaption {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-muted);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+}
+
+/* ── S6b · Learning library ───────────────────────────────────────────────────────────────── */
+
+.libraryGrid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .libraryGrid {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  }
+}
+
+.player {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--radius-lg);
+  background: #000;
+}
+
+.player iframe {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
-  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* A facade, not a player. No document loads until the visitor asks for one. */
+.facade {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.facade img {
+  object-fit: cover;
+}
+
+.facadeScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.1) 0%, rgb(0 0 0 / 0.72) 100%);
+}
+
+.facadeMark {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-full, 9999px);
+  background: var(--t0-surface);
+  color: var(--t0-ink);
+  transition: background-color var(--ui-fast) var(--ui-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .facade:hover .facadeMark {
+    background: var(--t0-accent);
+    color: #fff;
+  }
+}
+
+.facadeCaption {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: grid;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  text-align: start;
+  color: #fff;
+}
+
+.facadeType {
+  color: var(--t0-accent-lift);
+  font-family: var(--font-mono);
+}
+
+.libraryList {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  max-height: 28rem;
+  overflow-y: auto;
+}
+
+.libraryRow {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.875rem;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
   transition:
-    transform 0.6s var(--fx-apple),
-    opacity 0.6s var(--fx-apple);
-  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.1));
-  mix-blend-mode: multiply;
-}
-.stage[data-step="0"] .stateImg[data-step="0"],
-.stage[data-step="1"] .stateImg[data-step="1"],
-.stage[data-step="2"] .stateImg[data-step="2"],
-.stage[data-step="3"] .stateImg[data-step="3"] {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-  z-index: 10;
+    background-color var(--ui-fast) var(--ui-ease),
+    border-color var(--ui-fast) var(--ui-ease);
 }
 
-.laser {
-  position: absolute;
-  top: 22%;
-  left: 18%;
-  width: 64%;
-  height: 2px;
-  background: var(--fx-blue);
-  box-shadow: 0 0 15px var(--fx-blue);
-  opacity: 0;
-  z-index: 20;
-  pointer-events: none;
-}
-.stage[data-step="1"] .laser {
-  opacity: 1;
-  animation: fx-scan 2s var(--fx-apple) infinite alternate;
-}
-@keyframes fx-scan {
-  0% {
-    transform: translateY(-70px);
-  }
-  100% {
-    transform: translateY(90px);
+@media (hover: hover) and (pointer: fine) {
+  .libraryRow:hover {
+    background: var(--ui-sunk);
   }
 }
 
-.reticle {
-  position: absolute;
-  top: 30%;
-  left: 35%;
-  width: 30%;
-  height: 40%;
-  border: 1px solid rgba(0, 163, 68, 0.5);
-  opacity: 0;
-  transition: opacity 0.5s var(--fx-apple);
-  z-index: 20;
-}
-.stage[data-step="2"] .reticle {
-  opacity: 1;
-}
-.reticleCorner {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-color: var(--fx-green);
+.libraryRowOn {
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
 }
 
-.packLabel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(3deg);
-  width: 11rem;
-  height: 15rem;
-  background: #eae6df;
-  border: 1px solid var(--fx-border);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  opacity: 0;
-  transition: opacity 0.5s var(--fx-apple);
-  z-index: 20;
-}
-.stage[data-step="3"] .packLabel {
-  opacity: 1;
+.libraryThumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--ui-sunk);
 }
 
-.hub {
-  position: absolute;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  width: 14rem;
-  z-index: 30;
-}
-/* Hub row markers track the viewed step entirely in CSS, so the stage stays a Server Component
-   and ships no JavaScript: upcoming "—", current "●", already-passed "✓". The ✓ rules come after
-   the ● rules and never target the current row, so specificity order needs no !important. */
-.hubMarker {
-  color: var(--fx-gray);
-  transition: color 0.3s var(--fx-apple);
-}
-.hubMarker::after {
-  content: "—";
-}
-.stage[data-step="0"] .hubRow:nth-child(1) .hubMarker::after,
-.stage[data-step="1"] .hubRow:nth-child(2) .hubMarker::after,
-.stage[data-step="2"] .hubRow:nth-child(3) .hubMarker::after,
-.stage[data-step="3"] .hubRow:nth-child(4) .hubMarker::after {
-  content: "●";
-}
-.stage[data-step="0"] .hubRow:nth-child(1) .hubMarker,
-.stage[data-step="1"] .hubRow:nth-child(2) .hubMarker,
-.stage[data-step="2"] .hubRow:nth-child(3) .hubMarker,
-.stage[data-step="3"] .hubRow:nth-child(4) .hubMarker {
-  color: var(--fx-blue);
-  font-weight: 700;
-}
-.stage[data-step="1"] .hubRow:nth-child(1) .hubMarker::after,
-.stage[data-step="2"] .hubRow:nth-child(-n + 2) .hubMarker::after,
-.stage[data-step="3"] .hubRow:nth-child(-n + 3) .hubMarker::after {
-  content: "✓";
+.libraryThumb img {
+  object-fit: cover;
 }
 
-/* Step controls now live in shared/service (ServiceWorkflow); the local .stepBtn rules it
-   replaced are gone. */
-
-/* ── Dark consultation inputs handled by shared components; only the shell is scoped here ── */
-.consult {
-  background: var(--fx-ink);
+.libraryMeta {
+  min-width: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .root *,
-  .root *::before,
-  .root *::after {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
+.libraryMeta > span {
+  display: block;
+}
+
+.libraryTitle {
+  margin: 0.125rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.noscriptList {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── S7 · Commitment ──────────────────────────────────────────────────────────────────────── */
+
+.commitGrid {
+  composes: cardGrid;
+}
+
+@media (min-width: 768px) {
+  .commitGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
   }
-  .laser {
-    display: none !important;
+}
+
+.commit {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--radius-lg);
+  background: var(--ui-surface);
+}
+
+.commitTerm {
+  composes: termAccent;
+}
+
+.commitValue {
+  margin: 0;
+}
+
+.commitDetail {
+  display: block;
+  margin-block-start: 0.5rem;
+  color: var(--ui-accent-text);
+  font-family: var(--font-mono);
+}
+
+.commitFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-block-start: var(--ui-space-block);
+  padding-block-start: 1.5rem;
+  border-top: 1px solid var(--ui-line);
+}
+
+/* ── S8 · Operating handbook ──────────────────────────────────────────────────────────────── */
+
+.chapter {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .chapter {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 3rem;
+    align-items: start;
   }
+}
+
+.chapterAside {
+  position: static;
+}
+
+@media (min-width: 1024px) {
+  .chapterAside {
+    position: sticky;
+    top: 6rem;
+  }
+}
+
+.steps {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.step::before {
+  counter-increment: step;
+  content: counter(step, decimal-leading-zero);
+  color: var(--ui-accent-text);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  padding-block-start: 0.125rem;
+}
+
+.modules {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ui-line);
+}
+
+.module {
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--ui-line);
+  scroll-margin-top: 6rem;
+}
+
+.moduleTitle {
+  margin: 0;
+}
+
+.moduleIntro {
+  margin: 0.5rem 0 0;
+  max-width: 62ch;
+  color: var(--ui-muted);
+}
+
+/* `display: grid` removes the marker box in Chrome; items opt back in so a bulleted list stays one. */
+.moduleBullets li {
+  display: list-item;
+}
+
+.moduleBullets {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding-inline-start: 1.125rem;
+  color: var(--ui-muted);
+}
+
+/* Metric NAMES with what each one tells the seller — and no values. The Hub is real software;
+   inventing a number here would set an expectation the operation has to correct later. */
+.metricNames {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--ui-sunk);
+}
+
+@media (min-width: 768px) {
+  .metricNames {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 2rem;
+  }
+}
+
+.metricRow {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.metricName {
+  font-family: var(--font-mono);
+}
+
+.metricMeaning {
+  margin: 0;
+  color: var(--ui-muted);
+}
+
+/* ── S9 · Ecosystem ───────────────────────────────────────────────────────────────────────── */
+
+.siblings {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .siblings {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.capabilities {
+  display: grid;
+  gap: 1.25rem 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .capabilities {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .capabilities {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.capability {
+  display: grid;
+  gap: 0.375rem;
+  padding-block-start: 1rem;
+  border-top: 1px solid var(--ui-line);
+}
+
+.capabilityTerm {
+  margin: 0;
+}
+
+.capabilityText {
+  margin: 0;
+  color: var(--ui-muted);
+}
+
+.platforms {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.platforms li {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  color: var(--ui-muted);
+}
+
+/* ── S10 · Question index ─────────────────────────────────────────────────────────────────── */
+
+.qa {
+  composes: ruledList;
+}
+
+.qaItem {
+  display: grid;
+  gap: 0.5rem 2rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--ui-line);
+  scroll-margin-top: 6rem;
+}
+
+@media (min-width: 768px) {
+  .qaItem {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    padding-block: 1.75rem;
+  }
+}
+
+.qaQuestion {
+  margin: 0;
+}
+
+.qaAnswer {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ui-muted);
+}
+
+/* ── S11 · Consultation ───────────────────────────────────────────────────────────────────── */
+
+.closeGrid {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .closeGrid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 4rem;
+    align-items: start;
+  }
+}
+
+.closeList {
+  display: grid;
+  gap: 0.75rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ui-muted);
+}
+
+.closeList li {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.closeMark {
+  color: var(--ui-accent-text);
+  padding-block-start: 0.25rem;
+}
+
+/* ── Deferred fields: what the consultation resolves, stated rather than hidden ───────────── */
+
+.deferred {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deferred li {
+  padding: 0.25rem 0.625rem;
+  border: 1px dashed var(--ui-line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--ui-muted);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+}
+
+/* ── Focus. Never removed, and legible on both surfaces. ──────────────────────────────────── */
+
+.root :focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.inverted :focus-visible {
+  outline-color: var(--t0-accent-lift);
 }
