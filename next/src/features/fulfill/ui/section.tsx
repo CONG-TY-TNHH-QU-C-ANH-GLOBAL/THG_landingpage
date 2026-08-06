@@ -27,6 +27,14 @@ interface MovementProps {
   children: ReactNode;
 }
 
+/** Tone to surface class. A lookup rather than a chain of conditionals, so adding a surface is one
+ *  entry and the set of tones stays readable at a glance. */
+const TONE_CLASS: Readonly<Record<NonNullable<MovementProps["tone"]>, string>> = {
+  canvas: "",
+  surface: styles.surface,
+  inverted: styles.inverted,
+};
+
 export function Movement({
   id,
   aliases,
@@ -34,8 +42,7 @@ export function Movement({
   width = "wide",
   children,
 }: Readonly<MovementProps>) {
-  const toneClass =
-    tone === "inverted" ? styles.inverted : tone === "surface" ? styles.surface : "";
+  const toneClass = TONE_CLASS[tone];
 
   return (
     <section id={id} className={`${styles.section} ${toneClass}`}>

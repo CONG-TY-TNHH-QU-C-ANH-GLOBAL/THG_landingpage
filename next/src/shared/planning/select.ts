@@ -116,10 +116,14 @@ export function summarizeForHandoff(
   plan: OperationalPlan,
   labels: (id: string) => string,
 ): string {
+  const situation = labels(`situation.${plan.subject.situation.value}`);
+  const supply = labels(`supply.${plan.subject.supplyModel.value}`);
+  const course = plan.course.capabilities.map((c) => labels(`capability.${c}`)).join(" + ");
+
   const lines = [
-    `${labels("handoff.situation")}: ${labels(`situation.${plan.subject.situation.value}`)} · ${labels(`supply.${plan.subject.supplyModel.value}`)}`,
+    `${labels("handoff.situation")}: ${situation} · ${supply}`,
     `${labels("handoff.constraint")}: ${labels(plan.constraint.id)}`,
-    `${labels("handoff.course")}: ${plan.course.capabilities.map((c) => labels(`capability.${c}`)).join(" + ")}`,
+    `${labels("handoff.course")}: ${course}`,
   ];
   if (plan.subject.destination) {
     lines.push(`${labels("handoff.destination")}: ${plan.subject.destination.value}`);

@@ -13,13 +13,23 @@
 // no priority to resolve. A composite key is the whole mechanism. The engine becomes correct when
 // conditions stop being enum-shaped — volume BANDS, overlapping predicates — and the entry shape here is
 // deliberately engine-compatible so that upgrade is additive rather than a rewrite.
-import type { PlanTemplate, SituationId, SupplyModel } from "./plan";
+import type { NextStep, Obligation, PlanTemplate, SituationId, SupplyModel } from "./plan";
 
 /** Bump when any entry's business content changes. Stamped into every plan's identity so a
  *  recommendation made months ago remains explainable. */
 export const CATALOGUE_VERSION = "0.1.0-draft";
 
 const key = (situation: SituationId, supplyModel: SupplyModel) => `${situation}:${supplyModel}`;
+
+// Constructors for the two shapes every entry repeats. They exist so an entry reads as the argument
+// it is — who owes what — instead of as thirty copies of the same object literal, and so the party
+// can never be typed onto the wrong side of a course.
+const thg = (id: string): Obligation => ({ id, party: "thg" });
+const seller = (id: string): Obligation => ({ id, party: "seller" });
+
+/** Every drafted plan ends at the same place: a conversation. A self-serve or proposal next step
+ *  becomes a per-entry value the day one of them does something else. */
+const CONSULTATION: NextStep = { kind: "consultation" };
 
 /**
  * ── CUSTOM (the seller prints their own design) → fulfill ─────────────────────────────────────────────
@@ -36,13 +46,13 @@ const CUSTOM_PLANS: readonly PlanTemplate[] = [
     course: {
       capabilities: ["fulfill"],
       obligations: [
-        { id: "obligation.thg.print_on_demand", party: "thg" },
-        { id: "obligation.thg.item_level_qc", party: "thg" },
-        { id: "obligation.thg.us_standard_pack", party: "thg" },
-        { id: "obligation.seller.print_ready_artwork", party: "seller" },
+        thg("obligation.thg.print_on_demand"),
+        thg("obligation.thg.item_level_qc"),
+        thg("obligation.thg.us_standard_pack"),
+        seller("obligation.seller.print_ready_artwork"),
       ],
       tradeoff: { id: "tradeoff.per_unit_vs_bulk" },
-      nextStep: { kind: "consultation" },
+      nextStep: CONSULTATION,
     },
     evidenceIds: [
       "evidence.production_geography",
@@ -63,14 +73,14 @@ const CUSTOM_PLANS: readonly PlanTemplate[] = [
     course: {
       capabilities: ["fulfill", "express"],
       obligations: [
-        { id: "obligation.thg.route_by_destination", party: "thg" },
-        { id: "obligation.thg.us_domestic_fulfillment", party: "thg" },
-        { id: "obligation.thg.item_level_qc", party: "thg" },
-        { id: "obligation.seller.print_ready_artwork", party: "seller" },
-        { id: "obligation.seller.sku_mapping", party: "seller" },
+        thg("obligation.thg.route_by_destination"),
+        thg("obligation.thg.us_domestic_fulfillment"),
+        thg("obligation.thg.item_level_qc"),
+        seller("obligation.seller.print_ready_artwork"),
+        seller("obligation.seller.sku_mapping"),
       ],
       tradeoff: { id: "tradeoff.us_production_cost_vs_transit" },
-      nextStep: { kind: "consultation" },
+      nextStep: CONSULTATION,
     },
     evidenceIds: [
       "evidence.production_geography",
@@ -91,14 +101,14 @@ const CUSTOM_PLANS: readonly PlanTemplate[] = [
     course: {
       capabilities: ["fulfill"],
       obligations: [
-        { id: "obligation.thg.hub_visibility", party: "thg" },
-        { id: "obligation.thg.bulk_intake", party: "thg" },
-        { id: "obligation.thg.support_channels", party: "thg" },
-        { id: "obligation.seller.sku_sync", party: "seller" },
-        { id: "obligation.seller.prepaid_wallet", party: "seller" },
+        thg("obligation.thg.hub_visibility"),
+        thg("obligation.thg.bulk_intake"),
+        thg("obligation.thg.support_channels"),
+        seller("obligation.seller.sku_sync"),
+        seller("obligation.seller.prepaid_wallet"),
       ],
       tradeoff: { id: "tradeoff.prepaid_model" },
-      nextStep: { kind: "consultation" },
+      nextStep: CONSULTATION,
     },
     evidenceIds: [
       "evidence.hub_modules",
@@ -122,13 +132,13 @@ const SOURCED_PLANS: readonly PlanTemplate[] = [
     course: {
       capabilities: ["dropship"],
       obligations: [
-        { id: "obligation.thg.source_per_order", party: "thg" },
-        { id: "obligation.thg.ship_per_order", party: "thg" },
-        { id: "obligation.seller.product_specs", party: "seller" },
+        thg("obligation.thg.source_per_order"),
+        thg("obligation.thg.ship_per_order"),
+        seller("obligation.seller.product_specs"),
       ],
       // A published limit, not a hedge: THG does not source from AliExpress or SHEIN.
       tradeoff: { id: "tradeoff.sourcing_scope_limits" },
-      nextStep: { kind: "consultation" },
+      nextStep: CONSULTATION,
     },
     evidenceIds: [
       "evidence.sourcing_scope",
@@ -147,13 +157,13 @@ const SOURCED_PLANS: readonly PlanTemplate[] = [
     course: {
       capabilities: ["dropship", "express"],
       obligations: [
-        { id: "obligation.thg.source_per_order", party: "thg" },
-        { id: "obligation.thg.route_by_destination", party: "thg" },
-        { id: "obligation.seller.product_specs", party: "seller" },
-        { id: "obligation.seller.sku_mapping", party: "seller" },
+        thg("obligation.thg.source_per_order"),
+        thg("obligation.thg.route_by_destination"),
+        seller("obligation.seller.product_specs"),
+        seller("obligation.seller.sku_mapping"),
       ],
       tradeoff: { id: "tradeoff.sourcing_scope_limits" },
-      nextStep: { kind: "consultation" },
+      nextStep: CONSULTATION,
     },
     evidenceIds: [
       "evidence.sourcing_scope",
@@ -173,14 +183,14 @@ const SOURCED_PLANS: readonly PlanTemplate[] = [
     course: {
       capabilities: ["warehouse", "express"],
       obligations: [
-        { id: "obligation.thg.store_and_id", party: "thg" },
-        { id: "obligation.thg.route_by_destination", party: "thg" },
-        { id: "obligation.thg.hub_visibility", party: "thg" },
-        { id: "obligation.seller.stock_forecast", party: "seller" },
-        { id: "obligation.seller.prepaid_wallet", party: "seller" },
+        thg("obligation.thg.store_and_id"),
+        thg("obligation.thg.route_by_destination"),
+        thg("obligation.thg.hub_visibility"),
+        seller("obligation.seller.stock_forecast"),
+        seller("obligation.seller.prepaid_wallet"),
       ],
       tradeoff: { id: "tradeoff.storage_vs_per_order" },
-      nextStep: { kind: "consultation" },
+      nextStep: CONSULTATION,
     },
     evidenceIds: [
       "evidence.intake_operational_id",
