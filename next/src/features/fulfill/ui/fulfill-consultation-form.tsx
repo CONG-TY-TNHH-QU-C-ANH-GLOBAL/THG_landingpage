@@ -7,7 +7,7 @@
 // surface="fulfill-inline" to the real /leads endpoint — no fake community publishing, no
 // simulated submit, no unsupported fields. Unique field IDs (useId) so it stays isolated from a
 // separately mounted global dialog form.
-import { useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -48,6 +48,7 @@ export default function FulfillConsultationForm({
   // Fixed primary = fulfill; adjacent interests are optional secondaries (land-and-expand).
   const [secondary, setSecondary] = useState<LeadServiceKey[]>([]);
   const [status, setStatus] = useState<{ tone: "error" | "ok"; text: string } | null>(null);
+  const successRef = useRef<HTMLDivElement | null>(null);
   const adjacentServices = LEAD_SERVICE_KEYS.filter((s) => s !== "fulfill");
 
   const lead = useLeadSubmission({ lang, sourcePage: "/thg-fulfill" });
@@ -70,16 +71,22 @@ export default function FulfillConsultationForm({
     }
   }
 
+  // Runs only on the transition into the done state, so the panel is focused once rather than on
+  // every subsequent render.
+  useEffect(() => {
+    if (done) successRef.current?.focus();
+  }, [done]);
+
   if (done) {
     return (
-      /* The form unmounts on success, so without a live region the outcome is announced to nobody
-         and focus falls to the document body. A polite region states it without stealing focus,
-         which is the rule the planner's narrowing follows too. */
+      /* The submit button unmounts with the form, so focus would fall to the document body and a
+         keyboard user would be left nowhere. Focus moves onto the panel that replaced it, which is
+         also what announces the outcome — one mechanism, not a live region competing with it. */
       <div
-        className="rounded-[var(--radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-8 md:p-10 text-center"
+        ref={successRef}
+        tabIndex={-1}
+        className="rounded-[var(--radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-8 md:p-10 text-center outline-none"
         data-testid="fulfill-consult-success"
-        role="status"
-        aria-live="polite"
       >
         <CheckCircle2
           className="w-11 h-11 mx-auto mb-4"

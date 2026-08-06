@@ -181,6 +181,7 @@ const CHROME: Readonly<Record<string, LocalizedText>> = {
   ),
   "ui.confidence": tr("Mức tin cậy", "Confidence", "可信度"),
   "ui.identity": tr("Mã kế hoạch", "Plan reference", "方案编号"),
+  "ui.unverified": tr("Bản nháp — chờ vận hành duyệt", "Draft — pending operations review", "草案——待运营审核"),
   "ui.inferred": tr("suy ra", "inferred", "推断"),
   "ui.deferred": tr("Xác định khi tư vấn", "Resolved in consultation", "在咨询中确定"),
 

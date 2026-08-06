@@ -183,8 +183,13 @@
 
 /* The kind is part of the evidence, not a decoration on it: measured, published, committed and
    absent are four different claims and are labelled as four different claims. */
-.groundKind {
+.groundTerm {
   margin: 0;
+  color: var(--pv-ink);
+}
+
+.groundKind {
+  display: block;
   color: var(--pv-muted);
   font-family: var(--font-mono);
   font-size: var(--step-label);
@@ -244,4 +249,13 @@
   color: var(--pv-muted);
   font-family: var(--font-mono);
   font-size: var(--step-small);
+}
+
+/* Stated in words, not by colour: a drafted plan must read as drafted in a monochrome print-out. */
+.unverified {
+  display: inline-block;
+  margin-inline-start: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px dashed var(--pv-line);
+  border-radius: var(--radius-sm);
 }

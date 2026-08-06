@@ -72,12 +72,11 @@ export function selectPlan(input: SelectionInput): OperationalPlan | null {
   const subject: Subject = {
     situation: asked(input.situation),
     supplyModel: asked(input.supplyModel),
-    // Entailed, not asked: print-on-demand is make-to-order, so a custom seller holds no finished stock.
-    // Recording it as `inferred` lets an interface show the seller what was concluded on their behalf.
-    holdsStock:
-      input.supplyModel === "custom"
-        ? { value: false, provenance: "inferred" }
-        : { value: true, provenance: "asked" },
+    // Entailed, not asked, on BOTH paths: print-on-demand is make-to-order so a custom seller holds
+    // no finished stock, and a sourced seller's stock position follows from the same answer.
+    // Recording it as `asked` would present a conclusion as something the seller told us, which is
+    // the one thing provenance exists to prevent.
+    holdsStock: { value: input.supplyModel !== "custom", provenance: "inferred" },
     ...(input.destination ? { destination: asked(input.destination) } : {}),
     // Recorded rather than silently skipped: a downstream consumer should be able to see what this plan
     // deliberately does not know, and where it gets resolved.
@@ -91,6 +90,9 @@ export function selectPlan(input: SelectionInput): OperationalPlan | null {
       planId: template.planId,
       catalogueVersion: CATALOGUE_VERSION,
       producedAt: input.producedAt ?? null,
+      // Carried through rather than dropped: a renderer that cannot see this cannot tell a drafted
+      // plan from a signed-off one, and would present both as settled.
+      verified: template.verified,
     },
     subject,
     constraint: template.constraint,

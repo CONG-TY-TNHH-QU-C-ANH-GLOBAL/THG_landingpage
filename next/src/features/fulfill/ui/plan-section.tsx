@@ -79,12 +79,13 @@ function makeEvidenceResolver(
         : undefined; // → absent
     }
     if (!id.startsWith("evidence.")) return undefined;
-    return {
-      id,
-      kind: PUBLISHED.has(id) ? "published" : "committed",
-      value: labels(id),
-      source: "thg:published-content",
-    };
+    // A published ground must carry its value. If the content behind the id resolves to nothing the
+    // ground is absent, not an empty published fact.
+    const value = labels(id);
+    if (PUBLISHED.has(id)) {
+      return value ? { id, kind: "published", value, source: "thg:published-content" } : undefined;
+    }
+    return { id, kind: "committed", source: "thg:published-content" };
   };
 }
 

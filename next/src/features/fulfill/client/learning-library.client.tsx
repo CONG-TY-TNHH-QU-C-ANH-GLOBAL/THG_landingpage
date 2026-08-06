@@ -152,7 +152,7 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
             <li key={resource.id} className="type-body">
               <a
                 className={styles.linkQuiet}
-                href={`https://www.youtube-nocookie.com/watch?v=${resource.videoId}`}
+                href={`https://www.youtube.com/watch?v=${resource.videoId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

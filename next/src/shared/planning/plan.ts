@@ -144,14 +144,28 @@ export interface Course {
  */
 export type EvidenceKind = "measured" | "published" | "committed" | "absent";
 
-export interface Evidence {
-  id: string;
-  kind: EvidenceKind;
-  /** Present only for `measured` and `published`. Never synthesised to fill a slot. */
-  value?: string;
-  /** Where the claim comes from — a CMS field path, a published policy, or a computation. */
-  source: string;
-}
+/**
+ * A ground, discriminated by kind so the type system enforces the honesty rule the prose states.
+ *
+ * `measured` and `published` MUST carry a value: a fact without its figure is not a fact, and
+ * allowing one made it possible for `deriveConfidence` to count an empty ground as proof.
+ * `committed` and `absent` must NOT carry one: a commitment has no figure, and an absent ground
+ * has no value by definition.
+ */
+export type Evidence =
+  | {
+      id: string;
+      kind: "measured" | "published";
+      /** Never synthesised to fill a slot. */
+      value: string;
+      /** Where the claim comes from — a CMS field path, a published policy, or a computation. */
+      source: string;
+    }
+  | {
+      id: string;
+      kind: "committed" | "absent";
+      source: string;
+    };
 
 // ── 5 · EXPECTATION ──────────────────────────────────────────────────────────────────────────────────
 
@@ -183,6 +197,14 @@ export interface PlanIdentity {
   planId: string;
   catalogueVersion: string;
   producedAt: string | null;
+  /**
+   * Whether THG operations has confirmed this plan's business assertions.
+   *
+   * Carried onto the plan rather than left behind in the catalogue, because a consumer that cannot
+   * see it will present a drafted plan exactly like a signed-off one. Every surface that renders a
+   * plan is expected to say so when this is false — a gap is displayed, never filled.
+   */
+  verified: boolean;
 }
 
 // ── THE PLAN ─────────────────────────────────────────────────────────────────────────────────────────
@@ -226,7 +248,14 @@ export interface PlanTemplate {
  *           ground it cites is absent
  */
 export function deriveConfidence(subject: Subject, grounds: readonly Evidence[]): Confidence {
-  const known = [subject.situation, subject.supplyModel, subject.holdsStock];
+  // The destination joins the set when it is present: a plan built on an assumed destination is
+  // built on an assumption, whatever its grounds say.
+  const known = [
+    subject.situation,
+    subject.supplyModel,
+    subject.holdsStock,
+    ...(subject.destination ? [subject.destination] : []),
+  ];
   const anyAssumed = known.some((k) => k.provenance === "assumed");
   const hardGrounds = grounds.filter((g) => g.kind === "measured" || g.kind === "published").length;
   const allAbsent = grounds.length > 0 && grounds.every((g) => g.kind === "absent");

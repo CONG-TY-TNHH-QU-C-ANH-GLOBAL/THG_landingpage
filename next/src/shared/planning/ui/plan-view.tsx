@@ -17,8 +17,30 @@
 // as a labelled gap, and every ground states which kind of claim it is.
 import type { ReactNode } from "react";
 
-import type { OperationalPlan } from "../plan";
+import type { Evidence, OperationalPlan } from "../plan";
 import styles from "./plan-view.module.css";
+
+/**
+ * What a ground shows in its value slot.
+ *
+ * A switch rather than a chain of conditionals, so the discriminated union narrows and each kind's
+ * rendering is stated once: an absent ground shows a labelled gap, a commitment shows the
+ * undertaking in words, and a hard ground shows the figure it carries.
+ */
+function groundValue(
+  evidence: Evidence,
+  labels: (id: string) => string,
+  absentClassName: string,
+): ReactNode {
+  switch (evidence.kind) {
+    case "absent":
+      return <span className={absentClassName}>{labels("ui.no_data_yet")}</span>;
+    case "committed":
+      return labels(evidence.id);
+    default:
+      return evidence.value;
+  }
+}
 
 interface Props {
   plan: OperationalPlan;
@@ -108,15 +130,13 @@ export function PlanView({ plan, labels, action, as: Heading = "h3" }: Readonly<
         <dl className={styles.grounds}>
           {plan.grounds.map((evidence) => (
             <div key={evidence.id} className={styles.ground} data-kind={evidence.kind}>
-              <dt className={styles.groundKind}>{labels(`kind.${evidence.kind}`)}</dt>
+              {/* The term names WHICH fact this is; the kind says what sort of claim it is. Showing
+                  only the kind left a reader looking at "Published · $7.50" with no way to know
+                  whether that was a base cost, a lead time or something else entirely. */}
+              <dt className={`${styles.groundTerm} type-small`}>{labels(evidence.id)}</dt>
               <dd className={`${styles.groundValue} type-small`}>
-                {evidence.kind === "absent" ? (
-                  <span className={styles.absent}>
-                    {labels(evidence.id)} — {labels("ui.no_data_yet")}
-                  </span>
-                ) : (
-                  (evidence.value ?? labels(evidence.id))
-                )}
+                <span className={styles.groundKind}>{labels(`kind.${evidence.kind}`)}</span>
+                {groundValue(evidence, labels, styles.absent)}
               </dd>
             </div>
           ))}
@@ -144,6 +164,12 @@ export function PlanView({ plan, labels, action, as: Heading = "h3" }: Readonly<
       <div className={styles.foot}>
         <p className={styles.identity}>
           {labels("ui.identity")} {identity.planId} · {identity.catalogueVersion}
+          {/* A drafted plan says so. Operations has not confirmed these assertions, and presenting
+              them identically to a signed-off plan would be the fabrication the whole evidence
+              model exists to prevent. */}
+          {identity.verified ? null : (
+            <span className={styles.unverified}>{labels("ui.unverified")}</span>
+          )}
         </p>
         {action}
       </div>

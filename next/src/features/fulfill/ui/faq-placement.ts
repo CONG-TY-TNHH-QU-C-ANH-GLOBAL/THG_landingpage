@@ -40,8 +40,9 @@ export function pickFaq(
   faqs: readonly FulfillFaq[],
   slot: (typeof FAQ_SLOT)[keyof typeof FAQ_SLOT],
 ): FulfillFaq | undefined {
-  // The canonical set is numbered 1..7 and both content sources use those ids, so match on id
-  // first: an editor reordering the CMS list must not silently move the liability answer to the
-  // scope movement. Position is the fallback for a set that does not carry the canonical ids.
-  return faqs.find((faq) => faq.id === slot + 1) ?? faqs[slot];
+  // Matched on the canonical id, never on position. The CMS DTO guarantees only that an id is
+  // numeric, so an editor reordering the list would otherwise move the liability answer into the
+  // scope movement — silently, and in production. A set without the canonical id renders nothing
+  // at that point of doubt; the canonical index still carries every answer it does have.
+  return faqs.find((faq) => faq.id === slot + 1);
 }

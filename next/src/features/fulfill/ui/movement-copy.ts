@@ -127,10 +127,12 @@ const SOURCE: Readonly<Record<keyof MovementCopy, LocalizedText>> = {
     "When something goes wrong, this is what THG carries.",
     "出现问题时，这是 THG 承担的部分。",
   ),
+  // No count: the list is built from published content, and a CMS set missing a slot would leave
+  // the copy promising more commitments than the page shows.
   commitmentIntro: tr(
-    "Bốn cam kết dưới đây được công bố công khai và áp dụng cho mọi đơn hàng. Điều khoản đầy đủ nằm ở trang chính sách.",
-    "The four commitments below are published and apply to every order. The full terms live on the policy page.",
-    "以下四项承诺均已公开，适用于所有订单。完整条款见政策页面。",
+    "Những cam kết dưới đây được công bố công khai và áp dụng cho mọi đơn hàng. Điều khoản đầy đủ nằm ở trang chính sách.",
+    "The commitments below are published and apply to every order. The full terms live on the policy page.",
+    "以下承诺均已公开，适用于所有订单。完整条款见政策页面。",
   ),
   termCompensation: tr("Đền bù", "Compensation", "赔偿"),
   termPayment: tr("Thanh toán", "Payment rails", "支付渠道"),

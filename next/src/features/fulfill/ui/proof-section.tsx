@@ -37,8 +37,9 @@ export default function ProofSection({ copy, parity, movement }: Readonly<Props>
       />
 
       <div className={styles.evidenceGrid}>
-        {/* The only priority image on the route. The rest of the page's imagery is below the fold
-            and loads lazily, which keeps the preload budget at one. */}
+        {/* Lazy, deliberately. This is movement 06 and sits far below the fold; the LCP element on
+            this route is the qualification headline, which is text. Preloading a photograph nobody
+            has scrolled to would compete with the first screen's own resources. */}
         <figure className={styles.figure}>
           <div className={styles.figureFrame}>
             <Image
@@ -46,7 +47,6 @@ export default function ProofSection({ copy, parity, movement }: Readonly<Props>
               alt={movement.figureAlt}
               fill
               sizes="(max-width: 1024px) 100vw, 700px"
-              priority
             />
           </div>
           <figcaption className={styles.figureCaption}>{movement.figureLabel}</figcaption>

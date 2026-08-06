@@ -80,6 +80,8 @@ describe("the six invariants are present on every plan", () => {
       // 6 IDENTITY
       expect(plan.identity.planId).toBeTruthy();
       expect(plan.identity.catalogueVersion).toBeTruthy();
+      // Verification state survives selection, so a renderer can tell a draft from a signed-off plan.
+      expect(typeof plan.identity.verified).toBe("boolean");
     },
   );
 
@@ -180,7 +182,12 @@ describe("confidence is derived, not asserted", () => {
     holdsStock: { value: false, provenance: "inferred" },
     deferred: [],
   });
-  const ev = (kind: Evidence["kind"]): Evidence => ({ id: `e.${kind}`, kind, source: "test" });
+  // Built through the union: a measured or published ground carries its value by construction, so
+  // the fixture cannot express the "hard ground with nothing in it" the type now forbids.
+  const ev = (kind: Evidence["kind"]): Evidence =>
+    kind === "measured" || kind === "published"
+      ? { id: `e.${kind}`, kind, value: "v", source: "test" }
+      : { id: `e.${kind}`, kind, source: "test" };
 
   it("is high when the subject is known and at least one ground is hard", () => {
     expect(deriveConfidence(subject("asked"), [ev("committed"), ev("published")])).toBe("high");
