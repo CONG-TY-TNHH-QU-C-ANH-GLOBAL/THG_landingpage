@@ -7,7 +7,7 @@
 // surface="fulfill-inline" to the real /leads endpoint — no fake community publishing, no
 // simulated submit, no unsupported fields. Unique field IDs (useId) so it stays isolated from a
 // separately mounted global dialog form.
-import { useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -24,11 +24,19 @@ import {
   type LeadServiceKey,
 } from "@/shared/ui/lead-services";
 
+// P0 accessibility fix (Phase 0.2): the placeholder was `white/35` on a `#121214` card — ≈2.2:1,
+// while several fields use the placeholder as their only hint, so the form was hard to complete.
+// Labels were `white/45`. Both now clear AA against the raised navy surface. The field text is the
+// 16px body step rather than 14px, which also stops iOS zooming the viewport on focus.
 const FIELD =
-  "w-full min-h-[44px] rounded-xl px-4 py-3 text-sm text-white bg-white/[0.04] border border-white/12 " +
-  "placeholder:text-white/35 transition-colors focus-visible:outline-none focus-visible:ring-2 " +
-  "focus-visible:ring-[var(--fx-blue)] focus-visible:border-[var(--fx-blue)] aria-[invalid=true]:border-[var(--fx-orange)]";
-const FIELD_LABEL = "block font-mono text-[10px] uppercase tracking-wider text-white/45 mb-2";
+  "w-full min-h-[44px] rounded-[var(--radius-sm)] px-4 py-3 text-[length:var(--step-body)] text-white " +
+  "bg-white/[0.06] border border-white/[0.16] placeholder:text-white/[0.62] transition-colors " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 " +
+  "focus-visible:ring-offset-transparent focus-visible:ring-[var(--ui-accent-text)] " +
+  "focus-visible:border-[var(--ui-accent-text)] aria-[invalid=true]:border-[hsl(var(--destructive))]";
+const FIELD_LABEL =
+  "block font-mono text-[length:var(--step-label)] font-medium uppercase " +
+  "tracking-[0.08em] text-white/[0.78] mb-2";
 
 export default function FulfillConsultationForm({
   lang,
@@ -40,6 +48,7 @@ export default function FulfillConsultationForm({
   // Fixed primary = fulfill; adjacent interests are optional secondaries (land-and-expand).
   const [secondary, setSecondary] = useState<LeadServiceKey[]>([]);
   const [status, setStatus] = useState<{ tone: "error" | "ok"; text: string } | null>(null);
+  const successRef = useRef<HTMLDivElement | null>(null);
   const adjacentServices = LEAD_SERVICE_KEYS.filter((s) => s !== "fulfill");
 
   const lead = useLeadSubmission({ lang, sourcePage: "/thg-fulfill" });
@@ -62,12 +71,35 @@ export default function FulfillConsultationForm({
     }
   }
 
+  // Runs only on the transition into the done state, so the panel is focused once rather than on
+  // every subsequent render.
+  useEffect(() => {
+    if (done) successRef.current?.focus();
+  }, [done]);
+
   if (done) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-[#121214] p-8 md:p-10 text-center" data-testid="fulfill-consult-success">
-        <CheckCircle2 className="w-11 h-11 mx-auto mb-4" style={{ color: "var(--fx-green)" }} aria-hidden="true" />
-        <h3 className="text-white font-bold text-xl mb-2">{t("lead_form.success_title")}</h3>
-        <p className="text-sm max-w-[36ch] mx-auto" style={{ color: "#9ca3af" }}>
+      /* The submit button unmounts with the form, so focus would fall to the document body and a
+         keyboard user would be left nowhere. Focus moves onto the panel that replaced it, which is
+         also what announces the outcome — one mechanism, not a live region competing with it. */
+      <div
+        ref={successRef}
+        tabIndex={-1}
+        className="rounded-[var(--radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-8 md:p-10 text-center outline-none"
+        data-testid="fulfill-consult-success"
+      >
+        <CheckCircle2
+          className="w-11 h-11 mx-auto mb-4"
+          style={{ color: "var(--ui-accent-text)" }}
+          aria-hidden="true"
+        />
+        <h3 className="text-white font-semibold text-[length:var(--step-h3)] mb-2">
+          {t("lead_form.success_title")}
+        </h3>
+        <p
+          className="text-[length:var(--step-body)] leading-relaxed max-w-[36ch] mx-auto"
+          style={{ color: "var(--ui-muted)" }}
+        >
           {t("lead_form.success_desc_before")}
           <strong className="text-white">{form.email}</strong>
           {t("lead_form.success_desc_after")}
@@ -81,7 +113,7 @@ export default function FulfillConsultationForm({
       onSubmit={onSubmit}
       noValidate
       data-testid="fulfill-consult-form"
-      className="rounded-3xl border border-white/10 bg-[#121214] p-7 md:p-9 shadow-2xl"
+      className="rounded-[var(--radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-7 md:p-9 shadow-[var(--shadow-3)]"
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
         <div>
@@ -201,24 +233,41 @@ export default function FulfillConsultationForm({
         </div>
       )}
 
+      {/* The button keeps today's white fill (adopting the gold Primary rank is the Act-7 rebuild,
+          PR 3.12). What changes here is accessibility: a visible focus ring on the dark surface, a
+          real pressed state, and a 52px target. */}
       <button
         type="submit"
         disabled={pending}
-        className="btn-magnetic w-full bg-white text-[var(--fx-ink)] font-bold py-4 rounded-xl flex justify-center items-center gap-2 disabled:opacity-70"
+        className="w-full min-h-[52px] bg-[var(--ui-contrast-surface)] text-[var(--ui-contrast-ink)] font-bold py-4 rounded-[var(--radius)] flex justify-center items-center gap-2 transition-[background-color,transform] duration-200 hover:bg-white/90 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ui-surface)] disabled:opacity-70"
       >
         {pending && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
         {pending ? t("lead_form.submitting") : t("lead_form.submit")}
       </button>
 
+      {/* Was 10px with min-height 1em, so a submission error could render as one near-invisible
+          line and shift the layout. Now the 13.5px caption step with a reserved row. */}
       <p
-        className="text-center font-mono text-[10px] mt-4 min-h-[1em]"
+        className="text-center font-mono text-[length:var(--step-small)] mt-4 min-h-[1.5rem]"
         role="status"
         aria-live="polite"
-        style={{ color: status?.tone === "ok" ? "var(--fx-green)" : "var(--fx-orange)" }}
+        style={{
+          // The raw destructive hue is a mid red that fails on the navy panel; lifting it toward
+          // white keeps the error legible without inventing a second error colour.
+          color:
+            status?.tone === "ok"
+              ? "var(--ui-ink)"
+              : "color-mix(in oklch, hsl(var(--destructive)) 68%, white)",
+        }}
       >
         {status?.text ?? ""}
       </p>
-      <p className="text-[10px] text-center text-white/40 mt-2">{t("lead_form.consent")}</p>
+      <p
+        className="text-[length:var(--step-small)] text-center mt-2"
+        style={{ color: "var(--ui-muted)" }}
+      >
+        {t("lead_form.consent")}
+      </p>
     </form>
   );
 }

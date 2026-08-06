@@ -163,10 +163,13 @@ const SOURCE = {
     "Watch the detailed video guide on placing orders on the THG Ecount ERP system. Note: select the correct SBSL (Ship By Seller) / SBTT (Ship By TikTok) when choosing SKU.",
     "观看THG Ecount ERP系统下单的详细视频教程。注意：选择SKU时请正确选择SBSL（卖家发货）/ SBTT（TikTok发货）。",
   ),
+  // Phase 0.4: the leading 📋 was emoji-as-an-icon in a call to action, shipping in all three
+  // locales. The wording is otherwise untouched; the glyph is replaced by a monoline SVG at the
+  // render site.
   ecountSkuLink: tr(
-    "📋 Link SKU cho THG FULFILL",
-    "📋 Link SKU for THG FULFILL",
-    "📋 THG FULFILL SKU链接",
+    "Link SKU cho THG FULFILL",
+    "Link SKU for THG FULFILL",
+    "THG FULFILL SKU链接",
   ),
 
   hubEyebrow: tr("Hướng dẫn sử dụng hệ thống", "System Usage Guide", "系统使用指南"),

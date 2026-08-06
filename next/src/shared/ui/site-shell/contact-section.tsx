@@ -134,7 +134,7 @@ function DirectoryComposition({
             </div>
             {physicalCount > 0 && channels.length > 0 && (
               <div className="mt-8" data-testid="contact-channels">
-                <p className="text-[length:var(--step-label)] font-bold text-accent uppercase tracking-[var(--tracking-wide)] mb-1.5">
+                <p className="text-[length:var(--step-label)] font-bold text-gold-dark uppercase tracking-[var(--tracking-wide)] mb-1.5">
                   {t("contact.channels")}
                 </p>
                 <ChannelList channels={channels} />
@@ -192,7 +192,7 @@ function ChannelList({ channels }: Readonly<{ channels: readonly ContactRow[] }>
         return (
           <li key={item.id} className="flex items-center gap-3 py-2.5 border-b border-border">
             <Icon className="w-4 h-4 text-accent flex-shrink-0" aria-hidden="true" />
-            <span className="text-[length:var(--step-label)] font-bold text-accent uppercase tracking-[var(--tracking-wide)] w-24 flex-shrink-0 text-left">
+            <span className="text-[length:var(--step-label)] font-bold text-gold-dark uppercase tracking-[var(--tracking-wide)] w-24 flex-shrink-0 text-left">
               {item.label}
             </span>
             {href ? (
@@ -247,7 +247,7 @@ function ContactList({ locations, mapLabel }: Readonly<{ locations: readonly Con
               <Icon className="w-4 h-4 text-accent" aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <p className="text-[length:var(--step-label)] font-bold text-accent uppercase tracking-[var(--tracking-wide)] mb-1">
+              <p className="text-[length:var(--step-label)] font-bold text-gold-dark uppercase tracking-[var(--tracking-wide)] mb-1">
                 {item.label}
               </p>
               {externalHref && !mapHref ? (
