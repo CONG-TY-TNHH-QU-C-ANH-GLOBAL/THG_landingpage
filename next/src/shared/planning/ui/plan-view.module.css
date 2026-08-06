@@ -109,7 +109,7 @@
 /* The first capability is the one the plan is named for; the rest are adjacent services it routes
    into. Rank is carried by weight and border, never by colour alone. */
 .capability:first-child {
-  border-color: currentColor;
+  border-color: currentcolor;
   font-weight: 600;
 }
 

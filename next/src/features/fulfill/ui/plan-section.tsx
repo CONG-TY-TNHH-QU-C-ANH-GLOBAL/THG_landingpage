@@ -64,11 +64,15 @@ function makeEvidenceResolver(
   ]);
 
   return (id: string) => {
-    if (id === "evidence.basecost" || id === "evidence.storage_cost") {
+    if (id === "evidence.basecost") {
       return priced?.price
         ? { id, kind: "published", value: priced.price, source: "cms:catalog.price" }
         : undefined; // → absent
     }
+    // Storage cost is NOT the catalogue's base cost. Presenting a per-unit production price as a
+    // warehousing figure would publish a number THG has not stated, in the plan and in the
+    // consultation handoff both. It stays absent until a storage-cost field exists.
+    if (id === "evidence.storage_cost") return undefined;
     if (id === "evidence.lead_time") {
       return timed?.leadTime
         ? { id, kind: "published", value: timed.leadTime, source: "cms:catalog.lead_time" }

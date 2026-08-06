@@ -40,5 +40,8 @@ export function pickFaq(
   faqs: readonly FulfillFaq[],
   slot: (typeof FAQ_SLOT)[keyof typeof FAQ_SLOT],
 ): FulfillFaq | undefined {
-  return faqs[slot];
+  // The canonical set is numbered 1..7 and both content sources use those ids, so match on id
+  // first: an editor reordering the CMS list must not silently move the liability answer to the
+  // scope movement. Position is the fallback for a set that does not carry the canonical ids.
+  return faqs.find((faq) => faq.id === slot + 1) ?? faqs[slot];
 }

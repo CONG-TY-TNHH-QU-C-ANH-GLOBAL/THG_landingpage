@@ -72,9 +72,14 @@ export default function FulfillConsultationForm({
 
   if (done) {
     return (
+      /* The form unmounts on success, so without a live region the outcome is announced to nobody
+         and focus falls to the document body. A polite region states it without stealing focus,
+         which is the rule the planner's narrowing follows too. */
       <div
         className="rounded-[var(--radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-8 md:p-10 text-center"
         data-testid="fulfill-consult-success"
+        role="status"
+        aria-live="polite"
       >
         <CheckCircle2
           className="w-11 h-11 mx-auto mb-4"
@@ -227,7 +232,7 @@ export default function FulfillConsultationForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full min-h-[52px] bg-white text-[var(--ui-ink)] font-bold py-4 rounded-[var(--radius)] flex justify-center items-center gap-2 transition-[background-color,transform] duration-200 hover:bg-white/90 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ui-surface)] disabled:opacity-70"
+        className="w-full min-h-[52px] bg-[var(--ui-contrast-surface)] text-[var(--ui-contrast-ink)] font-bold py-4 rounded-[var(--radius)] flex justify-center items-center gap-2 transition-[background-color,transform] duration-200 hover:bg-white/90 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ui-surface)] disabled:opacity-70"
       >
         {pending && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
         {pending ? t("lead_form.submitting") : t("lead_form.submit")}
@@ -240,7 +245,12 @@ export default function FulfillConsultationForm({
         role="status"
         aria-live="polite"
         style={{
-          color: status?.tone === "ok" ? "var(--ui-ink)" : "hsl(var(--destructive))",
+          // The raw destructive hue is a mid red that fails on the navy panel; lifting it toward
+          // white keeps the error legible without inventing a second error colour.
+          color:
+            status?.tone === "ok"
+              ? "var(--ui-ink)"
+              : "color-mix(in oklch, hsl(var(--destructive)) 68%, white)",
         }}
       >
         {status?.text ?? ""}

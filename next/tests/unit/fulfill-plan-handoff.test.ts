@@ -10,6 +10,7 @@
 import { describe, it, expect } from "vitest";
 
 import { SITUATIONS, SUPPLY_MODELS } from "@/shared/planning/plan";
+import { CATALOGUE_VERSION } from "@/shared/planning/catalogue";
 import { selectPlan, summarizeForHandoff } from "@/shared/planning/select";
 import { getFulfillContent } from "@/features/fulfill";
 import { getFulfillParityContent } from "@/features/fulfill/parity-content";
@@ -41,7 +42,8 @@ describe.each(SUPPORTED_LOCALES)("Operational Plan handoff — %s", (lang) => {
   it("carries the plan id and catalogue version, so a lead can be traced back", () => {
     for (const { planId, text } of summaries(lang)) {
       expect(text).toContain(planId);
-      expect(text).toContain("0.1.0-draft");
+      // Read from the catalogue, so bumping the version does not fail an unrelated test.
+      expect(text).toContain(CATALOGUE_VERSION);
     }
   });
 });

@@ -57,7 +57,8 @@ export default function LibrarySection({ lang, movement }: Readonly<Props>) {
         aside={
           // A count, rendered beside the things it counts. Never a standalone statistic.
           <p className={`${styles.muted} type-label`}>
-            {resources.length} · {labels.overview} · {labels.walkthrough} · {labels.clip}
+            {resources.length} · {labels.intro} · {labels.overview} · {labels.walkthrough} ·{" "}
+            {labels.clip}
           </p>
         }
       />

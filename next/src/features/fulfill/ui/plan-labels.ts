@@ -184,6 +184,10 @@ const CHROME: Readonly<Record<string, LocalizedText>> = {
   "ui.inferred": tr("suy ra", "inferred", "推断"),
   "ui.deferred": tr("Xác định khi tư vấn", "Resolved in consultation", "在咨询中确定"),
 
+  // Storage cost has no CMS field yet, so it always renders as a labelled gap — under its own
+  // name, because labelling it "basecost" would name the wrong figure.
+  "evidence.storage_cost": tr("Chi phí lưu kho", "Storage cost", "仓储成本"),
+
   "field.capital": tr("Vốn", "Capital", "资金"),
   "field.monthlyVolume": tr("Sản lượng/tháng", "Monthly volume", "月出货量"),
 
@@ -249,7 +253,6 @@ export function buildPlanLabels(
     // Absent by design — the CMS fields exist and are empty. The renderer shows a labelled gap.
     "evidence.basecost": parity.basecostLabel,
     "evidence.lead_time": parity.leadTimeLabel,
-    "evidence.storage_cost": parity.basecostLabel,
   };
 
   // Resolution order: content THG already publishes, then the brand marks that are never
@@ -258,8 +261,10 @@ export function buildPlanLabels(
   const LOCALIZED = [AUTHORED, PLAN_VOCABULARY, HANDOFF_LABELS, CHROME] as const;
 
   return (id: string) => {
-    const derived = DERIVED[id] ?? CAPABILITY_NAMES[id];
-    if (derived !== undefined) return derived;
+    // An empty derived value is a content gap, not a label: falling through to MISSING keeps the
+    // gap visible instead of rendering nothing where a claim should be.
+    const derived = DERIVED[id] || CAPABILITY_NAMES[id];
+    if (derived) return derived;
 
     for (const table of LOCALIZED) {
       const text = table[id];

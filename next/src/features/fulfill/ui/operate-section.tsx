@@ -37,6 +37,8 @@ interface Props {
 export default function OperateSection({ parity, movement, faqs }: Readonly<Props>) {
   const placement = pickFaq(faqs, FAQ_SLOT.orderPlacement);
   const notification = pickFaq(faqs, FAQ_SLOT.orderNotification);
+  // By id, not by index: the Hub chapters are content and an editor may reorder them.
+  const orders = parity.hubSections.find((section) => section.id === "orders");
 
   return (
     <Movement id="handbook">
@@ -89,9 +91,7 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
           <li className={styles.step}>
             <div>
               <h4 className="type-h4">{parity.ecountTitle}</h4>
-              <p className={`${styles.muted} ${styles.spaceTopTight} type-body`}>
-                {parity.hubSections[1]?.intro}
-              </p>
+              <p className={`${styles.muted} ${styles.spaceTopTight} type-body`}>{orders?.intro}</p>
             </div>
           </li>
         </ol>

@@ -46,7 +46,12 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
   const [playing, setPlaying] = useState(false);
   const baseId = useId();
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const playerRef = useRef<HTMLDivElement | null>(null);
   const current = resources[active];
+
+  // The resource set is content. If it ever arrives empty the section renders nothing rather than
+  // throwing on `resources[0]` and taking the page down with it.
+  if (!current) return null;
 
   function select(index: number) {
     setActive(index);
@@ -61,9 +66,16 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
     btnRefs.current[target]?.focus();
   }
 
+  function play() {
+    setPlaying(true);
+    // Activating the facade removes it, so focus would fall to the document body and a keyboard
+    // user would lose their place entirely. Move it onto the player that replaced it.
+    requestAnimationFrame(() => playerRef.current?.focus());
+  }
+
   return (
     <div className={styles.libraryGrid}>
-      <div className={styles.player}>
+      <div className={styles.player} ref={playerRef} tabIndex={-1}>
         {playing ? (
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${current.videoId}?autoplay=1`}
@@ -74,7 +86,7 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
         ) : (
           <button
             type="button"
-            onClick={() => setPlaying(true)}
+            onClick={play}
             aria-label={`${playLabel}: ${current.title}`}
             className={styles.facade}
           >

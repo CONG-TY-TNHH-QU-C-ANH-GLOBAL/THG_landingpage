@@ -57,8 +57,10 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
 
       <ul className={styles.catalog}>
         {fromCms
-          ? content.catalog.map((item) => (
-              <li key={item.name} className={styles.product}>
+          ? content.catalog.map((item, i) => (
+              // Keyed by position: two catalogue rows may legitimately share a name, and a
+              // duplicate React key silently drops one of them.
+              <li key={`cms-${i}`} className={styles.product}>
                 {item.image ? (
                   <div className={styles.productFigure}>
                     <Image
@@ -92,8 +94,8 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
                 </div>
               </li>
             ))
-          : copy.catalogFallback.map((item) => (
-              <li key={item.name} className={styles.product}>
+          : copy.catalogFallback.map((item, i) => (
+              <li key={`local-${i}`} className={styles.product}>
                 <div className={styles.productFigure}>
                   <Image
                     src={item.image}
@@ -115,6 +117,10 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
                       value=""
                       absentLabel={movement.notPublished}
                     />
+                    {/* The same three rows as the CMS branch. Dropping one here would make the
+                        fallback look like a product with fewer unknowns rather than the same
+                        product with none of them published. */}
+                    <Fact term={movement.originLabel} value="" absentLabel={movement.notPublished} />
                   </dl>
                 </div>
               </li>

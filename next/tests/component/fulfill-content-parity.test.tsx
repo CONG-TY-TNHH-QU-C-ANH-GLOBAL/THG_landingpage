@@ -16,6 +16,7 @@
 // renders the localized fallbacks (hero subtitle, catalog products, FAQ empty state), a populated
 // read renders the CMS branch (catalog intro, basecost/lead-time labels, real answers). Parity is
 // asserted against the UNION of both, which is exactly the set of strings the route can ever show.
+import type { ReactElement } from "react";
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, cleanup, fireEvent } from "@testing-library/react";
 
@@ -96,13 +97,13 @@ function snapshotText(container: HTMLElement): string {
 }
 
 /**
- * Everything the page can show, including content behind a disclosure.
+ * Everything the page can show.
  *
- * The FAQ accordion is `type="single"`, and Radix UNMOUNTS a collapsed panel — so the seven answers
- * are genuinely absent from the resting DOM (pre-existing behaviour, identical on `main`; the
- * FAQPage JSON-LD is what carries them for crawlers). "Parity" therefore means REACHABLE, not
- * simultaneously visible: expand each disclosure in turn and accumulate. This also means the test
- * fails if a redesign ever makes an answer unreachable, which is the thing that would actually hurt.
+ * The seven answers are no longer behind a disclosure — the index renders them unfolded — but the
+ * exclusive-selection groups (the planner's two questions, the library's resource list) still show
+ * a different panel per selection. "Parity" therefore means REACHABLE, not simultaneously visible:
+ * visit every control in turn and accumulate. The suite fails if a redesign ever makes a string
+ * unreachable, which is the thing that would actually hurt.
  */
 function reachableVocabulary(container: HTMLElement): string {
   const parts = [snapshotText(container)];
@@ -167,50 +168,48 @@ function populatedCms(): FulfillContent {
   };
 }
 
-/** The whole composed page, in the order page.tsx composes it. */
+/**
+ * The whole composed page.
+ *
+ * Every movement is handed the same bag of resolved content and takes the slice it needs, so this
+ * lists the movements rather than restating each one's prop signature. That keeps the suite from
+ * being a second, drifting copy of `page.tsx`: the thing under test here is that no string is lost
+ * when movements are reordered or merged, not which props each one happens to accept today.
+ */
 function renderPage(lang: Locale, cms: FulfillContent, faqsMode: "empty" | "fallback") {
-  const copy = getFulfillContent(lang);
   const parity = getFulfillParityContent(lang);
-  const movement = getMovementCopy(lang);
-  const marketingCopy = copyForLocale(lang);
-  const faqs = faqsMode === "fallback" ? parity.faqFallback : [];
+  const props = {
+    lang,
+    copy: getFulfillContent(lang),
+    parity,
+    movement: getMovementCopy(lang),
+    marketingCopy: copyForLocale(lang),
+    content: cms,
+    faqs: faqsMode === "fallback" ? parity.faqFallback : [],
+  };
 
-  // Mirrors the eleven movements in page.tsx. When the composition changes, change it here too —
-  // the point of this suite is that reordering and merging movements never costs a string.
+  // A component that reads a subset of the bag is assignable to one that takes the whole bag, so
+  // this stays fully typed: adding a required prop to any movement fails the build here.
+  const MOVEMENTS: readonly ((p: typeof props) => ReactElement)[] = [
+    QualifySection,
+    RecogniseSection,
+    PlanSection,
+    ProcessSection,
+    ScopeSection,
+    ProofSection,
+    LibrarySection,
+    CommitmentSection,
+    OperateSection,
+    EcosystemSection,
+    IndexSection,
+    ActSection,
+  ];
+
   return render(
     <main>
-      <QualifySection copy={copy} content={cms} movement={movement} faqs={faqs} />
-      <RecogniseSection copy={copy} />
-      <PlanSection
-        lang={lang}
-        marketingCopy={marketingCopy}
-        copy={copy}
-        parity={parity}
-        content={cms}
-        movement={movement}
-      />
-      <ProcessSection copy={copy} parity={parity} movement={movement} />
-      <ScopeSection content={cms} copy={copy} parity={parity} movement={movement} faqs={faqs} />
-      <ProofSection copy={copy} parity={parity} movement={movement} />
-      <LibrarySection lang={lang} movement={movement} />
-      <CommitmentSection lang={lang} parity={parity} movement={movement} faqs={faqs} />
-      <OperateSection parity={parity} movement={movement} faqs={faqs} />
-      <EcosystemSection
-        lang={lang}
-        marketingCopy={marketingCopy}
-        copy={copy}
-        parity={parity}
-        movement={movement}
-      />
-      <IndexSection lang={lang} copy={copy} movement={movement} faqs={faqs} />
-      <ActSection
-        lang={lang}
-        marketingCopy={marketingCopy}
-        copy={copy}
-        parity={parity}
-        content={cms}
-        movement={movement}
-      />
+      {MOVEMENTS.map((Movement, i) => (
+        <Movement key={i} {...props} />
+      ))}
     </main>,
   );
 }

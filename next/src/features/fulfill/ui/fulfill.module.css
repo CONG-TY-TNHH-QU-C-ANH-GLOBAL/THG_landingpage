@@ -42,6 +42,13 @@
   --ui-line: var(--t0-line);
   --ui-line-strong: color-mix(in oklch, var(--t0-ink) 20%, transparent);
   --ui-on-accent: #fff;
+
+  /* A light fill and its ink, for an element that must stay light on ANY surface — the submit
+     button on the inverted consultation panel is the case. Deliberately NOT reassigned by
+     `.inverted`: that is what makes them a contrast pair rather than a second theme. */
+  --ui-contrast-surface: var(--t0-surface);
+  --ui-contrast-ink: var(--t0-ink);
+
   --radius-full: 9999px;
 
   /* ── Rhythm. Section padding is a token so no section decides its own vertical space. ─────── */
@@ -109,7 +116,9 @@
 .inverted {
   --ui-canvas: var(--t0-ink);
   --ui-surface: var(--t0-ink-raised);
-  --ui-sunk: var(--t0-ink-raised);
+  /* Recessed rather than raised — collapsing it onto the raised value would leave the inverted
+     surface with one depth where the light one has two. */
+  --ui-sunk: color-mix(in oklch, var(--t0-ink) 88%, black);
   --ui-ink: rgb(255 255 255 / 0.88);
   --ui-muted: rgb(255 255 255 / 0.7);
   --ui-accent-text: var(--t0-accent-lift);
@@ -207,10 +216,10 @@
    these are never garbage-collected. */
 .anchorAlias {
   display: block;
-  position: relative;
-  top: -6rem;
   height: 0;
-  visibility: hidden;
+  /* Same technique as `.section`: clear the floating header by reserving scroll margin, rather
+     than by offsetting the element and leaving its box in the wrong place. */
+  scroll-margin-top: 6rem;
 }
 
 /* ── Type helpers bound to the route's contract ───────────────────────────────────────────── */
@@ -286,7 +295,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .linkQuiet:hover {
-    text-decoration-color: currentColor;
+    text-decoration-color: currentcolor;
   }
 }
 
@@ -516,7 +525,7 @@
   content: "";
   width: 0.5rem;
   height: 1px;
-  background: currentColor;
+  background: currentcolor;
   flex: none;
 }
 
@@ -753,6 +762,12 @@
 
 .facade img {
   object-fit: cover;
+}
+
+/* `.player` clips its overflow and the facade fills it exactly, so the shared outward-offset ring
+   at the end of this file would be clipped away entirely. Draw this one inside. */
+.facade:focus-visible {
+  outline-offset: -4px;
 }
 
 .facadeScrim {
@@ -1192,10 +1207,11 @@
 
 /* ── Focus. Never removed, and legible on both surfaces. ──────────────────────────────────── */
 
+/* The ring only. Rounding is the component's business: forcing a radius here reshaped controls
+   that had chosen a different one. */
 .root :focus-visible {
   outline: 2px solid var(--ui-accent);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
 }
 
 .inverted :focus-visible {

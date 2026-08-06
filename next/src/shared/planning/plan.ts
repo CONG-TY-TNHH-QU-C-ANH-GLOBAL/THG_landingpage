@@ -222,7 +222,8 @@ export interface PlanTemplate {
  *
  *   high    the subject was asked or measured throughout, AND at least one ground is measured/published
  *   medium  the subject is complete, but every ground is only a commitment
- *   low     any part of the subject is assumed, or every ground is absent
+ *   low     any part of the subject is assumed, or the plan cites no grounds at all, or every
+ *           ground it cites is absent
  */
 export function deriveConfidence(subject: Subject, grounds: readonly Evidence[]): Confidence {
   const known = [subject.situation, subject.supplyModel, subject.holdsStock];

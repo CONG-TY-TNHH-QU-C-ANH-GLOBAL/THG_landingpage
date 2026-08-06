@@ -21,7 +21,7 @@
 // Labels arrive as a plain record, not a resolver function: this is a client boundary, and a function
 // cannot cross it. The ids read below are the contract; the server resolves them and passes strings,
 // so the label system — and every locale in it — stays server-side.
-import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { rovingIndex } from "@/shared/ui/roving";
 import { SITUATIONS, SUPPLY_MODELS, type SituationId, type SupplyModel } from "../plan";
@@ -51,15 +51,18 @@ function ChoiceGroup<T extends string>({
   prefix: string;
 }>) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
+  // Generated rather than derived from `prefix`, so two planners on one page cannot label each
+  // other's groups.
+  const legendId = useId();
   // Before anything is chosen the first control is the tab stop, so the group is always reachable.
   const activeIndex = value ? options.indexOf(value) : 0;
 
   return (
     <div className={styles.group}>
-      <p className={`${styles.legend} type-label`} id={`${prefix}-legend`}>
+      <p className={`${styles.legend} type-label`} id={legendId}>
         {legend}
       </p>
-      <div role="radiogroup" aria-labelledby={`${prefix}-legend`} className={styles.options}>
+      <div role="radiogroup" aria-labelledby={legendId} className={styles.options}>
         {options.map((option, i) => {
           const selected = option === value;
           return (

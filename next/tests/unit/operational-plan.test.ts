@@ -16,6 +16,11 @@ import { selectPlan, summarizeForHandoff } from "@/shared/planning/select";
 
 const subjectOf = (plan: NonNullable<ReturnType<typeof selectPlan>>) => plan.subject;
 
+// Anchored lists rather than loose regexes: an unanchored /low|medium|high/ also matches
+// "unknown-low", so it would not catch a value the domain never meant to produce.
+const CONSTRAINT_KINDS = ["failing-status-quo", "absent-operation", "scaling-limit"];
+const CONFIDENCE_LEVELS = ["low", "medium", "high"];
+
 describe("catalogue coverage", () => {
   it("has a plan for every situation × supply model — no combination falls through", () => {
     for (const situation of SITUATIONS) {
@@ -58,10 +63,10 @@ describe("the six invariants are present on every plan", () => {
 
       // 1 SUBJECT — with provenance on every known field.
       expect(plan.subject.situation.provenance).toBe("asked");
-      expect(plan.subject.holdsStock.provenance).toMatch(/asked|inferred/);
+      expect(["asked", "inferred"]).toContain(plan.subject.holdsStock.provenance);
       // 2 CONSTRAINT — invariant. A plan without one is a preference, not a plan.
       expect(plan.constraint.id).toBeTruthy();
-      expect(plan.constraint.kind).toMatch(/failing-status-quo|absent-operation|scaling-limit/);
+      expect(CONSTRAINT_KINDS).toContain(plan.constraint.kind);
       // 3 COURSE — capabilities, obligations on BOTH sides, a stated trade-off, a next step.
       expect(plan.course.capabilities.length).toBeGreaterThan(0);
       expect(plan.course.obligations.some((o) => o.party === "thg")).toBe(true);
@@ -71,7 +76,7 @@ describe("the six invariants are present on every plan", () => {
       // 4 GROUNDS
       expect(plan.grounds.length).toBeGreaterThan(0);
       // 5 EXPECTATION
-      expect(plan.expectation.confidence).toMatch(/low|medium|high/);
+      expect(CONFIDENCE_LEVELS).toContain(plan.expectation.confidence);
       // 6 IDENTITY
       expect(plan.identity.planId).toBeTruthy();
       expect(plan.identity.catalogueVersion).toBeTruthy();
