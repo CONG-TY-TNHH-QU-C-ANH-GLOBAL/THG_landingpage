@@ -41,10 +41,49 @@ function Fact({
   );
 }
 
+/** One product row, from whichever source supplied it. Normalising first means the two sources
+ *  render through one path: a fallback product is the same product with nothing published, not a
+ *  product with fewer fields, and neither branch can drift from the other. */
+interface ProductRow {
+  key: string;
+  name: string;
+  image: string;
+  alt: string;
+  price: string;
+  leadTime: string;
+  origin: string;
+  /** CMS media is remote and not yet covered by an image-optimizer allowlist. */
+  remote: boolean;
+}
+
 export default function ScopeSection({ content, copy, parity, movement, faqs }: Readonly<Props>) {
   const templates = pickFaq(faqs, FAQ_SLOT.templates);
   const limit = pickFaq(faqs, FAQ_SLOT.sourcingLimit);
   const fromCms = content.catalog.length > 0;
+
+  // Keyed by asset path: it is the one field that identifies a product across a re-render, and two
+  // catalogue rows may legitimately share a name.
+  const products: readonly ProductRow[] = fromCms
+    ? content.catalog.map((item) => ({
+        key: item.image || item.name,
+        name: item.name,
+        image: item.image,
+        alt: "",
+        price: item.price,
+        leadTime: item.leadTime,
+        origin: item.origin,
+        remote: true,
+      }))
+    : copy.catalogFallback.map((item) => ({
+        key: item.image,
+        name: item.name,
+        image: item.image,
+        alt: item.alt,
+        price: "",
+        leadTime: "",
+        origin: "",
+        remote: false,
+      }));
 
   return (
     <Movement id="catalog" tone="surface">
@@ -56,75 +95,42 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
       />
 
       <ul className={styles.catalog}>
-        {fromCms
-          ? content.catalog.map((item, i) => (
-              // Keyed by position: two catalogue rows may legitimately share a name, and a
-              // duplicate React key silently drops one of them.
-              <li key={`cms-${i}`} className={styles.product}>
-                {item.image ? (
-                  <div className={styles.productFigure}>
-                    <Image
-                      src={item.image}
-                      alt=""
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
-                      unoptimized
-                    />
-                  </div>
-                ) : null}
-                <div className={styles.productBody}>
-                  <h3 className={`${styles.productName} type-h4`}>{item.name}</h3>
-                  <dl className={styles.productFacts}>
-                    <Fact
-                      term={parity.basecostLabel}
-                      value={item.price}
-                      absentLabel={movement.notPublished}
-                    />
-                    <Fact
-                      term={parity.leadTimeLabel}
-                      value={item.leadTime}
-                      absentLabel={movement.notPublished}
-                    />
-                    <Fact
-                      term={movement.originLabel}
-                      value={item.origin}
-                      absentLabel={movement.notPublished}
-                    />
-                  </dl>
-                </div>
-              </li>
-            ))
-          : copy.catalogFallback.map((item, i) => (
-              <li key={`local-${i}`} className={styles.product}>
-                <div className={styles.productFigure}>
-                  <Image
-                    src={item.image}
-                    alt={item.alt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
-                  />
-                </div>
-                <div className={styles.productBody}>
-                  <h3 className={`${styles.productName} type-h4`}>{item.name}</h3>
-                  <dl className={styles.productFacts}>
-                    <Fact
-                      term={parity.basecostLabel}
-                      value=""
-                      absentLabel={movement.notPublished}
-                    />
-                    <Fact
-                      term={parity.leadTimeLabel}
-                      value=""
-                      absentLabel={movement.notPublished}
-                    />
-                    {/* The same three rows as the CMS branch. Dropping one here would make the
-                        fallback look like a product with fewer unknowns rather than the same
-                        product with none of them published. */}
-                    <Fact term={movement.originLabel} value="" absentLabel={movement.notPublished} />
-                  </dl>
-                </div>
-              </li>
-            ))}
+        {products.map((item) => (
+          <li key={item.key} className={styles.product}>
+            {item.image ? (
+              <div className={styles.productFigure}>
+                <Image
+                  src={item.image}
+                  alt={item.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                  unoptimized={item.remote}
+                />
+              </div>
+            ) : null}
+            <div className={styles.productBody}>
+              <h3 className={`${styles.productName} type-h4`}>{item.name}</h3>
+              {/* Three rows always. A missing figure is a labelled gap, never an omitted row. */}
+              <dl className={styles.productFacts}>
+                <Fact
+                  term={parity.basecostLabel}
+                  value={item.price}
+                  absentLabel={movement.notPublished}
+                />
+                <Fact
+                  term={parity.leadTimeLabel}
+                  value={item.leadTime}
+                  absentLabel={movement.notPublished}
+                />
+                <Fact
+                  term={movement.originLabel}
+                  value={item.origin}
+                  absentLabel={movement.notPublished}
+                />
+              </dl>
+            </div>
+          </li>
+        ))}
       </ul>
 
       {!fromCms ? (
