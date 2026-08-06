@@ -3,151 +3,261 @@
 // The domain references everything by id and holds no strings, so this is where a plan becomes
 // readable. It lives in the feature rather than in `shared/planning` for a boundary reason:
 // resolution needs the feature's own copy trees, and `shared` may not import `features`. A future
-// service builds its own resolver from its own content and passes it to the same renderer.
+// service builds its own tables from its own content and passes the resolver to the same renderer.
 //
 // ─────────────────────────────────────────────────────────────────────────────────────────────────
-// DERIVED FIRST, AUTHORED ONLY WHERE NECESSARY.
+// ONE TABLE PER REGISTRY, EXHAUSTIVE BY TYPE.
 //
-// Most ids resolve to copy THG has already published — the journey steps, the capability
-// descriptions, the Hub handbook chapters, the FAQ answers. Deriving rather than re-authoring means:
-// no new business claim, three locales for free, and the label follows the source if the CMS
-// overlays it.
+// Each table is `satisfies Record<Name, LabelSource>` over the registry in `shared/planning/ids.ts`.
+// That is the point of the whole file: adding an id to the domain and forgetting to label it is a
+// BUILD FAILURE, not a placeholder discovered in production. Before this, the ids existed twice —
+// once in the catalogue, once here — with nothing holding the two lists together.
 //
-// `AUTHORED` below is the complete list of strings that could NOT be derived — 12 ids, every one
-// flagged for review. The five trade-offs are the commercially sensitive ones: each states only a
-// STRUCTURAL choice (make-to-order vs batch, prepaid vs invoiced, storage vs per-order) and
-// deliberately asserts no price relationship, because THG publishes no pricing.
+// A label is one of two things, and the table says which:
 //
-// ─────────────────────────────────────────────────────────────────────────────────────────────────
-// MODELLED BY ID, NOT BY LOCALE.
+//   derived   the label IS content THG has already published, read from a copy tree. No new
+//             business claim, three locales for free, and the label follows the source if a CMS
+//             service-block overlays it.
+//   authored  no published source exists. REVIEW REQUIRED — every one of these is an assertion
+//             about how THG operates that nobody has confirmed.
 //
-// Each id is declared once with `tr(vi, en, zh)` rather than in three parallel per-locale objects.
-// Three objects sharing a key set share a structure: every id has to be added three times, a missed
-// one is a silent English leak on a Vietnamese page, and the repeated structure is what a
-// duplication gate measures regardless of the copy differing.
-import { tr, localize, type Locale, type LocalizedText } from "@/shared/i18n";
+// Making that distinction DATA rather than "which object it happened to be declared in" is what
+// lets a reviewer enumerate the unverified claims (`AUTHORED_LABEL_IDS`) instead of grepping for a
+// comment, and what would let a surface mark them.
+import { localize, tr, type Locale, type LocalizedText } from "@/shared/i18n";
+import {
+  CONSTRAINTS,
+  EVIDENCE,
+  SELLER_OBLIGATIONS,
+  THG_OBLIGATIONS,
+  TRADEOFFS,
+  constraintId,
+  evidenceId,
+  tradeoffId,
+  type ConstraintName,
+  type EvidenceName,
+  type SellerObligationName,
+  type ThgObligationName,
+  type TradeoffName,
+} from "@/shared/planning/ids";
+import { CAPABILITIES, SITUATIONS, SUPPLY_MODELS } from "@/shared/planning/plan";
+import type {
+  CapabilityId,
+  Confidence,
+  EvidenceKind,
+  SituationId,
+  SupplyModel,
+} from "@/shared/planning/plan";
 import type { FulfillCopy } from "../localized-content";
 import type { FulfillParityCopy } from "../parity-content";
 
 /** Rendered where an id has no label at all — the same honesty rule the `absent` evidence kind
- *  follows: a gap is visible, never silent. Reaching this in production is a content bug. */
+ *  follows: a gap is visible, never silent. The exhaustive tables below make it unreachable for a
+ *  registry id; it remains for an unknown id arriving from outside the domain. */
 const MISSING = "—";
 
-/**
- * Strings with no existing source in THG's content.
- *
- * REVIEW REQUIRED. Seller obligations describe work the seller must do; the trade-offs describe what
- * they accept. Both are assertions about how THG operates and neither is confirmed.
- */
-const AUTHORED: Readonly<Record<string, LocalizedText>> = {
-  // Constraints for sellers who have no operation yet — no existing copy describes this state.
-  "constraint.no_operation_yet": tr(
+/** The content a derived label reads from. */
+interface LabelContent {
+  copy: FulfillCopy;
+  parity: FulfillParityCopy;
+}
+
+type LabelSource =
+  | { readonly kind: "derived"; readonly read: (c: LabelContent) => string }
+  | { readonly kind: "authored"; readonly text: LocalizedText };
+
+/** The label is copy THG already publishes. */
+const derived = (read: (c: LabelContent) => string): LabelSource => ({ kind: "derived", read });
+
+/** No published source exists. Every use of this is an unconfirmed assertion awaiting review. */
+const authored = (vi: string, en: string, zh: string): LabelSource => ({
+  kind: "authored",
+  text: tr(vi, en, zh),
+});
+
+/** A Hub chapter by id rather than by position — the chapters are content and may be reordered. */
+function hubSection(c: LabelContent, id: string): string {
+  return c.parity.hubSections.find((section) => section.id === id)?.intro ?? MISSING;
+}
+
+/** A canonical answer by its published position in the seven. */
+function answer(c: LabelContent, index: number): string {
+  return c.parity.faqFallback[index]?.answer ?? MISSING;
+}
+
+// ── Constraints ─────────────────────────────────────────────────────────────────────────────────
+
+const CONSTRAINT_LABELS = {
+  // Verbatim from the seller-challenge copy: the constraint a plan names is a pain THG has already
+  // published, not a second description of it.
+  transit_cancellations: derived((c) => c.copy.pains[0].description),
+  order_management_errors: derived((c) => c.copy.pains[2].description),
+  inventory_control: derived((c) => c.copy.pains[3].description),
+  // No existing copy describes the state of having no operation at all.
+  no_operation_yet: authored(
     "Chưa có luồng vận hành nào để bắt đầu bán ở Mỹ.",
     "There is no fulfillment operation in place to start selling into the US.",
     "尚无可用于开始在美国销售的履约流程。",
   ),
-  "constraint.no_supply_chain": tr(
+  no_supply_chain: authored(
     "Chưa có nguồn hàng và chưa có luồng xuất đơn.",
     "There is no supply source and no order-dispatch flow in place.",
     "尚无供货来源，也无出单流程。",
   ),
+} as const satisfies Record<ConstraintName, LabelSource>;
 
-  // The one THG obligation with no published source: production geography is published, but
-  // US-domestic dispatch as an undertaking is not stated anywhere in THG's own content.
-  "obligation.thg.us_domestic_fulfillment": tr(
+// ── Obligations ─────────────────────────────────────────────────────────────────────────────────
+
+const THG_OBLIGATION_LABELS = {
+  print_on_demand: derived((c) => c.copy.steps[1].description),
+  item_level_qc: derived((c) => c.copy.steps[2].description),
+  us_standard_pack: derived((c) => c.copy.steps[3].description),
+  route_by_destination: derived((c) => c.copy.capabilities.network.description),
+  hub_visibility: derived((c) => c.copy.capabilities.hub.description),
+  store_and_id: derived((c) => c.copy.capabilities.intake.description),
+  bulk_intake: derived((c) => c.parity.hubSections[1]?.bullets[1] ?? MISSING),
+  support_channels: derived((c) => hubSection(c, "support")),
+  source_per_order: derived((c) => answer(c, 6)),
+  ship_per_order: derived((c) => answer(c, 0)),
+  // Production geography is published; US-domestic dispatch as an undertaking is not stated
+  // anywhere in THG's own content.
+  us_domestic_fulfillment: authored(
     "Sản xuất và xuất hàng nội địa Mỹ cho đơn đến Mỹ, thay vì gửi xuyên biên giới.",
     "Produce and dispatch inside the US for US destinations, instead of shipping cross-border.",
     "面向美国目的地在美国本土生产并发货，而非跨境运输。",
   ),
+} as const satisfies Record<ThgObligationName, LabelSource>;
 
-  // Seller-side obligations.
-  "obligation.seller.print_ready_artwork": tr(
+const SELLER_OBLIGATION_LABELS = {
+  sku_sync: derived((c) => hubSection(c, "catalog")),
+  prepaid_wallet: derived((c) => hubSection(c, "finance")),
+  // What the SELLER must do has no published source at all: THG's content describes what THG does.
+  print_ready_artwork: authored(
     "Cung cấp file thiết kế đúng template sản phẩm.",
     "Supply artwork that matches the product template.",
     "按产品模板提供设计文件。",
   ),
-  "obligation.seller.sku_mapping": tr(
+  sku_mapping: authored(
     "Ghép SKU của bạn với SKU trong catalog THG.",
     "Map your SKUs to the THG catalog SKUs.",
     "将您的 SKU 与 THG 目录 SKU 对应。",
   ),
-  "obligation.seller.product_specs": tr(
+  product_specs: authored(
     "Cung cấp thông tin và thông số sản phẩm cần tìm nguồn.",
     "Supply the product details and specifications to source against.",
     "提供需寻源的产品信息与规格。",
   ),
-  "obligation.seller.stock_forecast": tr(
+  stock_forecast: authored(
     "Dự báo lượng tồn cần lưu kho theo kỳ.",
     "Forecast the stock volume to be held per period.",
     "按周期预测需入库的库存量。",
   ),
+} as const satisfies Record<SellerObligationName, LabelSource>;
 
-  // Trade-offs — structural choices only, no price claim.
-  "tradeoff.per_unit_vs_bulk": tr(
+// ── Trade-offs ──────────────────────────────────────────────────────────────────────────────────
+//
+// The commercially sensitive set, and the only table that is authored throughout. Each states a
+// STRUCTURAL choice — make-to-order vs batch, prepaid vs invoiced, storage vs per-order — and
+// deliberately asserts no price relationship, because THG publishes no pricing.
+
+const TRADEOFF_LABELS = {
+  per_unit_vs_bulk: authored(
     "Sản xuất theo từng đơn thay vì đặt lô: không cần vốn tồn kho, chi phí tính theo từng sản phẩm.",
     "Production per order rather than per batch: no inventory capital, cost accounted per unit.",
     "按单生产而非批量下单：无需库存资金，成本按件计。",
   ),
-  "tradeoff.us_production_cost_vs_transit": tr(
+  us_production_cost_vs_transit: authored(
     "Sản xuất tại Mỹ để rút ngắn chặng giao, thay vì sản xuất tại VN/CN rồi vận chuyển xuyên biên.",
     "Producing inside the US to shorten the delivery leg, rather than producing in VN/CN and shipping cross-border.",
     "在美国本土生产以缩短配送段，而非在越南/中国生产后跨境运输。",
   ),
-  "tradeoff.prepaid_model": tr(
+  prepaid_model: authored(
     "Hub System vận hành theo mô hình trả trước — cần nạp ví trước khi lên đơn.",
     "The Hub System runs prepaid — the wallet is topped up before orders are placed.",
     "Hub System 采用预付费模式——下单前需为钱包充值。",
   ),
-  "tradeoff.sourcing_scope_limits": tr(
+  sourcing_scope_limits: authored(
     "Nguồn hàng giới hạn trong phạm vi THG hỗ trợ, không phải mọi sàn.",
     "Sourcing is limited to the marketplaces THG supports, not every platform.",
     "寻源范围限于 THG 支持的平台，并非全部平台。",
   ),
-  "tradeoff.storage_vs_per_order": tr(
+  storage_vs_per_order: authored(
     "Giữ tồn tại kho THG thay vì tìm nguồn theo từng đơn.",
     "Holding stock in a THG warehouse rather than sourcing per order.",
     "在 THG 仓库备货，而非逐单寻源。",
   ),
-};
+} as const satisfies Record<TradeoffName, LabelSource>;
 
-/**
- * Service names. NOT localized: they are registered brand marks, and passing them through the
- * translation layer would invite a well-meaning translator to render one of them in Vietnamese.
- */
-const CAPABILITY_NAMES: Readonly<Record<string, string>> = {
-  "capability.fulfill": "THG Fulfill",
-  "capability.express": "THG Express",
-  "capability.warehouse": "THG Warehouse",
-  "capability.dropship": "THG Dropship",
-};
+// ── Evidence ────────────────────────────────────────────────────────────────────────────────────
+//
+// Derived throughout, and necessarily so: a claim THG has not published cannot be evidence for
+// anything. The unpublished ones resolve to their field NAME, because the renderer shows the name
+// beside the labelled gap — "Basecost from · not yet published" says more than a bare gap.
 
-/**
- * How a seller describes their own business, and how firmly a plan is stated.
- *
- * Separate from the interface chrome below because it is read by the seller as a description of
- * themselves; the wording is a product decision, and it also travels into the sales handoff.
- */
-const PLAN_VOCABULARY: Readonly<Record<string, LocalizedText>> = {
-  "situation.starting": tr("Mới bắt đầu", "Just starting", "刚开始"),
-  "situation.expanding": tr("Đang mở rộng sang Mỹ", "Expanding into the US", "正在拓展美国市场"),
-  "situation.operating": tr("Đã bán ở Mỹ", "Already selling in the US", "已在美国销售"),
-  "supply.custom": tr("In thiết kế của tôi", "I print my own design", "印制我自己的设计"),
-  "supply.sourced": tr("Bán hàng tìm nguồn", "I resell sourced goods", "转售寻源商品"),
-  "confidence.low": tr("Cần trao đổi thêm", "Needs a conversation", "需进一步沟通"),
-  "confidence.medium": tr(
-    "Dựa trên cam kết vận hành",
-    "Based on operational commitments",
-    "基于运营承诺",
-  ),
-  "confidence.high": tr("Dựa trên dữ liệu đã công bố", "Based on published data", "基于已公布数据"),
-};
+const EVIDENCE_LABELS = {
+  production_geography: derived((c) => c.copy.capabilities.network.description),
+  item_level_qc: derived((c) => c.copy.capabilities.qc.description),
+  us_standard_pack: derived((c) => c.copy.capabilities.pack.description),
+  tracking: derived((c) => c.copy.steps[3].description),
+  intake_operational_id: derived((c) => c.copy.steps[0].description),
+  hub_modules: derived((c) => c.copy.capabilities.hub.description),
+  bulk_csv_intake: derived((c) => c.parity.hubSections[1]?.bullets[1] ?? MISSING),
+  prepaid_transparency: derived((c) => hubSection(c, "finance")),
+  destination_coverage: derived((c) => answer(c, 0)),
+  payment_rails: derived((c) => answer(c, 3)),
+  compensation_policy: derived((c) => answer(c, 5)),
+  sourcing_scope: derived((c) => answer(c, 6)),
+  basecost: derived((c) => c.parity.basecostLabel),
+  lead_time: derived((c) => c.parity.leadTimeLabel),
+  // Not the base cost: naming a per-unit production price as a warehousing figure would publish a
+  // number THG has never stated.
+  storage_cost: authored("Chi phí lưu kho", "Storage cost", "仓储成本"),
+} as const satisfies Record<EvidenceName, LabelSource>;
 
-/**
- * Field names for the plan summary serialized into the lead message.
- *
- * Their audience is a salesperson reading a CRM record, not a visitor, so they change for different
- * reasons than anything on screen and are kept apart from it.
- */
+// ── The seller's own vocabulary ─────────────────────────────────────────────────────────────────
+//
+// Exhaustive over the domain enums for the same reason: adding a situation without labelling it is
+// a build failure rather than an unlabelled control.
+
+const SITUATION_LABELS = {
+  starting: tr("Mới bắt đầu", "Just starting", "刚开始"),
+  expanding: tr("Đang mở rộng sang Mỹ", "Expanding into the US", "正在拓展美国市场"),
+  operating: tr("Đã bán ở Mỹ", "Already selling in the US", "已在美国销售"),
+} as const satisfies Record<SituationId, LocalizedText>;
+
+const SUPPLY_LABELS = {
+  custom: tr("In thiết kế của tôi", "I print my own design", "印制我自己的设计"),
+  sourced: tr("Bán hàng tìm nguồn", "I resell sourced goods", "转售寻源商品"),
+} as const satisfies Record<SupplyModel, LocalizedText>;
+
+const CONFIDENCE_LABELS = {
+  low: tr("Cần trao đổi thêm", "Needs a conversation", "需进一步沟通"),
+  medium: tr("Dựa trên cam kết vận hành", "Based on operational commitments", "基于运营承诺"),
+  high: tr("Dựa trên dữ liệu đã công bố", "Based on published data", "基于已公布数据"),
+} as const satisfies Record<Confidence, LocalizedText>;
+
+/** Registered brand marks, not localized: routing them through the translation layer invites a
+ *  well-meaning translator to render one of them in Vietnamese. */
+const CAPABILITY_LABELS = {
+  fulfill: "THG Fulfill",
+  express: "THG Express",
+  warehouse: "THG Warehouse",
+  dropship: "THG Dropship",
+} as const satisfies Record<CapabilityId, string>;
+
+const EVIDENCE_KIND_LABELS = {
+  measured: tr("Đo được", "Measured", "已测量"),
+  published: tr("Đã công bố", "Published", "已公布"),
+  committed: tr("Cam kết", "Committed", "承诺"),
+  absent: tr("Chưa công bố", "Not yet published", "尚未公布"),
+} as const satisfies Record<EvidenceKind, LocalizedText>;
+
+// ── Interface chrome ────────────────────────────────────────────────────────────────────────────
+//
+// Not registry-bound: these name the planner's own parts and the fields of the sales handoff. Two
+// audiences kept apart because they change for different reasons — one is read by a visitor on
+// screen, the other by a salesperson in a CRM record.
+
 const HANDOFF_LABELS: Readonly<Record<string, LocalizedText>> = {
   "handoff.situation": tr("Bối cảnh", "Context", "背景"),
   "handoff.constraint": tr("Vướng mắc", "Constraint", "瓶颈"),
@@ -155,7 +265,6 @@ const HANDOFF_LABELS: Readonly<Record<string, LocalizedText>> = {
   "handoff.destination": tr("Điểm đến", "Destination", "目的地"),
 };
 
-/** Interface chrome: what the planner calls its own parts on screen. */
 const CHROME: Readonly<Record<string, LocalizedText>> = {
   "ui.constraint": tr("Vướng mắc vận hành", "Operational constraint", "运营瓶颈"),
   "ui.course": tr("Kế hoạch vận hành", "Operational plan", "运营方案"),
@@ -181,96 +290,90 @@ const CHROME: Readonly<Record<string, LocalizedText>> = {
   ),
   "ui.confidence": tr("Mức tin cậy", "Confidence", "可信度"),
   "ui.identity": tr("Mã kế hoạch", "Plan reference", "方案编号"),
-  "ui.unverified": tr("Bản nháp — chờ vận hành duyệt", "Draft — pending operations review", "草案——待运营审核"),
   "ui.inferred": tr("suy ra", "inferred", "推断"),
   "ui.deferred": tr("Xác định khi tư vấn", "Resolved in consultation", "在咨询中确定"),
-
-  // Storage cost has no CMS field yet, so it always renders as a labelled gap — under its own
-  // name, because labelling it "basecost" would name the wrong figure.
-  "evidence.storage_cost": tr("Chi phí lưu kho", "Storage cost", "仓储成本"),
-
+  "ui.unverified": tr(
+    "Bản nháp — chờ vận hành duyệt",
+    "Draft — pending operations review",
+    "草案——待运营审核",
+  ),
   "field.capital": tr("Vốn", "Capital", "资金"),
   "field.monthlyVolume": tr("Sản lượng/tháng", "Monthly volume", "月出货量"),
-
-  // The evidence kinds. Shown, not implied: a measured fact and a stated commitment must not look
-  // identical, because a reader who cannot tell them apart discounts both.
-  "kind.measured": tr("Đo được", "Measured", "已测量"),
-  "kind.published": tr("Đã công bố", "Published", "已公布"),
-  "kind.committed": tr("Cam kết", "Committed", "承诺"),
-  "kind.absent": tr("Chưa công bố", "Not yet published", "尚未公布"),
 };
+
+// ── Resolution ──────────────────────────────────────────────────────────────────────────────────
+
+/** Each registry table with the qualifier that turns a name into the id the domain emits. */
+const REGISTRY_TABLES = [
+  {
+    table: CONSTRAINT_LABELS as Record<string, LabelSource>,
+    names: Object.keys(CONSTRAINTS),
+    id: (n: string) => constraintId(n as ConstraintName),
+  },
+  {
+    table: THG_OBLIGATION_LABELS as Record<string, LabelSource>,
+    names: THG_OBLIGATIONS,
+    id: (n: string) => `obligation.thg.${n}`,
+  },
+  {
+    table: SELLER_OBLIGATION_LABELS as Record<string, LabelSource>,
+    names: SELLER_OBLIGATIONS,
+    id: (n: string) => `obligation.seller.${n}`,
+  },
+  {
+    table: TRADEOFF_LABELS as Record<string, LabelSource>,
+    names: TRADEOFFS,
+    id: (n: string) => tradeoffId(n as TradeoffName),
+  },
+  {
+    table: EVIDENCE_LABELS as Record<string, LabelSource>,
+    names: EVIDENCE,
+    id: (n: string) => evidenceId(n as EvidenceName),
+  },
+] as const;
 
 /**
  * Build the label resolver for this route.
  *
- * The `DERIVED` map is the interesting half: each entry points at copy that already exists, so the
- * plan inherits THG's own wording — including any CMS service-block overlay applied upstream —
- * instead of carrying a second, drifting copy of it.
+ * Flattened into one map up front rather than resolved per lookup: several surfaces ask for the
+ * same id, and a derived label walks the copy tree on every call.
  */
 export function buildPlanLabels(
   lang: Locale,
   copy: FulfillCopy,
   parity: FulfillParityCopy,
 ): (id: string) => string {
-  const [pain0, , pain2, pain3] = copy.pains;
-  const [, , hubCatalog, hubFinance, hubSupport] = parity.hubSections;
-  const hubOrders = parity.hubSections[1];
-  const faq = parity.faqFallback;
+  const content: LabelContent = { copy, parity };
+  const labels = new Map<string, string>();
+  const put = (id: string, text: LocalizedText) => labels.set(id, localize(lang, text));
 
-  const DERIVED: Readonly<Record<string, string>> = {
-    // ── Constraints, taken verbatim from the seller-challenge copy ──
-    "constraint.transit_cancellations": pain0.description,
-    "constraint.order_management_errors": pain2.description,
-    "constraint.inventory_control": pain3.description,
-
-    // ── THG obligations, from the journey steps and capability descriptions ──
-    "obligation.thg.print_on_demand": copy.steps[1].description,
-    "obligation.thg.item_level_qc": copy.steps[2].description,
-    "obligation.thg.us_standard_pack": copy.steps[3].description,
-    "obligation.thg.route_by_destination": copy.capabilities.network.description,
-    "obligation.thg.hub_visibility": copy.capabilities.hub.description,
-    "obligation.thg.store_and_id": copy.capabilities.intake.description,
-    "obligation.thg.bulk_intake": hubOrders.bullets[1] ?? MISSING,
-    "obligation.thg.support_channels": hubSupport.intro,
-    "obligation.thg.source_per_order": faq[6]?.answer ?? MISSING,
-    "obligation.thg.ship_per_order": faq[0]?.answer ?? MISSING,
-    // ── Seller obligations that DO have a source ──
-    "obligation.seller.sku_sync": hubCatalog.intro,
-    "obligation.seller.prepaid_wallet": hubFinance.intro,
-
-    // ── Evidence ──
-    "evidence.production_geography": copy.capabilities.network.description,
-    "evidence.item_level_qc": copy.capabilities.qc.description,
-    "evidence.us_standard_pack": copy.capabilities.pack.description,
-    "evidence.tracking": copy.steps[3].description,
-    "evidence.intake_operational_id": copy.steps[0].description,
-    "evidence.hub_modules": copy.capabilities.hub.description,
-    "evidence.bulk_csv_intake": hubOrders.bullets[1] ?? MISSING,
-    "evidence.prepaid_transparency": hubFinance.intro,
-    "evidence.destination_coverage": faq[0]?.answer ?? MISSING,
-    "evidence.payment_rails": faq[3]?.answer ?? MISSING,
-    "evidence.compensation_policy": faq[5]?.answer ?? MISSING,
-    "evidence.sourcing_scope": faq[6]?.answer ?? MISSING,
-    // Absent by design — the CMS fields exist and are empty. The renderer shows a labelled gap.
-    "evidence.basecost": parity.basecostLabel,
-    "evidence.lead_time": parity.leadTimeLabel,
-  };
-
-  // Resolution order: content THG already publishes, then the brand marks that are never
-  // translated, then the localized tables. First hit wins, so a derived label can never be
-  // shadowed by an authored one.
-  const LOCALIZED = [AUTHORED, PLAN_VOCABULARY, HANDOFF_LABELS, CHROME] as const;
-
-  return (id: string) => {
-    // An empty derived value is a content gap, not a label: falling through to MISSING keeps the
-    // gap visible instead of rendering nothing where a claim should be.
-    const derived = DERIVED[id] || CAPABILITY_NAMES[id];
-    if (derived) return derived;
-
-    for (const table of LOCALIZED) {
-      const text = table[id];
-      if (text) return localize(lang, text);
+  for (const { table, names, id } of REGISTRY_TABLES) {
+    for (const name of names) {
+      const source = table[name];
+      labels.set(id(name), source.kind === "derived" ? source.read(content) : localize(lang, source.text));
     }
-    return MISSING;
-  };
+  }
+
+  for (const situation of SITUATIONS) put(`situation.${situation}`, SITUATION_LABELS[situation]);
+  for (const supply of SUPPLY_MODELS) put(`supply.${supply}`, SUPPLY_LABELS[supply]);
+  for (const capability of CAPABILITIES) {
+    labels.set(`capability.${capability}`, CAPABILITY_LABELS[capability]);
+  }
+  for (const [level, text] of Object.entries(CONFIDENCE_LABELS)) put(`confidence.${level}`, text);
+  for (const [kind, text] of Object.entries(EVIDENCE_KIND_LABELS)) put(`kind.${kind}`, text);
+  for (const [id, text] of Object.entries({ ...HANDOFF_LABELS, ...CHROME })) put(id, text);
+
+  // An empty resolution is a content gap, not a label: falling through keeps the gap visible
+  // rather than rendering nothing where a claim belongs.
+  return (id: string) => labels.get(id) || MISSING;
 }
+
+/**
+ * The ids whose label is an unconfirmed assertion about how THG operates.
+ *
+ * Exported so a reviewer — or a future surface that marks unverified claims — can enumerate them
+ * rather than grep for a comment. The number should fall as operations signs each one off.
+ */
+export const AUTHORED_LABEL_IDS: readonly string[] = REGISTRY_TABLES.flatMap(({ table, names, id }) =>
+  names.filter((name) => table[name].kind === "authored").map((name) => id(name)),
+);
