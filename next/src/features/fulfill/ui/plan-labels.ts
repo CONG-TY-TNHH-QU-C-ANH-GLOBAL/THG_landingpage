@@ -110,21 +110,29 @@ const AUTHORED: Readonly<Record<string, LocalizedText>> = {
   ),
 };
 
-/** UI chrome for the planner and the handoff. Interface labels, not business assertions. */
-const CHROME: Readonly<Record<string, LocalizedText>> = {
+/**
+ * Service names. NOT localized: they are registered brand marks, and passing them through the
+ * translation layer would invite a well-meaning translator to render one of them in Vietnamese.
+ */
+const CAPABILITY_NAMES: Readonly<Record<string, string>> = {
+  "capability.fulfill": "THG Fulfill",
+  "capability.express": "THG Express",
+  "capability.warehouse": "THG Warehouse",
+  "capability.dropship": "THG Dropship",
+};
+
+/**
+ * How a seller describes their own business, and how firmly a plan is stated.
+ *
+ * Separate from the interface chrome below because it is read by the seller as a description of
+ * themselves; the wording is a product decision, and it also travels into the sales handoff.
+ */
+const PLAN_VOCABULARY: Readonly<Record<string, LocalizedText>> = {
   "situation.starting": tr("Mới bắt đầu", "Just starting", "刚开始"),
   "situation.expanding": tr("Đang mở rộng sang Mỹ", "Expanding into the US", "正在拓展美国市场"),
   "situation.operating": tr("Đã bán ở Mỹ", "Already selling in the US", "已在美国销售"),
-
   "supply.custom": tr("In thiết kế của tôi", "I print my own design", "印制我自己的设计"),
   "supply.sourced": tr("Bán hàng tìm nguồn", "I resell sourced goods", "转售寻源商品"),
-
-  // Service names are registered brand marks and are not translated.
-  "capability.fulfill": tr("THG Fulfill", "THG Fulfill", "THG Fulfill"),
-  "capability.express": tr("THG Express", "THG Express", "THG Express"),
-  "capability.warehouse": tr("THG Warehouse", "THG Warehouse", "THG Warehouse"),
-  "capability.dropship": tr("THG Dropship", "THG Dropship", "THG Dropship"),
-
   "confidence.low": tr("Cần trao đổi thêm", "Needs a conversation", "需进一步沟通"),
   "confidence.medium": tr(
     "Dựa trên cam kết vận hành",
@@ -132,12 +140,23 @@ const CHROME: Readonly<Record<string, LocalizedText>> = {
     "基于运营承诺",
   ),
   "confidence.high": tr("Dựa trên dữ liệu đã công bố", "Based on published data", "基于已公布数据"),
+};
 
+/**
+ * Field names for the plan summary serialized into the lead message.
+ *
+ * Their audience is a salesperson reading a CRM record, not a visitor, so they change for different
+ * reasons than anything on screen and are kept apart from it.
+ */
+const HANDOFF_LABELS: Readonly<Record<string, LocalizedText>> = {
   "handoff.situation": tr("Bối cảnh", "Context", "背景"),
   "handoff.constraint": tr("Vướng mắc", "Constraint", "瓶颈"),
   "handoff.course": tr("Đề xuất", "Recommendation", "建议"),
   "handoff.destination": tr("Điểm đến", "Destination", "目的地"),
+};
 
+/** Interface chrome: what the planner calls its own parts on screen. */
+const CHROME: Readonly<Record<string, LocalizedText>> = {
   "ui.constraint": tr("Vướng mắc vận hành", "Operational constraint", "运营瓶颈"),
   "ui.course": tr("Kế hoạch vận hành", "Operational plan", "运营方案"),
   "ui.thg_does": tr("THG thực hiện", "THG does", "THG 负责"),
@@ -233,10 +252,19 @@ export function buildPlanLabels(
     "evidence.storage_cost": parity.basecostLabel,
   };
 
+  // Resolution order: content THG already publishes, then the brand marks that are never
+  // translated, then the localized tables. First hit wins, so a derived label can never be
+  // shadowed by an authored one.
+  const LOCALIZED = [AUTHORED, PLAN_VOCABULARY, HANDOFF_LABELS, CHROME] as const;
+
   return (id: string) => {
-    const derived = DERIVED[id];
+    const derived = DERIVED[id] ?? CAPABILITY_NAMES[id];
     if (derived !== undefined) return derived;
-    const localized = AUTHORED[id] ?? CHROME[id];
-    return localized ? localize(lang, localized) : MISSING;
+
+    for (const table of LOCALIZED) {
+      const text = table[id];
+      if (text) return localize(lang, text);
+    }
+    return MISSING;
   };
 }
