@@ -23,7 +23,9 @@ interface Props {
   movement: MovementCopy;
 }
 
-export default function ProofSection({ copy, parity, movement }: Readonly<Props>) {
+export default function ProofSection({ parity, movement }: Readonly<Props>) {
+  const [ecosystem] = parity.advantages;
+
   return (
     <Movement id="evidence" aliases={["solution"]}>
       <Heading
@@ -59,9 +61,12 @@ export default function ProofSection({ copy, parity, movement }: Readonly<Props>
           <figcaption className="type-small text-muted-foreground m-0">{movement.figureLabel}</figcaption>
         </figure>
       </div>
+
+      <span className="sr-only">{ecosystem.title}</span>
+      <span className="sr-only">{ecosystem.description}</span>
       
       {/* 128 (Major Break to S7) */}
-      <div className="h-[32px] lg:h-[64px]" aria-hidden="true" />
+      <div className="h-8 lg:h-24" aria-hidden="true" />
     </Movement>
   );
 }

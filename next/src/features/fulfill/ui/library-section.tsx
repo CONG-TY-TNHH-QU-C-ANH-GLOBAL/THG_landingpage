@@ -55,7 +55,7 @@ export default function LibrarySection({ lang, movement }: Readonly<Props>) {
         as="h3"
         aside={
           // A count, rendered beside the things it counts. Never a standalone statistic.
-          <p className="font-mono text-[11px] tracking-[0.1em] text-muted-foreground uppercase m-0">
+          <p className="type-label text-muted-foreground m-0">
             {resources.length} · {labels.intro} · {labels.overview} · {labels.walkthrough} ·{" "}
             {labels.clip}
           </p>

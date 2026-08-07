@@ -45,7 +45,7 @@ export default function CommitmentSection({ lang, parity, movement, faqs }: Read
         </div>
 
         {/* 48px inner clearance */}
-        <div className="h-[48px]" aria-hidden="true" />
+        <div className="h-12" aria-hidden="true" />
 
         {/* Liability Statement: dominant strictly by isolation */}
         {compensation ? (
@@ -58,7 +58,7 @@ export default function CommitmentSection({ lang, parity, movement, faqs }: Read
         ) : null}
 
         {/* 48px inner clearance */}
-        <div className="h-[48px]" aria-hidden="true" />
+        <div className="h-12" aria-hidden="true" />
 
         {/* Payment Rails */}
         {payment ? (
@@ -73,6 +73,7 @@ export default function CommitmentSection({ lang, parity, movement, faqs }: Read
         {/* Policy Link */}
         <div className="border-t border-border/20 pt-8 mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <p className="type-body font-medium text-primary-foreground m-0">{parity.policyTitle}</p>
+          <span className="sr-only">{parity.policyDesc}</span>
           <Link 
             href={`/${lang}/policy`} 
             className="type-small font-mono text-muted hover:text-primary-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-offset-navy no-underline"
@@ -80,6 +81,9 @@ export default function CommitmentSection({ lang, parity, movement, faqs }: Read
             {parity.policyCta}
           </Link>
         </div>
+        
+        <span className="sr-only">{transparency.title}</span>
+        <span className="sr-only">{transparency.description}</span>
 
       </div>
     </Movement>
