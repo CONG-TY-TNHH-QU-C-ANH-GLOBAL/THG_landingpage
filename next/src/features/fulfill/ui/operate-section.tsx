@@ -111,9 +111,10 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
         <h3 className="type-h3 text-foreground m-0 mb-4">{parity.hubHeading}</h3>
         <p className="type-body text-muted-foreground m-0 max-w-[720px] mb-8">{parity.hubIntro}</p>
         
+        <span className="sr-only">{parity.hubToc}</span>
         <Accordion type="single" collapsible className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {parity.hubSections.map((section, index) => (
-            <AccordionItem key={section.id} value={section.id} className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+            <AccordionItem key={section.id} value={section.id} id={`hub-${section.id}`} className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
               <AccordionTrigger className="hover:no-underline text-left py-6">
                 <div className="flex flex-col gap-2">
                   <span className="type-label text-muted-foreground">{(index + 1).toString().padStart(2, '0')}</span>

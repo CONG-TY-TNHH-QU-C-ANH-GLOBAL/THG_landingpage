@@ -13,7 +13,6 @@ import type { FulfillFaq } from "../models/faq";
 import type { FulfillCopy } from "../localized-content";
 import { Heading, Movement } from "./section";
 import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
-import { cn } from "@/shared/ui/cn";
 
 interface Props {
   lang: Locale;
@@ -22,7 +21,7 @@ interface Props {
   faqs: readonly FulfillFaq[];
 }
 
-export default function IndexSection({ lang, copy, movement, faqs }: Readonly<Props>) {
+export default function IndexSection({ lang, copy, faqs }: Readonly<Props>) {
   return (
     <Movement id="qa">
       <Heading
@@ -33,7 +32,7 @@ export default function IndexSection({ lang, copy, movement, faqs }: Readonly<Pr
         aside={
           // The path for a question this page does not answer. Moderation-first: it goes to the
           // community, not to a form that implies an immediate reply.
-          <Link href={`/${lang}/community`} className="font-mono text-[13.5px] text-muted-foreground hover:text-primary transition-colors no-underline">
+          <Link href={`/${lang}/community`} className="type-small font-mono text-muted-foreground hover:text-primary transition-colors no-underline">
             {copy.faqAskCommunity}
           </Link>
         }
@@ -45,7 +44,7 @@ export default function IndexSection({ lang, copy, movement, faqs }: Readonly<Pr
             {faqs.map((faq) => (
               <AccordionPrimitive.Item 
                 key={faq.id} 
-                value={faq.id} 
+                value={String(faq.id)} 
                 className="border-b border-border/50 last:border-0"
               >
                 <AccordionPrimitive.Header className="flex">

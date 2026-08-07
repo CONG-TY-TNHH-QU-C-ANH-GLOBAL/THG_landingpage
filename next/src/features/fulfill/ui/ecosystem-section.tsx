@@ -101,7 +101,7 @@ export default function EcosystemSection({
       </div>
 
       {/* 128 (Major Break to S10) */}
-      <div className="h-[32px] lg:h-[64px]" aria-hidden="true" />
+      <div className="h-8 lg:h-32" aria-hidden="true" />
     </Movement>
   );
 }

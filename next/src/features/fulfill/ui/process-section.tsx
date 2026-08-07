@@ -32,7 +32,7 @@ export default function ProcessSection({ copy, parity, movement }: Readonly<Prop
       {/* Enforce the 128px major break (this sits between S3 and S4). 
           Since Movement provides its own padding, this spacer visually ensures the boundary is large.
           (Assuming padding collapsing logic is handled by section spacing rules). */}
-      <div className="h-[32px]" aria-hidden="true" />
+      <div className="h-8" aria-hidden="true" />
       <Movement id="process" aliases={["journey", "passport"]}>
         <Heading
           index={MOVEMENT_INDEX.process}

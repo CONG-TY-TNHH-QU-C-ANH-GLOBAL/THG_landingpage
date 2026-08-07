@@ -27,7 +27,7 @@ import EcosystemSection from "@/features/fulfill/ui/ecosystem-section";
 import IndexSection from "@/features/fulfill/ui/index-section";
 import ActSection from "@/features/fulfill/ui/act-section";
 import { FulfillServiceJsonLd, FulfillFaqJsonLd } from "@/features/fulfill/ui/fulfill-jsonld";
-import styles from "@/features/fulfill/ui/fulfill.module.css";
+
 
 // THG Fulfill — the public decision surface for the service.
 //
@@ -106,7 +106,7 @@ export default async function FulfillPage({ params }: PageProps) {
   const canonical = localeUrl(lang, "/thg-fulfill");
 
   return (
-    <div className={`${styles.root} ${monoFont.variable}`}>
+    <div className={monoFont.variable}>
       <FulfillServiceJsonLd
         name={FULFILL_SEO[lang].title}
         description={FULFILL_SEO[lang].description}
