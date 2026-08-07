@@ -75,7 +75,7 @@ export function Heading({
   aside,
 }: Readonly<HeadingProps>) {
   const head = (
-    <div className="flex flex-col items-start text-left mb-12 lg:mb-16">
+    <div className={`flex flex-col items-start text-left ${aside ? "" : "mb-12 lg:mb-16"}`}>
       <p className="type-label text-muted-foreground mb-4">
         <span className="mr-2 text-primary">{index}</span>
         {eyebrow}

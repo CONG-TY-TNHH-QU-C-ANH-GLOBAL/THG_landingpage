@@ -19,6 +19,7 @@ import { FAQ_SLOT, pickFaq } from "./faq-placement";
 import { Heading, Movement } from "./section";
 import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/shared/ui/accordion";
+import { HubAccordion } from "../client/hub-accordion.client";
 
 /** The approved Hub origin. A link, not a lead surface — the self-serve branch is a way out of the
  *  page, not another form. */
@@ -112,7 +113,7 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
         <p className="type-body text-muted-foreground m-0 max-w-[720px] mb-8">{parity.hubIntro}</p>
         
         <span className="sr-only">{parity.hubToc}</span>
-        <Accordion type="single" collapsible className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <HubAccordion className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {parity.hubSections.map((section, index) => (
             <AccordionItem key={section.id} value={section.id} id={`hub-${section.id}`} className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
               <AccordionTrigger className="hover:no-underline text-left py-6">
@@ -148,7 +149,7 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
               </AccordionContent>
             </AccordionItem>
           ))}
-        </Accordion>
+        </HubAccordion>
 
         {/* ── The self-serve branch. An outbound link, never a lead. ─────────────────── */}
         <div id="hub-cta" className="flex flex-wrap justify-between items-center gap-6 mt-16 pt-8 border-t border-border">

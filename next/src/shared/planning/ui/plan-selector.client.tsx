@@ -126,9 +126,12 @@ export default function PlanSelector({ labels, children }: Readonly<Props>) {
           state needs no special handling anywhere. A live region announces what the set was narrowed
           to rather than re-reading every plan, and focus is never moved. */}
       <p className="my-6 type-label text-muted-foreground" role="status" aria-live="polite">
-        {situation && supply ? (
+        {situation || supply ? (
           <span className="text-foreground">
-            {labels[`situation.${situation}`]} · {labels[`supply.${supply}`]}
+            {[
+              situation ? labels[`situation.${situation}`] : null,
+              supply ? labels[`supply.${supply}`] : null
+            ].filter(Boolean).join(" · ")}
           </span>
         ) : (
           labels["ui.all_plans"]

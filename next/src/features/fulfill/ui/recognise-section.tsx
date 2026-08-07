@@ -25,7 +25,7 @@ export default function RecogniseSection({ copy }: Readonly<Props>) {
       />
 
       {/* 
-        // TODO: HALT [H-A]
+        // HALT [H-A]
         // Isolation tier and collapse order are missing from authority.
         // We do not invent values to patch this.
       */}

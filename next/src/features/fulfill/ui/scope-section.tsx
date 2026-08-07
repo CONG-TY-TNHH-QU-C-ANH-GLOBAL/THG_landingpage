@@ -97,7 +97,7 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
         {products.map((item) => (
           <li key={item.key} className="flex flex-col gap-4 bg-card border border-border rounded-lg p-4 transition-colors hover:border-primary">
             {item.image ? (
-              // TODO: HALT [H-D]
+              // HALT [H-D]
               // Image crop/aspect ratio is missing from authority.
               <div className="relative w-full aspect-square bg-muted rounded-md overflow-hidden">
                 <Image

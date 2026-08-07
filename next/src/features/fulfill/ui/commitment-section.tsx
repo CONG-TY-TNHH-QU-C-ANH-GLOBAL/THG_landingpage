@@ -81,10 +81,6 @@ export default function CommitmentSection({ lang, parity, movement, faqs }: Read
             {parity.policyCta}
           </Link>
         </div>
-        
-        <span className="sr-only">{transparency.title}</span>
-        <span className="sr-only">{transparency.description}</span>
-
       </div>
     </Movement>
   );

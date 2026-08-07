@@ -54,7 +54,7 @@ export default function QualifySection({ copy, content, movement, faqs }: Readon
               {copy.heroHeadline}
             </h1>
             
-            <p className="type-lead text-foreground max-w-[720px] line-clamp-2 mb-12">
+            <p className="type-lead text-foreground max-w-[720px] mb-12">
               {subtitle}
             </p>
 
