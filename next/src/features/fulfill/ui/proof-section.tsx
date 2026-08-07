@@ -12,7 +12,6 @@ import type { FulfillCopy } from "../localized-content";
 import type { FulfillParityCopy } from "../parity-content";
 import { Heading, Movement } from "./section";
 import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
-import styles from "./fulfill.module.css";
 
 /** Served locally. The Vite page hot-linked this from the CMS CDN, which made the proof movement
  *  depend on a third-party origin being up. */
@@ -25,8 +24,6 @@ interface Props {
 }
 
 export default function ProofSection({ copy, parity, movement }: Readonly<Props>) {
-  const [ecosystem] = parity.advantages;
-
   return (
     <Movement id="evidence" aliases={["solution"]}>
       <Heading
@@ -36,33 +33,35 @@ export default function ProofSection({ copy, parity, movement }: Readonly<Props>
         lead={parity.solutionIntro}
       />
 
-      <div className={styles.evidenceGrid}>
+      {/* Full span (12/12) Full-bleed Facility Image */}
+      <div className="mt-6 lg:mt-6 w-full">
         {/* Lazy, deliberately. This is movement 06 and sits far below the fold; the LCP element on
             this route is the qualification headline, which is text. Preloading a photograph nobody
             has scrolled to would compete with the first screen's own resources. */}
-        <figure className={styles.figure}>
-          <div className={styles.figureFrame}>
+        <figure className="flex flex-col gap-3 m-0">
+          <div className="relative w-full aspect-video bg-muted rounded-md overflow-hidden">
             <Image
               src={FACILITY_IMAGE}
               alt={movement.figureAlt}
               fill
-              sizes="(max-width: 1024px) 100vw, 700px"
+              className="object-cover"
+              sizes="100vw"
             />
+            {/* Play Icon Facade off-path (would mount player on click) - Placeholder as per blueprint */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-16 h-16 rounded-full bg-background/80 flex items-center justify-center shadow-sm backdrop-blur-sm">
+                <svg className="w-8 h-8 ml-1 text-foreground" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
           </div>
-          <figcaption className={styles.figureCaption}>{movement.figureLabel}</figcaption>
+          <figcaption className="type-small text-muted-foreground m-0">{movement.figureLabel}</figcaption>
         </figure>
-
-        <div>
-          <h3 className="type-h3">{ecosystem.title}</h3>
-          <p className={`${styles.lead} ${styles.spaceTopTight} type-body`}>
-            {ecosystem.description}
-          </p>
-          {/* The production-geography claim, in THG's own published wording. */}
-          <p className={`${styles.muted} ${styles.spaceTopTight} type-small`}>
-            {copy.capabilities.network.description}
-          </p>
-        </div>
       </div>
+      
+      {/* 128 (Major Break to S7) */}
+      <div className="h-[32px] lg:h-[64px]" aria-hidden="true" />
     </Movement>
   );
 }

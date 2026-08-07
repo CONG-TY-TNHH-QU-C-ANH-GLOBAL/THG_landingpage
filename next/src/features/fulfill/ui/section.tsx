@@ -11,8 +11,6 @@
 // split layout. Space between things belongs to the parent, never to the thing.
 import type { ReactNode } from "react";
 
-import styles from "./fulfill.module.css";
-
 interface MovementProps {
   /** The published anchor id. Permanent: a movement that is replaced leaves its id behind. */
   id: string;
@@ -27,12 +25,10 @@ interface MovementProps {
   children: ReactNode;
 }
 
-/** Tone to surface class. A lookup rather than a chain of conditionals, so adding a surface is one
- *  entry and the set of tones stays readable at a glance. */
 const TONE_CLASS: Readonly<Record<NonNullable<MovementProps["tone"]>, string>> = {
-  canvas: "",
-  surface: styles.surface,
-  inverted: styles.inverted,
+  canvas: "bg-background text-foreground",
+  surface: "bg-card text-card-foreground",
+  inverted: "bg-navy text-primary-foreground", // Inverted maps to text-on-dark
 };
 
 export function Movement({
@@ -45,8 +41,8 @@ export function Movement({
   const toneClass = TONE_CLASS[tone];
 
   return (
-    <section id={id} className={`${styles.section} ${toneClass}`}>
-      <div className={`${styles.inner} ${width === "wide" ? styles.innerWide : ""}`}>
+    <section id={id} className={`w-full pt-16 pb-16 lg:pt-24 lg:pb-24 ${toneClass}`}>
+      <div className={`container mx-auto px-4 md:px-8 ${width === "content" ? "max-w-[720px]" : ""}`}>
         {aliases?.map((alias) => <Alias key={alias} id={alias} />)}
         {children}
       </div>
@@ -55,7 +51,7 @@ export function Movement({
 }
 
 export function Alias({ id }: Readonly<{ id: string }>) {
-  return <span id={id} className={styles.anchorAlias} aria-hidden="true" />;
+  return <span id={id} className="scroll-mt-[100px]" aria-hidden="true" />;
 }
 
 interface HeadingProps {
@@ -79,22 +75,24 @@ export function Heading({
   aside,
 }: Readonly<HeadingProps>) {
   const head = (
-    <div className={styles.header}>
-      <p className={`${styles.eyebrow} type-label`}>
-        <span className={styles.eyebrowIndex}>{index}</span>
+    <div className="flex flex-col items-start text-left mb-12 lg:mb-16">
+      <p className="type-label text-muted-foreground mb-4">
+        <span className="mr-2 text-primary">{index}</span>
         {eyebrow}
       </p>
-      <Tag className={`${styles.title} type-h2`}>{title}</Tag>
-      {lead ? <p className={`${styles.lead} type-lead`}>{lead}</p> : null}
+      <Tag className={`type-${Tag} text-foreground mb-4`}>
+        {title}
+      </Tag>
+      {lead ? <p className="type-lead max-w-[720px]">{lead}</p> : null}
     </div>
   );
 
   if (!aside) return head;
 
   return (
-    <div className={styles.headerSplit}>
+    <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6 mb-12 lg:mb-16">
       {head}
-      <div>{aside}</div>
+      <div className="w-full lg:w-5/12 flex-shrink-0">{aside}</div>
     </div>
   );
 }

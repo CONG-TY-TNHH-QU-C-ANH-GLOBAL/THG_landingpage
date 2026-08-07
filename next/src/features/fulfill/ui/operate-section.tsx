@@ -18,7 +18,7 @@ import type { FulfillParityCopy } from "../parity-content";
 import { FAQ_SLOT, pickFaq } from "./faq-placement";
 import { Heading, Movement } from "./section";
 import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
-import styles from "./fulfill.module.css";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/shared/ui/accordion";
 
 /** The approved Hub origin. A link, not a lead surface — the self-serve branch is a way out of the
  *  page, not another form. */
@@ -50,83 +50,81 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
       />
 
       {/* ── Chapter 1 · placing an order ─────────────────────────────────────────────────── */}
-      <div id="order-guide" className={styles.chapter}>
-        <div className={styles.chapterAside}>
-          <h3 className="type-h3">{movement.orderGuideTitle}</h3>
-          <p className={`${styles.muted} ${styles.spaceTopTight} type-body`}>{parity.ecountIntro}</p>
-          <p className={styles.spaceTopTight}>
-            <a
-              className={styles.linkQuiet}
-              href={SKU_SHEET}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {parity.ecountSkuLink}
-              <ExternalLink size={14} aria-hidden="true" />
-            </a>
-          </p>
-        </div>
-
-        <ol className={styles.steps}>
+      <div id="order-guide" className="mt-12 lg:mt-16">
+        <h3 className="type-h3 text-foreground m-0 mb-6">{movement.orderGuideTitle}</h3>
+        
+        <Accordion type="single" collapsible className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {placement ? (
-            <li className={styles.step}>
-              <div>
-                <h4 className="type-h4">{placement.question}</h4>
-                <p className={`${styles.muted} ${styles.spaceTopTight} type-body`}>
-                  {placement.answer}
-                </p>
-              </div>
-            </li>
+            <AccordionItem value="placement" className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+              <AccordionTrigger className="hover:no-underline text-left py-6">
+                <div className="flex flex-col gap-2">
+                  <span className="type-label text-muted-foreground">01</span>
+                  <span className="type-body font-medium text-foreground">{placement.question}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="type-body text-muted-foreground pb-6">
+                {placement.answer}
+              </AccordionContent>
+            </AccordionItem>
           ) : null}
+
           {notification ? (
-            <li className={styles.step}>
-              <div>
-                <h4 className="type-h4">{notification.question}</h4>
-                <p className={`${styles.muted} ${styles.spaceTopTight} type-body`}>
-                  {notification.answer}
-                </p>
-              </div>
-            </li>
+            <AccordionItem value="notification" className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+              <AccordionTrigger className="hover:no-underline text-left py-6">
+                <div className="flex flex-col gap-2">
+                  <span className="type-label text-muted-foreground">02</span>
+                  <span className="type-body font-medium text-foreground">{notification.question}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="type-body text-muted-foreground pb-6">
+                {notification.answer}
+              </AccordionContent>
+            </AccordionItem>
           ) : null}
-          <li className={styles.step}>
-            <div>
-              <h4 className="type-h4">{parity.ecountTitle}</h4>
-              <p className={`${styles.muted} ${styles.spaceTopTight} type-body`}>{orders?.intro}</p>
-            </div>
-          </li>
-        </ol>
+
+          <AccordionItem value="ecount" className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+            <AccordionTrigger className="hover:no-underline text-left py-6">
+              <div className="flex flex-col gap-2">
+                <span className="type-label text-muted-foreground">03</span>
+                <span className="type-body font-medium text-foreground">{parity.ecountTitle}</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="type-body text-muted-foreground pb-6">
+              <p className="m-0 mb-4">{parity.ecountIntro}</p>
+              {orders?.intro && <p className="m-0 mb-4">{orders.intro}</p>}
+              <a
+                className="inline-flex items-center gap-2 type-small font-mono text-foreground hover:text-primary transition-colors no-underline focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+                href={SKU_SHEET}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {parity.ecountSkuLink}
+                <ExternalLink size={14} aria-hidden="true" />
+              </a>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
-      {/* ── Chapter 2 · the Hub, six addressable modules ─────────────────────────────────── */}
-      <div id="hub-guide" className={`${styles.chapter} ${styles.spaceTop}`}>
-        <div className={styles.chapterAside}>
-          <h3 className="type-h3">{parity.hubHeading}</h3>
-          <p className={`${styles.muted} ${styles.spaceTopTight} type-body`}>{parity.hubIntro}</p>
-
-          {/* A contents list for a document a returning reader navigates, not a menu that offers to
-              skip the argument: it addresses reference material, never the page's reasoning. */}
-          <nav aria-label={parity.hubToc} className={styles.spaceTopTight}>
-            <ul className={styles.siblings}>
-              {parity.hubSections.map((section) => (
-                <li key={section.id}>
-                  <a href={`#hub-${section.id}`} className={styles.linkQuiet}>
-                    {section.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-
-        <div>
-          <ol className={styles.modules}>
-            {parity.hubSections.map((section) => (
-              <li key={section.id} id={`hub-${section.id}`} className={styles.module}>
-                <h4 className={`${styles.moduleTitle} type-h4`}>{section.title}</h4>
-                <p className={`${styles.moduleIntro} type-body`}>{section.intro}</p>
+      {/* ── Chapter 2 · the Hub, addressable modules ─────────────────────────────────── */}
+      <div id="hub-guide" className="mt-16 pt-16 border-t border-border">
+        <h3 className="type-h3 text-foreground m-0 mb-4">{parity.hubHeading}</h3>
+        <p className="type-body text-muted-foreground m-0 max-w-[720px] mb-8">{parity.hubIntro}</p>
+        
+        <Accordion type="single" collapsible className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {parity.hubSections.map((section, index) => (
+            <AccordionItem key={section.id} value={section.id} className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+              <AccordionTrigger className="hover:no-underline text-left py-6">
+                <div className="flex flex-col gap-2">
+                  <span className="type-label text-muted-foreground">{(index + 1).toString().padStart(2, '0')}</span>
+                  <span className="type-body font-medium text-foreground">{section.title}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-6">
+                <p className="type-body text-muted-foreground m-0">{section.intro}</p>
 
                 {section.bullets.length > 0 ? (
-                  <ul className={`${styles.moduleBullets} type-small`}>
+                  <ul className="flex flex-col gap-2 mt-4 ml-4.5 p-0 list-disc marker:text-primary type-body text-muted-foreground">
                     {section.bullets.map((bullet) => (
                       <li key={bullet}>{bullet}</li>
                     ))}
@@ -134,36 +132,38 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
                 ) : null}
 
                 {section.facts.length > 0 ? (
-                  <div className={styles.metricNames}>
-                    <p className={`${styles.muted} type-label`}>{movement.metricsTitle}</p>
-                    {section.facts.map((fact) => (
-                      <div key={fact.label} className={styles.metricRow}>
-                        <span className={`${styles.metricName} type-small`}>{fact.label}</span>
-                        <p className={`${styles.metricMeaning} type-small`}>{fact.description}</p>
-                      </div>
-                    ))}
+                  <div className="flex flex-col gap-3 mt-6 pt-6 border-t border-border/50">
+                    <p className="type-label text-muted-foreground m-0">{movement.metricsTitle}</p>
+                    <div className="flex flex-col gap-3">
+                      {section.facts.map((fact) => (
+                        <div key={fact.label} className="grid grid-cols-[10rem_1fr] items-baseline gap-4 pt-3 border-t border-border/50 first:pt-0 first:border-0">
+                          <span className="type-small font-mono text-foreground">{fact.label}</span>
+                          <p className="type-small text-muted-foreground m-0">{fact.description}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
-              </li>
-            ))}
-          </ol>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
 
-          {/* ── The self-serve branch. An outbound link, never a lead. ─────────────────── */}
-          <div id="hub-cta" className={`${styles.commitFoot} ${styles.spaceTop}`}>
-            <div>
-              <p className="type-h4">{parity.hubCtaTitle}</p>
-              <p className={`${styles.muted} ${styles.noteBody} type-small`}>{parity.hubCtaDesc}</p>
-            </div>
-            <a
-              className={styles.linkOut}
-              href={HUB_ORIGIN}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="type-h4">{parity.hubCtaLabel}</span>
-              <ExternalLink size={16} className={styles.linkOutMark} aria-hidden="true" />
-            </a>
+        {/* ── The self-serve branch. An outbound link, never a lead. ─────────────────── */}
+        <div id="hub-cta" className="flex flex-wrap justify-between items-center gap-6 mt-16 pt-8 border-t border-border">
+          <div className="flex flex-col gap-2">
+            <p className="type-body font-medium text-foreground m-0">{parity.hubCtaTitle}</p>
+            <p className="type-small text-muted-foreground max-w-[720px] m-0">{parity.hubCtaDesc}</p>
           </div>
+          <a
+            className="inline-flex items-center gap-3 px-5 py-3 border border-border rounded-md bg-card hover:border-primary transition-colors no-underline group focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+            href={HUB_ORIGIN}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="type-body font-medium text-foreground group-hover:text-primary transition-colors">{parity.hubCtaLabel}</span>
+            <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary transition-colors" aria-hidden="true" />
+          </a>
         </div>
       </div>
     </Movement>

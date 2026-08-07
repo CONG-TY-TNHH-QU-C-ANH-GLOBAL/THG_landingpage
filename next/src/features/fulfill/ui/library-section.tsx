@@ -11,7 +11,6 @@ import type { Locale } from "@/shared/i18n";
 import LearningLibrary, { type LibraryResource } from "../client/learning-library.client";
 import { Heading, Movement } from "./section";
 import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
-import styles from "./fulfill.module.css";
 
 type ResourceType = "intro" | "overview" | "walkthrough" | "clip";
 
@@ -56,7 +55,7 @@ export default function LibrarySection({ lang, movement }: Readonly<Props>) {
         as="h3"
         aside={
           // A count, rendered beside the things it counts. Never a standalone statistic.
-          <p className={`${styles.muted} type-label`}>
+          <p className="font-mono text-[11px] tracking-[0.1em] text-muted-foreground uppercase m-0">
             {resources.length} · {labels.intro} · {labels.overview} · {labels.walkthrough} ·{" "}
             {labels.clip}
           </p>
