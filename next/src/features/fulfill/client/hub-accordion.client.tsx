@@ -7,14 +7,17 @@ import { Accordion } from "@/shared/ui/accordion";
  * Client wrapper for the Hub accordion to support hash-based opening (#hub-id) 
  */
 export function HubAccordion({ children, className }: Omit<React.ComponentProps<typeof Accordion>, "type" | "collapsible" | "value" | "onValueChange">) {
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      if (hash.startsWith("#hub-")) {
+        return hash.replace("#hub-", "");
+      }
+    }
+    return "";
+  });
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.startsWith("#hub-")) {
-      setValue(hash.replace("#hub-", ""));
-    }
-
     const handleHashChange = () => {
       const newHash = window.location.hash;
       if (newHash.startsWith("#hub-")) {
