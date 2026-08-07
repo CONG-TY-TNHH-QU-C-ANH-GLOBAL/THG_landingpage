@@ -15,7 +15,6 @@ import type { FulfillCopy } from "../localized-content";
 import type { FulfillParityCopy } from "../parity-content";
 import { Heading, Movement } from "./section";
 import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
-import styles from "./fulfill.module.css";
 
 interface Props {
   copy: FulfillCopy;
@@ -29,67 +28,79 @@ export default function ProcessSection({ copy, parity, movement }: Readonly<Prop
   const podFlow = [parity.blankTshirt, parity.dtgPrint, parity.yourBrand, parity.brandedProduct];
 
   return (
-    <Movement id="process" aliases={["journey", "passport"]}>
-      <Heading
-        index={MOVEMENT_INDEX.process}
-        eyebrow={copy.journeyEyebrow}
-        title={copy.journeyTitle}
-        lead={copy.journeyIntro}
-        aside={
-          <div>
-            <p className={`${styles.muted} type-label`}>{parity.podProcess}</p>
-            <ol className={`${styles.visibilityRail} ${styles.railBare} ${styles.spaceTopTight}`}>
-              {podFlow.map((stage) => (
-                <li key={stage}>{stage}</li>
-              ))}
-            </ol>
-          </div>
-        }
-      />
+    <>
+      {/* Enforce the 128px major break (this sits between S3 and S4). 
+          Since Movement provides its own padding, this spacer visually ensures the boundary is large.
+          (Assuming padding collapsing logic is handled by section spacing rules). */}
+      <div className="h-[32px]" aria-hidden="true" />
+      <Movement id="process" aliases={["journey", "passport"]}>
+        <Heading
+          index={MOVEMENT_INDEX.process}
+          eyebrow={copy.journeyEyebrow}
+          title={copy.journeyTitle}
+          lead={copy.journeyIntro}
+          aside={
+            <div className="mt-4 lg:mt-0">
+              <p className="type-label text-muted-foreground mb-2">{parity.podProcess}</p>
+              <ol className="flex flex-wrap items-center gap-2 lg:gap-4 m-0 p-0 list-none text-muted-foreground type-small font-mono">
+                {podFlow.map((stage, idx) => (
+                  <li key={stage} className="flex items-center gap-2 lg:gap-4">
+                    <span>{stage}</span>
+                    {idx < podFlow.length - 1 && <span aria-hidden="true" className="text-border">→</span>}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          }
+        />
 
-      <ol className={styles.states}>
-        {copy.steps.map((step) => (
-          <li key={step.index} className={styles.state}>
-            <p className={`${styles.stateIndex} type-label`}>{step.index}</p>
-            <h3 className={`${styles.stateTitle} type-h3`}>{step.title}</h3>
+        <ol className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-6 mt-12 lg:mt-16">
+          {copy.steps.map((step) => (
+            <li key={step.index} className="flex flex-col gap-4 border-t border-border pt-6">
+              <p className="type-label text-muted-foreground m-0">{step.index}</p>
+              <h3 className="type-h3 text-foreground m-0">{step.title}</h3>
 
-            <dl className={styles.stateFacts}>
-              <div>
-                <dt className={`${styles.stateFactTerm} type-label`}>{movement.stateTruth}</dt>
-                <dd className={`${styles.stateFactValue} type-small`}>{step.description}</dd>
-              </div>
-              <div>
-                <dt className={`${styles.stateFactTerm} type-label`}>{movement.stateFailure}</dt>
-                <dd className={`${styles.stateFactValue} type-small`}>
-                  <span className={styles.absent}>{movement.notPublished}</span>
-                </dd>
-              </div>
-              <div>
-                <dt className={`${styles.stateFactTerm} type-label`}>{movement.stateOwner}</dt>
-                <dd className={`${styles.stateFactValue} type-small`}>
-                  <span className={styles.absent}>{movement.notPublished}</span>
-                </dd>
-              </div>
-            </dl>
-          </li>
-        ))}
-      </ol>
-
-      {/* The visibility rail: the four states a seller can watch while the above is running. Stated,
-          never animated as if live — the Hub reports these, this page does not stream them. */}
-      <div className={styles.spaceTop}>
-        <p className={`${styles.stateFactTerm} type-label`}>{movement.stateVisibility}</p>
-        <ol className={styles.visibilityRail}>
-          {copy.hubStages.map((stage) => (
-            <li key={stage}>{stage}</li>
+              <dl className="grid gap-4 mt-2">
+                <div className="grid gap-1">
+                  <dt className="type-label text-muted-foreground">{movement.stateTruth}</dt>
+                  <dd className="type-small text-foreground m-0">{step.description}</dd>
+                </div>
+                <div className="grid gap-1">
+                  <dt className="type-label text-muted-foreground">{movement.stateFailure}</dt>
+                  <dd className="type-small m-0 text-muted-foreground">
+                    <span>{movement.notPublished}</span>
+                  </dd>
+                </div>
+                <div className="grid gap-1">
+                  <dt className="type-label text-muted-foreground">{movement.stateOwner}</dt>
+                  <dd className="type-small m-0 text-muted-foreground">
+                    <span>{movement.notPublished}</span>
+                  </dd>
+                </div>
+              </dl>
+            </li>
           ))}
         </ol>
-        <p className={`${styles.noteBody} ${styles.muted} type-small`}>{copy.hubCaption}</p>
-      </div>
 
-      <p className={`${styles.noteBody} ${styles.muted} type-small ${styles.spaceTopTight}`}>
-        {copy.journeyReference}
-      </p>
-    </Movement>
+        {/* The visibility rail: the four states a seller can watch while the above is running. Stated,
+            never animated as if live — the Hub reports these, this page does not stream them. */}
+        <div className="mt-16 pt-8 border-t border-border">
+          <p className="type-label text-muted-foreground mb-4">{movement.stateVisibility}</p>
+          <ol className="flex flex-wrap items-center gap-2 lg:gap-4 m-0 p-0 list-none text-foreground type-small font-mono mb-4">
+            {copy.hubStages.map((stage, idx) => (
+              <li key={stage} className="flex items-center gap-2 lg:gap-4">
+                <span>{stage}</span>
+                {idx < copy.hubStages.length - 1 && <span aria-hidden="true" className="text-border">→</span>}
+              </li>
+            ))}
+          </ol>
+          <p className="type-small text-muted-foreground m-0 max-w-[720px]">{copy.hubCaption}</p>
+        </div>
+
+        <p className="mt-6 type-small text-muted-foreground m-0 max-w-[720px]">
+          {copy.journeyReference}
+        </p>
+      </Movement>
+    </>
   );
 }

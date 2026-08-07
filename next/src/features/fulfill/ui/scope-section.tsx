@@ -16,7 +16,6 @@ import type { FulfillParityCopy } from "../parity-content";
 import { FAQ_SLOT, pickFaq } from "./faq-placement";
 import { Heading, Movement } from "./section";
 import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
-import styles from "./fulfill.module.css";
 
 interface Props {
   content: FulfillContent;
@@ -34,9 +33,9 @@ function Fact({
   absentLabel,
 }: Readonly<{ term: string; value: string; absentLabel: string }>) {
   return (
-    <div className={styles.productFact}>
-      <dt>{term}</dt>
-      <dd>{value || <span className={styles.absent}>{absentLabel}</span>}</dd>
+    <div className="flex flex-row justify-between items-baseline gap-4 py-1.5 border-b border-border last:border-b-0">
+      <dt className="type-label text-muted-foreground">{term}</dt>
+      <dd className="type-small text-foreground text-right font-mono">{value || <span className="text-muted-foreground font-sans">{absentLabel}</span>}</dd>
     </div>
   );
 }
@@ -86,7 +85,7 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
       }));
 
   return (
-    <Movement id="catalog" tone="surface">
+    <Movement id="catalog">
       <Heading
         index={MOVEMENT_INDEX.scope}
         eyebrow={copy.catalogEyebrow}
@@ -94,24 +93,27 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
         lead={copy.catalogIntro}
       />
 
-      <ul className={styles.catalog}>
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 m-0 p-0 list-none">
         {products.map((item) => (
-          <li key={item.key} className={styles.product}>
+          <li key={item.key} className="flex flex-col gap-4 bg-card border border-border rounded-lg p-4 transition-colors hover:border-primary">
             {item.image ? (
-              <div className={styles.productFigure}>
+              // TODO: HALT [H-D]
+              // Image crop/aspect ratio is missing from authority.
+              <div className="relative w-full aspect-square bg-muted rounded-md overflow-hidden">
                 <Image
                   src={item.image}
                   alt={item.alt}
                   fill
+                  className="object-cover"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
                   unoptimized={item.remote}
                 />
               </div>
             ) : null}
-            <div className={styles.productBody}>
-              <h3 className={`${styles.productName} type-h4`}>{item.name}</h3>
+            <div className="flex flex-col">
+              <h3 className="type-h4 text-foreground m-0 mb-3">{item.name}</h3>
               {/* Three rows always. A missing figure is a labelled gap, never an omitted row. */}
-              <dl className={styles.productFacts}>
+              <dl className="flex flex-col m-0 border-t border-border pt-1">
                 <Fact
                   term={parity.basecostLabel}
                   value={item.price}
@@ -134,24 +136,24 @@ export default function ScopeSection({ content, copy, parity, movement, faqs }: 
       </ul>
 
       {!fromCms ? (
-        <p className={`${styles.note} ${styles.spaceTop} type-small`}>{copy.catalogEmpty}</p>
+        <p className="mt-8 type-small text-muted-foreground p-4 bg-muted/30 rounded-md max-w-[720px]">{copy.catalogEmpty}</p>
       ) : null}
 
-      <div className={`${styles.spaceTop} ${styles.pairGrid}`}>
+      <div className="flex flex-col md:flex-row gap-8 lg:gap-12 mt-16 pt-12 border-t border-border">
         {/* Templates: the artwork obligation, answered where the seller first meets it. */}
         {templates ? (
-          <div className={styles.boundary}>
-            <p className="type-label">{movement.templatesTitle}</p>
-            <p className="type-body">{templates.answer}</p>
+          <div className="flex-1 flex flex-col gap-3 bg-card border border-border p-6 rounded-lg [&_a]:text-primary [&_a:hover]:underline [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-ring [&_a:focus-visible]:outline-none">
+            <p className="type-label text-muted-foreground m-0">{movement.templatesTitle}</p>
+            <p className="type-body text-foreground m-0">{templates.answer}</p>
           </div>
         ) : null}
 
         {/* The stated limit. This is an exit, and it is placed to be found rather than to be
             avoided — a seller who leaves on this row saves both parties a month. */}
         {limit ? (
-          <div className={styles.boundary}>
-            <p className="type-label">{movement.boundaryTitle}</p>
-            <p className="type-body">{limit.answer}</p>
+          <div className="flex-1 flex flex-col gap-3 bg-card border border-border p-6 rounded-lg [&_a]:text-primary [&_a:hover]:underline [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-ring [&_a:focus-visible]:outline-none">
+            <p className="type-label text-muted-foreground m-0">{movement.boundaryTitle}</p>
+            <p className="type-body text-foreground m-0">{limit.answer}</p>
           </div>
         ) : null}
       </div>

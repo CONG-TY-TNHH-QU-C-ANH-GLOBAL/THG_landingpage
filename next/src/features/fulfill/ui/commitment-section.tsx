@@ -13,9 +13,8 @@ import type { Locale } from "@/shared/i18n";
 import type { FulfillFaq } from "../models/faq";
 import type { FulfillParityCopy } from "../parity-content";
 import { FAQ_SLOT, pickFaq } from "./faq-placement";
-import { Heading, Movement } from "./section";
-import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
-import styles from "./fulfill.module.css";
+import { Movement } from "./section";
+import type { MovementCopy } from "./movement-copy";
 
 interface Props {
   lang: Locale;
@@ -24,76 +23,64 @@ interface Props {
   faqs: readonly FulfillFaq[];
 }
 
-/** One published undertaking. `detail` names the concrete things the statement promises, where the
- *  published wording promises some. */
-interface Commitment {
-  term: string;
-  value: string;
-  detail?: readonly string[];
-}
-
 export default function CommitmentSection({ lang, parity, movement, faqs }: Readonly<Props>) {
   const compensation = pickFaq(faqs, FAQ_SLOT.compensation);
   const payment = pickFaq(faqs, FAQ_SLOT.payment);
-  const support = parity.hubSections.find((section) => section.id === "support");
   const [, transparency] = parity.advantages;
 
-  // Only commitments THG has actually published. A row is present because there is something to say
-  // in it, never because the grid looked unbalanced with three. The support row names its two
-  // channels because its published intro ends by promising them — a sentence that stops at the
-  // colon reads as content that went missing.
-  const commitments: Commitment[] = [];
-  if (compensation) {
-    commitments.push({ term: movement.termCompensation, value: compensation.answer });
-  }
-  if (payment) commitments.push({ term: movement.termPayment, value: payment.answer });
-  if (support) {
-    commitments.push({
-      term: movement.termSupport,
-      value: support.intro,
-      detail: support.facts.map((fact) => fact.label),
-    });
-  }
-  commitments.push({ term: movement.termPolicy, value: parity.policyDesc });
-
   return (
-    <Movement id="trust" tone="inverted">
-      <Heading
-        index={MOVEMENT_INDEX.commitment}
-        eyebrow={movement.commitment}
-        title={movement.commitmentTitle}
-        lead={movement.commitmentIntro}
-        aside={
-          <div>
-            <p className="type-h4">{transparency.title}</p>
-            <p className={`${styles.muted} ${styles.spaceTopTight} type-small`}>
+    <Movement id="trust" tone="inverted" width="content">
+      <div className="flex flex-col text-left">
+        
+        {/* Transparency Promise */}
+        <div className="flex flex-col gap-4">
+          <p className="type-lead text-primary-foreground m-0">
+            {transparency.title}
+          </p>
+          {transparency.description && (
+            <p className="type-body text-muted m-0">
               {transparency.description}
             </p>
-          </div>
-        }
-      />
+          )}
+        </div>
 
-      <dl className={styles.commitGrid}>
-        {commitments.map((entry) => (
-          <div key={entry.term} className={styles.commit}>
-            <dt className={`${styles.commitTerm} type-label`}>{entry.term}</dt>
-            <dd className={`${styles.commitValue} type-body`}>
-              {entry.value}
-              {entry.detail?.length ? (
-                <span className={`${styles.commitDetail} type-small`}>
-                  {entry.detail.join(" · ")}
-                </span>
-              ) : null}
-            </dd>
-          </div>
-        ))}
-      </dl>
+        {/* 48px inner clearance */}
+        <div className="h-[48px]" aria-hidden="true" />
 
-      <div className={styles.commitFoot}>
-        <p className="type-h4">{parity.policyTitle}</p>
-        <Link href={`/${lang}/policy`} className={styles.linkQuiet}>
-          {parity.policyCta}
-        </Link>
+        {/* Liability Statement: dominant strictly by isolation */}
+        {compensation ? (
+          <div className="flex flex-col gap-4 border-y border-border/20 py-12">
+            <h2 className="type-label text-muted m-0">{movement.termCompensation}</h2>
+            <p className="type-body text-primary-foreground m-0">
+              {compensation.answer}
+            </p>
+          </div>
+        ) : null}
+
+        {/* 48px inner clearance */}
+        <div className="h-[48px]" aria-hidden="true" />
+
+        {/* Payment Rails */}
+        {payment ? (
+          <div className="flex flex-col gap-4 mb-12">
+            <h3 className="type-label text-muted m-0">{movement.termPayment}</h3>
+            <p className="type-body text-primary-foreground m-0">
+              {payment.answer}
+            </p>
+          </div>
+        ) : null}
+
+        {/* Policy Link */}
+        <div className="border-t border-border/20 pt-8 mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <p className="type-body font-medium text-primary-foreground m-0">{parity.policyTitle}</p>
+          <Link 
+            href={`/${lang}/policy`} 
+            className="type-small font-mono text-muted hover:text-primary-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-offset-navy no-underline"
+          >
+            {parity.policyCta}
+          </Link>
+        </div>
+
       </div>
     </Movement>
   );

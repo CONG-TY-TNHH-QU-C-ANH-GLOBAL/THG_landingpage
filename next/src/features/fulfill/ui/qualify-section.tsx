@@ -1,4 +1,4 @@
-// S1 · QUALIFY — "What is this, and is it for my operation?"
+// S1 · QUALIFY
 //
 // The decision this movement serves is the cheapest one on the page and the most valuable: whether
 // to keep reading at all. So it carries the scope panel and the page's first exit, and it carries
@@ -13,7 +13,6 @@ import type { FulfillCopy } from "../localized-content";
 import { FAQ_SLOT, pickFaq } from "./faq-placement";
 import type { MovementCopy } from "./movement-copy";
 import { MOVEMENT_INDEX } from "./movement-copy";
-import styles from "./fulfill.module.css";
 
 /** Invariant scope tokens. Market and country codes are not translated, and rendering them as a
  *  structured row is a restatement of the published scope answer shown directly beneath — not a
@@ -40,60 +39,70 @@ export default function QualifySection({ copy, content, movement, faqs }: Readon
   const scopeAnswer = pickFaq(faqs, FAQ_SLOT.serviceScope);
 
   return (
-    <section id="top" className={`${styles.section} ${styles.hero}`}>
-      <div className={`${styles.inner} ${styles.innerWide}`}>
-        <div className={styles.heroGrid}>
-          <div>
-            {/* The same eyebrow the other ten movements use, so the page numbers itself
-                consistently from the first line onward. */}
-            <p className={`${styles.eyebrow} type-label`}>
-              <span className={styles.eyebrowIndex}>{MOVEMENT_INDEX.qualify}</span>
+    <section id="top" className="w-full bg-background pt-16 pb-16 lg:pt-24 lg:pb-24">
+      <div className="container mx-auto px-4 md:px-8">
+        <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-x-6">
+          {/* Primary region: 7/12 on desktop */}
+          <div className="col-span-4 md:col-span-8 lg:col-span-7 flex flex-col justify-start items-start text-left">
+            
+            <p className="type-label text-muted-foreground mb-4">
+              <span className="mr-2 text-primary">{MOVEMENT_INDEX.qualify}</span>
               {movement.qualify}
             </p>
 
-            <h1 className={`${styles.heroTitle} type-display`}>{copy.heroHeadline}</h1>
-            <p className={`${styles.heroLead} type-lead`}>{subtitle}</p>
+            <h1 className="type-display text-foreground mb-12">
+              {copy.heroHeadline}
+            </h1>
+            
+            <p className="type-lead text-foreground max-w-[720px] line-clamp-2 mb-12">
+              {subtitle}
+            </p>
 
-            <ul className={styles.heroRail}>
+            <ul className="flex flex-col gap-2 type-small text-muted-foreground mb-12">
               {points.map((point) => (
                 <li key={point}>{point}</li>
               ))}
             </ul>
+            
+            {/* Resting Space */}
+            <div className="h-8 lg:h-12 w-full" aria-hidden="true" />
+
+            {/* Note: The exit and scope list were originally rendered side-by-side in a grid.
+                The visual blueprint strictly dictates that S1 has NO supporting content on the right (5/12 empty),
+                so the scope panel and exit gate remain sequentially in the 7/12 column stack. */}
+            <div className="flex flex-col mt-8 border-t border-border pt-8 w-full max-w-[720px]">
+              <p className="type-label text-muted-foreground mb-4">{serviceLabel}</p>
+              <h2 className="type-h2 text-foreground mb-6">{movement.scopeTitle}</h2>
+
+              <dl className="flex flex-col gap-4 mb-6">
+                <div className="flex flex-row justify-between items-baseline border-b border-border/50 pb-2">
+                  <dt className="type-label text-muted-foreground">{movement.scopeServices}</dt>
+                  <dd className="type-body text-foreground">{SCOPE.services}</dd>
+                </div>
+                <div className="flex flex-row justify-between items-baseline border-b border-border/50 pb-2">
+                  <dt className="type-label text-muted-foreground">{movement.scopeOrigins}</dt>
+                  <dd className="type-body text-foreground">{SCOPE.origins}</dd>
+                </div>
+                <div className="flex flex-row justify-between items-baseline border-b border-border/50 pb-2">
+                  <dt className="type-label text-muted-foreground">{movement.scopeDestinations}</dt>
+                  <dd className="type-body text-foreground">{SCOPE.destinations}</dd>
+                </div>
+              </dl>
+
+              {scopeAnswer ? (
+                <p className="type-small text-muted-foreground mb-8 max-w-[720px]">{scopeAnswer.answer}</p>
+              ) : null}
+
+              <div className="bg-muted/30 p-6 rounded-md">
+                <p className="type-label text-muted-foreground mb-2">{movement.exitTitle}</p>
+                <p className="type-small text-foreground max-w-[720px]">{movement.exitText}</p>
+              </div>
+            </div>
+
           </div>
 
-          {/* The scope panel. Gate G0: everything downstream is wasted on a seller outside these
-              three rows, so the rows come before the argument rather than after it. */}
-          <div className={styles.scope}>
-            <p className="type-label">{serviceLabel}</p>
-            <h2 className="type-h3">{movement.scopeTitle}</h2>
-
-            <dl className={styles.scopeList}>
-              <div className={styles.scopeRow}>
-                <dt className={`${styles.scopeTerm} type-label`}>{movement.scopeServices}</dt>
-                <dd className={`${styles.scopeValue} type-h4`}>{SCOPE.services}</dd>
-              </div>
-              <div className={styles.scopeRow}>
-                <dt className={`${styles.scopeTerm} type-label`}>{movement.scopeOrigins}</dt>
-                <dd className={`${styles.scopeValue} type-h4`}>{SCOPE.origins}</dd>
-              </div>
-              <div className={styles.scopeRow}>
-                <dt className={`${styles.scopeTerm} type-label`}>{movement.scopeDestinations}</dt>
-                <dd className={`${styles.scopeValue} type-h4`}>{SCOPE.destinations}</dd>
-              </div>
-            </dl>
-
-            {/* The published scope answer, verbatim, at the point the question is asked. It also
-                appears in the canonical index; that duplication is the design. */}
-            {scopeAnswer ? (
-              <p className={`${styles.scopeNote} type-small`}>{scopeAnswer.answer}</p>
-            ) : null}
-          </div>
-        </div>
-
-        {/* The first exit. A seller who leaves here has been served correctly. */}
-        <div className={`${styles.note} ${styles.spaceTop}`}>
-          <p className="type-label">{movement.exitTitle}</p>
-          <p className={`${styles.noteBody} type-small`}>{movement.exitText}</p>
+          {/* Supporting region: 5/12 on desktop. EMPTY intentionally for isolation. */}
+          <div className="hidden lg:block lg:col-span-5" aria-hidden="true" />
         </div>
       </div>
     </section>
