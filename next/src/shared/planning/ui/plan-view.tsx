@@ -18,7 +18,6 @@
 import type { ReactNode } from "react";
 
 import type { Evidence, OperationalPlan } from "../plan";
-import styles from "./plan-view.module.css";
 
 /**
  * What a ground shows in its value slot.
@@ -30,11 +29,10 @@ import styles from "./plan-view.module.css";
 function groundValue(
   evidence: Evidence,
   labels: (id: string) => string,
-  absentClassName: string,
 ): ReactNode {
   switch (evidence.kind) {
     case "absent":
-      return <span className={absentClassName}>{labels("ui.no_data_yet")}</span>;
+      return <span className="text-muted-foreground">{labels("ui.no_data_yet")}</span>;
     case "committed":
       return labels(evidence.id);
     default:
@@ -59,46 +57,50 @@ export function PlanView({ plan, labels, action, as: Heading = "h3" }: Readonly<
   const { subject, identity, expectation } = plan;
 
   return (
-    <article className={styles.plan} id={`plan-${identity.planId}`} data-plan-id={identity.planId}>
+    <article 
+      className="grid gap-6 p-6 border border-border rounded-lg bg-card text-foreground scroll-mt-24" 
+      id={`plan-${identity.planId}`} 
+      data-plan-id={identity.planId}
+    >
       {/* SUBJECT — who this plan is for, and how each part of that was established. */}
-      <header className={styles.head}>
-        <p className={`${styles.subject} type-h3`}>
+      <header className="flex flex-wrap items-baseline justify-between gap-y-3 gap-x-6 pb-5 border-b border-border">
+        <p className="m-0 type-h3 text-foreground">
           {labels(`situation.${subject.situation.value}`)}
           <span aria-hidden="true"> · </span>
           {labels(`supply.${subject.supplyModel.value}`)}{" "}
           {subject.holdsStock.provenance === "inferred" ? (
-            <span className={styles.inferred}>({labels("ui.inferred")})</span>
+            <span className="text-muted-foreground type-small font-mono">({labels("ui.inferred")})</span>
           ) : null}
         </p>
-        <p className={styles.confidence}>
+        <p className="inline-flex items-baseline gap-2 m-0 text-muted-foreground type-small font-mono">
           {labels("ui.confidence")}
-          <span className={styles.confidenceValue}>
+          <span className="text-foreground">
             {labels(`confidence.${expectation.confidence}`)}
           </span>
         </p>
       </header>
 
       {/* CONSTRAINT — invariant. Why acting is necessary at all. */}
-      <div className={styles.block}>
-        <Heading className={`${styles.label} type-label`}>{labels("ui.constraint")}</Heading>
-        <p className={`${styles.constraint} type-h3`}>{labels(plan.constraint.id)}</p>
+      <div className="grid gap-3">
+        <Heading className="m-0 type-label text-muted-foreground">{labels("ui.constraint")}</Heading>
+        <p className="m-0 type-h3 text-foreground max-w-[46ch]">{labels(plan.constraint.id)}</p>
       </div>
 
       {/* COURSE — what happens, who does it, and what it costs the seller. */}
-      <div className={styles.block}>
-        <p className={`${styles.label} type-label`}>{labels("ui.course")}</p>
-        <ul className={styles.capabilities}>
-          {plan.course.capabilities.map((capability) => (
-            <li key={capability} className={styles.capability}>
+      <div className="grid gap-3">
+        <p className="m-0 type-label text-muted-foreground">{labels("ui.course")}</p>
+        <ul className="flex flex-wrap gap-2 m-0 p-0 list-none">
+          {plan.course.capabilities.map((capability, idx) => (
+            <li key={capability} className={`px-3 py-1.5 border rounded-sm type-small font-mono ${idx === 0 ? "border-current font-semibold" : "border-border"}`}>
               {labels(`capability.${capability}`)}
             </li>
           ))}
         </ul>
 
-        <div className={styles.obligations}>
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 mt-2">
           <div>
-            <p className={`${styles.label} type-label`}>{labels("ui.thg_does")}</p>
-            <ul className={`${styles.list} type-small`}>
+            <p className="m-0 type-label text-muted-foreground">{labels("ui.thg_does")}</p>
+            <ul className="grid gap-2 mt-2 ml-4.5 pl-0 text-muted-foreground type-small leading-relaxed list-disc marker:text-primary">
               {thg.map((o) => (
                 <li key={o.id}>{labels(o.id)}</li>
               ))}
@@ -107,8 +109,8 @@ export function PlanView({ plan, labels, action, as: Heading = "h3" }: Readonly<
           {/* A course with no seller obligations would be a sales pitch; the domain forbids it and
               this column is what makes the reciprocity impossible to miss. */}
           <div>
-            <p className={`${styles.label} type-label`}>{labels("ui.you_do")}</p>
-            <ul className={`${styles.list} type-small`}>
+            <p className="m-0 type-label text-muted-foreground">{labels("ui.you_do")}</p>
+            <ul className="grid gap-2 mt-2 ml-4.5 pl-0 text-muted-foreground type-small leading-relaxed list-disc marker:text-primary">
               {seller.map((o) => (
                 <li key={o.id}>{labels(o.id)}</li>
               ))}
@@ -116,27 +118,27 @@ export function PlanView({ plan, labels, action, as: Heading = "h3" }: Readonly<
           </div>
         </div>
 
-        <div className={styles.tradeoff}>
-          <p className={`${styles.label} type-label`}>{labels("ui.tradeoff")}</p>
-          <p className={`${styles.tradeoffText} type-small`}>
+        <div className="grid gap-1.5 px-5 py-4 border-l-2 border-primary rounded-r-md bg-border/20 mt-4">
+          <p className="m-0 type-label text-muted-foreground">{labels("ui.tradeoff")}</p>
+          <p className="m-0 type-small leading-relaxed text-foreground max-w-[60ch]">
             {"none" in tradeoff ? labels(tradeoff.reasonId) : labels(tradeoff.id)}
           </p>
         </div>
       </div>
 
       {/* GROUNDS — kind-aware. `absent` is stated, which is the whole point of the kind existing. */}
-      <div className={styles.block}>
-        <p className={`${styles.label} type-label`}>{labels("ui.grounds")}</p>
-        <dl className={styles.grounds}>
+      <div className="grid gap-3">
+        <p className="m-0 type-label text-muted-foreground">{labels("ui.grounds")}</p>
+        <dl className="grid m-0 border-t border-border">
           {plan.grounds.map((evidence) => (
-            <div key={evidence.id} className={styles.ground} data-kind={evidence.kind}>
+            <div key={evidence.id} className="grid sm:grid-cols-[9rem_1fr] items-baseline gap-x-6 gap-y-1 py-3 border-b border-border" data-kind={evidence.kind}>
               {/* The term names WHICH fact this is; the kind says what sort of claim it is. Showing
                   only the kind left a reader looking at "Published · $7.50" with no way to know
                   whether that was a base cost, a lead time or something else entirely. */}
-              <dt className={`${styles.groundTerm} type-small`}>{labels(evidence.id)}</dt>
-              <dd className={`${styles.groundValue} type-small`}>
-                <span className={styles.groundKind}>{labels(`kind.${evidence.kind}`)}</span>
-                {groundValue(evidence, labels, styles.absent)}
+              <dt className="m-0 type-small text-foreground">{labels(evidence.id)}</dt>
+              <dd className="m-0 type-small text-foreground max-w-[62ch]">
+                <span className={`block type-label ${(evidence.kind === "published" || evidence.kind === "measured") ? "text-primary" : "text-muted-foreground"}`}>{labels(`kind.${evidence.kind}`)}</span>
+                {groundValue(evidence, labels)}
               </dd>
             </div>
           ))}
@@ -147,28 +149,28 @@ export function PlanView({ plan, labels, action, as: Heading = "h3" }: Readonly<
           promise, so a null outcome renders nothing; what the plan deliberately does not know is
           listed rather than silently skipped. */}
       {expectation.outcomeId ? (
-        <p className="type-body">{labels(expectation.outcomeId)}</p>
+        <p className="type-body text-foreground">{labels(expectation.outcomeId)}</p>
       ) : null}
 
-      <div className={styles.block}>
-        <p className={`${styles.label} type-label`}>{labels("ui.deferred")}</p>
-        <ul className={styles.deferred}>
+      <div className="grid gap-3">
+        <p className="m-0 type-label text-muted-foreground">{labels("ui.deferred")}</p>
+        <ul className="flex flex-wrap items-baseline gap-2 m-0 p-0 list-none">
           {subject.deferred.map((d) => (
-            <li key={d.field} className={styles.deferredItem}>
+            <li key={d.field} className="px-2 py-0.5 border border-dashed border-border rounded-sm type-small font-mono text-muted-foreground">
               {labels(`field.${d.field}`)}
             </li>
           ))}
         </ul>
       </div>
 
-      <div className={styles.foot}>
-        <p className={styles.identity}>
+      <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-6 pt-8 border-t border-border mt-0">
+        <p className="m-0 type-small font-mono text-muted-foreground">
           {labels("ui.identity")} {identity.planId} · {identity.catalogueVersion}
           {/* A drafted plan says so. Operations has not confirmed these assertions, and presenting
               them identically to a signed-off plan would be the fabrication the whole evidence
               model exists to prevent. */}
           {identity.verified ? null : (
-            <span className={styles.unverified}>{labels("ui.unverified")}</span>
+            <span className="inline-block ml-2 px-2 py-0.5 border border-dashed border-border rounded-sm text-muted-foreground">{labels("ui.unverified")}</span>
           )}
         </p>
         {action}

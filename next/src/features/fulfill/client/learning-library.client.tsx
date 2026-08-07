@@ -21,7 +21,6 @@ import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { Play } from "lucide-react";
 
 import { rovingIndex } from "@/shared/ui/roving";
-import styles from "../ui/fulfill.module.css";
 
 export interface LibraryResource {
   id: string;
@@ -74,39 +73,45 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
   }
 
   return (
-    <div className={styles.libraryGrid}>
-      <div className={styles.player} ref={playerRef} tabIndex={-1}>
-        {playing ? (
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${current.videoId}?autoplay=1`}
-            title={current.title}
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={play}
-            aria-label={`${playLabel}: ${current.title}`}
-            className={styles.facade}
-          >
-            <Image
-              src={current.poster}
-              alt=""
-              fill
-              sizes="(max-width: 1024px) 100vw, 800px"
-              priority={false}
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 mt-12 lg:mt-16 items-start">
+      <div className="col-span-1 lg:col-span-8 sticky top-24" ref={playerRef} tabIndex={-1}>
+        <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+          {playing ? (
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${current.videoId}?autoplay=1`}
+              title={current.title}
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="absolute inset-0 w-full h-full border-0"
             />
-            <span className={styles.facadeScrim} aria-hidden="true" />
-            <span className={styles.facadeMark} aria-hidden="true">
-              <Play size={22} fill="currentColor" />
-            </span>
-            <span className={styles.facadeCaption}>
-              <span className={`${styles.facadeType} type-label`}>{current.typeLabel}</span>
-              <span className="type-h3">{current.title}</span>
-            </span>
-          </button>
-        )}
+          ) : (
+            <button
+              type="button"
+              onClick={play}
+              aria-label={`${playLabel}: ${current.title}`}
+              className="absolute inset-0 w-full h-full flex flex-col justify-end p-6 text-left border-0 bg-transparent cursor-pointer p-0 m-0 focus-visible:outline-none"
+            >
+              <Image
+                src={current.poster}
+                alt=""
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 1024px) 100vw, 800px"
+                priority={false}
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" aria-hidden="true" />
+              <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
+                <span className="flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground shadow-lg transform transition-transform duration-200 group-hover:scale-110">
+                  <Play size={28} fill="currentColor" className="ml-1" />
+                </span>
+              </span>
+              <span className="relative z-10 flex flex-col gap-1 drop-shadow-md p-6 pb-4">
+                <span className="font-mono text-[11px] tracking-[0.1em] text-white/80 uppercase">{current.typeLabel}</span>
+                <span className="font-sans text-[clamp(19px,2.5vw,24px)] text-white font-medium">{current.title}</span>
+              </span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Type first, then title — the type is what tells a visitor whether this is worth two
@@ -115,7 +120,7 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
         role="radiogroup"
         aria-label={groupLabel}
         aria-orientation="vertical"
-        className={styles.libraryList}
+        className="col-span-1 lg:col-span-4 flex flex-col gap-3"
       >
         {resources.map((resource, i) => {
           const selected = i === active;
@@ -132,14 +137,25 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
               tabIndex={selected ? 0 : -1}
               onClick={() => select(i)}
               onKeyDown={onKeyDown}
-              className={`${styles.libraryRow} ${selected ? styles.libraryRowOn : ""}`}
+              className={`flex items-center gap-4 p-3 pr-4 border rounded-lg text-left transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                selected 
+                  ? "border-primary bg-primary/5" 
+                  : "border-transparent hover:bg-muted/50"
+              }`}
             >
-              <span className={styles.libraryThumb}>
-                <Image src={resource.poster} alt="" fill sizes="96px" />
+              <span className="relative w-[96px] h-[54px] flex-shrink-0 bg-black rounded overflow-hidden">
+                <Image src={resource.poster} alt="" fill sizes="96px" className="object-cover" />
+                {selected && (
+                  <span className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                    <span className="text-white drop-shadow-md">
+                      <Play size={20} fill="currentColor" />
+                    </span>
+                  </span>
+                )}
               </span>
-              <span className={styles.libraryMeta}>
-                <span className={`${styles.muted} type-label`}>{resource.typeLabel}</span>
-                <span className={`${styles.libraryTitle} type-h4`}>{resource.title}</span>
+              <span className="flex flex-col flex-grow min-w-0">
+                <span className="font-mono text-[11px] tracking-[0.1em] text-muted-foreground uppercase truncate">{resource.typeLabel}</span>
+                <span className="font-sans text-[13.5px] font-medium text-foreground truncate">{resource.title}</span>
               </span>
             </button>
           );
@@ -147,11 +163,11 @@ export default function LearningLibrary({ resources, groupLabel, playLabel }: Re
       </div>
 
       <noscript>
-        <ul className={styles.noscriptList}>
+        <ul className="col-span-1 lg:col-span-12 flex flex-col gap-2 mt-8 m-0 p-0 list-none">
           {resources.map((resource) => (
-            <li key={resource.id} className="type-body">
+            <li key={resource.id} className="font-sans text-[16px] text-foreground m-0">
               <a
-                className={styles.linkQuiet}
+                className="font-sans text-[16px] text-foreground hover:text-primary transition-colors underline"
                 href={`https://www.youtube.com/watch?v=${resource.videoId}`}
                 target="_blank"
                 rel="noopener noreferrer"

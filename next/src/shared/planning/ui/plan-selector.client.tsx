@@ -25,7 +25,6 @@ import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "rea
 
 import { rovingIndex } from "@/shared/ui/roving";
 import { SITUATIONS, SUPPLY_MODELS, type SituationId, type SupplyModel } from "../plan";
-import styles from "./plan-selector.module.css";
 
 type Labels = Readonly<Record<string, string>>;
 
@@ -58,11 +57,11 @@ function ChoiceGroup<T extends string>({
   const activeIndex = value ? options.indexOf(value) : 0;
 
   return (
-    <div className={styles.group}>
-      <p className={`${styles.legend} type-label`} id={legendId}>
+    <div className="grid gap-3 content-start">
+      <p className="type-label text-muted-foreground m-0" id={legendId}>
         {legend}
       </p>
-      <div role="radiogroup" aria-labelledby={legendId} className={styles.options}>
+      <div role="radiogroup" aria-labelledby={legendId} className="flex flex-wrap gap-2">
         {options.map((option, i) => {
           const selected = option === value;
           return (
@@ -83,7 +82,11 @@ function ChoiceGroup<T extends string>({
                 onChange(options[target]);
                 refs.current[target]?.focus();
               }}
-              className={`${styles.option} ${selected ? styles.optionOn : ""}`}
+              className={`min-h-[44px] px-3.5 py-2 border rounded-md type-small text-left transition-colors duration-[260ms] ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                selected
+                  ? "border-primary bg-primary text-primary-foreground font-semibold"
+                  : "border-border bg-transparent text-foreground hover:border-primary"
+              }`}
             >
               {labels[`${prefix}.${option}`]}
             </button>
@@ -99,8 +102,8 @@ export default function PlanSelector({ labels, children }: Readonly<Props>) {
   const [supply, setSupply] = useState<SupplyModel | null>(null);
 
   return (
-    <div className={styles.selector}>
-      <div className={styles.questions}>
+    <div className="w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:px-8 md:py-7 border border-border rounded-lg bg-card mb-6">
         <ChoiceGroup
           legend={labels["ui.q_situation"]}
           options={SITUATIONS}
@@ -122,18 +125,24 @@ export default function PlanSelector({ labels, children }: Readonly<Props>) {
       {/* The narrowing surface. An attribute appears only once an answer exists, so the unanswered
           state needs no special handling anywhere. A live region announces what the set was narrowed
           to rather than re-reading every plan, and focus is never moved. */}
-      <p className={styles.status} role="status" aria-live="polite">
-        {situation && supply ? (
-          <span className={styles.statusValue}>
-            {labels[`situation.${situation}`]} · {labels[`supply.${supply}`]}
+      <p className="my-6 type-label text-muted-foreground" role="status" aria-live="polite">
+        {situation || supply ? (
+          <span className="text-foreground">
+            {[
+              situation ? labels[`situation.${situation}`] : null,
+              supply ? labels[`supply.${supply}`] : null
+            ].filter(Boolean).join(" · ")}
           </span>
         ) : (
           labels["ui.all_plans"]
         )}
       </p>
 
+      {/* Wrapping the children with transition-all to handle opacity and layout shifts over 260ms.
+          Non-matching elements are zeroed out (h-0, opacity-0, overflow-hidden) instead of display: none 
+          to allow the transition to run. */}
       <div
-        className={styles.stack}
+        className={`flex flex-col xl:flex-row xl:flex-wrap gap-6 [&>div]:w-full ${situation && supply ? "xl:[&>div]:w-full" : "xl:[&>div]:w-[calc(50%-12px)]"} [&>div]:transition-all [&>div]:duration-[260ms] [&>div]:ease-[cubic-bezier(0.16,1,0.3,1)] [&>div]:opacity-100 [&>div]:h-auto [&[data-situation="starting"]>[data-situation]:not([data-situation="starting"])]:opacity-0 [&[data-situation="starting"]>[data-situation]:not([data-situation="starting"])]:!h-0 [&[data-situation="starting"]>[data-situation]:not([data-situation="starting"])]:overflow-hidden [&[data-situation="starting"]>[data-situation]:not([data-situation="starting"])]:pointer-events-none [&[data-situation="starting"]>[data-situation]:not([data-situation="starting"])]:!m-0 [&[data-situation="starting"]>[data-situation]:not([data-situation="starting"])]:!p-0 [&[data-situation="starting"]>[data-situation]:not([data-situation="starting"])]:!border-0 [&[data-situation="expanding"]>[data-situation]:not([data-situation="expanding"])]:opacity-0 [&[data-situation="expanding"]>[data-situation]:not([data-situation="expanding"])]:!h-0 [&[data-situation="expanding"]>[data-situation]:not([data-situation="expanding"])]:overflow-hidden [&[data-situation="expanding"]>[data-situation]:not([data-situation="expanding"])]:pointer-events-none [&[data-situation="expanding"]>[data-situation]:not([data-situation="expanding"])]:!m-0 [&[data-situation="expanding"]>[data-situation]:not([data-situation="expanding"])]:!p-0 [&[data-situation="expanding"]>[data-situation]:not([data-situation="expanding"])]:!border-0 [&[data-situation="operating"]>[data-situation]:not([data-situation="operating"])]:opacity-0 [&[data-situation="operating"]>[data-situation]:not([data-situation="operating"])]:!h-0 [&[data-situation="operating"]>[data-situation]:not([data-situation="operating"])]:overflow-hidden [&[data-situation="operating"]>[data-situation]:not([data-situation="operating"])]:pointer-events-none [&[data-situation="operating"]>[data-situation]:not([data-situation="operating"])]:!m-0 [&[data-situation="operating"]>[data-situation]:not([data-situation="operating"])]:!p-0 [&[data-situation="operating"]>[data-situation]:not([data-situation="operating"])]:!border-0 [&[data-supply="custom"]>[data-supply]:not([data-supply="custom"])]:opacity-0 [&[data-supply="custom"]>[data-supply]:not([data-supply="custom"])]:!h-0 [&[data-supply="custom"]>[data-supply]:not([data-supply="custom"])]:overflow-hidden [&[data-supply="custom"]>[data-supply]:not([data-supply="custom"])]:pointer-events-none [&[data-supply="custom"]>[data-supply]:not([data-supply="custom"])]:!m-0 [&[data-supply="custom"]>[data-supply]:not([data-supply="custom"])]:!p-0 [&[data-supply="custom"]>[data-supply]:not([data-supply="custom"])]:!border-0 [&[data-supply="sourced"]>[data-supply]:not([data-supply="sourced"])]:opacity-0 [&[data-supply="sourced"]>[data-supply]:not([data-supply="sourced"])]:!h-0 [&[data-supply="sourced"]>[data-supply]:not([data-supply="sourced"])]:overflow-hidden [&[data-supply="sourced"]>[data-supply]:not([data-supply="sourced"])]:pointer-events-none [&[data-supply="sourced"]>[data-supply]:not([data-supply="sourced"])]:!m-0 [&[data-supply="sourced"]>[data-supply]:not([data-supply="sourced"])]:!p-0 [&[data-supply="sourced"]>[data-supply]:not([data-supply="sourced"])]:!border-0`}
         {...(situation ? { "data-situation": situation } : {})}
         {...(supply ? { "data-supply": supply } : {})}
       >
