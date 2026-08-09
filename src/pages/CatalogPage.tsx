@@ -217,10 +217,14 @@ const CatalogPage = () => {
     setPage(1);
   };
 
+  // Single-select, matching handleCategory/handleOrigin above: picking another
+  // campaign replaces the current one rather than stacking onto it. Operations
+  // read the accumulating selection as a bug — the rail's two other filters have
+  // never behaved that way, so the tags looked broken by comparison. Clicking the
+  // active tag still clears it. State stays an array because the catalog API takes
+  // a `collection` list; only the selection rule changes.
   const handleCollection = (slug: string) => {
-    setActiveCollections((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
-    );
+    setActiveCollections((prev) => (prev.includes(slug) ? [] : [slug]));
     setPage(1);
   };
 
@@ -291,7 +295,11 @@ const CatalogPage = () => {
             {collections.length > 0 && (
               <div className="pb-4 mb-2 border-b border-border/30">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.tags_label")}</p>
-                <div className="flex flex-wrap gap-1.5 px-3">
+                {/* One tag per row. Wrapping packed the short names into shared
+                    rows (Kid + Pet, DTF + 2D) while long ones took a row alone,
+                    so the column read as ragged. `items-start` keeps each pill at
+                    its content width instead of stretching to the rail. */}
+                <div className="flex flex-col items-start gap-1.5 px-3">
                   {collections.map((c) => {
                     const on = activeCollections.includes(c.slug);
                     return (
