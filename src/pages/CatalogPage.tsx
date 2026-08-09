@@ -278,7 +278,39 @@ const CatalogPage = () => {
 
         {/* Sidebar (desktop) */}
         <aside className="hidden lg:block w-56 flex-shrink-0">
-          <div className="sticky top-24 space-y-2">
+          {/* Bounded to the viewport so `sticky` actually pins. An unbounded
+              sticky column taller than the screen scrolls its own bottom out of
+              reach — that is why the campaign tags at the end were unreachable
+              and the rail appeared to drift while the product grid scrolled.
+              Overflowing inside keeps every section reachable; overscroll-contain
+              stops a wheel at the rail's end from chaining to the page. */}
+          <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto overscroll-contain pr-1 space-y-2">
+            {/* Tags / Campaign filter — THG-CAT-005: đồng bộ collections từ Hub, multi-select.
+                Đặt trên đầu rail theo yêu cầu vận hành: đây là bộ lọc theo mùa/chiến dịch,
+                cần thấy ngay mà không phải cuộn qua toàn bộ category + origin. */}
+            {collections.length > 0 && (
+              <div className="pb-4 mb-2 border-b border-border/30">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.tags_label")}</p>
+                <div className="flex flex-wrap gap-1.5 px-3">
+                  {collections.map((c) => {
+                    const on = activeCollections.includes(c.slug);
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => handleCollection(c.slug)}
+                        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${on ? "text-white border-transparent" : "text-foreground/70 border-border hover:bg-secondary"}`}
+                        style={on ? { backgroundColor: c.color || "#1e293b" } : undefined}
+                      >
+                        {c.icon && <span>{c.icon}</span>}
+                        <span>{c.name}</span>
+                        {typeof c.count === "number" && <span className="text-xs opacity-70">{c.count}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* All */}
             <button
               onClick={() => { setActiveCategory(""); setPage(1); }}
@@ -328,30 +360,6 @@ const CatalogPage = () => {
                   </button>
                 ))}
             </div>
-
-            {/* Tags / Campaign filter — THG-CAT-005: đồng bộ collections từ Hub, multi-select. */}
-            {collections.length > 0 && (
-              <div className="pt-4 border-t border-border/30">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.tags_label")}</p>
-                <div className="flex flex-wrap gap-1.5 px-3">
-                  {collections.map((c) => {
-                    const on = activeCollections.includes(c.slug);
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => handleCollection(c.slug)}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${on ? "text-white border-transparent" : "text-foreground/70 border-border hover:bg-secondary"}`}
-                        style={on ? { backgroundColor: c.color || "#1e293b" } : undefined}
-                      >
-                        {c.icon && <span>{c.icon}</span>}
-                        <span>{c.name}</span>
-                        {typeof c.count === "number" && <span className="opacity-70">{c.count}</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         </aside>
 
