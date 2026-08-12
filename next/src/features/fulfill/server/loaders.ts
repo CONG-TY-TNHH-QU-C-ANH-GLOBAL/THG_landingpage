@@ -10,6 +10,9 @@ import type { Locale } from "@/shared/i18n";
 import { fullServicesResponseSchema } from "../schemas/services";
 import { fulfillFaqsResponseSchema } from "../schemas/fulfill-faqs";
 import { serviceBlocksResponseSchema } from "../schemas/service-blocks";
+import { loadFeaturedProducts, type CatalogProduct } from "@/features/catalog";
+
+import { FULFILL_FEATURED_PRODUCT_IDS } from "../featured-products";
 import { fulfillContentFromDto } from "../mappers/fulfillContent";
 import { fulfillFaqsFromDto } from "../mappers/faq";
 import { fulfillServiceContentFromDto } from "../mappers/serviceBlocks";
@@ -49,6 +52,23 @@ export function loadFulfillContent(lang: Locale): Promise<FulfillContent> {
     fulfillContentFromDto,
     emptyFulfillContent(),
   );
+}
+
+/**
+ * The real THG Hub products the "products we can fulfill" section shows.
+ *
+ * Source of ids, in order of authority: the CMS service catalog when an editor has linked
+ * entries to Hub products, otherwise the feature's own verified featured list. Either way the
+ * DISPLAYED data (name, image, origin, price, lead time) comes from the Hub, never from copy —
+ * so a card is always the SKU it claims to be and its deep link always resolves.
+ *
+ * `[]` on a Hub outage; the section then renders its static illustrative cards.
+ */
+export function loadFulfillFeaturedProducts(
+  content: FulfillContent,
+): Promise<readonly CatalogProduct[]> {
+  const cmsIds = content.catalog.map((item) => item.productId).filter(Boolean);
+  return loadFeaturedProducts(cmsIds.length > 0 ? cmsIds : FULFILL_FEATURED_PRODUCT_IDS);
 }
 
 /** Fulfill-scope FAQs (visible accordion + JSON-LD input); [] omits both. */

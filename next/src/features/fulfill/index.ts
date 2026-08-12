@@ -9,4 +9,9 @@ export type { FulfillServiceContent } from "./models/service-content";
 
 export { getFulfillContent } from "./localized-content";
 export { applyServiceBlocks } from "./models/service-content";
-export { loadFulfillContent, loadFulfillFaqs, loadFulfillServiceBlocks } from "./server/loaders";
+export {
+  loadFulfillContent,
+  loadFulfillFaqs,
+  loadFulfillServiceBlocks,
+  loadFulfillFeaturedProducts,
+} from "./server/loaders";

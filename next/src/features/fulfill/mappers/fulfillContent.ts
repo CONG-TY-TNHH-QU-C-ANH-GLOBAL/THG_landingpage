@@ -18,7 +18,15 @@ function catalogItemFromProduct(p: CmsServiceProduct): FulfillCatalogItem | null
   // `note` stays the collapsed one-line form (unchanged consumers rely on it); the three fields
   // are also surfaced individually so the card can label them the way the Vite page does.
   const note = [price, leadTime, origin].filter(Boolean).join(" · ");
-  return { name, image: p.image?.trim() ?? "", note, price, leadTime, origin };
+  return {
+    name,
+    image: p.image?.trim() ?? "",
+    note,
+    price,
+    leadTime,
+    origin,
+    productId: p.product_id?.trim() ?? "",
+  };
 }
 
 /** Select the live `thg-fulfill` service and normalize it to the landing view model. When the

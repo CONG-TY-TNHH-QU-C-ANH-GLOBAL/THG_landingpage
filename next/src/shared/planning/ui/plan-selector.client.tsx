@@ -32,6 +32,11 @@ interface Props {
   labels: Labels;
   /** The server-rendered plans. Each must carry `data-situation` and `data-supply`. */
   children: ReactNode;
+  /** The choices this selector offers. Narrowing either to a single member removes its question and
+   *  pre-commits that answer — the group is hidden rather than rendered as a control with one option,
+   *  because a radio group of one is a decision the reader is not actually being asked to make. */
+  situations?: readonly SituationId[];
+  supplyModels?: readonly SupplyModel[];
 }
 
 function ChoiceGroup<T extends string>({
@@ -97,30 +102,45 @@ function ChoiceGroup<T extends string>({
   );
 }
 
-export default function PlanSelector({ labels, children }: Readonly<Props>) {
-  const [situation, setSituation] = useState<SituationId | null>(null);
-  const [supply, setSupply] = useState<SupplyModel | null>(null);
+export default function PlanSelector({ 
+  labels, 
+  children,
+  situations = SITUATIONS,
+  supplyModels = SUPPLY_MODELS
+}: Readonly<Props>) {
+  const [situation, setSituation] = useState<SituationId | null>(situations.length === 1 ? situations[0] : null);
+  const [supply, setSupply] = useState<SupplyModel | null>(supplyModels.length === 1 ? supplyModels[0] : null);
+
+  const showSituation = situations.length > 1;
+  const showSupply = supplyModels.length > 1;
+  const showSelectorPanel = showSituation || showSupply;
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:px-8 md:py-7 border border-border rounded-lg bg-card mb-6">
-        <ChoiceGroup
-          legend={labels["ui.q_situation"]}
-          options={SITUATIONS}
-          value={situation}
-          onChange={setSituation}
-          labels={labels}
-          prefix="situation"
-        />
-        <ChoiceGroup
-          legend={labels["ui.q_supply"]}
-          options={SUPPLY_MODELS}
-          value={supply}
-          onChange={setSupply}
-          labels={labels}
-          prefix="supply"
-        />
-      </div>
+      {showSelectorPanel && (
+        <div className={`grid grid-cols-1 ${showSituation && showSupply ? "md:grid-cols-2" : ""} gap-6 p-6 md:px-8 md:py-7 border border-border rounded-lg bg-card mb-6`}>
+          {showSituation && (
+            <ChoiceGroup
+              legend={labels["ui.q_situation"]}
+              options={situations}
+              value={situation}
+              onChange={setSituation}
+              labels={labels}
+              prefix="situation"
+            />
+          )}
+          {showSupply && (
+            <ChoiceGroup
+              legend={labels["ui.q_supply"]}
+              options={supplyModels}
+              value={supply}
+              onChange={setSupply}
+              labels={labels}
+              prefix="supply"
+            />
+          )}
+        </div>
+      )}
 
       {/* The narrowing surface. An attribute appears only once an answer exists, so the unanswered
           state needs no special handling anywhere. A live region announces what the set was narrowed

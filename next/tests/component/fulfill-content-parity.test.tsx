@@ -35,22 +35,27 @@ vi.mock("next/link", () => ({
 // it keeps this suite focused on the feature's copy trees.
 vi.mock("@/features/fulfill/ui/fulfill-consultation-form", () => ({ default: () => null }));
 
-import QualifySection from "@/features/fulfill/ui/qualify-section";
-import RecogniseSection from "@/features/fulfill/ui/recognise-section";
-import PlanSection from "@/features/fulfill/ui/plan-section";
+// The movement list below mirrors what app/[lang]/thg-fulfill/page.tsx actually composes. That
+// is the point of the suite: if a copy key stops being rendered by the REAL page, this fails,
+// which it cannot do if the list includes sections the page no longer mounts. (plan-section,
+// proof-section and act-section were deleted with the redesign and their imports here went
+// stale — the suite could not even compile.)
+import HeroSection from "@/features/fulfill/ui/hero-section";
+import PainBentoGrid from "@/features/fulfill/ui/pain-bento-grid";
 import ProcessSection from "@/features/fulfill/ui/process-section";
-import ScopeSection from "@/features/fulfill/ui/scope-section";
-import ProofSection from "@/features/fulfill/ui/proof-section";
-import LibrarySection from "@/features/fulfill/ui/library-section";
+import HubGuideSection from "@/features/fulfill/ui/hub-guide-section";
+import ConsultCTASection from "@/features/fulfill/ui/consult-cta-section";
 import CommitmentSection from "@/features/fulfill/ui/commitment-section";
-import OperateSection from "@/features/fulfill/ui/operate-section";
+import ScopeSection from "@/features/fulfill/ui/scope-section";
+import FulfillmentVisualShowcase from "@/features/fulfill/ui/fulfillment-visual-showcase";
+import LibrarySection from "@/features/fulfill/ui/library-section";
 import EcosystemSection from "@/features/fulfill/ui/ecosystem-section";
 import IndexSection from "@/features/fulfill/ui/index-section";
-import ActSection from "@/features/fulfill/ui/act-section";
 import { getMovementCopy } from "@/features/fulfill/ui/movement-copy";
 
 import { getFulfillContent } from "@/features/fulfill";
 import type { FulfillContent } from "@/features/fulfill";
+import { getCatalogCopy, type CatalogProduct } from "@/features/catalog";
 import { getFulfillParityContent } from "@/features/fulfill/parity-content";
 import { SUPPORTED_LOCALES, type Locale } from "@/shared/i18n";
 import { copyForLocale } from "../support/lead-test-utils";
@@ -64,6 +69,45 @@ const INTENTIONALLY_UNRENDERED: readonly string[] = [
   // plumbed into the fulfill model first (a data change, out of scope for a presentation redesign).
   // The copy is ported so the slice is content-complete on arrival.
   "galleryTitle",
+
+  // ── ORPHANED BY THE ELEVEN-MOVEMENT REDESIGN ────────────────────────────────────────────────
+  // Approved copy whose owning movement was deleted (act/plan/proof/handoff/qualify/recognise/
+  // operate). It is still authored, still translated, and no longer reaches a visitor.
+  //
+  // Listed rather than deleted, and listed by KEY rather than by string, because the decision to
+  // drop published content belongs to whoever owns the content — not to a cleanup pass. Every
+  // entry here is a question for that owner: restore the movement, or retire the copy. What this
+  // list does buy is that the gate stays strict for everything else: a key that stops rendering
+  // tomorrow and is not named here still fails the suite, which is what it is for.
+  //
+  // localized-content.ts — the journey chapter and the operations hero:
+  "heroHeadline", // superseded on the page by heroHeadlineLong
+  "heroBadge",
+  "pointsFallback",
+  "journeyEyebrow",
+  "journeyTitle",
+  "journeyIntro",
+  "journeyReference",
+  "steps",
+  "hubStages", // the static Hub visibility panel went with the movement that framed it
+  "hubCaption",
+  //
+  // parity-content.ts — the "Our Solution" chapter and two Hub-guide trimmings:
+  "solutionEyebrow",
+  "solutionTitle",
+  "solutionIntro",
+  "advantages",
+  "ecountTitle",
+  "ecountIntro",
+  "ecountSkuLink",
+  "hubCtaTitle",
+  "hubCtaDesc",
+  "hubCtaLabel",
+  // These two now live in the catalog feature's copy (features/catalog/localized-content.ts),
+  // because the product card that shows them is shared with /{lang}/catalog. The parity copies
+  // survive only as inputs to plan-labels.ts.
+  "basecostLabel",
+  "leadTimeLabel",
 ];
 
 /** Structural (non-visible) values: asset paths and stable ids, not user-facing copy. */
@@ -154,6 +198,7 @@ function populatedCms(): FulfillContent {
         price: "$4.90",
         leadTime: "48h",
         origin: "VN",
+        productId: "",
       },
       {
         name: "CMS Drinkware",
@@ -162,10 +207,39 @@ function populatedCms(): FulfillContent {
         price: "$6.20",
         leadTime: "72h",
         origin: "CN",
+        productId: "",
       },
-      { name: "CMS Fleece", image: "/assets/fulfill/fleece.png", note: "note-only product", price: "", leadTime: "", origin: "" },
+      { name: "CMS Fleece", image: "/assets/fulfill/fleece.png", note: "note-only product", price: "", leadTime: "", origin: "", productId: "" },
     ],
   };
+}
+
+/** A resolved Hub product, as loadFulfillFeaturedProducts returns it. Passing `[]` instead
+ *  exercises the Hub-unavailable branch, where the section shows its illustrative cards. */
+function hubProducts(): readonly CatalogProduct[] {
+  return [
+    {
+      id: "hub-1",
+      name: "180 g Milk Thread Women's Heat Transfer T-Shirt — Double-sided",
+      sku: "9A2WSN",
+      thgSku: "THG-VN001-ABC",
+      category: "Apparel",
+      origin: "PH",
+      image: "https://cdn.thgfulfill.com/catalog/x_01.png",
+      images: ["https://cdn.thgfulfill.com/catalog/x_01.png"],
+      videos: [],
+      price: "$6.00",
+      prodTime: "3 - 5",
+      shipTime: "8 - 12",
+      material: [],
+      features: [],
+      care: [],
+      sizes: [],
+      colors: [],
+      collections: [],
+      variants: [],
+    },
+  ];
 }
 
 /**
@@ -181,28 +255,32 @@ function renderPage(lang: Locale, cms: FulfillContent, faqsMode: "empty" | "fall
   const props = {
     lang,
     copy: getFulfillContent(lang),
+    catalogCopy: getCatalogCopy(lang),
     parity,
     movement: getMovementCopy(lang),
     marketingCopy: copyForLocale(lang),
     content: cms,
+    // Hub products only when the CMS read is populated, so both catalog branches are covered
+    // across the two renders vocabularyFor() performs.
+    products: cms.present ? hubProducts() : [],
     faqs: faqsMode === "fallback" ? parity.faqFallback : [],
   };
 
   // A component that reads a subset of the bag is assignable to one that takes the whole bag, so
   // this stays fully typed: adding a required prop to any movement fails the build here.
-  const MOVEMENTS: readonly ((p: typeof props) => ReactElement)[] = [
-    QualifySection,
-    RecogniseSection,
-    PlanSection,
+  // `| null` because HubGuideSection renders nothing when its parity copy is absent.
+  const MOVEMENTS: readonly ((p: typeof props) => ReactElement | null)[] = [
+    HeroSection,
+    PainBentoGrid,
     ProcessSection,
-    ScopeSection,
-    ProofSection,
-    LibrarySection,
+    HubGuideSection,
     CommitmentSection,
-    OperateSection,
+    ConsultCTASection,
+    ScopeSection,
+    FulfillmentVisualShowcase,
+    LibrarySection,
     EcosystemSection,
     IndexSection,
-    ActSection,
   ];
 
   return render(
@@ -293,8 +371,11 @@ describe("THG Fulfill content parity — cross-locale", () => {
     const { container } = renderPage("vi", populatedCms(), "fallback");
     const rendered = reachableVocabulary(container);
     // The art-directed H1 is distinct per locale, so it is the sharpest leak detector.
-    expect(rendered).toContain(getFulfillContent("vi").heroHeadline);
-    expect(rendered).not.toContain(getFulfillContent("en").heroHeadline);
-    expect(rendered).not.toContain(getFulfillContent("zh").heroHeadline);
+    // `heroHeadlineLong` is the key the redesigned hero renders — and it needs this check most:
+    // it shipped as a hardcoded Vietnamese literal, so /en and /zh showed Vietnamese until it
+    // moved into the copy tree. That is exactly the leak this test exists to catch.
+    expect(rendered).toContain(getFulfillContent("vi").heroHeadlineLong);
+    expect(rendered).not.toContain(getFulfillContent("en").heroHeadlineLong);
+    expect(rendered).not.toContain(getFulfillContent("zh").heroHeadlineLong);
   });
 });

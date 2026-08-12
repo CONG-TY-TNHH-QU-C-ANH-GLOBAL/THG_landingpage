@@ -6,7 +6,7 @@
 import Link from "next/link";
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { Plus } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 
 import type { Locale } from "@/shared/i18n";
 import type { FulfillFaq } from "../models/faq";
@@ -30,34 +30,45 @@ export default function IndexSection({ lang, copy, faqs }: Readonly<Props>) {
         title={copy.faqTitle}
         lead={copy.faqIntro}
         aside={
-          // The path for a question this page does not answer. Moderation-first: it goes to the
-          // community, not to a form that implies an immediate reply.
-          <Link href={`/${lang}/community`} className="type-small font-mono text-muted-foreground hover:text-primary transition-colors no-underline">
+          <Link 
+            href={`/${lang}/community`} 
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white border border-thg-border text-thg-textMain font-semibold text-sm hover:border-thg-gold hover:text-thg-gold transition-all duration-300 shadow-sm hover:shadow"
+          >
             {copy.faqAskCommunity}
+            <ArrowRight className="w-4 h-4" />
           </Link>
         }
       />
 
       {faqs.length > 0 ? (
-        <div className="mt-12 lg:mt-16 bg-card border border-border rounded-lg px-6 py-2">
-          <AccordionPrimitive.Root type="single" collapsible className="flex flex-col">
-            {faqs.map((faq) => (
+        <div className="mt-16">
+          <AccordionPrimitive.Root type="single" collapsible className="flex flex-col gap-4">
+            {faqs.map((faq, idx) => (
               <AccordionPrimitive.Item 
                 key={faq.id} 
                 value={String(faq.id)} 
-                className="border-b border-border/50 last:border-0"
+                className="group/item bg-white border border-thg-border rounded-2xl overflow-hidden transition-all duration-300 hover:border-thg-borderHover hover:shadow-md data-[state=open]:border-thg-gold data-[state=open]:shadow-md"
               >
                 <AccordionPrimitive.Header className="flex">
                   <AccordionPrimitive.Trigger
-                    className="flex flex-1 items-center justify-between py-6 transition-colors hover:text-primary group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm"
+                    className="flex flex-1 items-center justify-between p-6 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-thg-gold group"
                   >
-                    <span className="type-h4 text-foreground text-left">{faq.question}</span>
-                    <Plus className="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-primary transition-transform duration-260 group-data-[state=open]:rotate-45 group-data-[state=open]:text-primary" />
+                    <div className="flex items-center gap-4">
+                      <span className="font-mono text-xs font-bold text-thg-textSubtle group-hover:text-thg-gold transition-colors">
+                        {(idx + 1).toString().padStart(2, '0')}
+                      </span>
+                      <span className="text-lg font-semibold text-thg-textMain text-left max-w-[800px] group-hover:text-thg-gold transition-colors">
+                        {faq.question}
+                      </span>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-thg-bg flex items-center justify-center border border-thg-border group-hover:border-thg-gold transition-colors group-data-[state=open]:bg-thg-gold group-data-[state=open]:border-thg-gold">
+                      <Plus className="h-4 w-4 shrink-0 text-thg-textMuted group-hover:text-thg-gold transition-transform duration-300 group-data-[state=open]:rotate-45 group-data-[state=open]:text-white" />
+                    </div>
                   </AccordionPrimitive.Trigger>
                 </AccordionPrimitive.Header>
                 <AccordionPrimitive.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                  <div className="pb-6 max-w-[720px]">
-                    <p className="type-body text-muted-foreground m-0">
+                  <div className="px-6 pb-6 pt-2 ml-8 max-w-[720px]">
+                    <p className="text-base text-thg-textMuted m-0 leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>

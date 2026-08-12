@@ -16,6 +16,10 @@ export const cmsServiceProductSchema = z.object({
   // Resolved to a URL server-side by the CMS media hydrator; may be absent (empty catalog).
   image: z.string().optional(),
   media_id: z.number().optional(),
+  // Optional link to a THG Hub catalog product. NOT published by the CMS today — accepted here
+  // so that the day an editor can pick a real product, the landing needs no code change and no
+  // redeploy. Until then the Fulfill section resolves its own featured ids.
+  product_id: z.string().optional(),
 });
 export type CmsServiceProduct = z.infer<typeof cmsServiceProductSchema>;
 

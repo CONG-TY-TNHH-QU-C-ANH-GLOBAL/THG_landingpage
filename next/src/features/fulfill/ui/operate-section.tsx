@@ -54,12 +54,12 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
       <div id="order-guide" className="mt-12 lg:mt-16">
         <h3 className="type-h3 text-foreground m-0 mb-6">{movement.orderGuideTitle}</h3>
         
-        <Accordion type="single" collapsible className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Accordion type="single" collapsible className="flex flex-col w-full border-t border-border">
           {placement ? (
-            <AccordionItem value="placement" className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+            <AccordionItem value="placement" className="border-b border-border px-0">
               <AccordionTrigger className="hover:no-underline text-left py-6">
-                <div className="flex flex-col gap-2">
-                  <span className="type-label text-muted-foreground">01</span>
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest">01</span>
                   <span className="type-body font-medium text-foreground">{placement.question}</span>
                 </div>
               </AccordionTrigger>
@@ -70,10 +70,10 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
           ) : null}
 
           {notification ? (
-            <AccordionItem value="notification" className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+            <AccordionItem value="notification" className="border-b border-border px-0">
               <AccordionTrigger className="hover:no-underline text-left py-6">
-                <div className="flex flex-col gap-2">
-                  <span className="type-label text-muted-foreground">02</span>
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest">02</span>
                   <span className="type-body font-medium text-foreground">{notification.question}</span>
                 </div>
               </AccordionTrigger>
@@ -83,10 +83,10 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
             </AccordionItem>
           ) : null}
 
-          <AccordionItem value="ecount" className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+          <AccordionItem value="ecount" className="border-b border-border px-0">
             <AccordionTrigger className="hover:no-underline text-left py-6">
-              <div className="flex flex-col gap-2">
-                <span className="type-label text-muted-foreground">03</span>
+              <div className="flex flex-col gap-3">
+                <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest">03</span>
                 <span className="type-body font-medium text-foreground">{parity.ecountTitle}</span>
               </div>
             </AccordionTrigger>
@@ -113,12 +113,12 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
         <p className="type-body text-muted-foreground m-0 max-w-[720px] mb-8">{parity.hubIntro}</p>
         
         <span className="sr-only">{parity.hubToc}</span>
-        <HubAccordion className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <HubAccordion className="flex flex-col w-full border-t border-border">
           {parity.hubSections.map((section, index) => (
-            <AccordionItem key={section.id} value={section.id} id={`hub-${section.id}`} className="bg-card border border-border rounded-lg px-6 overflow-hidden [&[data-state=open]]:border-primary transition-colors">
+            <AccordionItem key={section.id} value={section.id} id={`hub-${section.id}`} className="border-b border-border px-0">
               <AccordionTrigger className="hover:no-underline text-left py-6">
-                <div className="flex flex-col gap-2">
-                  <span className="type-label text-muted-foreground">{(index + 1).toString().padStart(2, '0')}</span>
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest">{(index + 1).toString().padStart(2, '0')}</span>
                   <span className="type-body font-medium text-foreground">{section.title}</span>
                 </div>
               </AccordionTrigger>
@@ -135,7 +135,7 @@ export default function OperateSection({ parity, movement, faqs }: Readonly<Prop
 
                 {section.facts.length > 0 ? (
                   <div className="flex flex-col gap-3 mt-6 pt-6 border-t border-border/50">
-                    <p className="type-label text-muted-foreground m-0">{movement.metricsTitle}</p>
+                    <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground m-0">{movement.metricsTitle}</p>
                     <div className="flex flex-col gap-3">
                       {section.facts.map((fact) => (
                         <div key={fact.label} className="grid grid-cols-[10rem_1fr] items-baseline gap-4 pt-3 border-t border-border/50 first:pt-0 first:border-0">

@@ -54,6 +54,11 @@ export interface SubmitArgs {
   surface: LeadSurfaceKey | null;
   /** Per-service validated details keyed by service; omitted/empty → not sent. */
   detailsByService?: Record<string, Record<string, unknown>> | null;
+  /** Machine-collected context appended below the seller's own note (e.g. a guided-journey
+   *  summary). Deliberately NOT part of `message` state: the textarea stays purely the seller's
+   *  words, and surfaces that collect answers outside the typed service dimensions still reach
+   *  Sales through the one contract field that carries free text. */
+  messageContext?: string;
   /** Optional service-specific validation gate run after common validation. */
   validateExtra?: () => boolean;
 }
@@ -129,6 +134,7 @@ export function useLeadSubmission(options: UseLeadSubmissionOptions): LeadSubmis
     setPending(true);
     try {
       const utm = getUtmPayload();
+      const message = [form.message.trim(), args.messageContext?.trim()].filter(Boolean).join("\n\n");
       const hasInterests = args.serviceInterests.length > 0;
       const hasDetails =
         args.detailsByService != null && Object.keys(args.detailsByService).length > 0;
@@ -136,7 +142,7 @@ export function useLeadSubmission(options: UseLeadSubmissionOptions): LeadSubmis
         name: form.name.trim(),
         email: form.email.trim(),
         phone: form.phone.trim() || undefined,
-        message: form.message.trim() || undefined,
+        message: message || undefined,
         source_page: sourcePage ?? (typeof window !== "undefined" ? window.location.pathname : "/"),
         locale: lang,
         utm: Object.keys(utm).length > 0 ? utm : undefined,

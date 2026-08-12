@@ -80,6 +80,24 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        thg: {
+          bg: '#F8F9FA',
+          surface: '#FFFFFF',
+          surfaceSubtle: '#F1F3F5',
+          border: '#E2E8F0',
+          borderHover: '#CBD5E1',
+          gold: '#C29B38',
+          goldBg: '#FDF8EC',
+          textMain: '#0F172A',
+          textMuted: '#64748B',
+          // The third text step. It existed as a bare #94A3B8 in eleven places across the
+          // fulfill sections; naming it is what stops the next component inventing a twelfth.
+          textSubtle: '#94A3B8',
+          cyanTech: '#0284C7',
+        }
+      },
+      boxShadow: {
+        'thg-goldGlow': '0 0 30px rgba(212, 175, 55, 0.15)',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -139,6 +157,16 @@ export default {
           from: { opacity: "0", transform: "translateY(40px) perspective(1200px) rotateX(2deg)" },
           to: { opacity: "1", transform: "translateY(0) perspective(1200px) rotateX(0)" },
         },
+        "line-flow": {
+          "0%": { strokeDashoffset: "24" },
+          "100%": { strokeDashoffset: "0" },
+        },
+        "particle": {
+          "0%": { offsetDistance: "0%", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { offsetDistance: "100%", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -153,6 +181,8 @@ export default {
         "pulse-3d": "pulse-3d 4s ease-in-out infinite",
         "rotate-in-3d": "rotate-in-3d 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards",
         "fade-in-up-3d": "fade-in-up-3d 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards",
+        "line-flow": "line-flow 1s linear infinite",
+        "particle": "particle 2s linear infinite",
       },
     },
   },

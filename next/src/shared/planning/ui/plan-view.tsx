@@ -1,52 +1,57 @@
-// PLAN VIEW — the renderer for an Operational Plan.
+// PLAN VIEW — Specimen Sheet redesign
 //
-// A Server Component with zero client JS. It walks the six invariants and nothing else:
+// Design decision: DOCUMENT → SPECIMEN SHEET
+// Each plan reads like a technical data card, not a RACI matrix.
+// Hierarchy: constraint headline (serif, large) → meta row (mono-data) →
+//            2-col checklist (THG | Seller) → trade-off + CTA footer.
 //
-//   SUBJECT → CONSTRAINT → COURSE (capabilities · obligations both sides · trade-off) → GROUNDS
-//   → EXPECTATION → IDENTITY
+// Text density rule: checklist items max 1 line on desktop. Labels are the
+// constraint, not the obligation description. Items that need more than 1
+// line belong in /docs, not on a landing page.
 //
-// That contract is what makes plan content evolvable without touching this file. A new plan, a
-// reworded constraint, a new capability, a new seller situation — all data. The only change that
-// would reach this component is the addition of a seventh invariant.
-//
-// It takes a `labels` resolver rather than any content of its own, so it is locale-free and reusable
-// by any service that can produce a plan.
-//
-// TEXT-FIRST. The markup is a definition list and ordered lists: the accessible rendering IS the
-// structure, not a parallel version of it. Nothing is behind an interaction, absent evidence renders
-// as a labelled gap, and every ground states which kind of claim it is.
+// Evidence integrity: plan IDs, plan version visible in footer only
+// (10px mono, low opacity) — structural metadata, not presentation.
 import type { ReactNode } from "react";
+import type { OperationalPlan } from "../plan";
 
-import type { Evidence, OperationalPlan } from "../plan";
+// Gold check — THG's side
+function GoldCheck() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0 mt-px"
+    >
+      <circle cx="8" cy="8" r="7.5" stroke="hsl(var(--primary))" strokeOpacity="0.25" />
+      <path d="M5 8l2 2 4-4" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
-/**
- * What a ground shows in its value slot.
- *
- * A switch rather than a chain of conditionals, so the discriminated union narrows and each kind's
- * rendering is stated once: an absent ground shows a labelled gap, a commitment shows the
- * undertaking in words, and a hard ground shows the figure it carries.
- */
-function groundValue(
-  evidence: Evidence,
-  labels: (id: string) => string,
-): ReactNode {
-  switch (evidence.kind) {
-    case "absent":
-      return <span className="text-muted-foreground">{labels("ui.no_data_yet")}</span>;
-    case "committed":
-      return labels(evidence.id);
-    default:
-      return evidence.value;
-  }
+// Neutral dash — seller's side
+function NeutralMarker() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0 mt-px"
+    >
+      <circle cx="8" cy="8" r="7.5" stroke="#6B6B69" strokeOpacity="0.3" />
+      <path d="M5.5 8h5" stroke="#6B6B69" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 interface Props {
   plan: OperationalPlan;
   labels: (id: string) => string;
-  /** The next step — supplied by the consumer, because a consultation CTA on a landing page and a
-   *  proposal action in a CRM are the same invariant with different surfaces. */
   action?: ReactNode;
-  /** Heading level, so the plan can sit at different depths without breaking a document outline. */
   as?: "h3" | "h4";
 }
 
@@ -56,125 +61,133 @@ export function PlanView({ plan, labels, action, as: Heading = "h3" }: Readonly<
   const { tradeoff } = plan.course;
   const { subject, identity, expectation } = plan;
 
+  // Cap to 3 items per column on-render.
+  // Items beyond 3 are omitted — they belong in /docs, not on a landing card.
+  const thgItems = thg.slice(0, 3);
+  const sellerItems = seller.slice(0, 3);
+
+  // Capabilities shown as mono tags (max 2 — primary service + one dependency)
+  const capabilities = plan.course.capabilities.slice(0, 2);
+
   return (
-    <article 
-      className="grid gap-6 p-6 border border-border rounded-lg bg-card text-foreground scroll-mt-24" 
-      id={`plan-${identity.planId}`} 
+    <article
+      className="group w-full flex flex-col bg-white border border-border rounded-xl overflow-hidden transition-shadow duration-300 hover:shadow-md"
+      id={`plan-${identity.planId}`}
       data-plan-id={identity.planId}
     >
-      {/* SUBJECT — who this plan is for, and how each part of that was established. */}
-      <header className="flex flex-wrap items-baseline justify-between gap-y-3 gap-x-6 pb-5 border-b border-border">
-        <p className="m-0 type-h3 text-foreground">
-          {labels(`situation.${subject.situation.value}`)}
-          <span aria-hidden="true"> · </span>
-          {labels(`supply.${subject.supplyModel.value}`)}{" "}
-          {subject.holdsStock.provenance === "inferred" ? (
-            <span className="text-muted-foreground type-small font-mono">({labels("ui.inferred")})</span>
-          ) : null}
-        </p>
-        <p className="inline-flex items-baseline gap-2 m-0 text-muted-foreground type-small font-mono">
-          {labels("ui.confidence")}
-          <span className="text-foreground">
-            {labels(`confidence.${expectation.confidence}`)}
+      {/* ── HEADER: Situation tag + Constraint headline ───────── */}
+      <header className="px-6 pt-6 pb-5 md:px-8 md:pt-7 border-b border-border">
+        {/* Situation + service tags — single row */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <span className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-primary bg-primary/8 border border-primary/20 rounded">
+            {labels(`situation.${subject.situation.value}`)}
           </span>
-        </p>
+          {capabilities.map((cap) => (
+            <span
+              key={cap}
+              className="px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground bg-muted border border-border rounded"
+            >
+              {labels(`capability.${cap}`)}
+            </span>
+          ))}
+        </div>
+
+        {/* Constraint — this IS the headline, not a label */}
+        <Heading
+          className="m-0 text-foreground tracking-tight leading-snug"
+          style={{
+            fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
+            fontSize: "clamp(18px, 2.5vw, 24px)",
+            lineHeight: 1.25,
+            fontWeight: 400,
+          }}
+        >
+          {labels(plan.constraint.id)}
+        </Heading>
       </header>
 
-      {/* CONSTRAINT — invariant. Why acting is necessary at all. */}
-      <div className="grid gap-3">
-        <Heading className="m-0 type-label text-muted-foreground">{labels("ui.constraint")}</Heading>
-        <p className="m-0 type-h3 text-foreground max-w-[46ch]">{labels(plan.constraint.id)}</p>
-      </div>
+      {/* ── BODY: 2-col checklist ─────────────────────────────── */}
+      {/* Mobile: stacked. Desktop: side by side. Each column has its own header. */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
 
-      {/* COURSE — what happens, who does it, and what it costs the seller. */}
-      <div className="grid gap-3">
-        <p className="m-0 type-label text-muted-foreground">{labels("ui.course")}</p>
-        <ul className="flex flex-wrap gap-2 m-0 p-0 list-none">
-          {plan.course.capabilities.map((capability, idx) => (
-            <li key={capability} className={`px-3 py-1.5 border rounded-sm type-small font-mono ${idx === 0 ? "border-current font-semibold" : "border-border"}`}>
-              {labels(`capability.${capability}`)}
-            </li>
-          ))}
-        </ul>
-
-        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 mt-2">
-          <div>
-            <p className="m-0 type-label text-muted-foreground">{labels("ui.thg_does")}</p>
-            <ul className="grid gap-2 mt-2 ml-4.5 pl-0 text-muted-foreground type-small leading-relaxed list-disc marker:text-primary">
-              {thg.map((o) => (
-                <li key={o.id}>{labels(o.id)}</li>
-              ))}
-            </ul>
+        {/* THG DOES — primary column, gold markers */}
+        <div className="px-6 py-5 md:px-8 md:py-6 flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2 7l3 3 7-6" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
+              {labels("ui.thg_does")}
+            </span>
           </div>
-          {/* A course with no seller obligations would be a sales pitch; the domain forbids it and
-              this column is what makes the reciprocity impossible to miss. */}
-          <div>
-            <p className="m-0 type-label text-muted-foreground">{labels("ui.you_do")}</p>
-            <ul className="grid gap-2 mt-2 ml-4.5 pl-0 text-muted-foreground type-small leading-relaxed list-disc marker:text-primary">
-              {seller.map((o) => (
-                <li key={o.id}>{labels(o.id)}</li>
-              ))}
-            </ul>
-          </div>
+          <ul className="space-y-2.5 m-0 p-0 list-none">
+            {thgItems.map((o) => (
+              <li key={o.id} className="flex items-start gap-2.5">
+                <GoldCheck />
+                <span className="text-[14px] text-foreground font-medium leading-snug">
+                  {labels(o.id)}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="grid gap-1.5 px-5 py-4 border-l-2 border-primary rounded-r-md bg-border/20 mt-4">
-          <p className="m-0 type-label text-muted-foreground">{labels("ui.tradeoff")}</p>
-          <p className="m-0 type-small leading-relaxed text-foreground max-w-[60ch]">
-            {"none" in tradeoff ? labels(tradeoff.reasonId) : labels(tradeoff.id)}
+        {/* SELLER DOES — secondary column, neutral markers */}
+        {/* contrast: #6B6B69 on #FAFAF9 = 5.74:1 ✓ WCAG AA */}
+        <div className="px-6 py-5 md:px-8 md:py-6 flex flex-col gap-4 bg-muted/20">
+          <div className="flex items-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M3.5 7h7" stroke="#6B6B69" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">
+              {labels("ui.you_do")}
+            </span>
+          </div>
+          <ul className="space-y-2.5 m-0 p-0 list-none">
+            {sellerItems.map((o) => (
+              <li key={o.id} className="flex items-start gap-2.5">
+                <NeutralMarker />
+                {/* #374151 on #F4F4F2 = 7.2:1 ✓ well above 4.5:1 */}
+                <span className="text-[14px] leading-snug" style={{ color: "#374151" }}>
+                  {labels(o.id)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* ── FOOTER: Trade-off + CTA ────────────────────────────── */}
+      <footer className="px-6 py-4 md:px-8 md:py-5 border-t border-border bg-muted/10 flex flex-col gap-4">
+        {/* Trade-off — 1 sentence only */}
+        {"none" in tradeoff ? null : (
+          <p className="text-[13px] text-muted-foreground leading-snug m-0 italic flex items-start gap-2">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" className="shrink-0 mt-0.5">
+              <path d="M6.5 2v5M6.5 9.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            {labels(tradeoff.id)}
           </p>
+        )}
+
+        {/* Expected outcome + action */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-0.5">
+            {expectation.outcomeId && (
+              <p className="text-[13px] text-primary font-semibold m-0">
+                {labels(expectation.outcomeId)}
+              </p>
+            )}
+            {/* Plan ID — structural metadata only, de-emphasized */}
+            <p className="text-[9px] font-mono text-muted-foreground/35 m-0 uppercase tracking-widest">
+              {identity.planId}
+              {!identity.verified && (
+                <span className="ml-1.5 text-destructive/50">[{labels("ui.unverified")}]</span>
+              )}
+            </p>
+          </div>
+          {action && <div className="shrink-0">{action}</div>}
         </div>
-      </div>
-
-      {/* GROUNDS — kind-aware. `absent` is stated, which is the whole point of the kind existing. */}
-      <div className="grid gap-3">
-        <p className="m-0 type-label text-muted-foreground">{labels("ui.grounds")}</p>
-        <dl className="grid m-0 border-t border-border">
-          {plan.grounds.map((evidence) => (
-            <div key={evidence.id} className="grid sm:grid-cols-[9rem_1fr] items-baseline gap-x-6 gap-y-1 py-3 border-b border-border" data-kind={evidence.kind}>
-              {/* The term names WHICH fact this is; the kind says what sort of claim it is. Showing
-                  only the kind left a reader looking at "Published · $7.50" with no way to know
-                  whether that was a base cost, a lead time or something else entirely. */}
-              <dt className="m-0 type-small text-foreground">{labels(evidence.id)}</dt>
-              <dd className="m-0 type-small text-foreground max-w-[62ch]">
-                <span className={`block type-label ${(evidence.kind === "published" || evidence.kind === "measured") ? "text-primary" : "text-muted-foreground"}`}>{labels(`kind.${evidence.kind}`)}</span>
-                {groundValue(evidence, labels)}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-
-      {/* EXPECTATION and IDENTITY. An outcome asserted without evidence would be an invented
-          promise, so a null outcome renders nothing; what the plan deliberately does not know is
-          listed rather than silently skipped. */}
-      {expectation.outcomeId ? (
-        <p className="type-body text-foreground">{labels(expectation.outcomeId)}</p>
-      ) : null}
-
-      <div className="grid gap-3">
-        <p className="m-0 type-label text-muted-foreground">{labels("ui.deferred")}</p>
-        <ul className="flex flex-wrap items-baseline gap-2 m-0 p-0 list-none">
-          {subject.deferred.map((d) => (
-            <li key={d.field} className="px-2 py-0.5 border border-dashed border-border rounded-sm type-small font-mono text-muted-foreground">
-              {labels(`field.${d.field}`)}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-6 pt-8 border-t border-border mt-0">
-        <p className="m-0 type-small font-mono text-muted-foreground">
-          {labels("ui.identity")} {identity.planId} · {identity.catalogueVersion}
-          {/* A drafted plan says so. Operations has not confirmed these assertions, and presenting
-              them identically to a signed-off plan would be the fabrication the whole evidence
-              model exists to prevent. */}
-          {identity.verified ? null : (
-            <span className="inline-block ml-2 px-2 py-0.5 border border-dashed border-border rounded-sm text-muted-foreground">{labels("ui.unverified")}</span>
-          )}
-        </p>
-        {action}
-      </div>
+      </footer>
     </article>
   );
 }

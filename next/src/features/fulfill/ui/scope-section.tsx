@@ -1,162 +1,123 @@
-// S5 · SCOPE — "Can you make what I sell?"
+// S5 · PRODUCTION INDEX — "Can you make what I sell?"
 //
-// Product-level qualification, and the most common correct exit on the page. The boundary is
-// therefore given the same weight as the catalogue: what THG will not source disqualifies as
-// usefully as what it will produce, and burying it would move that discovery to a sales call.
+// The answer has to be a product, not a category. A card reading "Apparel & drinkware" tells a
+// seller that THG does print-on-demand in the abstract; a card reading the exact SKU, with its
+// real origin, lead time and base cost, tells them THG can make the thing they already sell.
+// So every card here IS a live Hub catalog product, resolved by id at render time, and its CTA
+// deep-links to that product's specification — `products` comes from the Hub, and the section
+// authors nothing about them.
 //
-// The catalogue is CMS-backed and currently empty, so the localized product-category set renders
-// instead. Price and in-house time are unpublished; each renders as a labelled gap rather than
-// being dropped, so the row upgrades in place the day the CMS carries a figure.
+// The cards are the shared `ProductCard` from features/catalog, not a local copy: a product
+// seen here and the same product seen in the catalog must be one visual object.
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
+import { catalogHref, ProductCard, type CatalogCopy, type CatalogProduct } from "@/features/catalog";
+import type { Locale } from "@/shared/i18n";
 
 import type { FulfillContent } from "../models/fulfill";
-import type { FulfillFaq } from "../models/faq";
 import type { FulfillCopy } from "../localized-content";
-import type { FulfillParityCopy } from "../parity-content";
-import { FAQ_SLOT, pickFaq } from "./faq-placement";
-import { Heading, Movement } from "./section";
-import { MOVEMENT_INDEX, type MovementCopy } from "./movement-copy";
+import { MOVEMENT_INDEX } from "./movement-copy";
 
 interface Props {
   content: FulfillContent;
   copy: FulfillCopy;
-  parity: FulfillParityCopy;
-  movement: MovementCopy;
-  faqs: readonly FulfillFaq[];
+  catalogCopy: CatalogCopy;
+  /** Live Hub products; [] when the Hub is unreachable → the static illustrative cards. */
+  products: readonly CatalogProduct[];
+  lang: Locale;
 }
 
-/** A published value, or the labelled gap. Never a dash, never an omitted row: the reader has to be
- *  able to tell "THG has not published this" from "this product has no basecost". */
-function Fact({
-  term,
-  value,
-  absentLabel,
-}: Readonly<{ term: string; value: string; absentLabel: string }>) {
+/** The degraded card: product photography with no product identity and no deep link. Kept
+ *  visually consistent with ProductCard but deliberately NOT the same component — it has no
+ *  product to link to, and a card that looks clickable but is not is worse than a plain one. */
+function IllustrativeCard({ name, image, alt }: Readonly<{ name: string; image: string; alt: string }>) {
   return (
-    <div className="flex flex-row justify-between items-baseline gap-4 py-1.5 border-b border-border last:border-b-0">
-      <dt className="type-label text-muted-foreground">{term}</dt>
-      <dd className="type-small text-foreground text-right font-mono">{value || <span className="text-muted-foreground font-sans">{absentLabel}</span>}</dd>
-    </div>
+    <article className="flex flex-col overflow-hidden rounded-xl border border-thg-border bg-thg-surface shadow-sm">
+      <div className="relative aspect-square overflow-hidden bg-thg-surfaceSubtle">
+        <Image
+          src={image}
+          alt={alt}
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        />
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="m-0 text-pretty text-[15px] font-bold leading-snug text-thg-textMain md:text-[16px]">
+          {name}
+        </h3>
+      </div>
+    </article>
   );
 }
 
-/** One product row, from whichever source supplied it. Normalising first means the two sources
- *  render through one path: a fallback product is the same product with nothing published, not a
- *  product with fewer fields, and neither branch can drift from the other. */
-interface ProductRow {
-  key: string;
-  name: string;
-  image: string;
-  alt: string;
-  price: string;
-  leadTime: string;
-  origin: string;
-  /** CMS media is remote and not yet covered by an image-optimizer allowlist. */
-  remote: boolean;
-}
-
-export default function ScopeSection({ content, copy, parity, movement, faqs }: Readonly<Props>) {
-  const templates = pickFaq(faqs, FAQ_SLOT.templates);
-  const limit = pickFaq(faqs, FAQ_SLOT.sourcingLimit);
-  const fromCms = content.catalog.length > 0;
-
-  // Keyed by asset path: it is the one field that identifies a product across a re-render, and two
-  // catalogue rows may legitimately share a name.
-  const products: readonly ProductRow[] = fromCms
-    ? content.catalog.map((item) => ({
-        key: item.image || item.name,
-        name: item.name,
-        image: item.image,
-        alt: "",
-        price: item.price,
-        leadTime: item.leadTime,
-        origin: item.origin,
-        remote: true,
-      }))
-    : copy.catalogFallback.map((item) => ({
-        key: item.image,
-        name: item.name,
-        image: item.image,
-        alt: item.alt,
-        price: "",
-        leadTime: "",
-        origin: "",
-        remote: false,
-      }));
+export default function ScopeSection({ content, copy, catalogCopy, products, lang }: Readonly<Props>) {
+  const live = products.length > 0;
 
   return (
-    <Movement id="catalog">
-      <Heading
-        index={MOVEMENT_INDEX.scope}
-        eyebrow={copy.catalogEyebrow}
-        title={copy.catalogTitle}
-        lead={copy.catalogIntro}
-      />
+    <section id="catalog" className="w-full border-t border-thg-border bg-thg-bg py-24 lg:py-32">
+      <div className="container mx-auto px-4 md:px-8">
+        <div className="mb-16 flex max-w-2xl flex-col gap-4">
+          <p className="m-0 font-mono text-xs font-bold uppercase tracking-widest text-thg-textMuted">
+            <span className="mr-3 text-thg-gold">{MOVEMENT_INDEX.scope}</span>
+            {copy.catalogEyebrow}
+          </p>
+          <h2 className="m-0 font-sans text-3xl font-bold leading-snug tracking-tight text-thg-textMain md:text-5xl">
+            {copy.catalogTitle}
+          </h2>
+          <p className="m-0 max-w-xl text-base leading-relaxed text-thg-textMuted">
+            {copy.catalogIntro}
+          </p>
+        </div>
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 m-0 p-0 list-none">
-        {products.map((item) => (
-          <li key={item.key} className="flex flex-col gap-4 bg-card border border-border rounded-lg p-4 transition-colors hover:border-primary">
-            {item.image ? (
-              // HALT [H-D]
-              // Image crop/aspect ratio is missing from authority.
-              <div className="relative w-full aspect-square bg-muted rounded-md overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
-                  unoptimized={item.remote}
-                />
-              </div>
-            ) : null}
-            <div className="flex flex-col">
-              <h3 className="type-h4 text-foreground m-0 mb-3">{item.name}</h3>
-              {/* Three rows always. A missing figure is a labelled gap, never an omitted row. */}
-              <dl className="flex flex-col m-0 border-t border-border pt-1">
-                <Fact
-                  term={parity.basecostLabel}
-                  value={item.price}
-                  absentLabel={movement.notPublished}
-                />
-                <Fact
-                  term={parity.leadTimeLabel}
-                  value={item.leadTime}
-                  absentLabel={movement.notPublished}
-                />
-                <Fact
-                  term={movement.originLabel}
-                  value={item.origin}
-                  absentLabel={movement.notPublished}
-                />
-              </dl>
-            </div>
-          </li>
-        ))}
-      </ul>
+        {/* A list, not a bare div: the count and the item boundaries are what let a screen
+         *  reader user know how many products this is. The previous markup hid the grid behind
+         *  aria-hidden and offered an sr-only table instead — which also hid every product
+         *  link from the keyboard tab order once the cards became interactive. */}
+        {live ? (
+          <ul className="grid list-none grid-cols-2 gap-6 p-0 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((product) => (
+              <li key={product.id}>
+                <ProductCard product={product} lang={lang} copy={catalogCopy} />
+              </li>
+            ))}
+          </ul>
+        ) : content.catalog.length > 0 ? (
+          <ul className="grid list-none grid-cols-2 gap-6 p-0 lg:grid-cols-3 xl:grid-cols-4">
+            {content.catalog.map((item) => (
+              <li key={item.image || item.name}>
+                <IllustrativeCard name={item.name} image={item.image} alt={item.name} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>
+            {/* Said out loud rather than implied: these cards are illustrative because the live
+             *  catalog could not be read, so the page does not let a seller mistake three photos
+             *  for the full product range. */}
+            <p className="mb-8 max-w-[720px] text-sm text-thg-textMuted">{copy.catalogEmpty}</p>
+            <ul className="grid list-none grid-cols-2 gap-6 p-0 lg:grid-cols-3 xl:grid-cols-4">
+              {copy.catalogFallback.map((item) => (
+                <li key={item.image}>
+                  <IllustrativeCard name={item.name} image={item.image} alt={item.alt} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
 
-      {!fromCms ? (
-        <p className="mt-8 type-small text-muted-foreground p-4 bg-muted/30 rounded-md max-w-[720px]">{copy.catalogEmpty}</p>
-      ) : null}
-
-      <div className="flex flex-col md:flex-row gap-8 lg:gap-12 mt-16 pt-12 border-t border-border">
-        {/* Templates: the artwork obligation, answered where the seller first meets it. */}
-        {templates ? (
-          <div className="flex-1 flex flex-col gap-3 bg-card border border-border p-6 rounded-lg [&_a]:text-primary [&_a:hover]:underline [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-ring [&_a:focus-visible]:outline-none">
-            <p className="type-label text-muted-foreground m-0">{movement.templatesTitle}</p>
-            <p className="type-body text-foreground m-0">{templates.answer}</p>
-          </div>
-        ) : null}
-
-        {/* The stated limit. This is an exit, and it is placed to be found rather than to be
-            avoided — a seller who leaves on this row saves both parties a month. */}
-        {limit ? (
-          <div className="flex-1 flex flex-col gap-3 bg-card border border-border p-6 rounded-lg [&_a]:text-primary [&_a:hover]:underline [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-ring [&_a:focus-visible]:outline-none">
-            <p className="type-label text-muted-foreground m-0">{movement.boundaryTitle}</p>
-            <p className="type-body text-foreground m-0">{limit.answer}</p>
-          </div>
-        ) : null}
+        <div className="mt-12 flex w-full justify-center">
+          <Link
+            href={catalogHref(lang)}
+            className="inline-flex items-center gap-2 rounded-full bg-thg-textMain px-8 py-4 text-sm font-semibold text-thg-surface no-underline shadow-md transition-colors duration-300 hover:bg-thg-gold hover:shadow-lg"
+          >
+            {copy.catalogExploreAll}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
       </div>
-    </Movement>
+    </section>
   );
 }

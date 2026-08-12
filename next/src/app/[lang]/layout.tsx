@@ -80,8 +80,16 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     loadSiteSettings(),
   ]);
   return (
-    <html lang={HTML_LANG[lang]}>
-      <body className={`${displayFont.variable} ${bodyFont.variable} min-h-screen bg-background`}>
+    // The font-face variables belong on <html>, NOT on <body>. globals.css composes the brand
+    // stacks at `:root` (`--font-body: var(--font-body-face), …`), and a custom property is
+    // substituted once, where it is declared: with the faces defined only on <body>, `var(--font-
+    // body-face)` was unresolvable at :root, which makes the whole `--font-body` declaration
+    // compute to the guaranteed-invalid value — and custom properties inherit their COMPUTED value,
+    // so redefining the face lower down could never repair it. Every route was rendering in the
+    // browser's default serif. Measured before/after with getComputedStyle on /vi, /vi/blog and
+    // /vi/thg-fulfill.
+    <html lang={HTML_LANG[lang]} className={`${displayFont.variable} ${bodyFont.variable}`}>
+      <body className="min-h-screen bg-background">
         <UtmCapture />
         <a href="#main-content" className="skip-link">
           {SKIP_LINK_LABEL[lang]}

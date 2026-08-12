@@ -163,7 +163,8 @@
     font-size: var(--step-display);
     font-weight: 700;
     letter-spacing: -0.03em;
-    line-height: 1.02;
+    /* 1.08 — diacritics (ộ ắ ể) need headroom above cap-height */
+    line-height: 1.08;
   }
 
   .type-h1 {
@@ -171,7 +172,8 @@
     font-size: var(--step-h1);
     font-weight: 700;
     letter-spacing: -0.02em;
-    line-height: 1.08;
+    /* 1.18 — stack diacritics (ộ + circumflex + tone) without clipping */
+    line-height: 1.18;
   }
 
   .type-h2 {
@@ -179,7 +181,8 @@
     font-size: var(--step-h2);
     font-weight: 600;
     letter-spacing: -0.02em;
-    line-height: 1.12;
+    /* 1.28 — prevents circumflex+tone stacks (ộ, ắ) from clipping at 1.12 */
+    line-height: 1.28;
   }
 
   .type-h3 {
@@ -187,7 +190,8 @@
     font-size: var(--step-h3);
     font-weight: 600;
     letter-spacing: -0.01em;
-    line-height: 1.2;
+    /* 1.35 — h3 at smaller size still needs VI diacritic headroom */
+    line-height: 1.35;
   }
 
   .type-h4 {
@@ -220,7 +224,8 @@
     font-size: var(--step-label);
     font-weight: 500;
     letter-spacing: 0.1em;
-    line-height: 1;
+    /* 1.4 — was 1.0 which clips uppercase VI diacritics (Ộ Ắ) catastrophically */
+    line-height: 1.4;
     text-transform: uppercase;
   }
 

@@ -18,6 +18,10 @@ export interface FulfillCatalogItem {
   leadTime: string;
   /** Production origin badge, e.g. "US"; "" renders nothing. */
   origin: string;
+  /** THG Hub catalog id, when the CMS has linked this entry to a real catalog product.
+   *  "" means "not linked" — the section then falls back to its own featured-product list
+   *  rather than emitting a `?productId=` deep link that resolves to nothing. */
+  productId: string;
 }
 
 export interface FulfillContent {

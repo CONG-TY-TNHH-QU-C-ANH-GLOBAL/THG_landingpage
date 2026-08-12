@@ -130,8 +130,11 @@ describe("fulfillContentFromDto", () => {
         price: "$3.20",
         leadTime: "48h",
         origin: "VN",
+        // "" until the CMS publishes `product_id` — the section then resolves its own featured
+        // Hub ids instead of deep-linking to nothing.
+        productId: "",
       },
-      { name: "Mug", image: "", note: "US", price: "", leadTime: "", origin: "US" },
+      { name: "Mug", image: "", note: "US", price: "", leadTime: "", origin: "US", productId: "" },
     ]);
   });
 

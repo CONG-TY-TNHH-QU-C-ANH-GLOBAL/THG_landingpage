@@ -59,6 +59,7 @@ describe("loadFulfillContent — CMS source vs fallback provenance", () => {
         price: "$3.2",
         leadTime: "48h",
         origin: "VN",
+        productId: "",
       },
     ]);
   });

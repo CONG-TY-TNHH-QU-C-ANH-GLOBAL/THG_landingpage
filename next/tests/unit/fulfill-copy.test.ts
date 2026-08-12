@@ -62,11 +62,15 @@ describe("getFulfillContent — stable domain structure", () => {
     expect(badges[0]).toBe("THG Fulfillment Operations");
   });
 
-  it("keeps 4 hub stages and 3 catalog fallback categories, localized name/alt", () => {
+  it("keeps 4 hub stages and 3 illustrative catalog cards, with a locale-invariant product name", () => {
     expect(getFulfillContent("en").hubStages).toEqual(["Received", "Processing", "QC", "Packed"]);
     expect(getFulfillContent("vi").hubStages[0]).toBe("Nhận");
     expect(getFulfillContent("en").catalogFallback).toHaveLength(3);
-    expect(getFulfillContent("en").catalogFallback[0].name).toBe("Apparel");
-    expect(getFulfillContent("zh").catalogFallback[0].name).toBe("服装");
+    // The card names became real product names, and a product name is identity, not copy:
+    // it must read the SAME in every locale. Only the image alt text is translated.
+    const names = SUPPORTED_LOCALES.map((l) => getFulfillContent(l).catalogFallback[0].name);
+    expect(new Set(names).size).toBe(1);
+    expect(names[0]).toBe("180 g Milk Thread Women's Heat Transfer T-Shirt — Double-sided");
+    expect(getFulfillContent("zh").catalogFallback[0].alt).toBe("双面热转印T恤");
   });
 });

@@ -3,29 +3,34 @@ import { notFound } from "next/navigation";
 import { isSupportedLocale, type Locale } from "@/shared/i18n";
 import { getMarketingCopy } from "@/shared/i18n/server/get-marketing-copy";
 import { buildPageMetadata, resolveSiteOrigin } from "@/shared/seo";
-import { loadHomepageContent, loadHomeServices, loadHomeFaqs, loadSiteSettings } from "@/features/home";
-import HeroSection from "@/features/home/ui/hero-section";
-import AboutVideoSection from "@/features/home/ui/about-video-section";
-import ProofStripSection from "@/features/home/ui/proof-strip-section";
-import PillarAtlasSection from "@/features/home/ui/pillar-atlas-section";
-import EcosystemAtlasSection from "@/features/home/ui/ecosystem-atlas-section";
-import CoverageSection from "@/features/home/ui/coverage-section";
-import WhoWeServeSection from "@/features/home/ui/who-we-serve-section";
-import WhyThgSection from "@/features/home/ui/why-thg-section";
-import ConversionSection from "@/features/home/ui/conversion-section";
+import { loadHomepageContent, loadHomeFaqs } from "@/features/home";
 import FAQSection from "@/features/home/ui/faq-section";
 import { HomeOrganizationJsonLd, HomeFaqJsonLd } from "@/features/home/ui/home-jsonld";
+import {
+  CorridorRoot,
+  CorridorProvider,
+  ThresholdSection,
+  CorridorTrack,
+  MatrixSection,
+  DiagnosticSection,
+  RecommendationSection,
+  WaybillSection,
+  WaybillDossier,
+} from "@/features/home/corridor";
 
-// The real THG homepage — WEB-001B completes the approved Open Design baseline
-// (visual authority: homepage-concept-global-fulfillment-orbit.html; rules:
-// IMPLEMENTATION_BASELINE.md). Narrative: hero → proof handoff → four-pillar
-// atlas with operational blueprint stages → restored Why-THG video (owner
-// override) → connected ecosystem → coverage → who we serve → why THG →
-// private consultation + Community Knowledge Loop → FAQ → shared footer
-// (layout). Sections still omitted per the approved artifact: integrations,
-// testimonials, trust-badge placeholders, image marquee, logistics counters —
-// see the WEB-001B entries in THG_public_platform_specs for dispositions.
-// Rendering stays SSG + ISR: FND-005 loaders → landing models → Server Components.
+// The THG homepage — "Khoảng giữa" (visual authority: src/reference/thg-world-camera-ro.html).
+//
+// Narrative, and it is one continuous argument rather than a stack of panels: threshold → the
+// eleven-gate corridor, which asks three questions while the seller walks it → the matrix that
+// shows them where they just landed → the two remaining questions → the recommendation the answers
+// produce → the waybill, next to the exact payload Sales will receive. The FAQ stays as the tail:
+// it carries the FAQPage JSON-LD and it is the `#faq` target the shared Navbar links to from every
+// route, so removing it would break navigation that lives outside this page.
+//
+// Rendering: the page itself and the threshold stay Server Components; the corridor and the four
+// answer-driven sections are client islands under one provider, because they share a single piece
+// of state (see corridor/ui/corridor-provider.client.tsx). Data flow is unchanged — FND-005
+// loaders → landing models → props. SSG + ISR as before.
 export const revalidate = 300;
 
 type PageProps = Readonly<{ params: Promise<{ lang: string }> }>;
@@ -65,31 +70,28 @@ export default async function HomePage({ params }: PageProps) {
   const { lang } = await params;
   if (!isSupportedLocale(lang)) notFound();
 
-  const [copy, content, services, faqs, settings, enContent] = await Promise.all([
+  const [copy, content, faqs] = await Promise.all([
     getMarketingCopy(lang),
     loadHomepageContent(lang),
-    loadHomeServices(lang),
     loadHomeFaqs(lang),
-    loadSiteSettings(),
-    // The about video always uses the EN block's URL so all locales show the same
-    // video (parity with the pre-redesign homepage); site settings stay the default.
-    loadHomepageContent("en"),
   ]);
-  const aboutVideoUrl = enContent.aboutVideo.videoUrl || settings.aboutVideoUrl || "";
 
   return (
     <div className="min-h-screen bg-background">
       <HomeOrganizationJsonLd />
       <HomeFaqJsonLd faqs={faqs} />
-      <HeroSection lang={lang} copy={copy} hero={content.hero} />
-      <ProofStripSection copy={copy} />
-      <PillarAtlasSection lang={lang} copy={copy} services={services} />
-      <AboutVideoSection copy={copy} about={content.aboutVideo} videoUrl={aboutVideoUrl} />
-      <EcosystemAtlasSection copy={copy} />
-      <CoverageSection copy={copy} />
-      <WhoWeServeSection copy={copy} />
-      <WhyThgSection copy={copy} />
-      <ConversionSection lang={lang} copy={copy} />
+      <CorridorRoot>
+        <CorridorProvider lang={lang}>
+          {/* Server-rendered; the CMS hero badge becomes the eyebrow, the H1 stays art-directed. */}
+          <ThresholdSection lang={lang} eyebrow={content.hero.badge} />
+          <CorridorTrack />
+          <MatrixSection />
+          <DiagnosticSection />
+          <RecommendationSection />
+          <WaybillSection copy={copy} />
+          <WaybillDossier />
+        </CorridorProvider>
+      </CorridorRoot>
       <FAQSection copy={copy} lang={lang} />
     </div>
   );

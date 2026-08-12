@@ -1,0 +1,1574 @@
+/* Scoped visual layer for the "Khoảng giữa" homepage.
+ *
+ * Everything nests under .root — NO global token edits (the WEB-002 fulfill precedent). The palette
+ * below binds to the existing brand tokens wherever the reference's hex already IS the token
+ * (#9B753B is exactly hsl(var(--gold)); #F9F8F6 is exactly hsl(var(--background)); #3D664B is
+ * hsl(var(--olive))); only the tones the design system genuinely does not carry — the warm ink
+ * ladder, the second border step, the pale gold fill and the brick accent — are declared here.
+ *
+ * The corridor itself is CSS 3D, not WebGL. See corridor-track.client.tsx for why.
+ */
+
+.root {
+  --c-bg: hsl(var(--background));
+  --c-surface: hsl(var(--card));
+  --c-surface-sunk: hsl(var(--secondary));
+  --c-line: hsl(var(--border));
+  --c-line-strong: #d6d0c2;
+  --c-ink: #241e16;
+  --c-ink-2: #4a4238;
+  --c-muted: #786e60;
+  --c-gold: hsl(var(--gold));
+  --c-gold-deep: hsl(var(--gold-dark));
+  --c-gold-pale: #ede3ce;
+  --c-brick: #8b4732;
+
+  --c-shell: 1520px;
+  --c-pad: clamp(20px, 4.5vw, 72px);
+  --c-edge: max(var(--c-pad), calc((100vw - var(--c-shell)) / 2));
+  --c-panel: clamp(300px, 30vw, 420px);
+
+  /* --u is the WORLD UNIT, in px. The corridor is modelled in the reference's own units (gate 7
+     tall, 10 wide, 9 apart, eye 3.2 off the floor) and every dimension below is a multiple of it,
+     so the composition is identical at every viewport instead of being a pile of magic pixels.
+     It is written by corridor-track.client.tsx together with the perspective it must agree with —
+     one owner, no mirrored constant to drift. The fallback only has to keep the static markup
+     sane; the scene is display:none until that script runs. */
+  --u: 180px;
+  --c-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* `--font-mono` has to be re-composed here, not just inherited. globals.css declares it at
+     `:root` as `var(--font-mono-face), …`, but the mono face is supplied per-route (by design) —
+     so at `:root` that substitution has nothing to resolve and the property computes to the
+     guaranteed-invalid value for the whole document. Custom properties inherit their COMPUTED
+     value, so defining `--font-mono-face` on this element cannot repair the composite above it;
+     the composite must be declared in the same scope as the face. */
+  --font-mono: var(--font-mono-face), ui-monospace, "IBM Plex Mono", SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+
+  position: relative;
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--font-corridor-body), var(--font-body);
+  font-weight: 300;
+  line-height: 1.65;
+}
+
+/* ── Type roles ── the display face is Archivo's width axis, which is the identity of this
+   direction; without the wdth setting the headlines read as an ordinary bold grotesque. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: clamp(10px, 0.68vw, 11px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.display {
+  font-family: var(--font-corridor-display), var(--font-display);
+  font-variation-settings: "wdth" 118, "wght" 800;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.96;
+}
+
+.emphasis {
+  color: var(--c-gold-deep);
+  font-weight: 500;
+}
+
+/* ─────────────────────────────  00 · THRESHOLD  ───────────────────────────── */
+
+.threshold {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 var(--c-edge) clamp(34px, 6vh, 80px);
+}
+
+/* The wash that keeps the headline legible over the corridor mouth behind it. */
+.threshold::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    101deg,
+    var(--c-bg) 0%,
+    var(--c-bg) 30%,
+    hsl(var(--background) / 0.82) 47%,
+    hsl(var(--background) / 0.34) 63%,
+    hsl(var(--background) / 0) 78%
+  );
+}
+
+.eyebrow {
+  composes: mono;
+  letter-spacing: 0.2em;
+  color: var(--c-gold-deep);
+  margin: 0 0 clamp(16px, 2vh, 24px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 38px;
+  height: 1px;
+  background: var(--c-gold);
+  display: block;
+  flex: none;
+}
+
+.thresholdTitle {
+  composes: display;
+  font-variation-settings: "wdth" 123, "wght" 800;
+  font-size: clamp(42px, min(10.2vw, 17vh), 170px);
+  line-height: 0.88;
+  letter-spacing: -0.032em;
+  margin: 0;
+  color: var(--c-ink);
+}
+
+.thresholdTitle em {
+  font-style: normal;
+  font-variation-settings: "wdth" 100, "wght" 500;
+  color: var(--c-gold);
+}
+
+.thresholdBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  align-items: end;
+  gap: clamp(22px, 3vw, 60px);
+  margin-top: clamp(20px, 3.4vh, 42px);
+}
+
+.thresholdLede {
+  max-width: 46ch;
+  color: var(--c-ink-2);
+  font-size: clamp(14.5px, 1vw, 16.5px);
+  margin: 0;
+}
+
+.thresholdActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: min(100%, 580px);
+}
+
+.hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--c-line-strong);
+  margin: clamp(14px, 1.8vh, 22px) 0 0;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1000px) {
+  .thresholdBody {
+    grid-template-columns: 1fr;
+  }
+
+  .thresholdActions {
+    justify-content: flex-start;
+    max-width: 100%;
+  }
+
+  .threshold::before {
+    background: linear-gradient(
+      to top,
+      var(--c-bg) 0%,
+      var(--c-bg) 52%,
+      hsl(var(--background) / 0.55) 74%,
+      hsl(var(--background) / 0) 100%
+    );
+  }
+}
+
+/* ── Buttons (shared by threshold, ask and form) ── */
+
+.primaryAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--c-gold-deep);
+  color: #fff;
+  border: none;
+  padding: 17px 25px;
+  font-family: var(--font-mono);
+  font-size: clamp(10.5px, 0.72vw, 12px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background 0.25s,
+    gap 0.25s;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.primaryAction:hover {
+  background: var(--c-ink);
+  gap: 20px;
+}
+
+.primaryAction:disabled {
+  background: var(--c-line);
+  color: var(--c-muted);
+  cursor: not-allowed;
+}
+
+.ghostAction {
+  display: inline-flex;
+  align-items: center;
+  padding: 17px 21px;
+  font-family: var(--font-mono);
+  font-size: clamp(10.5px, 0.72vw, 12px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  border: 1px solid var(--c-line-strong);
+  background: hsl(var(--background) / 0.8);
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.ghostAction:hover {
+  color: var(--c-ink);
+  border-color: var(--c-ink);
+}
+
+/* ─────────────────────────────  01 · CORRIDOR  ───────────────────────────── */
+
+/* Progressive enhancement, same contract as the existing hero parallax island: the SERVER markup
+ * below is the complete, readable, static corridor — eleven stacked articles and their questions,
+ * in order. The `.motion` class is added post-mount, and only when motion is allowed, and it is
+ * what turns that list into the pinned camera walk. No-JS and prefers-reduced-motion therefore need
+ * no special case: they simply never get `.motion`, and nothing is ever left invisible. */
+.track {
+  position: relative;
+  z-index: 2;
+}
+
+.motion.track {
+  /* One viewport of dwell per gate plus the approach and the exit — the reference's 1160vh. */
+  height: 1160vh;
+}
+
+.sticky {
+  position: relative;
+}
+
+.motion .sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* ── The world ── */
+
+.scene {
+  display: none;
+  position: absolute;
+  inset: 0;
+  /* perspective and perspective-origin are set by the track script, because both are functions of
+     the viewport that must stay consistent with --u:
+       perspective   = (H/2) / tan(fov/2)   — fov 50°, 62° on narrow, 46° on ultrawide, per the
+                                              reference camera. This alone fixes how much of the
+                                              frame a gate fills: fill = perspective / H.
+       origin-y      = 54.6%                — the eye sits 3.2 units off the floor of a 7-unit
+                                              gate, i.e. BELOW its mid-height. Above it (the old
+                                              46%) you look down onto a diorama; below it you are
+                                              standing inside the corridor.
+       --view-offset                        — the reference's setViewOffset(-off), which slides the
+                                              corridor clear of the copy panel.
+
+   The offset is a 2D translate of THIS element, not a perspective-origin shift, and the difference
+   is not cosmetic. setViewOffset translates the finished projection, so the corridor's axis lands
+   at the same screen x at every depth. Moving perspective-origin instead moves the eye sideways —
+   a shear, where only the vanishing point arrives and the near gate stays behind. Since the
+   perspective lives on this element, transforming the element itself acts on the projected image,
+   which is exactly what the reference does. The uncovered strip on the left is the page's own
+   background colour, so the seam is invisible. */
+  perspective: 965px;
+  perspective-origin: 50% 54.6%;
+  transform: translateX(var(--view-offset, 0px));
+  background: var(--c-bg);
+}
+
+.motion .scene {
+  display: block;
+}
+
+/* Fog: in a one-point perspective the vanishing point IS the far distance, so the haze belongs in
+   the middle of the frame, not at its edges. This is what stops gate 11 from reading as a hard
+   miniature stuck to the centre of the screen. */
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 54.6%,
+    var(--c-bg) 0%,
+    hsl(var(--background) / 0.92) 9%,
+    hsl(var(--background) / 0.55) 22%,
+    hsl(var(--background) / 0) 46%
+  );
+}
+
+/* Two nested camera layers on purpose. Depth follows the scrollbar and must never lag it, so
+   .stage carries no transition; the lateral strafe is answer-driven and should ease, so it lives
+   on its own layer that only re-renders when an answer changes. */
+/* Strafe AND yaw. The reference does not simply slide sideways when the seller picks a lane — it
+   moves the camera to camX and then `lookAt(camX * 0.55, …)`, so the camera also turns partway back
+   toward the corridor's axis. Translation alone reads as the whole world sliding; translation plus
+   that turn reads as a camera changing lanes, which is the entire point of the gesture. */
+.strafe {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: translateX(var(--cam-x, 0px)) rotateY(calc(var(--cam-yaw, 0) * 1deg));
+  transition: transform 0.9s var(--c-ease);
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--cam-z, 0) * 1px));
+}
+
+.motion .stage {
+  will-change: transform;
+}
+
+/* Floor plane + the running dashes under the walk — the strongest speed cue in the whole scene. */
+.floor {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* Reference: PlaneGeometry(60, 300) lying at y = 0 — the gate's floor line, 3.5 units below the
+     gate box's mid-height. */
+  width: calc(60 * var(--u));
+  height: calc(300 * var(--u));
+  transform: translate(-50%, -50%) translateY(calc(3.5 * var(--u))) rotateX(90deg)
+    translateY(calc(-100 * var(--u)));
+  background-color: #f1ebdf;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      hsl(var(--gold) / 0.34) 0 calc(1.9 * var(--u)),
+      transparent calc(1.9 * var(--u)) calc(3.2 * var(--u))
+    ),
+    linear-gradient(to right, transparent 0 48%, hsl(var(--gold) / 0.05) 48% 52%, transparent 52%);
+  background-repeat: no-repeat, repeat;
+  background-size:
+    calc(0.14 * var(--u)) 100%,
+    100% 100%;
+  background-position:
+    center top,
+    center top;
+  /* The plane is finite, so at depth its two long edges converge into frame as hard diagonals.
+     Dissolving them is cheaper and steadier than making the plane wide enough to never converge. */
+  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+}
+
+/* The two lanes light up with the seller's answers — POD/Express to the left, Dropship/US
+   warehouse to the right. Opacity is driven by data attributes, not inline style. */
+.lane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(3.4 * var(--u));
+  height: calc(300 * var(--u));
+  transform-origin: 50% 50%;
+  background: linear-gradient(to right, transparent, hsl(var(--gold) / 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.6s var(--c-ease);
+}
+
+.laneLeft {
+  transform: translate(-50%, -50%) translateX(calc(-7.6 * var(--u))) translateY(calc(3.5 * var(--u)))
+    rotateX(90deg) translateY(calc(-100 * var(--u)));
+}
+
+.laneRight {
+  transform: translate(-50%, -50%) translateX(calc(7.6 * var(--u))) translateY(calc(3.5 * var(--u)))
+    rotateX(90deg) translateY(calc(-100 * var(--u)));
+}
+
+.lane[data-active="true"] {
+  opacity: 0.26;
+}
+
+/* ── A gate ── two pillars, a beam, a gold threshold sill on the floor. */
+
+/* A gate is 10 units wide and 7 tall, standing 9 units behind the one before it — the reference's
+   own proportions. At the dwell the camera sits 7 units back, which puts the beam just above the
+   top of frame and the pillars hard against the left and right edges: you pass THROUGH the gate
+   rather than looking AT it. That single relationship is what the old fixed 720×430 box lost. */
+.gate {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(10 * var(--u));
+  height: calc(7 * var(--u));
+  transform: translate(-50%, -50%) translateZ(calc(var(--i) * -9 * var(--u)));
+  transform-style: preserve-3d;
+}
+
+.pillar {
+  position: absolute;
+  top: 0;
+  width: calc(0.72 * var(--u));
+  height: 100%;
+  transform-style: preserve-3d;
+  background: linear-gradient(90deg, #bfb298 0%, #d5cab2 44%, #c8bca2 100%);
+}
+
+/* Contact shadow, laid on the floor rather than painted on the pillar — without it every block
+   floats and the walk reads as flat cardboard (the reference's single biggest fix). */
+.pillar::after {
+  content: "";
+  position: absolute;
+  left: calc(-0.7 * var(--u));
+  right: calc(-0.7 * var(--u));
+  bottom: 0;
+  height: calc(3 * var(--u));
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+  background: radial-gradient(ellipse at 50% 100%, rgb(60 48 30 / 0.3), rgb(60 48 30 / 0) 68%);
+}
+
+/* The gold inlay running up the inner face of each pillar; brightens as the camera arrives. */
+.pillar::before {
+  content: "";
+  position: absolute;
+  top: 12%;
+  width: calc(0.09 * var(--u));
+  height: 74%;
+  background: var(--c-gold);
+  opacity: 0.18;
+  transition: opacity 0.45s linear;
+}
+
+/* Centred ON the gate's edge (x = ±5), matching the reference, so the pillar straddles the frame
+   boundary and sweeps past the viewer instead of standing inside the picture. */
+.pillarLeft {
+  left: calc(-0.36 * var(--u));
+}
+
+.pillarLeft::before {
+  right: calc(0.14 * var(--u));
+}
+
+.pillarRight {
+  right: calc(-0.36 * var(--u));
+}
+
+.pillarRight::before {
+  left: calc(0.14 * var(--u));
+}
+
+.gate[data-near="true"] .pillar::before {
+  opacity: 0.85;
+}
+
+/* A gate the camera has walked through is BEHIND it. WebGL would cull it; CSS 3D happily keeps
+   projecting it, and between z=0 and the perspective distance it blows up into full-width slabs
+   across the top of the frame. Culling it by hand is the equivalent of a near clipping plane. */
+.gate[data-passed="true"] {
+  visibility: hidden;
+}
+
+/* Reference beam: 11.44 wide × 0.5 tall, centred at y = 6.6 of a 7-tall gate — it overhangs the
+   pillars and sits just under the ceiling line, which is what closes the aperture overhead. */
+.beam {
+  position: absolute;
+  left: calc(-0.72 * var(--u));
+  right: calc(-0.72 * var(--u));
+  top: calc(0.15 * var(--u));
+  height: calc(0.5 * var(--u));
+  background: linear-gradient(180deg, #c9bda3, #b6a98d);
+  transition: opacity 0.6s var(--c-ease);
+}
+
+/* Express opens the roof from gate 07 onward — the lane choice literally changes the architecture. */
+.gate[data-roofless="true"] .beam {
+  opacity: 0.06;
+}
+
+.sill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(0.05 * var(--u));
+  background: var(--c-gold);
+  opacity: 0.28;
+  transition: opacity 0.45s linear;
+}
+
+.gate[data-near="true"] .sill {
+  opacity: 0.8;
+}
+
+.door {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* Reference: pillars at ±6.6, arch at y = 9.6 — taller and wider than a gate, so the corridor
+     visibly opens out at its end rather than just stopping. */
+  width: calc(14.2 * var(--u));
+  height: calc(9.4 * var(--u));
+  transform: translate(-50%, -50%) translateY(calc(-1.2 * var(--u)))
+    translateZ(calc((var(--gate-count) + 0.6) * -9 * var(--u)));
+  transform-style: preserve-3d;
+  border: 2px solid hsl(var(--gold) / 0.55);
+  border-bottom: none;
+  background: linear-gradient(180deg, hsl(var(--gold) / 0.05), transparent 60%);
+}
+
+/* Readability wash — the copy panel sits over the left third of the corridor, so that third is
+   flooded back to the page background. Mirrors the reference's `.panel::before`. */
+.corridorWash {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  /* Only as wide as the copy needs. The reference fades this out ~170px past the panel's right
+     edge; the earlier version ran opaque to 34% of the viewport and faded to 82%, which quietly
+     erased the near gate — the one whose pillars are supposed to sweep past you — and left the
+     corridor looking like it began several gates away. */
+  background: linear-gradient(
+    96deg,
+    var(--c-bg) 0%,
+    var(--c-bg) 25%,
+    hsl(var(--background) / 0.6) 36%,
+    hsl(var(--background) / 0) 47%
+  );
+}
+
+.motion .corridorWash {
+  display: block;
+}
+
+/* ── The copy panel ── a plain ordered list of gates by default; under `.motion` all eleven steps
+   stack in one pinned frame and the track cross-fades between them. */
+
+.panel {
+  position: relative;
+  padding: 0 var(--c-edge);
+  margin: 0;
+}
+
+.motion .panel {
+  position: absolute;
+  left: var(--c-edge);
+  top: 0;
+  height: 100%;
+  width: var(--c-panel);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+
+.panelPin {
+  position: relative;
+  width: 100%;
+}
+
+.motion .panelPin {
+  height: clamp(290px, 38vh, 420px);
+  transition: transform 0.45s var(--c-ease);
+}
+
+/* When a question is up, the copy lifts to make room rather than being covered by it. */
+.motion .sticky[data-asking="true"] .panelPin {
+  transform: translateY(-56px);
+}
+
+.step {
+  padding: clamp(28px, 4vh, 48px) 0;
+  border-top: 1px solid var(--c-line);
+}
+
+.motion .step {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  border-top: none;
+  opacity: 0;
+}
+
+.stepCount {
+  composes: mono;
+  font-size: clamp(10px, 0.66vw, 11px);
+  letter-spacing: 0.18em;
+  color: var(--c-gold-deep);
+  display: block;
+  margin-bottom: clamp(10px, 1.2vh, 16px);
+}
+
+.stepTitle {
+  composes: display;
+  font-variation-settings: "wdth" 114, "wght" 800;
+  font-size: clamp(26px, min(2.6vw, 4.6vh), 48px);
+  line-height: 1;
+  margin: 0 0 clamp(12px, 1.4vh, 18px);
+  color: var(--c-ink);
+}
+
+.stepOwned {
+  color: var(--c-ink-2);
+  font-size: clamp(13.5px, 0.98vw, 15.5px);
+  margin: 0 0 clamp(13px, 1.7vh, 21px);
+  max-width: 36ch;
+}
+
+.stepBreak {
+  border-left: 2px solid var(--c-brick);
+  padding: 2px 0 2px 14px;
+}
+
+.stepBreakLabel {
+  font-family: var(--font-mono);
+  font-size: clamp(9px, 0.6vw, 10px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-brick);
+  display: block;
+  margin-bottom: 5px;
+}
+
+.stepBreakBody {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: clamp(12.5px, 0.88vw, 14px);
+  max-width: 34ch;
+}
+
+/* ── Depth ruler ── the numbered answer to "which gate am I at". */
+
+.ruler {
+  display: none;
+  position: absolute;
+  right: var(--c-edge);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  flex-direction: column;
+  gap: clamp(6px, 0.8vh, 10px);
+  align-items: flex-end;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.motion .ruler {
+  display: flex;
+}
+
+.rulerTick {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  justify-content: flex-end;
+}
+
+.rulerTick span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--c-line-strong);
+  transition: color 0.35s;
+  min-width: 16px;
+  text-align: right;
+}
+
+/* Drawn at its full 30×2 and scaled down, so the active state animates transform instead of width
+   and height. Animating the box triggers layout on every tick, eleven of them, on every frame of
+   the walk. */
+.rulerTick i {
+  width: 30px;
+  height: 2px;
+  background: var(--c-line-strong);
+  display: block;
+  transform-origin: 100% 50%;
+  transform: scale(0.467, 0.5);
+  transition:
+    background 0.35s,
+    transform 0.35s;
+}
+
+.rulerTick[data-hit="true"] span {
+  color: var(--c-gold-deep);
+}
+
+.rulerTick[data-hit="true"] i {
+  background: var(--c-gold);
+  transform: none;
+}
+
+@media (max-width: 1000px) {
+  .motion .ruler {
+    display: none;
+  }
+
+  .motion .panel {
+    left: 0;
+    right: 0;
+    width: auto;
+    top: auto;
+    bottom: 148px;
+    height: auto;
+    align-items: flex-end;
+    padding: 0 var(--c-edge);
+  }
+
+  .motion .panelPin {
+    height: 286px;
+  }
+
+  .motion .sticky[data-asking="true"] .panelPin {
+    transform: none;
+  }
+
+  /* Narrow viewports stack copy over the corridor rather than beside it, so the wash has to cover
+     the whole reading column — opaque up to the top of the copy, not part-way through it. */
+  .motion .corridorWash {
+    background: linear-gradient(
+      to top,
+      var(--c-bg) 0%,
+      var(--c-bg) 62%,
+      hsl(var(--background) / 0.55) 78%,
+      hsl(var(--background) / 0) 100%
+    );
+  }
+}
+
+@media (min-width: 1001px) and (max-height: 820px) {
+  .motion .panelPin {
+    height: 270px;
+  }
+
+  .motion .sticky[data-asking="true"] .panelPin {
+    transform: translateY(-40px);
+  }
+}
+
+/* ── The in-corridor question ──
+   Statically it is simply the question that belongs to its gate, sitting under that gate's copy.
+   Under `.motion` it becomes the card that rises when the camera dwells at that gate. */
+
+.ask {
+  border: 1px solid var(--c-gold);
+  background: var(--c-surface);
+  padding: clamp(18px, 1.6vw, 28px);
+  margin: clamp(18px, 2vh, 26px) var(--c-edge) 0;
+}
+
+.motion .ask {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(20px, 6vh, 80px);
+  margin: 0;
+  transform: translate(-50%, 16px);
+  z-index: 4;
+  width: min(700px, calc(100vw - 2 * var(--c-edge)));
+  background: hsl(var(--card) / 0.96);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 24px 64px rgb(36 30 22 / 0.16);
+  opacity: 0;
+  /* visibility, not just pointer-events: a closed card must not leave invisible tab stops. */
+  visibility: hidden;
+  transition:
+    opacity 0.45s var(--c-ease),
+    transform 0.45s var(--c-ease),
+    visibility 0.45s;
+}
+
+.motion .ask[data-open="true"] {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+
+.askHead {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: clamp(13px, 1.5vh, 20px);
+  flex-wrap: wrap;
+}
+
+.askEyebrow {
+  font-family: var(--font-mono);
+  font-size: clamp(9px, 0.6vw, 10px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+}
+
+.askQuestion {
+  composes: display;
+  font-variation-settings: "wdth" 110, "wght" 700;
+  font-size: clamp(16px, 1.4vw, 22px);
+  margin: 0;
+  color: var(--c-ink);
+  line-height: 1.04;
+}
+
+.askOptions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.askOption {
+  flex: 1 1 220px;
+  text-align: left;
+  background: var(--c-bg);
+  border: 1px solid var(--c-line-strong);
+  color: var(--c-ink);
+  padding: 13px 17px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    color 0.2s;
+}
+
+.askOption:hover {
+  border-color: var(--c-gold);
+}
+
+.askOption[aria-pressed="true"] {
+  background: var(--c-gold-deep);
+  border-color: var(--c-gold-deep);
+  color: #fff;
+}
+
+/* `composes` only applies to simple class selectors, so the display face is written out on the
+   three element-level headings below rather than composed. */
+.askOption b {
+  font-family: var(--font-corridor-display), var(--font-display);
+  font-variation-settings: "wdth" 108, "wght" 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  display: block;
+  font-size: clamp(14px, 1vw, 16px);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+
+.askOption small {
+  font-size: clamp(11.5px, 0.82vw, 12.5px);
+  opacity: 0.76;
+  line-height: 1.45;
+  display: block;
+}
+
+.askSkip {
+  background: none;
+  border: none;
+  color: var(--c-line-strong);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-top: 13px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.askSkip:hover {
+  color: var(--c-muted);
+}
+
+@media (max-width: 1000px) {
+  .motion .ask {
+    /* Clears the shared FloatingContact bar, which owns the bottom edge below lg. */
+    bottom: 68px;
+    width: calc(100vw - 24px);
+  }
+
+  .askOption {
+    flex: 1 1 100%;
+  }
+}
+
+/* ─────────────────────────────  ROOMS  ───────────────────────────── */
+
+/* Every in-page anchor target (#corridor from the threshold, #waybill from the threshold and the
+   dossier) has to clear the shared fixed navbar, or the jump lands with the heading under it. */
+.track,
+.room {
+  scroll-margin-top: 96px;
+}
+
+.room {
+  position: relative;
+  z-index: 3;
+  background: var(--c-bg);
+}
+
+.roomSunk {
+  background: var(--c-surface-sunk);
+}
+
+.roomHead {
+  padding: clamp(72px, 10vh, 124px) var(--c-edge) 0;
+}
+
+.roomHeadTight {
+  padding-top: 0;
+}
+
+.roomNumber {
+  composes: mono;
+  letter-spacing: 0.2em;
+  color: var(--c-gold-deep);
+  margin: 0 0 clamp(16px, 2vh, 22px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.roomNumber::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--c-line-strong);
+  max-width: 120px;
+}
+
+.roomTitle {
+  composes: display;
+  font-variation-settings: "wdth" 116, "wght" 800;
+  font-size: clamp(28px, 3.6vw, 60px);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  margin: 0 0 clamp(12px, 1.6vh, 20px);
+  color: var(--c-ink);
+  max-width: 20ch;
+}
+
+.roomLede {
+  color: var(--c-muted);
+  max-width: 58ch;
+  margin: 0;
+  font-size: clamp(15px, 1.02vw, 17px);
+}
+
+/* ── 02 · the matrix ── */
+
+.matrixWrap {
+  padding: clamp(36px, 5vh, 60px) var(--c-edge) clamp(52px, 7vh, 82px);
+}
+
+.matrix {
+  display: grid;
+  grid-template-columns: clamp(150px, 14vw, 220px) minmax(0, 1fr) minmax(0, 1fr);
+  border: 1px solid var(--c-line-strong);
+  background: var(--c-surface);
+}
+
+.matrix > * {
+  border-right: 1px solid var(--c-line-strong);
+  border-bottom: 1px solid var(--c-line-strong);
+}
+
+.matrix > *:nth-child(3n) {
+  border-right: none;
+}
+
+.matrixCorner,
+.matrixAxis {
+  background: var(--c-surface-sunk);
+  padding: clamp(15px, 1.3vw, 22px);
+  font-family: var(--font-mono);
+  font-size: clamp(9px, 0.62vw, 10px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  line-height: 1.7;
+}
+
+.matrixAxis b {
+  font-family: var(--font-corridor-display), var(--font-display);
+  font-variation-settings: "wdth" 110, "wght" 700;
+  text-transform: uppercase;
+  font-size: clamp(14px, 1.05vw, 17px);
+  letter-spacing: 0;
+  color: var(--c-ink);
+  line-height: 1.06;
+}
+
+.matrixCell {
+  padding: clamp(20px, 1.8vw, 30px) clamp(18px, 1.5vw, 28px);
+  background: var(--c-surface);
+  position: relative;
+  transition:
+    background 0.45s,
+    box-shadow 0.45s;
+}
+
+.matrixCell b {
+  font-family: var(--font-corridor-display), var(--font-display);
+  font-variation-settings: "wdth" 108, "wght" 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: clamp(16px, 1.2vw, 19px);
+  display: block;
+  margin-bottom: 8px;
+  color: var(--c-ink);
+  line-height: 1.08;
+}
+
+.matrixCell small {
+  color: var(--c-muted);
+  font-size: clamp(13px, 0.94vw, 14.5px);
+  line-height: 1.6;
+  display: block;
+  max-width: 46ch;
+}
+
+.matrixCell[data-you="true"] {
+  background: var(--c-gold-pale);
+  box-shadow: inset 0 0 0 2px var(--c-gold);
+}
+
+.matrixYouMark {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--c-gold-deep);
+  text-transform: lowercase;
+}
+
+@media (max-width: 900px) {
+  .matrix {
+    grid-template-columns: 1fr;
+  }
+
+  .matrix > * {
+    border-right: none;
+  }
+
+  .matrixCorner,
+  .matrixColumnAxis {
+    display: none;
+  }
+
+  .matrixRowAxis {
+    background: var(--c-gold-pale);
+  }
+}
+
+/* ── 03 · the two diagnostics ── */
+
+.diagnostics {
+  padding: 0 var(--c-edge) clamp(52px, 7vh, 82px);
+}
+
+.question {
+  border-top: 1px solid var(--c-line-strong);
+  padding: clamp(22px, 2.6vh, 32px) 0;
+}
+
+.question:last-child {
+  border-bottom: 1px solid var(--c-line-strong);
+}
+
+.questionHead {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: clamp(13px, 1.6vh, 18px);
+  flex-wrap: wrap;
+}
+
+.questionNumber {
+  font-family: var(--font-mono);
+  font-size: clamp(10px, 0.66vw, 11px);
+  letter-spacing: 0.15em;
+  color: var(--c-gold-deep);
+  text-transform: uppercase;
+}
+
+.questionTitle {
+  composes: display;
+  font-variation-settings: "wdth" 110, "wght" 700;
+  font-size: clamp(18px, 1.6vw, 26px);
+  margin: 0;
+  color: var(--c-ink);
+  line-height: 1.06;
+}
+
+.questionHint {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: var(--c-muted);
+  text-transform: uppercase;
+}
+
+.options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.option {
+  border: 1px solid var(--c-line-strong);
+  background: var(--c-surface);
+  padding: 12px 18px;
+  font-size: clamp(13px, 0.94vw, 14.5px);
+  color: var(--c-ink);
+  font-weight: 400;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    color 0.2s;
+}
+
+.option:hover {
+  border-color: var(--c-gold);
+}
+
+.option[aria-pressed="true"] {
+  background: var(--c-gold-deep);
+  border-color: var(--c-gold-deep);
+  color: #fff;
+}
+
+/* ── 04 · what the system read ── */
+
+.result {
+  padding: clamp(36px, 5vh, 60px) var(--c-edge) 0;
+}
+
+.resultGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  border: 1px solid var(--c-line-strong);
+  background: var(--c-surface);
+}
+
+.resultGrid > div {
+  padding: clamp(26px, 2.2vw, 38px) clamp(24px, 2vw, 36px);
+}
+
+.resultPrimary {
+  border-right: 1px solid var(--c-line-strong);
+}
+
+.resultLabel {
+  composes: mono;
+  color: var(--c-gold-deep);
+  display: block;
+  margin-bottom: 14px;
+}
+
+.combo {
+  composes: display;
+  font-variation-settings: "wdth" 116, "wght" 800;
+  font-size: clamp(24px, 2.8vw, 46px);
+  line-height: 1.02;
+  margin: 0;
+  color: var(--c-ink);
+}
+
+.comboJoin {
+  color: var(--c-gold);
+  font-variation-settings: "wdth" 100, "wght" 500;
+}
+
+.why {
+  color: var(--c-ink-2);
+  font-size: clamp(14px, 1vw, 15.5px);
+  margin: clamp(14px, 1.6vh, 20px) 0 0;
+  max-width: 48ch;
+}
+
+.prep {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 46ch;
+}
+
+.prep li {
+  padding: 11px 0 11px 24px;
+  border-bottom: 1px solid var(--c-line);
+  font-size: clamp(13px, 0.94vw, 14.5px);
+  color: var(--c-ink-2);
+  position: relative;
+}
+
+.prep li:last-child {
+  border-bottom: none;
+}
+
+.prep li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--c-gold);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.caveat {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.11em;
+  color: var(--c-muted);
+  margin: clamp(16px, 2vh, 24px) 0 0;
+  text-transform: uppercase;
+  line-height: 1.9;
+}
+
+@media (max-width: 900px) {
+  .resultGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .resultPrimary {
+    border-right: none;
+    border-bottom: 1px solid var(--c-line-strong);
+  }
+}
+
+/* ── 05 · the waybill ── */
+
+.form {
+  padding: clamp(52px, 7vh, 96px) var(--c-edge) clamp(76px, 11vh, 124px);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+  margin-top: clamp(28px, 4vh, 44px);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(15px, 1.9vh, 21px);
+  max-width: 520px;
+}
+
+.field span {
+  font-family: var(--font-mono);
+  font-size: clamp(9.5px, 0.64vw, 10.5px);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  display: block;
+  margin-bottom: 7px;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--c-line-strong);
+  color: var(--c-ink);
+  font-family: inherit;
+  font-size: 16px;
+  padding: 10px 0;
+  font-weight: 300;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-bottom-color: var(--c-gold);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--c-line-strong);
+}
+
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-bottom-color: var(--c-brick);
+}
+
+.fieldError {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--c-brick);
+  min-height: 14px;
+  margin: 4px 0 0;
+}
+
+.formNote {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.11em;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  margin: 4px 0 0;
+  line-height: 1.9;
+  max-width: 44ch;
+}
+
+.payload {
+  background: var(--c-surface);
+  border: 1px solid var(--c-line-strong);
+  padding: clamp(22px, 1.9vw, 30px);
+  font-family: var(--font-mono);
+  font-size: clamp(11.5px, 0.82vw, 12.5px);
+  max-width: 660px;
+  width: 100%;
+  margin-left: auto;
+}
+
+.payload h3 {
+  font-family: var(--font-mono);
+  font-size: clamp(9px, 0.62vw, 10px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-gold-deep);
+  margin: 0 0 clamp(13px, 1.5vh, 18px);
+  font-weight: 500;
+}
+
+.payloadRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px dotted var(--c-line-strong);
+  padding: 8px 0;
+}
+
+.payloadRow:last-child {
+  border-bottom: none;
+}
+
+.payloadKey {
+  color: var(--c-muted);
+  flex: none;
+}
+
+.payloadValue {
+  color: var(--c-ink);
+  text-align: right;
+}
+
+.payloadEmpty {
+  color: var(--c-line-strong);
+}
+
+.captcha {
+  margin-top: 4px;
+}
+
+.sent {
+  border: 1px solid var(--c-gold);
+  background: var(--c-gold-pale);
+  padding: clamp(22px, 2vw, 32px);
+  max-width: 520px;
+}
+
+.sentTitle {
+  composes: display;
+  font-variation-settings: "wdth" 112, "wght" 700;
+  font-size: clamp(18px, 1.6vw, 26px);
+  margin: 0 0 10px;
+  color: var(--c-ink);
+}
+
+@media (max-width: 900px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .payload {
+    margin-left: 0;
+  }
+}
+
+/* ── The dossier ──
+ * Bottom-LEFT, and desktop only. The shared FloatingContact island already owns the bottom-right
+ * corner on desktop and the whole bottom edge on mobile; the shell's contact affordance outranks a
+ * page-local progress readout, so this never competes for that space. Below lg the same numbers
+ * are already on the page in the recommendation room and the payload panel. */
+.dossier {
+  position: fixed;
+  left: clamp(16px, 1.6vw, 30px);
+  bottom: clamp(16px, 1.6vw, 30px);
+  z-index: 30;
+  width: clamp(248px, 17vw, 292px);
+  background: hsl(var(--card) / 0.96);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--c-line-strong);
+  box-shadow: 0 18px 46px rgb(36 30 22 / 0.12);
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.5s var(--c-ease),
+    opacity 0.5s var(--c-ease);
+}
+
+.dossier[data-open="true"] {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Once the waybill section itself is on screen, the running readout has done its job — and would
+   otherwise sit on top of the very form it was pointing at. */
+.dossier[data-arrived="true"] {
+  transform: translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dossierHead {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--c-line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.dossierCode {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--c-gold-deep);
+}
+
+.dossierPercent {
+  composes: display;
+  font-variation-settings: "wdth" 110, "wght" 800;
+  font-size: 15px;
+  color: var(--c-ink);
+  line-height: 1;
+}
+
+.dossierMeter {
+  height: 2px;
+  background: var(--c-line);
+}
+
+/* Full width, scaled — a transform-driven meter costs no layout when it grows. */
+.dossierMeter i {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--c-gold);
+  transform-origin: 0 50%;
+  transition: transform 0.6s var(--c-ease);
+}
+
+.dossierBody {
+  padding: 10px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.dossierRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  padding: 4.5px 0;
+}
+
+.dossierRow dt {
+  color: var(--c-muted);
+  text-transform: uppercase;
+  flex: none;
+}
+
+.dossierRow dd {
+  color: var(--c-ink);
+  text-align: right;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dossierCta {
+  display: block;
+  width: 100%;
+  background: var(--c-gold-deep);
+  color: #fff;
+  border: none;
+  padding: 13px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+}
+
+.dossierCta[data-dim="true"] {
+  background: var(--c-surface-sunk);
+  color: var(--c-muted);
+}
+
+@media (max-width: 1023px) {
+  .dossier {
+    display: none;
+  }
+}
+
+/* Reduced motion needs no block of its own: the track script never adds `.motion` when the user
+ * asks for reduced motion, so the corridor stays the static list the server rendered. The one thing
+ * still worth disarming is the camera transition, in case `.motion` is already on when the user
+ * flips the setting mid-session. */
+@media (prefers-reduced-motion: reduce) {
+  .lane,
+  .beam,
+  .sill,
+  .pillar::before,
+  .dossier,
+  .dossierMeter i {
+    transition: none;
+  }
+}

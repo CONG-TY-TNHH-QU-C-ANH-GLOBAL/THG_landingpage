@@ -76,7 +76,29 @@ export interface FulfillCopy {
   catalogTitle: string;
   catalogIntro: string;
   catalogEmpty: string;
+  catalogExploreAll: string;
   catalogFallback: readonly { name: string; image: string; alt: string }[];
+
+  /** Hero infrastructure badge (the "✦ [...]" eyebrow above the H1). */
+  heroInfraBadge: string;
+  /** The art-directed page H1. */
+  heroHeadlineLong: string;
+  heroPrimaryCta: string;
+  heroSecondaryCta: string;
+  // The hero flow-diagram labels (POD process / blank / print / finished / your brand) are NOT
+  // here: parity-content.ts already owns them as podProcess/blankTshirt/dtgPrint/brandedProduct/
+  // yourBrand. The hero reads them from there rather than growing a second spelling.
+
+  /** Process movement chrome — was three inline locale objects inside the component. */
+  processEyebrow: string;
+  processTitle: string;
+  processLead: string;
+  processHonesty: string;
+
+  /** Manufacturing showcase chrome. */
+  showcaseEyebrow: string;
+  showcaseTitle: string;
+
 
   consultEyebrow: string;
   consultTitle: string;
@@ -105,7 +127,8 @@ interface FulfillCapabilitySource {
   description: LocalizedText;
 }
 interface FulfillCatalogSource {
-  name: LocalizedText;
+  /** Catalogue identity, not copy — a product name is the same string in every locale. */
+  name: string;
   image: string;
   alt: LocalizedText;
 }
@@ -139,7 +162,18 @@ interface FulfillCopySource {
   catalogTitle: LocalizedText;
   catalogIntro: LocalizedText;
   catalogEmpty: LocalizedText;
+  catalogExploreAll: LocalizedText;
   catalogFallback: readonly [FulfillCatalogSource, FulfillCatalogSource, FulfillCatalogSource];
+  heroInfraBadge: LocalizedText;
+  heroHeadlineLong: LocalizedText;
+  heroPrimaryCta: LocalizedText;
+  heroSecondaryCta: LocalizedText;
+  processEyebrow: LocalizedText;
+  processTitle: LocalizedText;
+  processLead: LocalizedText;
+  processHonesty: LocalizedText;
+  showcaseEyebrow: LocalizedText;
+  showcaseTitle: LocalizedText;
   consultEyebrow: LocalizedText;
   consultTitle: LocalizedText;
   consultIntro: LocalizedText;
@@ -361,21 +395,72 @@ const SOURCE: FulfillCopySource = {
     "The product catalog is being updated. Request a consultation for the full catalog.",
     "产品目录正在更新。请咨询以获取完整目录。",
   ),
+  catalogExploreAll: tr("Khám phá toàn bộ Catalog", "Explore the full catalog", "浏览完整目录"),
+
+  heroInfraBadge: tr(
+    "HẠ TẦNG FULFILLMENT TOÀN CẦU",
+    "GLOBAL FULFILLMENT INFRASTRUCTURE",
+    "全球履约基础设施",
+  ),
+  heroHeadlineLong: tr(
+    "Hạ Tầng Fulfill Xuyên Quốc Gia Cho Doanh Nghiệp TMĐT Thế Hệ Mới.",
+    "Cross-border fulfillment infrastructure for the next generation of eCommerce.",
+    "为新一代电商打造的跨境履约基础设施。",
+  ),
+
+  heroPrimaryCta: tr("Tư vấn ngay", "Talk to us", "立即咨询"),
+  heroSecondaryCta: tr("Xem năng lực hệ thống", "See system capability", "查看系统能力"),
+
+  processEyebrow: tr("Quy trình vận hành", "Operational loop", "运营循环"),
+  processTitle: tr(
+    "Mỗi đơn chạy qua 5 giai đoạn — không có hộp đen.",
+    "Every order runs 5 stages — no black box.",
+    "每个订单经历5个阶段——无黑箱。",
+  ),
+  processLead: tr(
+    "Từ upload file đến tracking handoff: đây là hệ thống thực tế của THG, không phải sơ đồ trình chiếu.",
+    "From file upload to tracking handoff: this is THG's real system, not a slide deck diagram.",
+    "从文件上传到追踪交接：这是THG的真实系统，而非演示文稿示意图。",
+  ),
+  processHonesty: tr(
+    "Mỗi stage trên là quy trình thực tế — không phải sơ đồ lý tưởng. Kỹ thuật (DTG/DTF, CSV intake, Hub System) đều đang vận hành.",
+    "Every stage above reflects actual operational process — not an ideal-state diagram. Technologies (DTG/DTF, CSV intake, Hub System) are currently in operation.",
+    "以上每个阶段均为实际操作流程——并非理想化示意图。技术（DTG/DTF、CSV接单、Hub System）均在运行中。",
+  ),
+
+  showcaseEyebrow: tr(
+    "XƯỞNG SẢN XUẤT & FULFILLMENT THG",
+    "THG MANUFACTURING & FULFILLMENT STUDIO",
+    "THG 制造与履约工作室",
+  ),
+  showcaseTitle: tr(
+    "Năng Lực In Ấn POD & Đóng Gói Chuẩn TMĐT Mỹ — Vận Hành Từng Đơn Không Tồn Kho",
+    "POD printing and US eCommerce-standard packing — run per order, with no inventory.",
+    "POD印刷与美国电商标准包装——按单运营，零库存。",
+  ),
+
+  // DEGRADED-PATH ONLY. When the Hub answers, this section renders real catalog products
+  // (see featured-products.ts) and these cards are never shown. They exist so a Hub outage
+  // leaves the page with product photography instead of a hole — which is why they carry no
+  // product id: an illustrative card must not emit a deep link it cannot honour.
+  //
+  // Product names are invariant across locales (they are catalogue identity, not copy), so
+  // they are plain strings; only the image alt text is localized.
   catalogFallback: [
     {
-      name: tr("Áo & apparel", "Apparel", "服装"),
+      name: "180 g Milk Thread Women's Heat Transfer T-Shirt — Double-sided",
       image: "/assets/fulfill/apparel.png",
-      alt: tr("Sản phẩm apparel THG", "THG apparel product", "THG 服装产品"),
+      alt: tr("Áo thun in chuyển nhiệt hai mặt", "Double-sided heat transfer T-shirt", "双面热转印T恤"),
     },
     {
-      name: tr("Drinkware", "Drinkware", "杯具饮具"),
+      name: "15oz Mug",
       image: "/assets/fulfill/drinkware.png",
-      alt: tr("Sản phẩm drinkware THG", "THG drinkware product", "THG 饮具产品"),
+      alt: tr("Cốc sứ in theo yêu cầu", "Custom printed ceramic mug", "定制印花陶瓷杯"),
     },
     {
-      name: tr("Fleece & đồ nhà", "Fleece & home", "抓绒与家居"),
+      name: "All-Over Print Fleece Pajama Pants",
       image: "/assets/fulfill/fleece.png",
-      alt: tr("Sản phẩm fleece THG", "THG fleece product", "THG 抓绒产品"),
+      alt: tr("Quần pyjama nỉ in toàn thân", "All-over print fleece pajama pants", "全幅印花抓绒睡裤"),
     },
   ],
 
@@ -457,7 +542,21 @@ export function getFulfillContent(locale: Locale): FulfillCopy {
     catalogTitle: L(SOURCE.catalogTitle),
     catalogIntro: L(SOURCE.catalogIntro),
     catalogEmpty: L(SOURCE.catalogEmpty),
-    catalogFallback: catalogFallback.map((c) => ({ name: L(c.name), image: c.image, alt: L(c.alt) })),
+    catalogExploreAll: L(SOURCE.catalogExploreAll),
+    catalogFallback: catalogFallback.map((c) => ({ name: c.name, image: c.image, alt: L(c.alt) })),
+
+    heroInfraBadge: L(SOURCE.heroInfraBadge),
+    heroHeadlineLong: L(SOURCE.heroHeadlineLong),
+    heroPrimaryCta: L(SOURCE.heroPrimaryCta),
+    heroSecondaryCta: L(SOURCE.heroSecondaryCta),
+
+    processEyebrow: L(SOURCE.processEyebrow),
+    processTitle: L(SOURCE.processTitle),
+    processLead: L(SOURCE.processLead),
+    processHonesty: L(SOURCE.processHonesty),
+
+    showcaseEyebrow: L(SOURCE.showcaseEyebrow),
+    showcaseTitle: L(SOURCE.showcaseTitle),
 
     consultEyebrow: L(SOURCE.consultEyebrow),
     consultTitle: L(SOURCE.consultTitle),

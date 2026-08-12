@@ -1,0 +1,2523 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THG World — Cuộc hành trình</title>
+    <style id="theme-vars">
+:root {
+  --thg-background: #f5f0e8;
+  --thg-foreground: #17120d;
+  --thg-card: #fbf8f3;
+  --thg-card-foreground: #201912;
+  --thg-popover: #ffffff;
+  --thg-popover-foreground: #17120d;
+  --thg-primary: #8c5a2b;
+  --thg-primary-foreground: #fff9f1;
+  --thg-muted: #ebe2d5;
+  --thg-muted-foreground: #6a5a4c;
+  --thg-border: #d8cab7;
+  --thg-input: #d8cab7;
+  --thg-ring: #b67a3a;
+  --thg-radius-sm: 4px;
+  --thg-radius-md: 10px;
+  --thg-radius-lg: 16px;
+  --thg-state-success: #2f6f52;
+  --thg-state-warning: #a66b1f;
+  --thg-state-error: #b14633;
+  --thg-state-info: #3e5f7b;
+  --font-display: "Archivo", "Be Vietnam Pro", system-ui, sans-serif;
+  --font-body: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --shadow-soft: 0 1px 2px rgba(23, 18, 13, 0.04), 0 10px 30px rgba(23, 18, 13, 0.05);
+  --shadow-float: 0 18px 48px rgba(23, 18, 13, 0.12);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--thg-background);
+  color: var(--thg-foreground);
+  font-family: var(--font-body);
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--thg-background);
+    --color-foreground: var(--thg-foreground);
+    --color-card: var(--thg-card);
+    --color-card-foreground: var(--thg-card-foreground);
+    --color-popover: var(--thg-popover);
+    --color-popover-foreground: var(--thg-popover-foreground);
+    --color-primary: var(--thg-primary);
+    --color-primary-foreground: var(--thg-primary-foreground);
+    --color-muted: var(--thg-muted);
+    --color-muted-foreground: var(--thg-muted-foreground);
+    --color-border: var(--thg-border);
+    --color-input: var(--thg-input);
+    --color-ring: var(--thg-ring);
+    --radius-sm: var(--thg-radius-sm);
+    --radius-md: var(--thg-radius-md);
+    --radius-lg: var(--thg-radius-lg);
+  }
+  @layer base {
+    body { background: var(--thg-background); color: var(--thg-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--thg-background); }
+      .text-background { color: var(--thg-background); }
+      .border-background { border-color: var(--thg-background); }
+      .ring-background { --tw-ring-color: var(--thg-background); }
+      .bg-foreground { background-color: var(--thg-foreground); }
+      .text-foreground { color: var(--thg-foreground); }
+      .border-foreground { border-color: var(--thg-foreground); }
+      .ring-foreground { --tw-ring-color: var(--thg-foreground); }
+      .bg-card { background-color: var(--thg-card); }
+      .text-card { color: var(--thg-card); }
+      .border-card { border-color: var(--thg-card); }
+      .ring-card { --tw-ring-color: var(--thg-card); }
+      .bg-card-foreground { background-color: var(--thg-card-foreground); }
+      .text-card-foreground { color: var(--thg-card-foreground); }
+      .border-card-foreground { border-color: var(--thg-card-foreground); }
+      .ring-card-foreground { --tw-ring-color: var(--thg-card-foreground); }
+      .bg-popover { background-color: var(--thg-popover); }
+      .text-popover { color: var(--thg-popover); }
+      .border-popover { border-color: var(--thg-popover); }
+      .ring-popover { --tw-ring-color: var(--thg-popover); }
+      .bg-popover-foreground { background-color: var(--thg-popover-foreground); }
+      .text-popover-foreground { color: var(--thg-popover-foreground); }
+      .border-popover-foreground { border-color: var(--thg-popover-foreground); }
+      .ring-popover-foreground { --tw-ring-color: var(--thg-popover-foreground); }
+      .bg-primary { background-color: var(--thg-primary); }
+      .text-primary { color: var(--thg-primary); }
+      .border-primary { border-color: var(--thg-primary); }
+      .ring-primary { --tw-ring-color: var(--thg-primary); }
+      .bg-primary-foreground { background-color: var(--thg-primary-foreground); }
+      .text-primary-foreground { color: var(--thg-primary-foreground); }
+      .border-primary-foreground { border-color: var(--thg-primary-foreground); }
+      .ring-primary-foreground { --tw-ring-color: var(--thg-primary-foreground); }
+      .bg-muted { background-color: var(--thg-muted); }
+      .text-muted { color: var(--thg-muted); }
+      .border-muted { border-color: var(--thg-muted); }
+      .ring-muted { --tw-ring-color: var(--thg-muted); }
+      .bg-muted-foreground { background-color: var(--thg-muted-foreground); }
+      .text-muted-foreground { color: var(--thg-muted-foreground); }
+      .border-muted-foreground { border-color: var(--thg-muted-foreground); }
+      .ring-muted-foreground { --tw-ring-color: var(--thg-muted-foreground); }
+      .bg-border { background-color: var(--thg-border); }
+      .text-border { color: var(--thg-border); }
+      .border-border { border-color: var(--thg-border); }
+      .ring-border { --tw-ring-color: var(--thg-border); }
+      .bg-input { background-color: var(--thg-input); }
+      .text-input { color: var(--thg-input); }
+      .border-input { border-color: var(--thg-input); }
+      .ring-input { --tw-ring-color: var(--thg-input); }
+      .bg-ring { background-color: var(--thg-ring); }
+      .text-ring { color: var(--thg-ring); }
+      .border-ring { border-color: var(--thg-ring); }
+      .ring-ring { --tw-ring-color: var(--thg-ring); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <header id="nav">
+        <div class="wrap nav-inner">
+            <a href="#mc-world" class="brand">THG<span class="brand-dot">.</span></a>
+            <nav class="nav-links" aria-label="Điều hướng chính">
+                <a href="#mc-world">Mission Control</a>
+                <a href="#ecosystem">Hệ sinh thái</a>
+                <a href="#dich-vu">Dịch vụ</a>
+                <a href="#hanh-trinh">Hành trình</a>
+                <a href="#ket-noi">Kết nối</a>
+                <a href="#faq">FAQ</a>
+            </nav>
+            <a href="#bat-dau" class="btn btn-primary btn-sm" data-dom-id="cta-consult">Tư vấn miễn phí</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="mc-world" class="mc-world" aria-label="Cuộc hành trình trong thế giới THG">
+          <div class="mc-stage" id="mc-stage">
+            <canvas id="mc-canvas" class="mc-canvas" aria-hidden="true"></canvas>
+            <div id="mc-fallback" class="mc-fallback" aria-hidden="true">
+                <img class="mc-fallback-img" src="../assets/hero-ecosystem-map.svg" alt="Con đường vận hành THG: POD, Dropship, Express và Warehouse nằm hai bên đường, kết thúc tại bàn tiếp tân">
+                <div class="mc-fallback-veil"></div>
+            </div>
+            <p class="mc-eyebrow">THG WORLD · CUỘC HÀNH TRÌNH</p>
+            <div class="mc-copy">
+                <h1 class="mc-title" id="mc-h1">Bước vào thế giới <em>THG</em></h1>
+                <p class="mc-lead">Cuộn để bước qua bốn dây chuyền — tới cuối đường, bàn tiếp tân đang chờ bạn.</p>
+            </div>
+            <p class="mc-start-hint" id="mc-start-hint">Cuộn để bước đi</p>
+            <p class="mc-caption" id="mc-caption" aria-live="polite"></p>
+            <div class="mc-fork" id="mc-fork" role="group" aria-live="polite"></div>
+
+            <!-- thước đo trạm: đang ở đâu trong hành trình -->
+            <div class="mc-gauge" id="mc-gauge" aria-hidden="true"></div>
+
+            <!-- cửa ra: chỉ hiện ở cuối đường -->
+            <div class="mc-outro" id="mc-outro">
+                <p class="mc-outro-k">Hết khoảng giữa</p>
+                <p class="mc-outro-t">Bên dưới là bản đồ vận hành đầy đủ</p>
+                <a class="mc-outro-a" href="#ecosystem">Xem tiếp <span data-lucide="arrow-down"></span></a>
+            </div>
+          </div>
+        </section>
+
+        <section id="ecosystem" class="sec">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">01</span>
+                    <h2 class="sec-title">Bản đồ vận hành</h2>
+                </div>
+                <ol class="pipe">
+                    <li class="pipe-step reveal">
+                        <span class="pipe-num">01</span>
+                        <h3 class="pipe-title">Nguồn hàng</h3>
+                        <ul class="pipe-facts">
+                            <li>POD in theo đơn tại VN</li>
+                            <li>Dropship mua hộ 1688/Taobao</li>
+                        </ul>
+                    </li>
+                    <li class="pipe-arrow" aria-hidden="true"><svg width="40" height="9" viewBox="0 0 40 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 4.5h35M35 4.5l-4.5-3.8M35 4.5l-4.5 3.8" stroke="currentColor" stroke-width="1.5"/></svg></li>
+                    <li class="pipe-step reveal">
+                        <span class="pipe-num">02</span>
+                        <h3 class="pipe-title">Xử lý</h3>
+                        <ul class="pipe-facts">
+                            <li>QC · in · đóng gói theo brand</li>
+                            <li>Label chuẩn từng đơn</li>
+                        </ul>
+                    </li>
+                    <li class="pipe-arrow" aria-hidden="true"><svg width="40" height="9" viewBox="0 0 40 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 4.5h35M35 4.5l-4.5-3.8M35 4.5l-4.5 3.8" stroke="currentColor" stroke-width="1.5"/></svg></li>
+                    <li class="pipe-step reveal">
+                        <span class="pipe-num">03</span>
+                        <h3 class="pipe-title">Vận chuyển</h3>
+                        <ul class="pipe-facts">
+                            <li>Express 5–8 ngày bay thẳng</li>
+                            <li>Kho Mỹ trữ sẵn · nội địa 2–5 ngày</li>
+                        </ul>
+                    </li>
+                    <li class="pipe-arrow" aria-hidden="true"><svg width="40" height="9" viewBox="0 0 40 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 4.5h35M35 4.5l-4.5-3.8M35 4.5l-4.5 3.8" stroke="currentColor" stroke-width="1.5"/></svg></li>
+                    <li class="pipe-step reveal">
+                        <span class="pipe-num">04</span>
+                        <h3 class="pipe-title">Giao tận nhà</h3>
+                        <ul class="pipe-facts">
+                            <li>Mỹ · EU</li>
+                            <li>Tracking real-time từng đơn</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="bo-sung" class="sec sec-ivory">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">02</span>
+                    <h2 class="sec-title">Vận đơn của bạn</h2>
+                </div>
+                <p class="sec-lead reveal">Tự điền từ form phía dưới.</p>
+                <div class="tot-hop-grid">
+                    <div class="recap reveal">
+                        <p class="chips-label">Bạn vừa đi qua</p>
+                        <ol class="recap-list">
+                            <li>Xưởng in POD — in theo đơn tại Việt Nam</li>
+                            <li>Kho nguồn hàng Trung Quốc — mua hộ 1688 · Taobao</li>
+                            <li>Đường băng Express — bay thẳng 5–8 ngày</li>
+                            <li>Kho Mỹ — trữ sẵn, giao nội địa 2–5 ngày</li>
+                        </ol>
+                        <p class="recap-note">Điền form phía dưới — vận đơn của bạn hiện ra ở đây, đúng dữ liệu Sales sẽ nhận.</p>
+                    </div>
+                    <aside class="dossier" id="dossier" aria-label="Vận đơn của bạn">
+                        <h3 class="dos-title">Vận đơn của bạn</h3>
+                        <p class="dos-sub">Cập nhật realtime từ form — đúng dữ liệu Sales sẽ nhận.</p>
+                        <dl class="dos-rows">
+                            <div class="dos-row"><dt>Nguồn hàng</dt><dd id="d-src">—</dd></div>
+                            <div class="dos-row"><dt>Làn giao</dt><dd id="d-dlv">—</dd></div>
+                            <div class="dos-row"><dt>Sản lượng</dt><dd id="d-vol">—</dd></div>
+                            <div class="dos-row"><dt>Sàn</dt><dd id="d-san">—</dd></div>
+                            <div class="dos-row"><dt>Nỗi đau</dt><dd id="d-pain">—</dd></div>
+                            <div class="dos-row" id="d-rec-wrap" hidden><dt>Đề xuất</dt><dd id="d-rec">—</dd></div>
+                        </dl>
+                        <div class="dos-progress">
+                            <div class="dos-progress-label"><span>THG đã hiểu gì về shop bạn</span><span id="dos-count">chưa có gì</span></div>
+                            <div class="dos-progress-bar"><div class="dos-progress-fill" id="dos-bar"></div></div>
+                        </div>
+                        <a href="#bat-dau" class="btn btn-primary dos-cta" id="dossier-cta" data-dom-id="dossier-cta">Điền vận đơn <span class="cta-arrow" data-lucide="arrow-right"></span></a>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <section id="dich-vu" class="sec">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">03</span>
+                    <h2 class="sec-title">Bốn dịch vụ</h2>
+                </div>
+                <div class="svc-list">
+                    <article class="svc-row reveal">
+                        <span class="svc-num">01</span>
+                        <div class="svc-body">
+                            <h3 class="svc-title">THG Fulfill — POD &amp; Sourcing</h3>
+                            <p class="svc-desc">In POD theo đơn với chi phí gốc cạnh tranh, đồng thời mua hộ hàng trending từ Trung Quốc — trọn gói từ sản xuất đến vận hành.</p>
+                            <ul class="svc-facts">
+                                <li>In POD chi phí gốc cạnh tranh</li>
+                                <li>Dropship trending từ TQ</li>
+                                <li>In tại VN / CN / US</li>
+                            </ul>
+                        </div>
+                        <a href="#bat-dau" class="svc-link">Tìm hiểu thêm <span data-lucide="arrow-up-right"></span></a>
+                    </article>
+                    <article class="svc-row reveal">
+                        <span class="svc-num">02</span>
+                        <div class="svc-body">
+                            <h3 class="svc-title">THG Express</h3>
+                            <p class="svc-desc">Tuyến bay thẳng VN/CN → Mỹ &amp; Anh, tracking realtime từng đơn, giao tận nhà trong 5–8 ngày.</p>
+                            <ul class="svc-facts">
+                                <li>VN/CN → Mỹ · Anh</li>
+                                <li>5–8 ngày tận nhà</li>
+                                <li>Tracking real-time</li>
+                            </ul>
+                        </div>
+                        <a href="#bat-dau" class="svc-link">Tìm hiểu thêm <span data-lucide="arrow-up-right"></span></a>
+                    </article>
+                    <article class="svc-row reveal">
+                        <span class="svc-num">03</span>
+                        <div class="svc-body">
+                            <h3 class="svc-title">THG Warehouse</h3>
+                            <p class="svc-desc">Fulfill nội địa Mỹ từ $1.20/đơn với kho tại PA và NC — hàng nằm gần khách, giao trong 2–5 ngày.</p>
+                            <ul class="svc-facts">
+                                <li>Fulfill nội địa từ $1.20/đơn</li>
+                                <li>Lưu kho miễn phí 90 ngày</li>
+                                <li>OMS / WMS đồng bộ sàn</li>
+                            </ul>
+                        </div>
+                        <a href="#bat-dau" class="svc-link">Tìm hiểu thêm <span data-lucide="arrow-up-right"></span></a>
+                    </article>
+                    <article class="svc-row reveal">
+                        <span class="svc-num">04</span>
+                        <div class="svc-body">
+                            <h3 class="svc-title">THG Dropship</h3>
+                            <p class="svc-desc">Sourcing Taobao/1688 không rào cản ngôn ngữ, gom đơn giao thẳng TQ → Mỹ.</p>
+                            <ul class="svc-facts">
+                                <li>Sourcing Taobao / 1688</li>
+                                <li>Không rào cản ngôn ngữ</li>
+                                <li>Giao thẳng TQ → Mỹ</li>
+                            </ul>
+                        </div>
+                        <a href="#bat-dau" class="svc-link">Tìm hiểu thêm <span data-lucide="arrow-up-right"></span></a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="hanh-trinh" class="sec sec-ivory">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">04</span>
+                    <h2 class="sec-title">Hành trình cùng THG</h2>
+                </div>
+                <div class="tl">
+                    <div class="tl-step reveal">
+                        <span class="tl-num">1</span>
+                        <h3 class="tl-title">Bắt đầu — THG Express</h3>
+                        <p class="tl-desc">Chưa cần kho. Khi vượt ~200 đơn/tháng, bạn cần hàng nằm gần khách hơn.</p>
+                    </div>
+                    <div class="tl-step reveal">
+                        <span class="tl-num">2</span>
+                        <h3 class="tl-title">Mở rộng — THG Warehouse</h3>
+                        <p class="tl-desc">Trữ hàng tại Mỹ, fulfill từ $1.20/đơn, sẵn sàng chuyển sang in POD lô.</p>
+                    </div>
+                    <div class="tl-step reveal">
+                        <span class="tl-num">3</span>
+                        <h3 class="tl-title">Tăng tốc — THG Fulfill POD &amp; Sourcing</h3>
+                        <p class="tl-desc">In theo yêu cầu tại VN/CN/US cộng vận hành trọn gói — scale không giới hạn.</p>
+                    </div>
+                </div>
+                <p class="tl-tagline reveal">Một đội ngũ xuyên suốt — từ đơn đầu tiên đến quy mô toàn cầu.</p>
+            </div>
+        </section>
+
+        <section id="ket-noi" class="sec">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">05</span>
+                    <h2 class="sec-title">Kết nối Marketplace</h2>
+                </div>
+                <p class="sec-lead reveal">Đồng bộ đơn, tracking, tồn kho tại một nơi.</p>
+                <div class="mk-chips reveal">
+                    <span class="mk-chip"><span class="chk"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8.5 6 12.5 14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Etsy</span>
+                    <span class="mk-chip"><span class="chk"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8.5 6 12.5 14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Amazon</span>
+                    <span class="mk-chip"><span class="chk"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8.5 6 12.5 14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>TikTok Shop</span>
+                    <span class="mk-chip"><span class="chk"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8.5 6 12.5 14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>eBay</span>
+                    <span class="mk-chip"><span class="chk"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8.5 6 12.5 14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Shopify</span>
+                    <span class="mk-chip"><span class="chk"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8.5 6 12.5 14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>WooCommerce</span>
+                </div>
+                <p class="mono-note reveal">THG OMS · nhập đơn tự động · cập nhật tracking</p>
+            </div>
+        </section>
+
+        <section id="chung-thuc" class="sec sec-ivory">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">06</span>
+                    <h2 class="sec-title">Lời từ seller</h2>
+                </div>
+                <div class="quotes">
+                    <blockquote class="quote q-lg reveal">
+                        <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+                        <p class="quote-text">Từ 50 lên hơn 500 đơn/tháng trên Etsy và TikTok. POD chi phí gốc cạnh tranh giúp mình giữ margin mà khách vẫn hài lòng về chất lượng in.</p>
+                        <footer>
+                            <p class="quote-name">Nguyễn Minh Tuấn</p>
+                            <p class="quote-role">POD Seller · Etsy &amp; TikTok</p>
+                        </footer>
+                    </blockquote>
+                    <blockquote class="quote q-sm reveal">
+                        <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+                        <p class="quote-text">Fulfill $1.2/đơn, khách nhận trong 2–5 ngày thay vì 2–3 tuần. Khách không tin nổi.</p>
+                        <footer>
+                            <p class="quote-name">David Chen</p>
+                            <p class="quote-role">Dropshipping · Amazon</p>
+                        </footer>
+                    </blockquote>
+                    <blockquote class="quote q-sm reveal">
+                        <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+                        <p class="quote-text">Giá minh bạch, kèm video đóng gói từng đơn — mình yên tâm giao việc cho THG.</p>
+                        <footer>
+                            <p class="quote-name">Trần Thị Mai</p>
+                            <p class="quote-role">Shopify Brand</p>
+                        </footer>
+                    </blockquote>
+                    <blockquote class="quote q-lg reveal">
+                        <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+                        <p class="quote-text">Dùng qua 3 đối tác rồi mới đến THG. Giờ cả đội chỉ cần một hệ sinh thái, một đầu mối — hết cảnh đuổi theo đơn lẻ giữa các bên.</p>
+                        <footer>
+                            <p class="quote-name">Kevin Nguyễn</p>
+                            <p class="quote-role">E-commerce Team Lead</p>
+                        </footer>
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="sec">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">07</span>
+                    <h2 class="sec-title">FAQ</h2>
+                </div>
+                <div class="faq-list">
+                    <details class="faq-item reveal">
+                        <summary>THG phù hợp với ai? <span class="chev" data-lucide="chevron-down"></span></summary>
+                        <p class="faq-ans">Seller POD, dropshipper và brand e-commerce bán sang Mỹ/EU — từ đơn đầu tiên đến vài nghìn đơn/tháng.</p>
+                    </details>
+                    <details class="faq-item reveal">
+                        <summary>Chi phí fulfillment thế nào? <span class="chev" data-lucide="chevron-down"></span></summary>
+                        <p class="faq-ans">Fulfill nội địa Mỹ từ $1.20/đơn. Báo giá chính xác theo từng SKU sau khi sales rà soát hàng và sản lượng.</p>
+                    </details>
+                    <details class="faq-item reveal">
+                        <summary>Giao bao lâu? <span class="chev" data-lucide="chevron-down"></span></summary>
+                        <p class="faq-ans">5–8 ngày cho đường bay VN/CN → Mỹ; 2–5 ngày giao nội địa Mỹ từ kho. Tracking realtime từng đơn.</p>
+                    </details>
+                    <details class="faq-item reveal">
+                        <summary>Có hỗ trợ POD không? <span class="chev" data-lucide="chevron-down"></span></summary>
+                        <p class="faq-ans">Có — in theo đơn tại VN, CN và US với chi phí gốc cạnh tranh.</p>
+                    </details>
+                    <details class="faq-item reveal">
+                        <summary>Bắt đầu thế nào? <span class="chev" data-lucide="chevron-down"></span></summary>
+                        <p class="faq-ans">Gửi vận đơn qua form, sales liên hệ trong 24h với gói đề xuất — tư vấn miễn phí, không cam kết.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <section id="bat-dau" class="sec sec-ivory">
+            <div class="wrap">
+                <div class="sec-head reveal">
+                    <span class="sec-num">08</span>
+                    <h2 class="sec-title">Sẵn sàng scale?</h2>
+                </div>
+                <p class="sec-lead reveal">Những gì bạn đã chọn trên đường đi đã nằm sẵn bên dưới. Còn tên và một cách liên hệ là đủ để sales trả lại bảng giá theo tuyến trong 24h.</p>
+                <div class="bd-grid">
+                    <div class="form-wrap reveal">
+                        <form id="lead-form" class="f-grid" novalidate>
+                            <div class="f-field">
+                                <span class="f-label">Nguồn hàng <em class="f-prefilled" id="pre-src" hidden>đã chọn trên đường đi</em></span>
+                                <div class="f-seg-group" role="group" aria-label="Nguồn hàng">
+                                    <button type="button" class="f-seg" data-mc="src" data-value="pod" aria-pressed="false">POD — in theo đơn</button>
+                                    <button type="button" class="f-seg" data-mc="src" data-value="drop" aria-pressed="false">Dropship — mua hộ TQ</button>
+                                </div>
+                            </div>
+                            <div class="f-field">
+                                <span class="f-label">Làn giao <em class="f-prefilled" id="pre-dlv" hidden>đã chọn trên đường đi</em></span>
+                                <div class="f-seg-group" role="group" aria-label="Làn giao">
+                                    <button type="button" class="f-seg" data-mc="dlv" data-value="exp" aria-pressed="false">Express — bay thẳng 5–8 ngày</button>
+                                    <button type="button" class="f-seg" data-mc="dlv" data-value="wh" aria-pressed="false">Kho Mỹ — trữ sẵn 2–5 ngày</button>
+                                </div>
+                            </div>
+                            <div class="f-field f-wide">
+                                <span class="f-label">Sàn bạn đang bán <em class="f-opt-note">không bắt buộc</em></span>
+                                <div class="f-chk-group" role="group" aria-label="Sàn bán hàng">
+                                    <button type="button" class="f-chk" data-mc="san" data-value="TikTok Shop" aria-pressed="false">TikTok Shop</button>
+                                    <button type="button" class="f-chk" data-mc="san" data-value="Etsy" aria-pressed="false">Etsy</button>
+                                    <button type="button" class="f-chk" data-mc="san" data-value="Amazon" aria-pressed="false">Amazon</button>
+                                    <button type="button" class="f-chk" data-mc="san" data-value="Shopify" aria-pressed="false">Shopify</button>
+                                    <button type="button" class="f-chk" data-mc="san" data-value="Website riêng" aria-pressed="false">Website riêng</button>
+                                </div>
+                            </div>
+                            <div class="f-field">
+                                <span class="f-label">Sản lượng mỗi tháng <em class="f-prefilled" id="pre-vol" hidden>đã chọn trên đường đi</em></span>
+                                <div class="f-seg-group" role="group" aria-label="Sản lượng">
+                                    <button type="button" class="f-seg" data-mc="vol" data-value="Dưới 100" aria-pressed="false">Dưới 100</button>
+                                    <button type="button" class="f-seg" data-mc="vol" data-value="100–500" aria-pressed="false">100 – 500</button>
+                                    <button type="button" class="f-seg" data-mc="vol" data-value="500–2.000" aria-pressed="false">500 – 2.000</button>
+                                    <button type="button" class="f-seg" data-mc="vol" data-value="Trên 2.000" aria-pressed="false">Trên 2.000</button>
+                                </div>
+                            </div>
+                            <div class="f-field">
+                                <span class="f-label">Tình huống bạn từng gặp <em class="f-opt-note">không bắt buộc</em></span>
+                                <div class="f-chk-group" role="group" aria-label="Tình huống đã gặp">
+                                    <button type="button" class="f-chk" data-mc="pain" data-value="Tracking đứng quá lâu" aria-pressed="false">Tracking đứng im nhiều ngày</button>
+                                    <button type="button" class="f-chk" data-mc="pain" data-value="Hàng thất lạc trên đường" aria-pressed="false">Hàng thất lạc trên đường</button>
+                                    <button type="button" class="f-chk" data-mc="pain" data-value="Khách nhận thiếu hàng" aria-pressed="false">Khách nhận thiếu hàng</button>
+                                    <button type="button" class="f-chk" data-mc="pain" data-value="Khách phàn nàn chất lượng" aria-pressed="false">Khách phàn nàn chất lượng</button>
+                                    <button type="button" class="f-chk" data-mc="pain" data-value="Chưa gặp cái nào" aria-pressed="false">Chưa gặp cái nào</button>
+                                </div>
+                            </div>
+                            <div class="f-field f-wide">
+                                <span class="f-label">Đề xuất của THG</span>
+                                <div class="f-rec" id="f-rec">Chọn nguồn hàng và làn giao để nhận gợi ý.</div>
+                            </div>
+                            <div class="f-field">
+                                <label class="f-label" for="f-name">Tên của bạn *</label>
+                                <input class="field" id="f-name" type="text" autocomplete="name" placeholder="Tên của bạn">
+                                <span class="err-msg" id="err-name" aria-live="polite"></span>
+                            </div>
+                            <div class="f-field">
+                                <label class="f-label" for="f-contact">Zalo / Email / Telegram *</label>
+                                <input class="field" id="f-contact" type="text" autocomplete="email" placeholder="Zalo, email hoặc Telegram">
+                                <span class="err-msg" id="err-contact" aria-live="polite"></span>
+                            </div>
+                            <div class="f-field f-wide">
+                                <label class="f-label" for="f-note">Link shop hoặc ghi chú</label>
+                                <textarea class="field" id="f-note" placeholder="vd: shop.etsy.com/ten-ban · kèm câu hỏi về gói dịch vụ"></textarea>
+                            </div>
+                            <div class="f-field f-wide">
+                                <button type="submit" class="btn btn-primary" id="submit-lead" data-dom-id="submit-lead" disabled>Gửi thông tin <span data-lucide="send"></span></button>
+                                <p class="note-line">Ưu đãi 15% cho 50 đơn đầu tiên · Tư vấn miễn phí · Không cam kết</p>
+                            </div>
+                        </form>
+                        <div class="form-success" id="form-success" hidden>
+                            <h3>Đã nhận — Sales sẽ liên hệ trong 24h</h3>
+                            <p>Kiểm tra Zalo, email hoặc Telegram của bạn nhé. Ưu đãi 15% áp dụng cho 50 đơn đầu tiên.</p>
+                        </div>
+                    </div>
+                    <aside class="payload reveal" aria-label="Gói dữ liệu Sales nhận">
+                        <p class="payload-title">Đúng những gì sales nhận được — không thêm gì khác</p>
+                        <dl>
+                            <div class="payload-row"><dt>Nguồn hàng</dt><dd id="p-src">—</dd></div>
+                            <div class="payload-row"><dt>Làn giao</dt><dd id="p-dlv">—</dd></div>
+                            <div class="payload-row"><dt>Sản lượng</dt><dd id="p-vol">—</dd></div>
+                            <div class="payload-row"><dt>Sàn</dt><dd id="p-san">—</dd></div>
+                            <div class="payload-row"><dt>Nỗi đau</dt><dd id="p-pain">—</dd></div>
+                            <div class="payload-row"><dt>Đề xuất</dt><dd id="p-rec">—</dd></div>
+                            <div class="payload-row"><dt>Tên</dt><dd id="p-name">—</dd></div>
+                            <div class="payload-row"><dt>Liên hệ</dt><dd id="p-contact">—</dd></div>
+                        </dl>
+                        <div class="p-brief-wrap" id="p-brief-wrap" hidden>
+                            <p class="p-brief-k">Bản đọc vị cho sales — seller không nhìn thấy phần này</p>
+                            <pre class="p-brief" id="p-brief"></pre>
+                        </div>
+                        <p class="payload-note">Đồng bộ realtime từ tương tác trong THG World · suy luận theo luật, sẵn sàng thay bằng model</p>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="wrap">
+            <div class="footer-grid">
+                <div class="footer-brand-col">
+                    <p class="footer-brand">THG<span class="footer-dot">.</span></p>
+                    <p class="footer-tagline">Transport Happiness Group — hệ sinh thái fulfillment xuyên biên giới cho seller e-commerce Việt Nam.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Văn phòng &amp; Kho</h4>
+                    <ul>
+                        <li>TP.HCM — 121/5 Đ. Kênh 19/5, Sơn Kỳ, Tân Phú</li>
+                        <li>Đà Nẵng — Thanh Tùng Building, 153 Đống Đa, Hải Châu</li>
+                        <li>Milford, PA — Mỹ</li>
+                        <li>Winston-Salem, NC — Mỹ</li>
+                        <li>Đông Quản — Trung Quốc</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Liên hệ</h4>
+                    <ul>
+                        <li><a href="tel:0335124089">0335.124.089</a></li>
+                        <li><a href="mailto:info@thgfulfill.com">info@thgfulfill.com</a></li>
+                        <li><a href="https://thgfulfill.com" target="_blank" rel="noopener">thgfulfill.com</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Công ty</h4>
+                    <ul>
+                        <li>CÔNG TY TNHH QUỐC ANH GLOBAL</li>
+                        <li>More Building, 40A-40B Út Tịch, Tân Sơn Nhất, TP.HCM</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 THG — Transport Happiness Group</span>
+                <span>Prototype redesign</span>
+            </div>
+        </div>
+    </footer>
+
+    <style id="critical-layout">
+        @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap');
+
+        /* ---------- root frame ---------- */
+        :root { scroll-behavior: smooth; }
+        html, body { overflow-x: clip; }
+        body { font-family: var(--font-body); color: var(--thg-foreground); background: var(--thg-background); }
+        .wrap { max-width: 1180px; margin-inline: auto; padding-inline: 24px; box-sizing: border-box; }
+        section[id] { scroll-margin-top: 92px; }
+        a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--thg-ring); outline-offset: 2px; border-radius: var(--thg-radius-sm); }
+
+        /* ---------- nav ---------- */
+        #nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; border-bottom: 1px solid transparent; transition: background .3s ease, border-color .3s ease, box-shadow .3s ease; }
+        #nav.scrolled { background: rgba(245, 240, 232, .86); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom-color: var(--thg-border); box-shadow: 0 1px 0 rgba(23, 18, 13, .03); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 24px; }
+        .brand { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: -.02em; text-transform: uppercase; color: var(--thg-foreground); text-decoration: none; }
+        .brand-dot { color: var(--thg-primary); }
+        .nav-links { display: flex; gap: 28px; }
+        .nav-links a { font-family: var(--font-display); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--thg-foreground); text-decoration: none; padding: 6px 2px; transition: color .2s ease; }
+        .nav-links a:hover { color: var(--thg-primary); }
+        @media (max-width: 900px) { .nav-links { display: none; } }
+
+        /* ---------- buttons ---------- */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: .03em; text-decoration: none; padding: 14px 22px; border-radius: var(--thg-radius-md); border: 1px solid transparent; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease; }
+        .btn-primary { background: var(--thg-primary); color: var(--thg-primary-foreground); }
+        .btn-primary:hover { background: var(--thg-ring); transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-ghost { background: transparent; border-color: var(--thg-border); color: var(--thg-foreground); }
+        .btn-ghost:hover { border-color: var(--thg-primary); color: var(--thg-primary); }
+        .btn-sm { padding: 10px 16px; font-size: 13px; }
+
+        /* ---------- hero ---------- */
+        #hero { min-height: 92svh; display: flex; align-items: center; padding: 128px 0 72px; }
+        .hero-grid { display: grid; grid-template-columns: minmax(0, 55%) minmax(0, 1fr); gap: 56px; align-items: center; }
+        .eyebrow-mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--thg-muted-foreground); margin: 0 0 20px; }
+        .display { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.75rem, 5.5vw, 4.25rem); line-height: 1.02; letter-spacing: -.02em; text-transform: uppercase; margin: 0 0 24px; color: var(--thg-foreground); }
+        .display em { font-style: normal; color: var(--thg-primary); }
+        .hero-lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.55; color: var(--thg-foreground); margin: 0 0 16px; }
+        .hero-body { font-size: 15.5px; line-height: 1.7; color: var(--thg-muted-foreground); margin: 0 0 32px; max-width: 46ch; }
+        .hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 44px; }
+        .kpi-strip { display: flex; border-top: 1px solid var(--thg-border); }
+        .kpi { flex: 1; padding: 20px 0 0; min-width: 0; }
+        .kpi + .kpi { border-left: 1px solid var(--thg-border); padding-left: 24px; }
+        .kpi-num { display: block; font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--thg-primary); }
+        .kpi-label { display: block; font-size: 12.5px; color: var(--thg-muted-foreground); line-height: 1.4; }
+        .hero-figure { margin: 0; border: 1px solid var(--thg-border); border-radius: var(--thg-radius-lg); background: var(--thg-card); overflow: hidden; box-shadow: var(--shadow-soft); }
+        .hero-map { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1080; object-fit: cover; }
+        .map-caption { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--thg-muted-foreground); padding: 12px 16px; border-top: 1px solid var(--thg-border); margin: 0; }
+
+        /* ---------- sections ---------- */
+        .sec { padding: 88px 0; }
+        .sec-ivory { background: var(--thg-card); border-top: 1px solid var(--thg-border); border-bottom: 1px solid var(--thg-border); }
+        .sec-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 40px; }
+        .sec-num { font-family: var(--font-mono); font-size: 13px; letter-spacing: .05em; color: var(--thg-primary); }
+        .sec-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.7rem, 3vw, 2.4rem); letter-spacing: -.02em; text-transform: uppercase; margin: 0; }
+        .sec-lead { font-size: 16px; line-height: 1.65; color: var(--thg-muted-foreground); max-width: 52ch; margin: -16px 0 40px; }
+
+        /* ---------- section 01 pipeline ---------- */
+        .pipe { display: flex; align-items: stretch; list-style: none; margin: 0; padding: 0; }
+        .pipe-step { flex: 1; min-width: 0; border-top: 2px solid var(--thg-primary); padding-top: 20px; }
+        .pipe-arrow { display: flex; align-items: center; flex: 0 0 auto; color: var(--thg-muted-foreground); padding: 0 16px; }
+        .pipe-num { font-family: var(--font-mono); font-size: 13px; color: var(--thg-primary); }
+        .pipe-title { font-family: var(--font-display); font-weight: 700; font-size: 17px; text-transform: uppercase; letter-spacing: .01em; margin: 8px 0 10px; color: var(--thg-foreground); }
+        .pipe-facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+        .pipe-facts li { position: relative; font-size: 13.5px; line-height: 1.5; color: var(--thg-muted-foreground); padding-left: 14px; }
+        .pipe-facts li::before { content: ""; position: absolute; left: 0; top: 9px; width: 6px; height: 1px; background: var(--thg-primary); }
+
+        /* ---------- section 02 soul widget ---------- */
+        .tot-hop-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 40px; align-items: start; }
+        .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+        .matrix-card { display: block; text-align: left; width: 100%; box-sizing: border-box; font-family: var(--font-body); background: var(--thg-background); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-lg); padding: 20px; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background .2s ease; }
+        .matrix-card:hover { border-color: var(--thg-primary); transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+        .matrix-card:active { transform: translateY(0); }
+        .matrix-card.selected { border-color: var(--thg-primary); background: rgba(140, 90, 43, .05); box-shadow: 0 0 0 2px var(--thg-ring); }
+        .mc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .mc-tags { display: flex; gap: 6px; }
+        .mc-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--thg-primary); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-sm); padding: 4px 8px; }
+        .mc-check { display: none; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--thg-primary); color: var(--thg-primary-foreground); }
+        .matrix-card.selected .mc-check { display: flex; }
+        .mc-title { display: block; font-family: var(--font-display); font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: .01em; margin-bottom: 6px; color: var(--thg-foreground); }
+        .mc-desc { display: block; font-size: 13.5px; line-height: 1.55; color: var(--thg-muted-foreground); }
+        .chips-group { margin-top: 22px; }
+        .chips-label { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--thg-muted-foreground); margin: 0 0 10px; }
+        .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .chip { font-family: var(--font-body); font-size: 13.5px; color: var(--thg-foreground); background: var(--thg-background); border: 1px solid var(--thg-border); border-radius: 999px; padding: 9px 16px; cursor: pointer; transition: border-color .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease; }
+        .chip:hover { border-color: var(--thg-primary); color: var(--thg-primary); }
+        .chip[aria-pressed="true"] { border-color: var(--thg-primary); color: var(--thg-primary); background: rgba(140, 90, 43, .06); box-shadow: 0 0 0 2px var(--thg-ring); }
+
+        /* ---------- dossier ---------- */
+        .dossier { position: sticky; top: 92px; background: var(--thg-card); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-lg); padding: 26px; box-shadow: var(--shadow-soft); }
+        .dos-title { font-family: var(--font-display); font-weight: 700; font-size: 18px; text-transform: uppercase; letter-spacing: .01em; margin: 0 0 6px; color: var(--thg-foreground); }
+        .dos-sub { font-size: 12.5px; line-height: 1.5; color: var(--thg-muted-foreground); margin: 0 0 16px; }
+        .dos-rows { margin: 0 0 18px; }
+        .dos-row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--thg-border); }
+        .dos-row dt { font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--thg-muted-foreground); padding-top: 2px; }
+        .dos-row dd { margin: 0; font-size: 13.5px; font-weight: 500; text-align: right; color: var(--thg-foreground); font-variant-numeric: tabular-nums; }
+        .dos-progress { margin-bottom: 16px; }
+        .dos-progress-label { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--thg-muted-foreground); margin-bottom: 8px; }
+        .dos-progress-bar { height: 6px; background: var(--thg-muted); border-radius: 999px; overflow: hidden; }
+        .dos-progress-fill { height: 100%; width: 0; background: var(--thg-primary); border-radius: 999px; transition: width .35s cubic-bezier(.32, .72, 0, 1); }
+        .dos-contact { margin-bottom: 16px; }
+        .dos-contact-label { display: block; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--thg-muted-foreground); margin-bottom: 6px; }
+        .dos-cta { width: 100%; }
+        .dos-cta.is-disabled { opacity: .45; pointer-events: none; }
+        .cta-arrow { display: inline-flex; transition: transform .25s cubic-bezier(.32, .72, 0, 1); }
+        .dos-cta:not(.is-disabled):hover .cta-arrow { transform: translateX(4px); }
+
+        /* ---------- section 03 services ---------- */
+        .svc-list { border-top: 1px solid var(--thg-border); }
+        .svc-row { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto; gap: 28px; align-items: start; padding: 34px 0; border-bottom: 1px solid var(--thg-border); }
+        .svc-num { font-family: var(--font-mono); font-size: 14px; color: var(--thg-primary); }
+        .svc-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.15rem, 2vw, 1.5rem); text-transform: uppercase; letter-spacing: -.01em; margin: 0 0 10px; color: var(--thg-foreground); }
+        .svc-desc { font-size: 14.5px; line-height: 1.65; color: var(--thg-muted-foreground); margin: 0 0 14px; max-width: 60ch; }
+        .svc-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+        .svc-facts li { font-size: 12.5px; color: var(--thg-foreground); background: var(--thg-background); border: 1px solid var(--thg-border); border-radius: 999px; padding: 6px 12px; }
+        .svc-link { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: var(--thg-foreground); text-decoration: none; white-space: nowrap; transition: color .2s ease; }
+        .svc-link:hover { color: var(--thg-primary); }
+        /* Ký tự dự phòng khi thư viện icon không tải được */
+        [data-lucide]:empty::after { font-family: var(--font-body); font-weight: 400; }
+        [data-lucide="arrow-right"]:empty::after { content: "\2192"; }
+        [data-lucide="arrow-up-right"]:empty::after { content: "\2197"; }
+        [data-lucide="chevron-down"]:empty::after { content: "\25BE"; }
+        [data-lucide="arrow-down"]:empty::after { content: "\2193"; }
+        [data-lucide="send"]:empty::after { content: "\2192"; }
+
+        .svc-link [data-lucide] { transition: transform .25s cubic-bezier(.32, .72, 0, 1); }
+        .svc-link:hover [data-lucide] { transform: translate(2px, -2px); }
+
+        /* ---------- section 04 timeline ---------- */
+        .tl { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--thg-primary); }
+        .tl-step { padding: 22px 28px 0 0; }
+        .tl-step + .tl-step { border-left: 1px solid var(--thg-border); padding-left: 28px; }
+        .tl-num { font-family: var(--font-mono); font-size: 13px; color: var(--thg-primary); }
+        .tl-title { font-family: var(--font-display); font-weight: 700; font-size: 17px; text-transform: uppercase; margin: 8px 0 8px; color: var(--thg-foreground); }
+        .tl-desc { font-size: 14px; line-height: 1.6; color: var(--thg-muted-foreground); margin: 0; }
+        .tl-tagline { margin: 48px 0 0; font-size: 16px; font-weight: 500; color: var(--thg-foreground); }
+
+        /* ---------- section 05 marketplace ---------- */
+        .mk-chips { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0 16px; }
+        .mk-chip { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 15px; text-transform: uppercase; letter-spacing: .02em; color: var(--thg-foreground); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-md); background: var(--thg-card); padding: 14px 20px; }
+        .mk-chip .chk { display: inline-flex; color: var(--thg-primary); }
+        .mono-note { font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; color: var(--thg-muted-foreground); margin: 0; }
+
+        /* ---------- section 06 quotes ---------- */
+        .quotes { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        .q-lg { grid-column: span 4; }
+        .q-sm { grid-column: span 2; }
+        .quote { background: var(--thg-card); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-lg); padding: 30px; box-shadow: var(--shadow-soft); }
+        .quote footer { margin-top: auto; }
+        .quote-mark { display: block; font-family: var(--font-display); font-weight: 800; font-size: 64px; line-height: .5; color: var(--thg-primary); margin-bottom: 24px; }
+        .quote-text { font-size: 15.5px; line-height: 1.65; margin: 0 0 22px; color: var(--thg-foreground); }
+        .q-lg .quote-text { font-size: 17.5px; }
+        .quote-name { font-family: var(--font-display); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: .02em; margin: 0; color: var(--thg-foreground); }
+        .quote-role { font-size: 12.5px; color: var(--thg-muted-foreground); margin: 3px 0 0; }
+
+        /* ---------- section 07 faq ---------- */
+        .faq-list { border-top: 1px solid var(--thg-border); }
+        .faq-item { border-bottom: 1px solid var(--thg-border); }
+        .faq-item summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; list-style: none; cursor: pointer; padding: 22px 4px; font-family: var(--font-display); font-weight: 600; font-size: 16px; text-transform: uppercase; letter-spacing: .01em; color: var(--thg-foreground); transition: color .2s ease; }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary:hover { color: var(--thg-primary); }
+        .faq-item .chev { flex: 0 0 auto; color: var(--thg-muted-foreground); transition: transform .25s cubic-bezier(.32, .72, 0, 1); }
+        .faq-item[open] .chev { transform: rotate(180deg); }
+        .faq-ans { padding: 0 4px 22px; margin: 0; font-size: 14.5px; line-height: 1.7; color: var(--thg-muted-foreground); max-width: 70ch; }
+
+        /* ---------- section 08 lead form ---------- */
+        .bd-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 48px; align-items: start; }
+        .form-grid { display: grid; gap: 18px; }
+        .form-row label { display: block; font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--thg-muted-foreground); margin-bottom: 7px; }
+        .field { width: 100%; box-sizing: border-box; background: var(--thg-card); border: 1px solid var(--thg-input); border-radius: var(--thg-radius-md); padding: 12px 14px; font-family: var(--font-body); font-size: 15px; color: var(--thg-foreground); transition: border-color .2s ease, box-shadow .2s ease; }
+        .field:focus { outline: none; border-color: var(--thg-primary); box-shadow: 0 0 0 2px var(--thg-ring); }
+        .field.err { border-color: var(--thg-state-error); }
+        .field::placeholder { color: var(--thg-muted-foreground); opacity: .7; }
+        .err-msg { display: block; min-height: 16px; font-size: 12px; color: var(--thg-state-error); margin-top: 5px; }
+        textarea.field { resize: vertical; min-height: 96px; }
+        .note-line { font-family: var(--font-mono); font-size: 12px; letter-spacing: .02em; color: var(--thg-muted-foreground); margin: 14px 0 0; }
+        .btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+        .form-success { border: 1px solid var(--thg-state-success); background: rgba(47, 111, 82, .06); border-radius: var(--thg-radius-lg); padding: 28px; }
+        .form-success h3 { font-family: var(--font-display); font-size: 18px; text-transform: uppercase; margin: 0 0 8px; color: var(--thg-state-success); }
+        .form-success p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--thg-muted-foreground); }
+        .payload { background: var(--thg-card); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-lg); padding: 26px; box-shadow: var(--shadow-soft); }
+        .payload-title { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--thg-primary); margin: 0 0 16px; }
+        .payload-row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--thg-border); }
+        .payload-row dt { font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--thg-muted-foreground); padding-top: 2px; }
+        .payload-row dd { margin: 0; font-size: 13.5px; font-weight: 500; text-align: right; color: var(--thg-foreground); font-variant-numeric: tabular-nums; }
+        .payload-note { font-family: var(--font-mono); font-size: 11px; letter-spacing: .03em; color: var(--thg-muted-foreground); margin: 14px 0 0; }
+
+        /* ---------- footer ---------- */
+        .site-footer { background: var(--thg-foreground); color: var(--thg-background); }
+        .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; padding: 64px 0 48px; }
+        .footer-brand { font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: -.02em; text-transform: uppercase; margin: 0 0 10px; color: var(--thg-background); }
+        .footer-dot { color: var(--thg-ring); }
+        .footer-tagline { font-size: 13px; line-height: 1.6; color: rgba(245, 240, 232, .62); max-width: 30ch; }
+        .footer-col h4 { font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: rgba(245, 240, 232, .55); margin: 0 0 16px; font-weight: 500; }
+        .footer-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+        .footer-col li { font-size: 13.5px; line-height: 1.5; color: rgba(245, 240, 232, .78); }
+        .footer-col a { color: rgba(245, 240, 232, .78); text-decoration: none; transition: color .2s ease; }
+        .footer-col a:hover { color: var(--thg-primary-foreground); }
+        .footer-bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid rgba(245, 240, 232, .14); padding: 20px 0 28px; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .04em; color: rgba(245, 240, 232, .5); }
+
+        /* ---------- responsive ---------- */
+        @media (max-width: 1000px) {
+            .tot-hop-grid { grid-template-columns: 1fr; }
+            .dossier { position: static; }
+        }
+        @media (max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+            #hero { padding-top: 112px; }
+            .kpi-strip { flex-wrap: wrap; }
+            .kpi { flex: 1 1 45%; padding-top: 16px; }
+            .kpi + .kpi { border-left: none; padding-left: 0; }
+            .kpi:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--thg-border); }
+            .pipe { flex-direction: column; gap: 26px; }
+            .pipe-arrow { transform: rotate(90deg); align-self: flex-start; padding: 2px 0 2px 12px; }
+            .svc-row { grid-template-columns: 1fr; gap: 12px; }
+            .tl { grid-template-columns: 1fr; gap: 26px; border-top: none; }
+            .tl-step { border-top: 2px solid var(--thg-primary); padding-top: 18px; }
+            .tl-step + .tl-step { border-left: none; padding-left: 0; }
+            .quotes { grid-template-columns: 1fr; }
+            .q-lg, .q-sm { grid-column: span 1; }
+            .bd-grid { grid-template-columns: 1fr; gap: 36px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+        }
+        @media (max-width: 560px) {
+            .matrix-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+            .sec { padding: 64px 0; }
+        }
+
+        /* ---------- scroll reveal ---------- */
+        .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .4s cubic-bezier(.32, .72, 0, 1), transform .4s cubic-bezier(.32, .72, 0, 1); }
+        .js .reveal.in { opacity: 1; transform: none; }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .js .reveal { opacity: 1; transform: none; transition: none; }
+            *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+        }
+
+        /* ---------- mission control stage ---------- */
+        /* ĐƯỜNG RAY: thế giới dài 660vh, sân khấu dính lại trong suốt quãng đó.
+           Trước đây height:100svh nén cả hành trình vào một màn hình — lướt qua
+           cả năm điểm dừng trong nửa giây, nên nó chưa bao giờ thành "thế giới".
+           overflow:hidden phải chuyển xuống .mc-stage, nếu để ở đây sticky chết. */
+        .mc-world { position: relative; height: 660vh; background: #10161f; color: rgba(245, 240, 232, .92); }
+        .mc-stage { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; }
+        .mc-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+        /* mobile/tablet: touch luôn phải cuộn được trang — chỉ desktop mới khoá touch cho drag */
+        @media (hover: none), (pointer: coarse) { .mc-canvas { touch-action: pan-y; } }
+        .mc-canvas.mc-hidden { display: none; }
+        .mc-fallback { position: absolute; inset: 0; display: none; }
+        .mc-fallback.mc-on { display: block; }
+        .mc-fallback-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+        .mc-fallback-veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16, 22, 31, .5), rgba(16, 22, 31, .84)); }
+        .mc-labels { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+        .mc-label { position: absolute; left: 0; top: 0; font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(245, 240, 232, .82); padding: 4px 8px; border: 1px solid rgba(245, 240, 232, .22); border-radius: var(--thg-radius-sm); background: rgba(16, 22, 31, .5); white-space: nowrap; will-change: transform; }
+        .mc-eyebrow { position: absolute; top: 96px; left: 4.5vw; margin: 0; z-index: 3; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(245, 240, 232, .6); }
+        .mc-eyebrow::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #b67a3a; margin-right: 10px; vertical-align: 1px; }
+        .mc-copy { position: absolute; left: 4.5vw; top: 50%; transform: translateY(-50%); z-index: 3; max-width: 460px; transition: opacity .8s cubic-bezier(.32, .72, 0, 1); }
+        .mc-active .mc-copy { opacity: .86; }
+        .mc-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.2rem, 4.6vw, 3.6rem); line-height: 1.04; letter-spacing: -.02em; text-transform: uppercase; color: #f5f0e8; margin: 0 0 18px; }
+        .mc-title em { font-style: normal; color: #b67a3a; }
+        .mc-lead { font-size: 15.5px; line-height: 1.7; color: rgba(245, 240, 232, .78); margin: 0 0 26px; max-width: 44ch; }
+        .mc-ctas { display: flex; flex-wrap: wrap; gap: 14px; }
+        .mc-enter:hover { box-shadow: 0 0 0 2px rgba(182, 122, 58, .55); }
+        .mc-ghost { border-color: rgba(245, 240, 232, .35); color: rgba(245, 240, 232, .9); }
+        .mc-ghost:hover { border-color: #b67a3a; color: #b67a3a; background: rgba(182, 122, 58, .08); }
+        .mc-hubs { position: absolute; right: 4.5vw; top: 50%; transform: translateY(-50%); z-index: 3; display: grid; gap: 10px; width: 264px; }
+        .mc-hub { display: grid; gap: 3px; text-align: left; background: rgba(16, 22, 31, .55); border: 1px solid rgba(245, 240, 232, .18); border-radius: var(--thg-radius-md); padding: 12px 14px; cursor: pointer; color: #f5f0e8; font-family: var(--font-body); transition: border-color .2s ease, background .2s ease, transform .2s ease; }
+        .mc-hub:hover { border-color: #b67a3a; background: rgba(16, 22, 31, .8); transform: translateY(-1px); }
+        .mc-hub:active { transform: translateY(0); }
+        .mc-hub[aria-pressed="true"] { border-color: #b67a3a; box-shadow: 0 0 0 2px rgba(182, 122, 58, .4); }
+        .mc-hub-code { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: #b67a3a; }
+        .mc-hub-line { font-size: 13px; color: rgba(245, 240, 232, .82); }
+        .mc-hub-pick { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em; color: rgba(245, 240, 232, .55); }
+        .mc-hub-pick svg { transition: transform .25s cubic-bezier(.32, .72, 0, 1); }
+        .mc-hub:hover .mc-hub-pick { color: rgba(245, 240, 232, .9); }
+        .mc-hub:hover .mc-hub-pick svg { transform: translateX(3px); }
+        .mc-panel { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); z-index: 5; width: min(440px, calc(100vw - 48px)); background: rgba(16, 22, 31, .92); border: 1px solid rgba(245, 240, 232, .22); border-radius: var(--thg-radius-lg); padding: 22px 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, .45); }
+        .mc-panel-close { position: absolute; top: 12px; right: 12px; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid rgba(245, 240, 232, .2); border-radius: var(--thg-radius-sm); background: transparent; color: rgba(245, 240, 232, .7); cursor: pointer; transition: color .2s ease, border-color .2s ease; }
+        .mc-panel-close:hover { color: #f5f0e8; border-color: #b67a3a; }
+        .mc-panel-code { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #b67a3a; margin: 0 0 6px; }
+        .mc-panel-title { font-family: var(--font-display); font-weight: 700; font-size: 17px; text-transform: uppercase; letter-spacing: .01em; color: #f5f0e8; margin: 0 0 8px; padding-right: 34px; }
+        .mc-panel-desc { font-size: 13.5px; line-height: 1.6; color: rgba(245, 240, 232, .75); margin: 0 0 16px; }
+        .mc-panel-q { font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: rgba(245, 240, 232, .6); margin: 0 0 10px; }
+        .mc-panel-opts { display: grid; gap: 8px; }
+        .mc-opt { text-align: left; font-family: var(--font-body); font-size: 13.5px; color: #f5f0e8; background: rgba(245, 240, 232, .05); border: 1px solid rgba(245, 240, 232, .22); border-radius: var(--thg-radius-md); padding: 11px 14px; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
+        .mc-opt:hover { border-color: #b67a3a; background: rgba(182, 122, 58, .1); }
+        .mc-opt[aria-pressed="true"] { border-color: #b67a3a; box-shadow: 0 0 0 2px rgba(182, 122, 58, .35); }
+        /* ── Thẻ ngã rẽ: trôi lên từ mép dưới, không nhảy vào mặt ── */
+        .mc-fork { position: absolute; left: 50%; bottom: 76px; transform: translate(-50%, 22px); z-index: 6;
+            width: min(470px, calc(100vw - 40px)); background: rgba(251, 248, 243, .97); backdrop-filter: blur(16px);
+            border: 1px solid var(--thg-border); border-left: 3px solid var(--thg-primary); border-radius: var(--thg-radius-lg);
+            padding: 22px 24px 18px; box-shadow: 0 26px 64px rgba(23, 18, 13, .17);
+            opacity: 0; pointer-events: none; transition: opacity .55s ease, transform .55s cubic-bezier(.22,.61,.36,1); }
+        .mc-fork.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+        .mc-fork .mc-panel-code { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--thg-primary); margin: 0 0 8px; }
+        .mc-fork .mc-panel-q { font-family: var(--font-display); font-weight: 700; font-size: 17.5px; line-height: 1.3; text-transform: none; letter-spacing: 0; color: #17120d; margin: 0 0 14px; }
+        .mc-fork .mc-panel-opts { display: grid; gap: 9px; }
+        .mc-fork .mc-opt { display: block; text-align: left; background: #fff; border: 1px solid var(--thg-border); border-radius: var(--thg-radius-md); padding: 12px 15px; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
+        .mc-fork .mc-opt strong { display: block; font-family: var(--font-display); font-weight: 700; font-size: 15px; color: #17120d; margin-bottom: 3px; }
+        .mc-fork .mc-opt-sub { display: block; font-size: 12.5px; color: var(--thg-muted-foreground); line-height: 1.45; }
+        .mc-fork .mc-opt:hover { border-color: var(--thg-primary); background: rgba(140, 90, 43, .05); }
+        .mc-fork .mc-opt[aria-pressed="true"] { border-color: var(--thg-primary); background: rgba(140, 90, 43, .09); box-shadow: inset 0 0 0 1px var(--thg-primary); }
+        .mc-fork .mc-confirm { display: block; font-family: var(--font-body); font-size: 13px; line-height: 1.55; letter-spacing: 0; color: #3a2f1e; background: rgba(140, 90, 43, .07); border-left: 2px solid var(--thg-primary); padding: 11px 13px; margin: 13px 0 0; }
+        .mc-fork .mc-confirm[hidden] { display: none; }
+        .mc-fork-skip { display: block; width: 100%; margin: 12px 0 0; padding: 6px 0 0; background: none; border: none; border-top: 1px solid var(--thg-border);
+            font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--thg-muted-foreground); cursor: pointer; text-align: right; transition: color .2s ease; }
+        .mc-fork-skip:hover { color: var(--thg-primary); }
+        @media (max-width: 640px) { .mc-fork { left: 12px; right: 12px; width: auto; transform: translate(0, 22px); bottom: 68px; padding: 16px 16px 12px; max-height: 52svh; } .mc-fork.on { transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .mc-fork { transition: none; } }
+
+        /* ── Chuỗi nhịp: thẻ cao hơn khi tới phần cây quyết định ── */
+        .mc-fork { max-height: calc(100svh - 150px); overflow-y: auto; }
+        .mc-opts-tight { gap: 6px !important; }
+        .mc-opt-slim { padding: 9px 13px !important; }
+        .mc-opt-slim strong { font-size: 13.5px !important; margin-bottom: 0 !important; }
+        .mc-back:empty { display: none; }
+
+        /* ── Ghi nhận tình huống: công nhận, không giải đáp ── */
+        .mc-ack { margin: 14px 0 0; border-left: 2px solid var(--thg-primary); padding: 11px 0 2px 14px; }
+        .mc-ack-k { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--thg-state-success); margin: 0 0 8px; }
+        .mc-ack-t { font-size: 13px; line-height: 1.6; color: #3a2f1e; margin: 0 0 12px; }
+        .mc-ack-q { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--thg-muted-foreground); margin: 0 0 7px; }
+        .mc-ack-l { list-style: none; margin: 0; padding: 0; }
+        .mc-ack-l li { position: relative; padding: 0 0 6px 18px; font-size: 12.5px; line-height: 1.5; color: #17120d; }
+        .mc-ack-l li::before { content: "?"; position: absolute; left: 0; font-family: var(--font-mono); color: var(--thg-primary); }
+
+        /* ── Bản đọc vị cho sales — chỉ hiện ở khối payload, không hiện trong thế giới ── */
+        .p-brief-wrap { margin: 16px 0 0; border-top: 1px dashed var(--thg-border); padding-top: 14px; }
+        .p-brief-k { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--thg-state-warning); margin: 0 0 9px; }
+        .p-brief { font-family: var(--font-mono); font-size: 11px; line-height: 1.75; color: #3a2f1e; background: rgba(140, 90, 43, .05); border-left: 2px solid var(--thg-primary); margin: 0; padding: 11px 13px; white-space: pre-wrap; word-break: break-word; }
+
+        /* ── Nhịp cuối: form nằm TRONG thẻ, không bật popup ── */
+        .mc-contact-lead { font-size: 13px; line-height: 1.55; color: var(--thg-muted-foreground); margin: 0 0 14px; }
+        .mc-contact-lead strong { color: var(--thg-primary); font-weight: 600; }
+        .mc-fields { display: grid; gap: 11px; }
+        .mc-fields label { display: block; }
+        .mc-fields span { display: block; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--thg-muted-foreground); margin-bottom: 5px; }
+        .mc-fields span em { font-style: normal; opacity: .65; margin-left: 6px; }
+        .mc-fields input { width: 100%; box-sizing: border-box; background: #fff; border: 1px solid var(--thg-border); border-radius: var(--thg-radius-md); padding: 11px 13px; font-family: var(--font-body); font-size: 14px; color: #17120d; }
+        .mc-fields input:focus { outline: none; border-color: var(--thg-primary); box-shadow: 0 0 0 3px rgba(140, 90, 43, .12); }
+        .mc-send { width: 100%; margin: 14px 0 0; background: var(--thg-primary); color: var(--thg-primary-foreground); border: none; border-radius: var(--thg-radius-md); padding: 14px; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .2s ease; }
+        .mc-send:hover:not(:disabled) { background: var(--thg-ring); }
+        .mc-send:disabled { background: var(--thg-muted); color: var(--thg-muted-foreground); cursor: not-allowed; }
+
+        /* Thước đo trạm — biết mình đang ở đâu trong 660vh */
+        .mc-gauge { position: absolute; right: 26px; top: 50%; transform: translateY(-50%); z-index: 4; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+        .mc-gauge.on { opacity: 1; }
+        .mc-gauge b { display: flex; align-items: center; gap: 10px; font-weight: 400; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--thg-muted-foreground); transition: color .35s ease; white-space: nowrap; }
+        .mc-gauge b span { opacity: 0; transition: opacity .35s ease; }
+        .mc-gauge b i { display: block; width: 14px; height: 1px; background: var(--thg-border); transition: width .35s ease, height .35s ease, background .35s ease; }
+        .mc-gauge b.hit { color: var(--thg-primary); }
+        .mc-gauge b.hit span { opacity: 1; }
+        .mc-gauge b.hit i { width: 30px; height: 2px; background: var(--thg-primary); }
+
+        /* Cửa ra — bàn giao từ thế giới sang nội dung */
+        .mc-outro { position: absolute; left: 50%; bottom: 15vh; transform: translate(-50%, 20px); z-index: 5; text-align: center; opacity: 0; pointer-events: none; transition: opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1); }
+        .mc-outro.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+        .mc-outro-k { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--thg-primary); margin: 0 0 10px; }
+        .mc-outro-t { font-family: var(--font-display); font-weight: 700; font-size: clamp(20px, 2.4vw, 30px); line-height: 1.2; color: #17120d; margin: 0 0 18px; }
+        .mc-outro-a { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--thg-primary-foreground); background: var(--thg-primary); border-radius: var(--thg-radius-md); padding: 13px 20px; text-decoration: none; transition: background .2s ease; }
+        .mc-outro-a:hover { background: var(--thg-ring); }
+        @media (max-width: 900px) { .mc-gauge { display: none; } .mc-outro { bottom: 22vh; width: calc(100vw - 40px); } }
+        @media (prefers-reduced-motion: reduce) { .mc-gauge, .mc-outro { transition: none; } }
+
+        .f-prefilled { font-style: normal; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--thg-state-success); margin-left: 8px; }
+        .f-opt-note { font-style: normal; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--thg-muted-foreground); margin-left: 8px; opacity: .8; }
+
+        .mc-confirm { font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; color: #f5f0e8; background: rgba(182, 122, 58, .14); border-left: 2px solid #b67a3a; padding: 10px 12px; margin: 14px 0 0; }
+        .mc-bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; align-items: center; gap: 22px; padding: 16px 4.5vw; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(245, 240, 232, .55); border-top: 1px solid rgba(245, 240, 232, .12); background: rgba(16, 22, 31, .4); }
+        .mc-live { display: inline-flex; align-items: center; gap: 8px; color: rgba(245, 240, 232, .85); }
+        .mc-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #b67a3a; animation: mc-pulse 2.6s ease-in-out infinite; }
+        .mc-hint { margin-left: auto; color: rgba(245, 240, 232, .45); }
+        @keyframes mc-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+        @media (hover: none), (prefers-reduced-motion: reduce) { .mc-hint { display: none; } }
+
+        /* nav legibility over the dark stage */
+        #nav:not(.scrolled) .brand, #nav:not(.scrolled) .nav-links a { color: rgba(245, 240, 232, .92); }
+        #nav:not(.scrolled) .nav-links a:hover { color: #d9a05e; }
+        #nav.scrolled .brand, #nav.scrolled .nav-links a { color: var(--thg-foreground); }
+
+        /* mission responsive */
+        @media (max-width: 900px) {
+            .mc-hubs { right: auto; left: 16px; top: auto; bottom: 78px; transform: none; width: auto; display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 8px; }
+            .mc-hub { flex: 0 0 152px; }
+            .mc-copy { left: 24px; right: 24px; top: auto; bottom: 196px; transform: none !important; max-width: none; }
+            .mc-eyebrow { top: 88px; left: 24px; }
+            .mc-bottom { gap: 14px; padding: 12px 16px; }
+            .mc-bottom-mid { display: none; }
+            .mc-panel { left: 16px; right: 16px; bottom: 78px; transform: none; width: auto; }
+            .mc-title { font-size: clamp(1.75rem, 7vw, 2.4rem); }
+            .mc-hint { display: none; }
+        }
+        @media (max-width: 560px) {
+            .mc-ctas .btn { flex: 1 1 auto; }
+            .mc-lead { font-size: 14.5px; }
+        }
+        @media (max-height: 560px) and (max-width: 900px) {
+            .mc-lead { display: none; }
+            .mc-copy { bottom: 178px; }
+        }
+
+        /* ---------- mission control guided tour ---------- */
+        .mc-tour { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); width: min(560px, calc(100% - 48px)); background: rgba(16, 22, 31, .82); border: 1px solid rgba(245, 240, 232, .18); border-radius: var(--thg-radius-md); padding: 14px 18px; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); font-family: var(--font-mono); z-index: 4; display: flex; flex-wrap: wrap; align-items: baseline; }
+        .mc-tour-label, .mc-tour-step { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; }
+        .mc-tour-label { color: rgba(245, 240, 232, .62); }
+        .mc-tour-step { color: #d9a05e; margin-left: auto; }
+        .mc-tour-track { position: relative; height: 4px; background: rgba(245, 240, 232, .16); border-radius: 999px; margin-top: 10px; display: flex; align-items: center; flex-basis: 100%; }
+        .mc-tour-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, #8c5a2b, #d9a05e); border-radius: 999px; transition: width .3s cubic-bezier(.32, .72, 0, 1); }
+        .mc-tour-tick { flex: 1; text-align: center; font-size: 9.5px; color: rgba(245, 240, 232, .5); text-transform: uppercase; letter-spacing: .06em; padding-top: 10px; position: relative; }
+        .mc-tour-tick::before { content: ""; position: absolute; top: 2px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; background: rgba(245, 240, 232, .25); }
+        .mc-tour-tick.done::before { background: #d9a05e; }
+        .mc-tour-tick.cur { color: #f5f0e8; }
+        .mc-tour-tick.cur::before { background: #f5f0e8; box-shadow: 0 0 0 3px rgba(217, 160, 94, .28); }
+        .mc-exit { position: absolute; right: 28px; bottom: 120px; z-index: 4; display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; color: #f5f0e8; background: rgba(140, 90, 43, .92); border: 1px solid rgba(245, 240, 232, .25); border-radius: var(--thg-radius-md); padding: 11px 16px; cursor: pointer; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease, background .2s ease; }
+        .mc-world.mc-active .mc-exit { opacity: 1; pointer-events: auto; transform: none; }
+        .mc-exit:hover { background: #b67a3a; }
+        .mc-exit [data-lucide] { transition: transform .25s cubic-bezier(.32, .72, 0, 1); }
+        .mc-exit:hover [data-lucide] { transform: translateY(2px); }
+        @media (max-width: 900px) {
+            .mc-tour { bottom: 120px; }
+            .mc-exit { right: 20px; bottom: 188px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .mc-world.mc-active .mc-exit { transition: none; }
+        }
+
+        /* ---------- mission control immersion ---------- */
+        .mc-scroll-hint { position: absolute; left: 50%; bottom: 118px; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: rgba(245, 240, 232, .78); opacity: 1; transition: opacity .5s ease; pointer-events: none; }
+        .mc-scroll-hint.hidden { opacity: 0; }
+        .mc-scroll-mouse { width: 22px; height: 34px; border: 1.5px solid rgba(245, 240, 232, .6); border-radius: 12px; position: relative; display: block; }
+        .mc-scroll-mouse i { position: absolute; left: 50%; top: 6px; width: 3px; height: 6px; margin-left: -1.5px; border-radius: 2px; background: #d9a05e; animation: mcDrop 1.6s cubic-bezier(.32, .72, 0, 1) infinite; }
+        @keyframes mcDrop { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
+        #mc-panel .mc-opt { padding: 13px 16px; font-size: 14px; }
+        #mc-panel .mc-panel-q { color: #d9a05e; }
+        @media (prefers-reduced-motion: reduce) {
+            .mc-scroll-hint, .mc-scroll-mouse i { transition: none; animation: none; }
+        }
+        @media (max-width: 900px) {
+            .mc-scroll-hint { bottom: 150px; }
+        }
+
+        /* ========== THG World — light facility stage (overrides) ========== */
+        .mc-world { background: linear-gradient(180deg, #ece6da 0%, #e4dccb 100%); color: #17120d; }
+        .mc-world .mc-fallback-img { mix-blend-mode: normal; opacity: 1; }
+        .mc-world .mc-fallback-veil { background: linear-gradient(180deg, rgba(236, 230, 218, .45), rgba(228, 220, 203, .88)); }
+        .mc-world .mc-eyebrow, .mc-world #mc-h1, .mc-world .mc-title, .mc-world .mc-lead { color: #17120d; }
+        .mc-world .mc-eyebrow { color: #6a5a4c; }
+        .mc-world .mc-title em { color: var(--thg-primary); }
+        .mc-world .mc-ghost { border-color: var(--thg-border); color: #17120d; }
+        .mc-world .mc-ghost:hover { border-color: var(--thg-primary); color: var(--thg-primary); background: rgba(140, 90, 43, .06); }
+        .mc-world .mc-label { color: #3a2f1e; border-color: var(--thg-border); background: rgba(251, 248, 243, .92); }
+        .mc-world .mc-hub { background: rgba(251, 248, 243, .9); border-color: var(--thg-border); color: #17120d; }
+        .mc-world .mc-hub:hover { border-color: var(--thg-primary); background: #fbf8f3; }
+        .mc-world .mc-hub-code { color: var(--thg-primary); }
+        .mc-world .mc-hub-line { color: #17120d; }
+        .mc-world .mc-hub-pick { color: #6a5a4c; }
+        .mc-world .mc-hub:hover .mc-hub-pick { color: #17120d; }
+        .mc-world .mc-hub[aria-pressed="true"] { border-color: var(--thg-primary); box-shadow: 0 0 0 2px var(--thg-ring); }
+        .mc-world .mc-panel { background: rgba(255, 255, 255, .94); color: #17120d; border: 1px solid var(--thg-border); box-shadow: 0 24px 60px rgba(23, 18, 13, .22); max-height: calc(100svh - 150px); overflow-y: auto; }
+        .mc-world .mc-panel-close { color: #6a5a4c; border-color: var(--thg-border); }
+        .mc-world .mc-panel-close:hover { color: #17120d; border-color: var(--thg-primary); }
+        .mc-world .mc-panel-code { color: var(--thg-primary); }
+        .mc-world .mc-panel-title { color: #17120d; }
+        .mc-world .mc-panel-desc { color: #4a3d2e; }
+        .mc-world .mc-panel-q { color: var(--thg-primary); }
+        #mc-panel .mc-panel-q { color: var(--thg-primary); }
+        .mc-world .mc-opt { color: #17120d; background: #fbf8f3; border-color: var(--thg-border); }
+        .mc-world .mc-opt:hover { border-color: var(--thg-primary); background: rgba(140, 90, 43, .06); }
+        .mc-world .mc-opt[aria-pressed="true"] { border-color: var(--thg-primary); background: rgba(140, 90, 43, .08); box-shadow: 0 0 0 2px var(--thg-ring); }
+        .mc-world .mc-confirm { color: #17120d; background: rgba(140, 90, 43, .08); border-left-color: var(--thg-primary); }
+        .mc-world .mc-bottom { color: #6a5a4c; border-top-color: var(--thg-border); background: rgba(236, 230, 218, .72); }
+        .mc-world .mc-live { color: #17120d; }
+        .mc-world .mc-hint { color: #6a5a4c; }
+        .mc-world .mc-tour { background: rgba(251, 248, 243, .92); border-color: var(--thg-border); color: #17120d; }
+        .mc-world .mc-tour-label { color: #6a5a4c; }
+        .mc-world .mc-tour-step { color: var(--thg-primary); }
+        .mc-world .mc-tour-track { background: rgba(23, 18, 13, .12); }
+        .mc-world .mc-tour-tick { color: #6a5a4c; }
+        .mc-world .mc-tour-tick::before { background: rgba(23, 18, 13, .2); }
+        .mc-world .mc-tour-tick.done::before { background: var(--thg-primary); }
+        .mc-world .mc-tour-tick.cur { color: #17120d; }
+        .mc-world .mc-tour-tick.cur::before { background: var(--thg-primary); box-shadow: 0 0 0 3px rgba(182, 122, 58, .3); }
+        .mc-world .mc-scroll-hint { color: #3a2f1e; }
+        .mc-world .mc-scroll-mouse { border-color: rgba(23, 18, 13, .5); }
+        .mc-world .mc-exit { color: var(--thg-primary-foreground); background: var(--thg-primary); border-color: rgba(255, 255, 255, .4); }
+        .mc-world .mc-exit:hover { background: var(--thg-ring); }
+        #nav:not(.scrolled) .brand, #nav:not(.scrolled) .nav-links a { color: var(--thg-foreground); }
+        #nav:not(.scrolled) .nav-links a:hover { color: var(--thg-primary); }
+
+        /* new station-specific styles */
+        .mc-san-list { display: flex; flex-wrap: wrap; gap: 10px; }
+        #mc-panel .mc-opt.san-pill { border-radius: 999px; padding: 10px 14px; text-align: center; }
+        .mc-rec { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: .02em; text-transform: uppercase; color: var(--thg-primary); margin: 2px 0 8px; }
+        .mc-rec-why { font-size: 13px; line-height: 1.65; color: #6a5a4c; margin: 0; }
+        .tw-form { display: grid; gap: 12px; }
+        .tw-form label { display: block; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #6a5a4c; margin-bottom: 6px; }
+        .tw-form .btn { width: 100%; }
+        .tw-success { border: 1px solid var(--thg-state-success); background: rgba(47, 111, 82, .08); color: var(--thg-state-success); border-radius: var(--thg-radius-md); padding: 14px 16px; font-size: 13.5px; line-height: 1.5; margin: 0; }
+        .bd-highlight { box-shadow: 0 0 0 3px var(--thg-ring); border-radius: var(--thg-radius-lg); transition: box-shadow .4s ease; }
+            @media (max-width: 900px) {
+                .mc-san-list { gap: 8px; }
+                #mc-panel .mc-opt.san-pill { flex: 1 1 44%; padding: 10px 12px; font-size: 13px; }
+                .mc-tour-tick { font-size: 8.5px; }
+            }
+
+            /* ========== walkthrough: eye-level boulevard (appended) ========== */
+            .mc-world { background: linear-gradient(180deg, #ece6da 0%, #e4dccb 100%); }
+            .mc-world .mc-hint { color: #6a5a4c; }
+            .mc-world .mc-scroll-hint { color: #3a2f1e; }
+            .mc-world #mc-panel .mc-panel-q { color: var(--thg-primary); }
+            .mc-world .tw-form .btn { width: 100%; }
+            .mc-world .mc-panel-card[data-hub="contact"] .tw-form { gap: 10px; }
+            .mc-world .mc-tour-tick { font-size: 9px; }
+            @media (max-width: 900px) {
+                .mc-world .mc-hub { flex: 0 0 150px; }
+                .mc-world .mc-panel { bottom: 78px; }
+                .mc-world .mc-tour { bottom: 120px; }
+                .mc-world .mc-scroll-hint { bottom: 150px; }
+            }
+            @media (max-width: 560px) {
+                .mc-world .mc-panel { bottom: 70px; padding: 18px 16px; }
+            }
+
+            /* ========== journey captions + natural lead form (appended) ========== */
+            .mc-caption { position: absolute; left: 50%; bottom: 56px; transform: translateX(-50%); z-index: 4; max-width: 560px; text-align: center; font-family: var(--font-body); font-size: 17px; line-height: 1.5; color: #17120d; background: rgba(251, 248, 243, .86); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-md); padding: 12px 20px; opacity: 0; transition: opacity .5s ease; pointer-events: none; margin: 0; }
+            .mc-caption.on { opacity: 1; }
+            .mc-start-hint { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 4; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: #3a2f1e; opacity: 1; transition: opacity .6s ease; pointer-events: none; margin: 0; white-space: nowrap; }
+            .mc-start-hint.hidden { opacity: 0; }
+
+            /* journey recap — silent summary */
+            .recap-list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 9px; counter-reset: recap; }
+            .recap-list li { position: relative; padding-left: 30px; font-size: 14px; line-height: 1.55; color: var(--thg-foreground); counter-increment: recap; }
+            .recap-list li::before { content: "0" counter(recap); position: absolute; left: 0; top: 1px; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .05em; color: var(--thg-primary); }
+            .recap-note { font-size: 13px; line-height: 1.6; color: var(--thg-muted-foreground); margin: 0; max-width: 46ch; }
+
+            /* natural lead form */
+            .f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+            .f-field { min-width: 0; }
+            .f-wide { grid-column: 1 / -1; }
+            .f-label { display: block; font-family: var(--font-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--thg-muted-foreground); margin-bottom: 7px; }
+            .f-seg-group, .f-chk-group { display: flex; flex-wrap: wrap; gap: 10px; }
+            .f-seg, .f-chk { display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-body); font-size: 13.5px; line-height: 1.4; color: var(--thg-foreground); background: var(--thg-card); border: 1px solid var(--thg-border); border-radius: var(--thg-radius-md); padding: 11px 16px; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+            .f-seg:hover, .f-chk:hover { border-color: var(--thg-primary); }
+            .f-seg[aria-pressed="true"], .f-chk[aria-pressed="true"] { border-color: var(--thg-primary); box-shadow: 0 0 0 2px var(--thg-ring); background: rgba(140, 90, 43, .06); }
+            .f-chk { border-radius: 999px; }
+            .f-rec { background: var(--thg-muted); border: 1px dashed var(--thg-primary); border-radius: var(--thg-radius-md); padding: 12px 16px; font-family: var(--font-display); font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: .02em; color: var(--thg-primary); min-height: 22px; line-height: 1.5; }
+
+            @media (max-width: 900px) {
+                .f-grid { grid-template-columns: 1fr; }
+                .mc-caption { max-width: calc(100vw - 32px); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .mc-caption, .mc-start-hint { transition: none; }
+            }
+        </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        (function () {
+            'use strict';
+            var doc = document.documentElement;
+            doc.classList.add('js');
+            var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            /* nav background on scroll */
+            var nav = document.getElementById('nav');
+            function onScroll() { if (nav) nav.classList.toggle('scrolled', window.scrollY > 24); }
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+
+            /* smooth scroll for anchors */
+            document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+                a.addEventListener('click', function (e) {
+                    var href = a.getAttribute('href');
+                    if (href && href.length > 1) {
+                        var t = document.querySelector(href);
+                        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                    }
+                });
+            });
+
+            /* shared lead state */
+            var state = { src: null, dlv: null, vol: null, pain: null, san: [], contact: '', name: '', note: '' };
+            var L = {
+                src: { pod: 'POD · in theo đơn', drop: 'Dropship · mua hộ TQ' },
+                dlv: { exp: 'Express · bay thẳng', wh: 'Kho Mỹ · trữ sẵn' },
+                vol: { 'Dưới 100': 'Dưới 100 đơn/tháng', '100–500': '100–500 đơn/tháng', '500–2.000': '500–2.000 đơn/tháng', 'Trên 2.000': 'Trên 2.000 đơn/tháng' },
+                pain: { 'Tracking đứng quá lâu': 'Tracking đứng nhiều ngày', 'Hàng thất lạc trên đường': 'Hàng thất lạc', 'Khách nhận thiếu hàng': 'Giao thiếu hàng', 'Khách phàn nàn chất lượng': 'Khiếu nại chất lượng', 'Chưa gặp cái nào': 'Chưa gặp sự cố' },
+                san: { 'TikTok Shop': 'TikTok Shop', 'Etsy': 'Etsy', 'Amazon': 'Amazon', 'Shopify': 'Shopify', 'Website riêng': 'Website riêng' },
+                rec: { exp: 'Express — 5–8 ngày · không tồn', wh: 'Kho Mỹ — 2–5 ngày · gom lô' }
+            };
+
+            function setTxt(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+
+            var NM = { pod: 'POD', drop: 'Dropship', exp: 'Express', wh: 'Kho Mỹ' };
+
+            function recommend() {
+                var out = { combo: null, why: [] };
+                if (state.src && state.dlv) out.combo = NM[state.src] + ' + ' + NM[state.dlv];
+                if (state.vol === 'Dưới 100' || state.vol === '100–500') out.why.push('sản lượng hiện tại hợp với làn bay thẳng hơn là khoá vốn tồn kho');
+                if (state.vol === '500–2.000' || state.vol === 'Trên 2.000') out.why.push('sản lượng đủ để gom lô qua kho Mỹ');
+                if (state.pain && state.pain !== 'Chưa gặp cái nào') out.why.push('có sẵn quy trình xử lý cho tình huống bạn từng gặp');
+                return out;
+            }
+
+            /* ═══════════════════════════════════════════════════════════
+               LỚP DỰ ĐOÁN — đầu ra dành cho SALES, không phải cho seller
+               ───────────────────────────────────────────────────────────
+               Seller chỉ thấy sự liên quan. Sales nhận bản đọc vị: rủi ro
+               sắp gặp, phản đối nhiều khả năng bật ra, nên mở đầu bằng gì,
+               và cả thứ KHÔNG nên bán. Đây là chỗ "agentic" thật sự có
+               giá trị — đoán trước tình huống và tâm lý, chứ không phải
+               sinh giao diện ngẫu nhiên.
+
+               Bản này là luật rõ ràng (deterministic). Khi có LLM, chỗ
+               này chỉ cần đổi thành lời gọi model với cùng đầu vào —
+               còn hợp đồng dữ liệu giữ nguyên.
+               ═══════════════════════════════════════════════════════════ */
+            var VOL_RANK = { 'Dưới 100': 1, '100–500': 2, '500–2.000': 3, 'Trên 2.000': 4 };
+
+            function predict() {
+                var v = VOL_RANK[state.vol] || 0;
+                var small = v > 0 && v <= 2, big = v >= 3;
+                var risks = [], objections = [], lead = [], avoid = [], mood = '';
+
+                /* ── giai đoạn & tâm lý ── */
+                if (v === 1) mood = 'Đang thăm dò. Nhạy rủi ro hơn nhạy giá — cần bằng chứng vận hành, không cần bảng giá dài.';
+                else if (v === 2) mood = 'Đã có mẫu chạy được, bắt đầu thấy biên bị bào. Nhạy giá mỗi đơn nhất ở giai đoạn này.';
+                else if (v === 3) mood = 'Đang chuyển từ tối ưu giá sang tối ưu độ ổn định. Bắt đầu quan tâm ai chịu trách nhiệm khi hỏng.';
+                else if (v === 4) mood = 'Quy mô lớn. Quan tâm công suất, SLA và người đứng tên — giá chỉ là điều kiện cần.';
+
+                /* ── lệch pha giữa mong muốn và quy mô ── */
+                if (state.dlv === 'wh' && small) {
+                    risks.push('Muốn kho Mỹ nhưng sản lượng chưa đỡ nổi vốn tồn kho');
+                    avoid.push('ĐỪNG chốt gói kho ngay. Bán sai tầng ở đây là mất khách sau 2 tháng.');
+                    lead.push('Đi Express trước, hẹn mốc sản lượng để quay lại bàn chuyện kho');
+                }
+                if (state.dlv === 'exp' && big) {
+                    risks.push('Sản lượng đã đủ gom lô nhưng vẫn đang bay từng đơn — đang trả giá cao hơn cần thiết');
+                    lead.push('Mang phép tính so giá mỗi đơn giữa Express và gom lô về kho Mỹ');
+                }
+
+                /* ── rủi ro theo nguồn hàng ── */
+                if (state.src === 'pod') {
+                    risks.push('Rủi ro lớn nhất của POD là chạy lô khi chưa duyệt sample');
+                    lead.push('Nói rõ quy trình duyệt sample TRƯỚC khi báo giá — đây là chỗ hỏng đắt nhất');
+                }
+                if (state.src === 'drop') {
+                    risks.push('Phụ thuộc nguồn: hết hàng hoặc sai lô phát hiện muộn');
+                    lead.push('Nhấn khâu kiểm hàng đầu vào và gộp đơn tại kho Trung Quốc');
+                }
+
+                /* ── rủi ro theo sàn ── */
+                if (state.san.indexOf('TikTok Shop') >= 0) {
+                    risks.push('TikTok Shop phạt chỉ số giao hàng nhanh và nặng hơn các sàn khác');
+                    lead.push('Đưa cam kết trả và active tracking đúng policy TikTok Shop');
+                }
+                if (state.san.indexOf('Amazon') >= 0) risks.push('Amazon siết chặt thời gian giao và tỉ lệ hoàn');
+                if (state.san.length >= 3) {
+                    risks.push('Bán đa sàn — mỗi sàn một chuẩn tracking, dễ vỡ khi tự xử lý');
+                    lead.push('Bán giá trị hợp nhất một đầu mối, không bán từng dịch vụ lẻ');
+                }
+
+                /* ── tín hiệu từ tình huống đã gặp ── */
+                var P = state.pain;
+                if (P && P !== 'Chưa gặp cái nào') {
+                    objections.push('Đang mang sẵn một trải nghiệm xấu — sẽ hỏi "lần này khác gì" trước khi hỏi giá');
+                    lead.push('Mở đầu bằng cơ chế xử lý sự cố và người đứng tên, đừng mở bằng bảng giá');
+                }
+                if (P === 'Khách phàn nàn chất lượng') {
+                    risks.push('Nhiều khả năng đã từng chạy lô mà chưa duyệt sample');
+                    lead.push('Hỏi ngay: lô trước có duyệt sample không — câu này quyết định cả cuộc nói chuyện');
+                }
+                if (P === 'Khách nhận thiếu hàng') lead.push('Nêu video đóng gói theo từng đơn — đối chứng được, không tranh cãi bằng lời');
+                if (P === 'Tracking đứng quá lâu') objections.push('Sẽ hỏi thẳng: bao lâu thì THG bắt đầu can thiệp');
+                if (P === 'Hàng thất lạc trên đường') objections.push('Sẽ hỏi ai chịu phí khi phải gửi lại');
+                if (P === 'Chưa gặp cái nào' && v <= 2) {
+                    objections.push('Chưa thấy đau nên chưa thấy cần đổi — dễ trì hoãn quyết định');
+                    lead.push('Bán bằng chi phí của việc hỏng, không bán bằng tính năng');
+                }
+
+                /* ── phản đối theo giá ── */
+                if (v === 2) objections.push('Sẽ so giá mỗi đơn với bên đang dùng — chuẩn bị số cụ thể');
+                if (v === 1) objections.push('Sẽ ngại cam kết dài hạn và số lượng tối thiểu');
+
+                var conf = 0;
+                if (state.src) conf++; if (state.dlv) conf++; if (state.vol) conf++;
+                if (state.san.length) conf++; if (state.pain) conf++;
+
+                return { risks: risks, objections: objections, lead: lead, avoid: avoid, mood: mood, conf: conf };
+            }
+
+            function briefText() {
+                var P = predict();
+                if (P.conf < 2) return '';
+                var out = [];
+                function blk(title, arr) {
+                    if (!arr.length) return;
+                    out.push(title);
+                    arr.forEach(function (x) { out.push('  · ' + x); });
+                    out.push('');
+                }
+                if (P.mood) { out.push('GIAI ĐOẠN'); out.push('  · ' + P.mood); out.push(''); }
+                blk('RỦI RO SẮP GẶP', P.risks);
+                blk('SẼ PHẢN ĐỐI', P.objections);
+                blk('MỞ ĐẦU BẰNG', P.lead);
+                blk('TRÁNH', P.avoid);
+                return out.join('\n').trim();
+            }
+
+            function filledCount() {
+                var n = 0;
+                if (state.src) n++;
+                if (state.dlv) n++;
+                if (state.vol) n++;
+                if (state.san.length) n++;
+                if (state.pain) n++;
+                if (state.name.trim()) n++;
+                if (state.contact.trim()) n++;
+                if (state.src && state.dlv) n++;
+                return n;
+            }
+
+            function render() {
+                setTxt('d-src', state.src ? L.src[state.src] : '—');
+                setTxt('d-dlv', state.dlv ? L.dlv[state.dlv] : '—');
+                setTxt('d-vol', state.vol ? L.vol[state.vol] : '—');
+                setTxt('d-pain', state.pain ? L.pain[state.pain] : '—');
+                setTxt('d-san', state.san.length ? state.san.map(function (v) { return L.san[v] || v; }).join(', ') : '—');
+                var rec = recommend();
+                var recWrap = document.getElementById('d-rec-wrap');
+                if (recWrap) recWrap.hidden = !rec.combo;
+                setTxt('d-rec', rec.combo || '—');
+
+                var total = 8;
+                var filled = filledCount();
+                var pct = Math.round(filled / total * 100);
+                /* Đếm trường = cảm giác bị chấm điểm. Nói bằng tiếng người:
+                   THG còn thiếu gì để báo được giá, chứ không phải bạn còn nợ mấy ô. */
+                var stage = 'chưa có gì';
+                if (state.src && state.dlv && state.vol) stage = 'đủ để báo giá sơ bộ';
+                else if (state.src && state.dlv) stage = 'đã rõ tuyến — còn sản lượng';
+                else if (state.src || state.dlv) stage = 'mới biết một nửa';
+                else if (filled) stage = 'vừa bắt đầu';
+                setTxt('dos-count', stage);
+                var bar = document.getElementById('dos-bar');
+                if (bar) bar.style.width = pct + '%';
+
+                /* payload mirror */
+                setTxt('p-src', state.src ? L.src[state.src] : '—');
+                setTxt('p-dlv', state.dlv ? L.dlv[state.dlv] : '—');
+                setTxt('p-vol', state.vol ? L.vol[state.vol] : '—');
+                setTxt('p-pain', state.pain ? L.pain[state.pain] : '—');
+                setTxt('p-san', state.san.length ? state.san.map(function (v) { return L.san[v] || v; }).join(', ') : '—');
+                setTxt('p-rec', rec.combo || '—');
+                ['src', 'dlv', 'vol'].forEach(function (k) {
+                    var pe = document.getElementById('pre-' + k);
+                    if (pe) pe.hidden = !state[k];
+                });
+                var bw = document.getElementById('p-brief-wrap');
+                var bt = briefText();
+                if (bw) {
+                    bw.hidden = !bt;
+                    var be = document.getElementById('p-brief');
+                    if (be) be.textContent = bt;
+                }
+                setTxt('p-name', state.name.trim() || '—');
+                setTxt('p-contact', state.contact.trim() || '—');
+            }
+
+            /* ===== natural lead form ===== */
+            function updateRec() {
+                var rec = recommend();
+                var el = document.getElementById('f-rec');
+                if (!el) return;
+                el.textContent = rec.combo
+                    ? rec.combo + (rec.why.length ? ' — ' + rec.why.join(' · ') : '')
+                    : 'Chọn nguồn hàng và làn giao để nhận gợi ý.';
+            }
+
+            /* segmented single-select groups: src · dlv · vol · pain */
+            function wireSeg(key) {
+                document.querySelectorAll('[data-mc="' + key + '"]').forEach(function (b) {
+                    b.addEventListener('click', function () {
+                        var v = b.getAttribute('data-value');
+                        state[key] = state[key] === v ? null : v;
+                        document.querySelectorAll('[data-mc="' + key + '"]').forEach(function (o) {
+                            o.setAttribute('aria-pressed', o.getAttribute('data-value') === state[key] ? 'true' : 'false');
+                        });
+                        render(); updateRec(); validateForm();
+                    });
+                });
+            }
+            wireSeg('src'); wireSeg('dlv'); wireSeg('vol'); wireSeg('pain');
+
+            /* san: multi-select chips */
+            document.querySelectorAll('[data-mc="san"]').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var v = b.getAttribute('data-value');
+                    var idx = state.san.indexOf(v);
+                    if (idx >= 0) { state.san.splice(idx, 1); b.setAttribute('aria-pressed', 'false'); }
+                    else { state.san.push(v); b.setAttribute('aria-pressed', 'true'); }
+                    render(); validateForm();
+                });
+            });
+
+            /* name / contact / note */
+            var fName = document.getElementById('f-name');
+            var fContact = document.getElementById('f-contact');
+            var fNote = document.getElementById('f-note');
+            var form = document.getElementById('lead-form');
+            var success = document.getElementById('form-success');
+            var submitBtn = document.getElementById('submit-lead');
+
+            function nameOk() { return state.name.trim().length >= 2; }
+            function contactOk() {
+                var v = state.contact.trim();
+                if (!v) return false;
+                if (v.indexOf('@') >= 0) return v.indexOf('.') > v.indexOf('@') + 1;
+                return v.length >= 6;
+            }
+            function setErr(id, msg) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = msg;
+            }
+            function markField(el, bad) {
+                if (el) el.classList.toggle('err', bad);
+            }
+            function validateForm() {
+                var ok = nameOk() && contactOk();
+                if (submitBtn) submitBtn.disabled = !ok;
+                return ok;
+            }
+            if (fName) {
+                fName.addEventListener('input', function () { state.name = fName.value; render(); validateForm(); });
+                fName.addEventListener('blur', function () {
+                    var bad = !nameOk();
+                    markField(fName, bad);
+                    setErr('err-name', bad ? 'Nhập tên của bạn (ít nhất 2 ký tự).' : '');
+                });
+            }
+            if (fContact) {
+                fContact.addEventListener('input', function () { state.contact = fContact.value; render(); validateForm(); });
+                fContact.addEventListener('blur', function () {
+                    var bad = !contactOk();
+                    markField(fContact, bad);
+                    setErr('err-contact', bad ? 'Nhập Zalo, email hoặc Telegram hợp lệ.' : '');
+                });
+            }
+            if (fNote) {
+                fNote.addEventListener('input', function () { state.note = fNote.value; });
+            }
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    var nameBad = !nameOk();
+                    var contactBad = !contactOk();
+                    markField(fName, nameBad);
+                    markField(fContact, contactBad);
+                    setErr('err-name', nameBad ? 'Nhập tên của bạn (ít nhất 2 ký tự).' : '');
+                    setErr('err-contact', contactBad ? 'Nhập Zalo, email hoặc Telegram hợp lệ.' : '');
+                    if (!validateForm()) return;
+                    form.hidden = true;
+                    if (success) success.hidden = false;
+                });
+            }
+            validateForm();
+
+            /* scroll reveal */
+            var revealEls = document.querySelectorAll('.reveal');
+            if (prefersReduced || !('IntersectionObserver' in window)) {
+                revealEls.forEach(function (el) { el.classList.add('in'); });
+            } else {
+                var io = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (en) {
+                        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+                    });
+                }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+                revealEls.forEach(function (el) { io.observe(el); });
+            }
+
+            /* ===== scroll journey ===== */
+            var mcWorld = document.getElementById('mc-world');
+            var mcCanvas = document.getElementById('mc-canvas');
+            var mcFallback = document.getElementById('mc-fallback');
+            var HAS3D = !!window.THREE;
+            var mcUse3D = false;
+            var mcScene = null, mcCamera = null, mcRenderer = null;
+            var mcZoneMeshes = [], mcZoneGroups = [];
+            var mcParcels = [], mcPlanes = [];
+            var mcLastT = 0;
+
+            /* Boulevard world: eye-level walk down the operation road */
+            var boulevard = { startZ: 48, endZ: -48 };
+
+            /* walking camera state (eye-level) */
+            var mcCamX = 0, mcCamXTarget = 0;
+            var mcLookYaw = 0, mcLookPitch = 0;    /* temporary drag look-around, reset on scroll */
+            var mcDown = false, mcLastX = 0, mcLastY = 0;
+
+            function mcWebglOk() {
+                try {
+                    var c = document.createElement('canvas');
+                    return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+                } catch (e) { return false; }
+            }
+
+            function mcMakePlane() {
+                var g = new THREE.Group();
+                var body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.42, 1.5), new THREE.MeshStandardMaterial({ color: 0xcfc8b8, roughness: 0.75, metalness: 0.15 }));
+                body.position.z = -0.25;
+                var nose = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.9, 12), new THREE.MeshStandardMaterial({ color: 0xb67a3a, roughness: 0.7 }));
+                nose.rotation.x = Math.PI / 2;
+                nose.position.z = 1.0;
+                var stripe = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.09, 1.5), new THREE.MeshStandardMaterial({ color: 0xb67a3a, roughness: 0.7 }));
+                stripe.position.y = 0.16;
+                stripe.position.z = -0.25;
+                var fin = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.5, 0.5), new THREE.MeshStandardMaterial({ color: 0xcfc8b8, roughness: 0.75 }));
+                fin.position.y = 0.3;
+                fin.position.z = -0.7;
+                g.add(body); g.add(nose); g.add(stripe); g.add(fin);
+                return g;
+            }
+
+            function mcMat(color, opts) {
+                opts = opts || {};
+                return new THREE.MeshStandardMaterial(Object.assign({ color: color, roughness: 0.88, metalness: 0.04 }, opts));
+            }
+            function mcWindow(px, py, pz, w, h, axis) {
+                var geo = (axis === 'z')
+                    ? new THREE.BoxGeometry(w, h, 0.06)
+                    : new THREE.BoxGeometry(0.06, h, w);
+                var win = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x4a3a22, emissive: 0xd9a05e, emissiveIntensity: 0.25, roughness: 0.5 }));
+                win.position.set(px, py, pz);
+                win.castShadow = true;
+                return win;
+            }
+            function mcMakeSign(text, x, z, rotY, w) {
+                w = w || 2.6;
+                var canvas = document.createElement('canvas');
+                canvas.width = 512; canvas.height = 256;
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'rgba(251,248,243,0.97)';
+                ctx.fillRect(0, 0, 512, 256);
+                ctx.fillStyle = '#b67a3a';
+                ctx.fillRect(0, 0, 512, 10);
+                ctx.fillStyle = '#3a2f1e';
+                var fs = text.length > 14 ? 38 : 54;
+                ctx.font = '700 ' + fs + 'px Archivo, "Be Vietnam Pro", Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(text, 256, 128);
+                var tex = new THREE.CanvasTexture(canvas);
+                var sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+                sprite.scale.set(w, w / 2, 1);
+                sprite.position.y = 1.7;
+                sprite.position.z = 0.16;
+                var g = new THREE.Group();
+                var board = new THREE.Mesh(new THREE.BoxGeometry(w, w / 2, 0.09), mcMat(0xe9e0cf));
+                board.position.y = 1.05;
+                g.add(board);
+                var post = new THREE.Mesh(new THREE.BoxGeometry(0.14, 1.15, 0.14), mcMat(0xb67a3a));
+                post.position.y = 0.46;
+                g.add(post);
+                g.add(sprite);
+                g.position.set(x, 0, z);
+                g.rotation.y = rotY || 0;
+                return { group: g, board: board };
+            }
+            var mcSignText = { vn: 'POD · IN THEO ĐƠN', cn: 'DROPSHIP · MUA HỘ TQ', us: 'EXPRESS · BAY THẲNG', eu: 'WAREHOUSE · KHO MỸ' };
+            function mcTagZone(group, node, x, z, rotY, signX, signZ) {
+                var sx = (typeof signX === 'number') ? signX : x + (x < 0 ? 2.2 : -2.2);
+                var sz = (typeof signZ === 'number') ? signZ : z;
+                var t = mcMakeSign(mcSignText[node], sx, sz, rotY, 3.2);
+                mcZoneGroups.push({ node: node, board: t.board });
+                mcScene.add(t.group);
+                t.board.userData.node = node;
+                mcZoneMeshes.push(t.board);
+                group.traverse(function (o) { if (o.isMesh) { o.userData.node = node; mcZoneMeshes.push(o); } });
+                group.position.set(x, 0, z);
+                group.rotation.y = rotY || 0;
+                mcScene.add(group);
+            }
+            function mcZonePod() {
+                var g = new THREE.Group();
+                var body = new THREE.Mesh(new THREE.BoxGeometry(5, 2.2, 4), mcMat(0xe9e0cf));
+                body.position.set(0, 1.1, 0);
+                body.castShadow = true;
+                g.add(body);
+                var roof = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.2, 4.4), mcMat(0xc9b48a));
+                roof.position.set(0, 2.3, 0);
+                g.add(roof);
+                var wedge = new THREE.Mesh(new THREE.BoxGeometry(3, 1.3, 2.6), mcMat(0xc9b48a));
+                wedge.position.set(0, 1.55, -1.3);
+                wedge.rotation.x = 0.22;
+                wedge.castShadow = true;
+                g.add(wedge);
+                g.add(mcWindow(2.6, 1.5, 0, 1.5, 0.4));
+                g.add(mcWindow(-2.6, 1.5, 0, 1.5, 0.4));
+                var shelf = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1, 2.2), mcMat(0xc9b48a));
+                shelf.position.set(-1.9, 1, 0.7);
+                g.add(shelf);
+                for (var i = 0; i < 3; i++) {
+                    var b = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.5, 0.62), mcMat(0xe8e0cf));
+                    b.position.set(-2.25 + i * 0.7, 1.3, 0.7);
+                    b.castShadow = true;
+                    g.add(b);
+                }
+                return g;
+            }
+            function mcZoneDrop() {
+                var g = new THREE.Group();
+                var body = new THREE.Mesh(new THREE.BoxGeometry(6, 2.6, 4), mcMat(0xe9e0cf));
+                body.position.set(0, 1.3, 0);
+                body.castShadow = true;
+                g.add(body);
+                var roof = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.2, 4.4), mcMat(0xc9b48a));
+                roof.position.set(0, 2.72, 0);
+                g.add(roof);
+                g.add(mcWindow(3, 1.8, 0, 1.8, 0.4));
+                g.add(mcWindow(-3, 1.8, 0, 1.8, 0.4));
+                var rows = [[-0.6, 2.2], [0.6, 2.2]];
+                for (var r = 0; r < rows.length; r++) {
+                    for (var l = 0; l < 2; l++) {
+                        var b = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.8, 0.85), mcMat(0xe8e0cf));
+                        b.position.set(rows[r][0], 0.4 + l * 0.82, rows[r][1]);
+                        b.castShadow = true;
+                        g.add(b);
+                    }
+                }
+                var top = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.8, 0.85), mcMat(0xe8e0cf));
+                top.position.set(0, 1.6, 2.2);
+                top.castShadow = true;
+                g.add(top);
+                return g;
+            }
+            function mcZoneExpress() {
+                var g = new THREE.Group();
+                var runway = new THREE.Mesh(new THREE.BoxGeometry(3, 0.08, 14), mcMat(0xcfc8b8));
+                runway.position.set(0, 0.04, 0);
+                runway.receiveShadow = true;
+                g.add(runway);
+                var rline = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 12), mcMat(0xb67a3a));
+                rline.position.set(0, 0.1, 0);
+                g.add(rline);
+                var tower = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, 3.2, 12), mcMat(0xe9e0cf));
+                tower.position.set(2.5, 1.6, 2.8);
+                tower.castShadow = true;
+                g.add(tower);
+                var cab = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.8, 12), mcMat(0xc9b48a));
+                cab.position.set(2.5, 3.6, 2.8);
+                g.add(cab);
+                g.add(mcWindow(2.5, 3.6, 2.2, 1.6, 0.4, 'z'));
+                var fus = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 4.6, 14), mcMat(0xcfc8b8));
+                fus.rotation.z = Math.PI / 2;
+                fus.position.set(-1.4, 0.95, -2.8);
+                fus.castShadow = true;
+                g.add(fus);
+                var nose = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.9, 14), mcMat(0xb67a3a));
+                nose.rotation.z = -Math.PI / 2;
+                nose.position.set(0.95, 0.95, -2.8);
+                g.add(nose);
+                var stripe = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.13, 4.4), mcMat(0xb67a3a));
+                stripe.position.set(-1.4, 0.74, -2.8);
+                g.add(stripe);
+                var wing = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.08, 3.4), mcMat(0xc9b48a));
+                wing.position.set(-1.2, 0.98, -2.8);
+                wing.castShadow = true;
+                g.add(wing);
+                var fin = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.75, 0.5), mcMat(0xc9b48a));
+                fin.position.set(-3.7, 1.3, -2.8);
+                g.add(fin);
+                return g;
+            }
+            function mcZoneWh() {
+                var g = new THREE.Group();
+                var body = new THREE.Mesh(new THREE.BoxGeometry(8, 3.2, 5), mcMat(0xe9e0cf));
+                body.position.set(0, 1.6, 0);
+                body.castShadow = true;
+                g.add(body);
+                for (var i = 0; i < 5; i++) {
+                    var rib = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.26, 5.6), mcMat(0xc9b48a));
+                    rib.position.set(-3.2 + i * 1.6, 3.28, 0);
+                    g.add(rib);
+                }
+                var roof = new THREE.Mesh(new THREE.BoxGeometry(8.4, 0.22, 5.4), mcMat(0xc9b48a));
+                roof.position.set(0, 3.52, 0);
+                g.add(roof);
+                g.add(mcWindow(4, 2.2, 2.7, 2.6, 0.45, 'z'));
+                g.add(mcWindow(-4, 2.2, 2.7, 2.6, 0.45, 'z'));
+                var pl = [[-1, 2.4], [1, 2.4]];
+                for (var p = 0; p < pl.length; p++) {
+                    for (var l = 0; l < 2; l++) {
+                        var b = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.6, 0.95), mcMat(0xe8e0cf));
+                        b.position.set(pl[p][0] + (p % 2) * 0.2, 0.3 + l * 0.62, pl[p][1]);
+                        b.castShadow = true;
+                        g.add(b);
+                    }
+                }
+                var truck = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.2, 1.1), mcMat(0xcfc8b8));
+                truck.position.set(3.8, 0.68, 1.6);
+                truck.castShadow = true;
+                g.add(truck);
+                var tcap = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.95), mcMat(0xb67a3a));
+                tcap.position.set(2.6, 0.55, 1.6);
+                g.add(tcap);
+                return g;
+            }
+
+            function mcZoneDesk() {
+                var g = new THREE.Group();
+                var counter = new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.1, 1.4), mcMat(0xe9e0cf));
+                counter.position.set(0, 0.55, 0);
+                counter.castShadow = true;
+                g.add(counter);
+                var top = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.12, 1.6), mcMat(0xb67a3a));
+                top.position.set(0, 1.16, 0);
+                g.add(top);
+                var back = new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.5, 0.16), mcMat(0xc9b48a));
+                back.position.set(0, 1.35, -0.78);
+                g.add(back);
+                var p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 2.3, 10), mcMat(0xb67a3a));
+                p1.position.set(-2.1, 1.15, 0);
+                g.add(p1);
+                var p2 = p1.clone();
+                p2.position.x = 2.1;
+                g.add(p2);
+                var canopy = new THREE.Mesh(new THREE.BoxGeometry(5, 0.14, 2.2), mcMat(0xc9b48a));
+                canopy.position.set(0, 2.34, 0);
+                g.add(canopy);
+                return g;
+            }
+            function mcDeskSign() {
+                /* warm hanging sign above the welcome desk */
+                var canvas = document.createElement('canvas');
+                canvas.width = 512; canvas.height = 160;
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#b67a3a';
+                ctx.fillRect(0, 0, 512, 160);
+                ctx.fillStyle = '#fff9f1';
+                ctx.font = '700 52px Archivo, "Be Vietnam Pro", Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Bàn tiếp tân THG', 256, 84);
+                var tex = new THREE.CanvasTexture(canvas);
+                var sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+                sprite.scale.set(4.4, 1.38, 1);
+                sprite.position.set(0, 3.15, 0);
+                return sprite;
+            }
+            function mcLamp(x, z) {
+                var g = new THREE.Group();
+                var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 3.7, 10), mcMat(0x3a2f1e));
+                pole.position.set(0, 1.85, 0);
+                g.add(pole);
+                var arm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.08, 0.08), mcMat(0x3a2f1e));
+                arm.position.set(x < 0 ? 0.3 : -0.3, 3.55, 0);
+                g.add(arm);
+                var bulb = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 10), new THREE.MeshStandardMaterial({ color: 0xd9a05e, emissive: 0xd9a05e, emissiveIntensity: 1.4 }));
+                bulb.position.set(x < 0 ? 0.62 : -0.62, 3.52, 0);
+                g.add(bulb);
+                var pl = new THREE.PointLight(0xffd9a0, 0.5, 9, 2);
+                pl.position.copy(bulb.position);
+                g.add(pl);
+                g.position.set(x, 0, z);
+                return g;
+            }
+            function mcTree(x, z, s) {
+                s = s || 1;
+                var g = new THREE.Group();
+                var trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.16 * s, 0.24 * s, 1.2 * s, 8), mcMat(0x8a6f4d));
+                trunk.position.y = 0.6 * s;
+                g.add(trunk);
+                var c1 = new THREE.Mesh(new THREE.ConeGeometry(1.35 * s, 2.4 * s, 10), mcMat(0x7c8a6a));
+                c1.position.y = 2.1 * s;
+                c1.castShadow = true;
+                g.add(c1);
+                var c2 = new THREE.Mesh(new THREE.ConeGeometry(0.9 * s, 1.7 * s, 10), mcMat(0x7c8a6a));
+                c2.position.y = 3.2 * s;
+                c2.castShadow = true;
+                g.add(c2);
+                g.position.set(x, 0, z);
+                return g;
+            }
+            function mcMakeGate(z, label, last) {
+                var g = new THREE.Group();
+                var mat = mcMat(0xb67a3a);
+                var p1 = new THREE.Mesh(new THREE.BoxGeometry(0.22, 3, 0.22), mat);
+                p1.position.set(-4.6, 1.5, 0);
+                g.add(p1);
+                var p2 = p1.clone();
+                p2.position.x = 4.6;
+                g.add(p2);
+                var beam = new THREE.Mesh(new THREE.BoxGeometry(9.4, 0.22, 0.3), mat);
+                beam.position.set(0, 3.08, 0);
+                g.add(beam);
+                if (last) {
+                    /* final gate: low floor beam across the road in front of the welcome desk */
+                    var fbeam = new THREE.Mesh(new THREE.BoxGeometry(10, 0.16, 0.3), mat);
+                    fbeam.position.set(0, 0.08, 0);
+                    g.add(fbeam);
+                    g.position.set(0, 0, z + 3.6);
+                } else {
+                    var canvas = document.createElement('canvas');
+                    canvas.width = 256; canvas.height = 96;
+                    var ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'rgba(251,248,243,0.96)';
+                    ctx.fillRect(0, 0, 256, 96);
+                    ctx.fillStyle = '#b67a3a';
+                    ctx.fillRect(0, 0, 256, 8);
+                    ctx.fillStyle = '#3a2f1e';
+                    ctx.font = '700 40px Archivo, "Be Vietnam Pro", Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(label, 128, 54);
+                    var tex = new THREE.CanvasTexture(canvas);
+                    var sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+                    sprite.scale.set(2.6, 0.98, 1);
+                    sprite.position.set(0, 3.62, 0);
+                    g.add(sprite);
+                    g.position.set(0, 0, z);
+                }
+                return g;
+            }
+
+            function mcInit() {
+                if (!HAS3D || !mcWebglOk() || !mcCanvas || !mcWorld) return false;
+                try {
+                    mcRenderer = new THREE.WebGLRenderer({ canvas: mcCanvas, antialias: true });
+                } catch (e) { return false; }
+                mcRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                mcRenderer.shadowMap.enabled = true;
+                mcRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+                mcScene = new THREE.Scene();
+                mcScene.background = new THREE.Color(0xece6da);
+                mcScene.fog = new THREE.Fog(0xe7e0d2, 60, 190);
+                mcCamera = new THREE.PerspectiveCamera(62, mcWorld.clientWidth / mcWorld.clientHeight, 0.5, 500);
+                mcCamera.position.set(0, 2.2, boulevard.startZ);
+                mcCamera.lookAt(0, 2.0, boulevard.startZ - 20);
+
+                mcScene.add(new THREE.AmbientLight(0xfff3e0, 0.85));
+                var sun = new THREE.DirectionalLight(0xfff1dd, 1.05);
+                sun.position.set(30, 44, 20);
+                sun.castShadow = true;
+                sun.shadow.mapSize.width = 1024;
+                sun.shadow.mapSize.height = 1024;
+                sun.shadow.camera.near = 1;
+                sun.shadow.camera.far = 220;
+                sun.shadow.camera.left = -70;
+                sun.shadow.camera.right = 70;
+                sun.shadow.camera.top = 70;
+                sun.shadow.camera.bottom = -70;
+                mcScene.add(sun);
+                var fill = new THREE.DirectionalLight(0xfff6e8, 0.35);
+                fill.position.set(-26, 14, -34);
+                mcScene.add(fill);
+
+                var ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 260), new THREE.MeshStandardMaterial({ color: 0xd9cfba, roughness: 1 }));
+                ground.rotation.x = -Math.PI / 2;
+                ground.position.y = -0.02;
+                ground.receiveShadow = true;
+                mcScene.add(ground);
+
+                /* boulevard road: ~10 wide, z +48 → -48 */
+                var road = new THREE.Mesh(new THREE.BoxGeometry(10, 0.08, 100), mcMat(0xe7e0d2));
+                road.position.set(0, 0.02, 0);
+                road.receiveShadow = true;
+                mcScene.add(road);
+                var edgeL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 100), mcMat(0xb67a3a));
+                edgeL.position.set(-5, 0.055, 0);
+                mcScene.add(edgeL);
+                var edgeR = edgeL.clone();
+                edgeR.position.x = 5;
+                mcScene.add(edgeR);
+                for (var dz = 40; dz > -44; dz -= 6) {
+                    var dash = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.03, 1.7), mcMat(0xc9b48a));
+                    dash.position.set(0, 0.055, dz);
+                    mcScene.add(dash);
+                }
+
+                /* buildings line both sides of the road */
+                mcTagZone(mcZonePod(), 'vn', -11, 30, 0, -8.8, 30);
+                mcTagZone(mcZoneDrop(), 'cn', 11, 16, Math.PI, 8.8, 16);
+                mcTagZone(mcZoneExpress(), 'us', -11, 0, 0, -8.8, 0);
+                mcTagZone(mcZoneWh(), 'eu', 11, -14, Math.PI, 8.8, -14);
+
+                /* welcome desk at the end of the road */
+                var desk = mcZoneDesk();
+                desk.position.set(0, 0, -40);
+                mcScene.add(desk);
+                mcScene.add(mcDeskSign());
+                var deskLight = new THREE.PointLight(0xffd9a0, 0.8, 12, 2);
+                deskLight.position.set(0, 2.6, 1.4);
+                mcScene.add(deskLight);
+
+                /* roadside zone signs (standing boards) */
+                var deskSign = mcMakeSign('BÀN TIẾP TÂN', 0, -35.6, Math.PI, 3.0);
+                mcScene.add(deskSign.group);
+
+                /* gates: copper arches along the road */
+                for (var gi = 0; gi < gates.length; gi++) {
+                    mcScene.add(mcMakeGate(gates[gi], 'TRẠM 0' + (gi + 1), gi === gates.length - 1));
+                }
+
+                /* street lamps */
+                [[-6.6, 34], [6.6, 34], [-6.6, 10], [6.6, 10], [-6.6, -24], [6.6, -24]].forEach(function (lp) {
+                    mcScene.add(mcLamp(lp[0], lp[1]));
+                });
+
+                /* trees along the roadside */
+                [[-8.5, 38, 1.1], [8.8, 27, 1], [-8.6, 21, 0.9], [8.7, 8, 1.1], [-8.6, -5, 1], [8.8, -8, 0.9], [-8.6, -20, 1.1], [8.7, -28, 1]].forEach(function (t) {
+                    mcScene.add(mcTree(t[0], t[1], t[2]));
+                });
+
+                /* cargo flows down the road axis: parcels + planes */
+                for (var ci = 0; ci < 8; ci++) {
+                    var boxGeo = new THREE.BoxGeometry(0.5 + Math.random() * 0.18, 0.5 + Math.random() * 0.18, 0.5 + Math.random() * 0.18);
+                    var parcel = new THREE.Group();
+                    parcel.add(new THREE.Mesh(boxGeo, new THREE.MeshStandardMaterial({ color: 0xe8e0cf, roughness: 0.8 })));
+                    parcel.add(new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo), new THREE.LineBasicMaterial({ color: 0xb67a3a })));
+                    parcel.userData = { p: ci / 8 + Math.random() * 0.08, speed: 0.03 + Math.random() * 0.03, lane: (ci % 2 ? 2.2 : -2.2) };
+                    mcScene.add(parcel);
+                    mcParcels.push(parcel);
+                }
+                for (var pi = 0; pi < 2; pi++) {
+                    var plane = mcMakePlane();
+                    plane.userData = { p: pi * 0.3 + Math.random() * 0.2, speed: 0.05 };
+                    mcScene.add(plane);
+                    mcPlanes.push(plane);
+                }
+
+                mcResize();
+                window.addEventListener('resize', mcResize);
+                mcBindInput();
+                requestAnimationFrame(mcFrame);
+                return true;
+            }
+
+            function mcResize() {
+                if (!mcUse3D || !mcWorld) return;
+                var stage = document.getElementById('mc-stage') || mcWorld;
+                var w = stage.clientWidth, h = stage.clientHeight;
+                if (!w || !h) return;
+                mcRenderer.setSize(w, h, false);
+                mcCamera.aspect = w / h;
+                mcCamera.updateProjectionMatrix();
+                if (typeof mcTouch === 'function') mcTouch();
+            }
+
+            /* Kiện hàng và máy bay CHỈ nhích khi người dùng cuộn.
+               dp = quãng cuộn vừa đi, không phải delta thời gian.
+               Đứng im => thế giới đứng im tuyệt đối. */
+            function mcAdvance(dp) {
+                var k = Math.abs(dp) * 3.2;
+                if (k < 1e-6) return;
+                mcParcels.forEach(function (b) {
+                    b.userData.p += b.userData.speed * k * 12;
+                    if (b.userData.p > 1) b.userData.p -= 1;
+                    var z = 40 - b.userData.p * 84;
+                    var y = 0.85 + Math.sin(b.userData.p * Math.PI * 6) * 0.12;
+                    b.position.set(b.userData.lane, y, z);
+                    b.rotation.y = b.userData.p * Math.PI * 1.2;
+                });
+                mcPlanes.forEach(function (pl) {
+                    pl.userData.p += pl.userData.speed * k * 12;
+                    if (pl.userData.p > 1) pl.userData.p -= 1;
+                    var z = 46 - pl.userData.p * 92;
+                    pl.position.set(0, 7.5, z);
+                    pl.rotation.y = Math.PI;
+                });
+            }
+
+            /* ── NHỊP: dừng một nhịp ở mỗi trạm rồi mới trôi tiếp ──
+               30% quãng cuộn của mỗi đoạn là đứng yên để mắt kịp đọc. */
+            /* ═══════════════════════════════════════════════════════════
+               HIỆU CHỈNH THEO KIỂU NHẬP LIỆU
+               ───────────────────────────────────────────────────────────
+               Chuột lăn ~100px mỗi nấc — rất mịn. Ngón tay vuốt một cú
+               đi 350–1030px kèm quán tính, tức mỗi lần chạm là một BƯỚC
+               NHẢY LỚN. Cùng một đường ray không thể phục vụ cả hai.
+
+               Đo trên máy 780px, đường ray 660vh (8 trạm, mỗi đoạn 0.125):
+                 vuốt nhẹ   Δp = 0.080   (0.64 đoạn trạm)
+                 vuốt thường Δp = 0.136  (1.09 đoạn — NHẢY QUA CẢ TRẠM)
+                 vuốt mạnh  Δp = 0.236   (1.9 đoạn)
+
+               Cửa sổ mở thẻ hỏi khi đó chỉ rộng 0.10 — nhỏ hơn một cú
+               vuốt thường. Nghĩa là seller vuốt bình thường sẽ BAY THẲNG
+               QUA CÂU HỎI mà không bao giờ thấy nó. Cả phễu lead sập trên
+               mobile, và không có lỗi nào báo ra.
+
+               Kéo ray lên 1400vh trên cảm ứng: vuốt thường còn Δp = 0.0585
+               = 0.47 đoạn trạm — vừa đủ để thấy mình đang điều khiển, và
+               cần ~17 cú vuốt đi hết hành trình.
+
+               Cửa sổ ±0.09 (bề rộng 0.18) > vuốt mạnh 0.1015 ⇒ không thể lọt.
+               ═══════════════════════════════════════════════════════════ */
+            var COARSE = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+            var mcRefVH = window.innerHeight;
+            window.addEventListener('resize', function () {
+                if (Math.abs(window.innerHeight - mcRefVH) > 140) {
+                    mcRefVH = window.innerHeight;
+                    if (typeof mcJourneyScroll === 'function') mcJourneyScroll();
+                }
+            });
+            var TUNE = COARSE
+                ? { track: 1400, ease: 0.05, win: 0.09, hold: 0.30, dwell: 0.15, adv: 1500 }
+                : { track: 660,  ease: 0.02, win: 0.05, hold: 0.16, dwell: 0.30, adv: 2600 };
+
+            if (mcWorld) mcWorld.style.height = TUNE.track + 'vh';
+
+            var DWELL = TUNE.dwell;
+            function smoother(x) { return x * x * x * (x * (x * 6 - 15) + 10); }
+            function stationEase(p) {
+                var n = gates.length;
+                var u = clamp(p, 0, 1) * n;
+                var i = Math.floor(u), f = u - i;
+                if (i >= n) return 1;
+                var e = smoother(clamp((f - DWELL) / (1 - DWELL), 0, 1));
+                return (i + e) / n;
+            }
+
+            var mcDirty = true, mcPrevWalk = 0;
+            function mcTouch() { mcDirty = true; }
+
+            function mcFrame(now) {
+                if (!mcUse3D) return;
+                requestAnimationFrame(mcFrame);
+                if (!mcLastT) mcLastT = now;
+                var dt = Math.min((now - mcLastT) / 1000, 0.05);
+                mcLastT = now;
+
+                /* p trôi từ từ về đích — UI và camera dịch chuyển mượt, không giật */
+                var gap = journey.target - journey.p;
+                if (Math.abs(gap) > 0.00015) {
+                    journey.p += gap * (1 - Math.pow(TUNE.ease, dt));
+                    mcDirty = true;
+                } else if (journey.p !== journey.target) {
+                    journey.p = journey.target;
+                    mcDirty = true;
+                }
+
+                var xGap = mcCamXTarget - mcCamX;
+                if (Math.abs(xGap) > 0.004) { mcCamX += xGap * (1 - Math.pow(0.004, dt)); mcDirty = true; }
+                else if (mcCamX !== mcCamXTarget) { mcCamX = mcCamXTarget; mcDirty = true; }
+
+                /* ĐỨNG IM = THẾ GIỚI ĐỨNG IM. Không render, không tốn pin. */
+                if (!mcDirty) return;
+                mcDirty = false;
+
+                var walk = stationEase(journey.p);
+                if (!prefersReduced) mcAdvance(walk - mcPrevWalk);
+                mcPrevWalk = walk;
+
+                mcJourneyUI(journey.p);
+
+                /* eye-level walk: z advances purely with scroll progress */
+                var zz = boulevard.startZ + (boulevard.endZ - boulevard.startZ) * walk;
+                var sway = prefersReduced ? 0 : Math.sin(walk * 5.6) * 0.5;
+                mcCamera.position.set(mcCamX + sway, 2.2, zz);
+                var cyaw = mcLookYaw, cpit = mcLookPitch;
+                var lx = Math.sin(cyaw) * Math.cos(cpit);
+                var ly = Math.sin(cpit);
+                var lz = -Math.cos(cyaw) * Math.cos(cpit);
+                mcCamera.lookAt(mcCamX + sway + lx * 20, 2.0 + ly * 20, zz + lz * 20);
+
+                mcRenderer.render(mcScene, mcCamera);
+            }
+
+            function mcBindInput() {
+                if (!mcCanvas) return;
+                mcCanvas.addEventListener('pointerdown', function (e) {
+                    if (!mcUse3D) return;
+                    /* mobile: touch chỉ dành cho scroll trang — kéo nhìn quanh chỉ dùng chuột */
+                    if (e.pointerType && e.pointerType !== 'mouse') return;
+                    mcDown = true;
+                    mcLastX = e.clientX; mcLastY = e.clientY;
+                    if (mcCanvas.setPointerCapture) mcCanvas.setPointerCapture(e.pointerId);
+                });
+                mcCanvas.addEventListener('pointermove', function (e) {
+                    if (!mcUse3D || !mcDown) return;
+                    var dx = e.clientX - mcLastX, dy = e.clientY - mcLastY;
+                    mcLastX = e.clientX; mcLastY = e.clientY;
+                    /* temporary look-around at eye level, reset on next scroll */
+                    mcLookYaw = clamp(mcLookYaw - dx * 0.006, -1.25, 1.25);
+                    mcLookPitch = clamp(mcLookPitch + dy * 0.006, -0.5, 0.7);
+                    mcTouch();
+                });
+                mcCanvas.addEventListener('pointerup', function () {
+                    if (!mcUse3D) return;
+                    mcDown = false;
+                    mcCanvas.style.cursor = 'grab';
+                });
+                /* wheel stays passive — page scroll drives the walk */
+            }
+
+            /* ===== scroll journey: zero-click walk with narrative captions ===== */
+            function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+            var journey = { p: 0, target: 0 };
+            var mcStartHint = document.getElementById('mc-start-hint');
+            var mcCaptionEl = document.getElementById('mc-caption');
+
+            /* gate z positions along the boulevard — copper arches (pure geometry) */
+            var gates = [32, 20, 8, -4, -16, -26, -34, -40];
+
+            /* narrative captions: subtitle windows along the walk */
+            var CAPTIONS = [
+                { lo: 0.02, hi: 0.18, text: 'Xưởng in POD — sản phẩm của bạn in theo đơn ngay tại Việt Nam.' },
+                { lo: 0.20, hi: 0.36, text: 'Kho nguồn hàng Trung Quốc — mua hộ từ 1688 và Taobao.' },
+                { lo: 0.38, hi: 0.54, text: 'Đường băng Express — bay thẳng 5–8 ngày tới Mỹ.' },
+                { lo: 0.56, hi: 0.72, text: 'Kho Mỹ — trữ sẵn, giao nội địa 2–5 ngày.' },
+                { lo: 0.76, hi: 0.94, text: 'Bàn tiếp tân THG — gần tới nơi rồi, hãy để lại lời nhắn.' }
+            ];
+            var curCaption = '';
+
+            function mcCaption(p) {
+                var text = '';
+                for (var i = 0; i < CAPTIONS.length; i++) {
+                    if (p >= CAPTIONS[i].lo && p < CAPTIONS[i].hi) { text = CAPTIONS[i].text; break; }
+                }
+                if (text !== curCaption) {
+                    curCaption = text;
+                    if (mcCaptionEl) {
+                        if (text) { mcCaptionEl.textContent = text; mcCaptionEl.classList.add('on'); }
+                        else { mcCaptionEl.classList.remove('on'); }
+                    }
+                }
+            }
+
+            /* ═══════════════════════════════════════════════════════════
+               NGÃ RẼ TRÊN ĐƯỜNG — không phải bảng câu hỏi
+               ───────────────────────────────────────────────────────────
+               Điều làm seller thấy "đang bị survey" không phải là SỐ CÂU
+               HỎI, mà là bốn thứ: bị đếm (3/8), bị hỏi dồn một lúc, không
+               bỏ qua được, và trả lời xong chẳng nhận lại gì.
+
+               Nên ở đây: mỗi ngã rẽ chỉ hỏi MỘT điều, xuất hiện đúng lúc
+               đi ngang nơi liên quan, luôn có "Đi tiếp" để bỏ qua, và trả
+               lời xong nhận NGAY một con số cụ thể của THG. Người dùng
+               đang chọn đường đi của mình, không phải khai báo.
+               ═══════════════════════════════════════════════════════════ */
+            /* ═══════════════════════════════════════════════════════════
+               DÒNG CHẢY MỘT MẠCH — không popup, không wizard
+               ───────────────────────────────────────────────────────────
+               Popup bị đóng theo phản xạ: người ta học cách bấm X trước
+               khi kịp đọc. Và popup = ngắt mạch = đúng cảm giác "bị hỏi"
+               mà mình đang tránh.
+
+               Nên form KHÔNG bật ra. Nó là NHỊP CUỐI của cùng một thẻ đã
+               đi cùng seller suốt hành trình — cùng vị trí, cùng khung,
+               cùng giọng. Tới lúc đó nó chỉ còn ba ô, và không ai đọc nó
+               như một biểu mẫu nữa.
+
+               Chuỗi: nguồn hàng → làn giao → sàn → sản lượng
+                      → tình huống từng gặp → liên hệ
+               ═══════════════════════════════════════════════════════════ */
+
+            /* Cây quyết định thật, rút từ tài liệu training THG.
+               CHỈ mô tả QUY TRÌNH — cố ý không đưa mức đền bù lên web,
+               vì bốn case có bốn kết cục khác nhau và một con số công khai
+               sẽ bị đọc thành cam kết chung. */
+            /* ═══════════════════════════════════════════════════════════
+               TÌNH HUỐNG — GHI NHẬN, KHÔNG GIẢI ĐÁP
+               ───────────────────────────────────────────────────────────
+               Bản trước đưa cả cây xử lý lên web. Sai hai lần:
+                 · Seller tự chốt kỳ vọng trước khi có ai xác minh case
+                 · Sales không còn gì để mang tới cuộc gọi
+               Nên đảo lại: THAY CÂU TRẢ LỜI BẰNG CÂU HỎI SALES SẼ HỎI.
+               Vẫn chứng minh THG có nghề (biết chính xác phải hỏi gì),
+               không cam kết chính sách nào, và để lại một vòng lặp mở.
+
+               Mức đền bù, điều kiện, ngưỡng thời gian — tuyệt đối không
+               lên web. Đó là việc của sales sau khi xác minh.
+               ═══════════════════════════════════════════════════════════ */
+            var CASES = {
+                'Tracking đứng quá lâu': {
+                    ack: 'Dạng này THG xử lý thường xuyên. Hướng đi phụ thuộc hoàn toàn vào việc hàng đang nằm ở đâu.',
+                    asks: ['Đơn xuất từ kho nào, đi hãng nào', 'Mốc thời gian tracking dừng lại']
+                },
+                'Hàng thất lạc trên đường': {
+                    ack: 'Có gặp. Việc đầu tiên là xác định hàng mất ở chặng nào — mỗi chặng có một hướng xử lý khác nhau.',
+                    asks: ['Tracking dừng ở trạng thái nào', 'Đơn đó là POD hay hàng nhập kho']
+                },
+                'Khách nhận thiếu hàng': {
+                    ack: 'Case này thường kết luận nhanh, vì mọi đơn ra khỏi kho THG đều có video đóng gói để đối chiếu.',
+                    asks: ['Đơn thiếu mã nào, thiếu bao nhiêu', 'Kho xuất và ngày xuất']
+                },
+                'Khách phàn nàn chất lượng': {
+                    ack: 'Đây là case cần nhiều thông tin nhất. Một câu hỏi duy nhất quyết định phần lớn hướng xử lý.',
+                    asks: ['Sample đã được duyệt trước khi chạy lô chưa', 'Khiếu nại nằm ở chất liệu, in ấn hay kích thước']
+                },
+                'Chưa gặp cái nào': {
+                    ack: 'Tốt. Nhưng thương mại xuyên biên giới thì sớm muộn cũng có — điều đáng hỏi một nhà cung cấp không phải "có sự cố không", mà là "khi có, ai đứng tên xử lý".',
+                    asks: []
+                }
+            };
+
+            var BEATS = [
+                {
+                    at: 0.115, key: 'src', type: 'pick', code: 'Xưởng in · Trạm 01',
+                    q: 'Hàng bạn bán được làm ra thế nào?',
+                    opts: [
+                        { v: 'pod', label: 'In theo từng đơn', sub: 'Cá nhân hoá, không ôm tồn kho',
+                          back: 'Vậy bạn không cần vốn hàng. THG in tại xưởng Việt Nam, đóng gói theo brand của bạn rồi ship thẳng.' },
+                        { v: 'drop', label: 'Có sẵn từ nguồn', sub: 'Mua hộ 1688 · Taobao · Tmall',
+                          back: 'Vậy THG lo tìm nguồn, mua hộ và kiểm hàng trước khi đóng — bạn không phải ứng vốn nhập lô.' }
+                    ]
+                },
+                {
+                    at: 0.455, key: 'dlv', type: 'pick', code: 'Đường băng · Trạm 03',
+                    q: 'Bạn muốn hàng tới tay khách Mỹ theo đường nào?',
+                    opts: [
+                        { v: 'exp', label: 'Bay thẳng từng đơn', sub: 'Không trữ hàng trước',
+                          back: 'Express giao 5–8 ngày làm việc, không cần vốn tồn kho.' },
+                        { v: 'wh', label: 'Trữ sẵn tại kho Mỹ', sub: 'Giao nội địa khi có đơn',
+                          back: 'Kho Mỹ giao nội địa 2–5 ngày, fulfill từ $1.20/đơn.' }
+                    ]
+                },
+                {
+                    chain: true, key: 'san', type: 'multi', code: 'Đường băng · tiếp',
+                    q: 'Bạn đang bán ở đâu?',
+                    opts: [
+                        { v: 'TikTok Shop', label: 'TikTok Shop' }, { v: 'Etsy', label: 'Etsy' },
+                        { v: 'Amazon', label: 'Amazon' }, { v: 'Shopify', label: 'Shopify' },
+                        { v: 'Website riêng', label: 'Website riêng' }
+                    ],
+                    back: 'THG nối thẳng vào các sàn này — đơn tự chảy vào hệ thống, tracking trả về đúng policy từng sàn.'
+                },
+                {
+                    chain: true, key: 'vol', type: 'pick', code: 'Đường băng · tiếp',
+                    q: 'Ước chừng mỗi tháng shop bạn chạy bao nhiêu đơn?',
+                    opts: [
+                        { v: 'Dưới 100', label: 'Dưới 100 đơn', sub: 'Đang thử sản phẩm',
+                          back: 'Giai đoạn này giữ linh hoạt quan trọng hơn giá — chưa nên khoá vốn vào tồn kho.' },
+                        { v: '100–500', label: '100 – 500 đơn', sub: 'Đã có mẫu chạy được',
+                          back: 'Mức này thường bắt đầu thấy giá mỗi đơn cắn vào biên. Có vài cách gộp trước khi tính tới kho.' },
+                        { v: '500–2.000', label: '500 – 2.000 đơn', sub: 'Sản lượng ổn định',
+                          back: 'Đây là ngưỡng mà trữ hàng tại Mỹ bắt đầu có lãi rõ. Con số cụ thể phụ thuộc vòng quay SKU của bạn.' },
+                        { v: 'Trên 2.000', label: 'Trên 2.000 đơn', sub: 'Đang scale mạnh',
+                          back: 'Ở quy mô này bài toán đổi hẳn — không còn là giá mỗi đơn mà là công suất và độ ổn định của kho.' }
+                    ]
+                },
+                {
+                    at: 0.845, key: 'pain', type: 'case', code: 'Bàn tiếp tân · Trạm 05',
+                    q: 'Đơn hàng không phải lúc nào cũng chạy đúng kế hoạch. Cái nào bạn từng gặp?',
+                    lead: 'Chọn một cái — THG sẽ chạy đúng quy trình xử lý của mình cho bạn xem.',
+                    opts: [
+                        { v: 'Tracking đứng quá lâu', label: 'Tracking đứng im nhiều ngày' },
+                        { v: 'Hàng thất lạc trên đường', label: 'Hàng thất lạc trên đường' },
+                        { v: 'Khách nhận thiếu hàng', label: 'Khách nhận thiếu hàng' },
+                        { v: 'Khách phàn nàn chất lượng', label: 'Khách phàn nàn chất lượng' },
+                        { v: 'Chưa gặp cái nào', label: 'Chưa gặp cái nào' }
+                    ]
+                },
+                { chain: true, type: 'contact', code: 'Bàn tiếp tân · cuối đường' }
+            ];
+
+            var forkEl = document.getElementById('mc-fork');
+            var forkOpen = -1, forkDone = {}, beatIdx = -1;
+
+            function anchorOf(i) {
+                while (i >= 0 && BEATS[i].chain) i--;
+                return i < 0 ? 0 : i;
+            }
+            function nextChain(i) {
+                var n = i + 1;
+                return (n < BEATS.length && BEATS[n].chain) ? n : -1;
+            }
+            function closeFork() {
+                if (forkEl) forkEl.classList.remove('on');
+                forkOpen = -1; beatIdx = -1;
+            }
+
+            function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+            function caseHTML(v) {
+                var C = CASES[v];
+                if (!C) return '';
+                var h = '<div class="mc-ack"><p class="mc-ack-k">Đã ghi nhận</p>' +
+                        '<p class="mc-ack-t">' + esc(C.ack) + '</p>';
+                if (C.asks.length) {
+                    h += '<p class="mc-ack-q">Sales sẽ cần biết hai điều:</p><ul class="mc-ack-l">';
+                    C.asks.forEach(function (a) { h += '<li>' + esc(a) + '</li>'; });
+                    h += '</ul>';
+                }
+                h += '</div>';
+                return h;
+            }
+
+            function renderBeat() {
+                var B = BEATS[beatIdx];
+                if (!B || !forkEl) return;
+                var html = '<p class="mc-panel-code">' + esc(B.code) + '</p>';
+                if (B.type === 'contact') {
+                    var r = recommend();
+                    html += '<p class="mc-panel-q">Sales gọi cho ai?</p>' +
+                        '<p class="mc-contact-lead">' +
+                        (r.combo ? 'THG đã đọc được: <strong>' + esc(r.combo) + '</strong>. ' : '') +
+                        'Còn ba dòng là đủ để trả lại bảng giá theo tuyến trong 24h.</p>' +
+                        '<div class="mc-fields">' +
+                        '<label><span>Tên bạn</span><input id="w-name" type="text" autocomplete="name" placeholder="Nguyễn Văn A" value="' + esc(state.name) + '"></label>' +
+                        '<label><span>Zalo / Điện thoại / Email</span><input id="w-contact" type="text" autocomplete="tel" placeholder="0901 234 567" value="' + esc(state.contact) + '"></label>' +
+                        '<label><span>Link shop <em>không bắt buộc</em></span><input id="w-note" type="text" placeholder="tiktok.com/@shop" value="' + esc(state.note) + '"></label>' +
+                        '</div>' +
+                        '<button type="button" class="mc-send" id="w-send" disabled>Gửi cho sales</button>' +
+                        '<button type="button" class="mc-fork-skip" id="mc-fork-skip">Để sau, xem tiếp trang →</button>';
+                    forkEl.innerHTML = html;
+                    forkEl.classList.add('on');
+                    wireContact();
+                    return;
+                }
+
+                html += '<p class="mc-panel-q">' + esc(B.q) + '</p>';
+                if (B.lead) html += '<p class="mc-contact-lead">' + esc(B.lead) + '</p>';
+                html += '<div class="mc-panel-opts' + (B.type === 'multi' || B.type === 'case' ? ' mc-opts-tight' : '') + '">';
+                B.opts.forEach(function (o, oi) {
+                    var on = B.type === 'multi' ? state[B.key].indexOf(o.v) >= 0 : state[B.key] === o.v;
+                    html += '<button type="button" class="mc-opt' + (B.type === 'multi' || B.type === 'case' ? ' mc-opt-slim' : '') +
+                        '" data-oi="' + oi + '" aria-pressed="' + on + '"><strong>' + esc(o.label) + '</strong>' +
+                        (o.sub ? '<span class="mc-opt-sub">' + esc(o.sub) + '</span>' : '') + '</button>';
+                });
+                html += '</div><div class="mc-back" id="mc-fork-back"></div>';
+                html += '<button type="button" class="mc-fork-skip" id="mc-fork-skip">Đi tiếp →</button>';
+                forkEl.innerHTML = html;
+                forkEl.classList.add('on');
+                paintBack();
+
+                forkEl.querySelectorAll('.mc-opt').forEach(function (b) {
+                    b.addEventListener('click', function () {
+                        var oi = +b.getAttribute('data-oi'), o = B.opts[oi];
+                        if (B.type === 'multi') {
+                            var ix = state[B.key].indexOf(o.v);
+                            if (ix >= 0) state[B.key].splice(ix, 1); else state[B.key].push(o.v);
+                        } else {
+                            state[B.key] = (state[B.key] === o.v) ? null : o.v;
+                        }
+                        forkEl.querySelectorAll('.mc-opt').forEach(function (x) {
+                            var oo = B.opts[+x.getAttribute('data-oi')];
+                            x.setAttribute('aria-pressed', String(B.type === 'multi'
+                                ? state[B.key].indexOf(oo.v) >= 0 : state[B.key] === oo.v));
+                        });
+                        paintBack();
+                        syncSegs(); render(); updateRec(); validateForm();
+                        /* pick đơn lẻ: tự sang nhịp kế sau khi đọc xong phần trả về.
+                           multi và case: để người dùng tự bấm "Đi tiếp".
+                           Mobile: 1.5s là đủ đọc dòng xác nhận — không nên giữ lâu hơn. */
+                        if (B.type === 'pick' && state[B.key]) queueAdvance(TUNE.adv);
+                    });
+                });
+                document.getElementById('mc-fork-skip').addEventListener('click', function () { advance(); });
+            }
+
+            function paintBack() {
+                var B = BEATS[beatIdx], el = document.getElementById('mc-fork-back');
+                if (!B || !el) return;
+                if (B.type === 'case') { el.innerHTML = state.pain ? caseHTML(state.pain) : ''; return; }
+                if (B.type === 'multi') {
+                    el.innerHTML = state[B.key].length ? '<p class="mc-confirm">' + esc(B.back) + '</p>' : '';
+                    return;
+                }
+                var picked = null;
+                for (var i = 0; i < B.opts.length; i++) if (B.opts[i].v === state[B.key]) picked = B.opts[i];
+                el.innerHTML = picked ? '<p class="mc-confirm">' + esc(picked.back) + '</p>' : '';
+            }
+
+            var advTimer = null;
+            function queueAdvance(ms) {
+                clearTimeout(advTimer);
+                advTimer = setTimeout(advance, ms);
+            }
+            function advance() {
+                clearTimeout(advTimer);
+                var nx = nextChain(beatIdx);
+                if (nx >= 0) { beatIdx = nx; renderBeat(); return; }
+                forkDone[anchorOf(beatIdx)] = true;
+                closeFork();
+            }
+
+            function openBeat(i) {
+                if (forkOpen === i) return;
+                forkOpen = i; beatIdx = i;
+                renderBeat();
+            }
+
+            function wireContact() {
+                var n = document.getElementById('w-name'), c = document.getElementById('w-contact'),
+                    o = document.getElementById('w-note'), b = document.getElementById('w-send');
+                function chk() {
+                    var ok = state.name.trim().length >= 2 && state.contact.trim().length >= 6;
+                    if (b) b.disabled = !ok;
+                }
+                function mirror(id, v) { var e = document.getElementById(id); if (e && e.value !== v) e.value = v; }
+                if (n) n.addEventListener('input', function () { state.name = n.value; mirror('f-name', n.value); render(); validateForm(); chk(); });
+                if (c) c.addEventListener('input', function () { state.contact = c.value; mirror('f-contact', c.value); render(); validateForm(); chk(); });
+                if (o) o.addEventListener('input', function () { state.note = o.value; mirror('f-note', o.value); });
+                if (b) b.addEventListener('click', function () {
+                    b.textContent = 'Đã gửi — sales liên hệ trong 24h';
+                    b.disabled = true;
+                    forkDone[anchorOf(beatIdx)] = true;
+                    setTimeout(closeFork, 1800);
+                });
+                var sk = document.getElementById('mc-fork-skip');
+                if (sk) sk.addEventListener('click', function () { forkDone[anchorOf(beatIdx)] = true; closeFork(); });
+                chk();
+            }
+
+            var GAUGE = ['Xưởng in POD', 'Kho nguồn TQ', 'Đường băng', 'Kho Mỹ', 'Bàn tiếp tân'];
+            var GAUGE_AT = [0.10, 0.28, 0.47, 0.64, 0.86];
+            var gaugeEl = document.getElementById('mc-gauge');
+            var outroEl = document.getElementById('mc-outro');
+            var gaugeBuilt = false;
+            function buildGauge() {
+                if (gaugeBuilt || !gaugeEl) return;
+                gaugeBuilt = true;
+                gaugeEl.innerHTML = GAUGE.map(function (g, i) {
+                    return '<b data-g="' + i + '"><span>' + g + '</span><i></i></b>';
+                }).join('');
+            }
+
+            var mcCopyEl = document.querySelector('.mc-copy');
+            var mcEyebrowEl = document.querySelector('.mc-eyebrow');
+
+            function mcJourneyUI(p) {
+                mcCaption(p);
+                buildGauge();
+
+                var heroOut = clamp((p - 0.015) / 0.075, 0, 1);
+                if (mcCopyEl) {
+                    mcCopyEl.style.opacity = (0.86 * (1 - heroOut)).toFixed(3);
+                    mcCopyEl.style.transform = 'translateY(calc(-50% - ' + (heroOut * 22).toFixed(1) + 'px))';
+                }
+                if (mcEyebrowEl) mcEyebrowEl.style.opacity = (1 - heroOut * 0.72).toFixed(3);
+
+                if (gaugeEl) {
+                    gaugeEl.classList.toggle('on', p > 0.03 && p < 0.94);
+                    var near = 0, best = 9;
+                    for (var gi = 0; gi < GAUGE_AT.length; gi++) {
+                        var dd = Math.abs(p - GAUGE_AT[gi]);
+                        if (dd < best) { best = dd; near = gi; }
+                    }
+                    var kids = gaugeEl.children;
+                    for (var ki = 0; ki < kids.length; ki++) kids[ki].classList.toggle('hit', ki === near);
+                }
+                if (outroEl) outroEl.classList.toggle('on', p > 0.955);
+
+                /* Thẻ đã mở thì bám lại — chỉ rời khi xong chuỗi hoặc đã đi hơi xa.
+                   Mobile: bám ngắn (0.10) để người dùng không thấy bị "kẹt" ở một bước. */
+                if (forkOpen >= 0) {
+                    if (forkDone[forkOpen] || Math.abs(p - BEATS[forkOpen].at) > TUNE.hold) closeFork();
+                    else return;
+                }
+                for (var i = 0; i < BEATS.length; i++) {
+                    if (BEATS[i].chain || forkDone[i]) continue;
+                    if (Math.abs(p - BEATS[i].at) < TUNE.win) { openBeat(i); return; }
+                }
+            }
+
+            /* đồng bộ ngược xuống form dưới trang */
+            function syncSegs() {
+                ['src', 'dlv', 'vol', 'pain'].forEach(function (k) {
+                    document.querySelectorAll('[data-mc="' + k + '"]').forEach(function (o) {
+                        o.setAttribute('aria-pressed', o.getAttribute('data-value') === state[k] ? 'true' : 'false');
+                    });
+                });
+                document.querySelectorAll('[data-mc="san"]').forEach(function (o) {
+                    o.setAttribute('aria-pressed', state.san.indexOf(o.getAttribute('data-value')) >= 0 ? 'true' : 'false');
+                });
+            }
+
+            function mcJourneyScroll() {
+                if (!mcWorld) return;
+                /* Sân khấu dính suốt (chiều cao ray − 1 màn hình). p = quãng đã đi.
+
+                   BẪY MOBILE: cú vuốt ĐẦU TIÊN làm thanh địa chỉ thu lại,
+                   innerHeight nhảy 60–100px giữa chừng. Nếu lấy innerHeight
+                   trực tiếp thì span đổi theo và p giật một phát ngay lúc
+                   người dùng vừa chạm vào — đúng khoảnh khắc ấn tượng đầu.
+                   Nên khoá lại chiều cao tham chiếu; chỉ cập nhật khi chênh
+                   quá 140px, tức là xoay máy thật chứ không phải thanh địa chỉ. */
+                var r = mcWorld.getBoundingClientRect();
+                var span = Math.max(r.height - mcRefVH, 1);
+                var p = clamp(-r.top / span, 0, 1);
+                if (p > 0.02 && mcStartHint) mcStartHint.classList.add('hidden');
+                journey.target = p;
+                if (mcUse3D) { mcTouch(); }
+                else { journey.p = p; mcJourneyUI(p); }
+                /* any scroll resumes the straight walk: reset look-around + lateral focus */
+                mcLookYaw = 0; mcLookPitch = 0; mcCamXTarget = 0;
+            }
+            window.addEventListener('scroll', mcJourneyScroll, { passive: true });
+
+            /* auto-start: the walk is live on load — scroll is the only input */
+            setTimeout(function () {
+                if (mcWorld) mcWorld.classList.add('mc-active');
+            }, 700);
+
+            mcUse3D = !prefersReduced && mcInit();
+            if (!mcUse3D) {
+                if (mcCanvas) mcCanvas.classList.add('mc-hidden');
+                if (mcFallback) mcFallback.classList.add('mc-on');
+            } else {
+                if (mcCanvas) mcCanvas.style.cursor = 'grab';
+                mcResize();
+            }
+            render();
+            updateRec();
+            validateForm();
+            mcJourneyScroll();
+            journey.p = journey.target;
+            mcJourneyUI(journey.p);
+        })();
+    </script>
+    <script>
+        /* CDN lucide có thể 404 — không được để nó chặn cả trang.
+           Thất bại thì các slot [data-lucide] rỗng đã có ký tự dự phòng bằng CSS. */
+        try {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+        } catch (e) { /* im lặng: icon là trang trí, không phải chức năng */ }
+    </script>
+</body>
+</html>
