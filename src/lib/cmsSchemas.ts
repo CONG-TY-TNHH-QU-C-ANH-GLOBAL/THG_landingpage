@@ -131,6 +131,25 @@ export const contactLocationsResponseSchema = z.object({
   locations: z.array(cmsContactLocationSchema),
 });
 
+/* ---------- Partners ---------- */
+
+export const cmsPartnerSchema = z.object({
+  id: z.number(),
+  position: z.number(),
+  name: z.string(),
+  /** Absolute URL resolved by the CMS, or null when no logo is set. Unlike
+   *  integrations (which exposes a raw media id the landing cannot resolve),
+   *  this can go straight into an <img src>. */
+  logo_url: z.string().nullable(),
+  url: z.string().nullable(),
+  tier: z.string().nullable(),
+});
+export type CmsPartner = z.infer<typeof cmsPartnerSchema>;
+
+export const partnersResponseSchema = z.object({
+  partners: z.array(cmsPartnerSchema),
+});
+
 /* ---------- Integrations ---------- */
 
 export const cmsIntegrationSchema = z.object({
