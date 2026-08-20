@@ -99,6 +99,15 @@ export function useCmsContactLocations(locale: Locale) {
   });
 }
 
+export function useCmsPartners() {
+  return useQuery({
+    queryKey: ["cms", "partners"],
+    queryFn: () => cmsClient.getPartners(),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
 export function useCmsIntegrations() {
   return useQuery({
     queryKey: ["cms", "integrations"],

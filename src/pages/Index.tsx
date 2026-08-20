@@ -7,6 +7,7 @@ import ProcessSection from "@/components/ProcessSection";
 import AdvantagesSection from "@/components/AdvantagesSection";
 import EcosystemJourneySection from "@/components/EcosystemJourneySection";
 import IntegrationsSection from "@/components/IntegrationsSection";
+import PartnersSection from "@/components/PartnersSection";
 import LogisticsAnimationSection from "@/components/LogisticsAnimationSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import TrustBadgesSection from "@/components/TrustBadgesSection";
@@ -58,6 +59,7 @@ const Index = () => {
       <ProcessSection />
       <AdvantagesSection />
       <EcosystemJourneySection />
+      <PartnersSection />
       <IntegrationsSection />
       <LogisticsAnimationSection />
       <TestimonialsSection />

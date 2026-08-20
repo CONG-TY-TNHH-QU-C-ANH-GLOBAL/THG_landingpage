@@ -30,6 +30,7 @@ import {
   faqsResponseSchema,
   homepageResponseSchema,
   integrationsResponseSchema,
+  partnersResponseSchema,
   jobResponseSchema,
   jobsResponseSchema,
   marqueeImagesResponseSchema,
@@ -149,6 +150,10 @@ export const cmsClient = {
 
   getContactLocations(locale: Locale) {
     return fetchJson(`/contact-locations?lang=${locale}`, contactLocationsResponseSchema);
+  },
+
+  getPartners() {
+    return fetchJson("/partners", partnersResponseSchema);
   },
 
   getIntegrations() {
