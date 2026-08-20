@@ -31,6 +31,8 @@ export const navTranslations: TranslationDict = {
   "nav.express_desc": tr("International shipping VN/CN → US/UK/EU", "Vận chuyển quốc tế VN/CN → US/UK/EU", "国际运输 VN/CN → US/UK/EU"),
   "nav.warehouse_desc": tr("US warehouse & domestic fulfillment from $1.2", "Kho & fulfill nội địa Mỹ từ 1.2$", "美国仓储及履约低至1.2美元"),
   "nav.order_desc": tr("Buy from Taobao/1688, ship direct to USA", "Mua hàng từ Taobao/1688, giao thẳng đến Mỹ", "淘宝/1688代购直邮美国"),
+  "nav.chinhngach_pricing": tr("Formal Customs Rates", "Bảng giá ship chính ngạch", "正规报关运费"),
+  "nav.chinhngach_pricing_desc": tr("Sea & air formal-customs rates, Vietnam → US", "Cước Sea/Air LCL & FCL chính ngạch VN → US", "越南至美国的正规报关海运与空运"),
   "nav.catalog": tr("Product Catalog", "Catalog Mẫu Sản Phẩm", "产品目录"),
   "nav.catalog_desc": tr("Browse POD items, apparel & accessories", "Xem chi tiết áo thun, hoodie, phụ kiện POD", "浏览POD商品、服装及配件"),
   "brand.promise": tr("Happiness means: on time · on budget · in your customers' hands.", "Happiness nghĩa là: giao đúng hẹn · đúng giá · đúng tay khách hàng.", "Happiness 即：准时 · 价格透明 · 安全送达买家手中。"),

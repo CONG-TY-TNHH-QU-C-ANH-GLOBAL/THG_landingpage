@@ -35,6 +35,7 @@ const THGOrderPage = lazy(() => import("./pages/order/THGOrderPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const InternationalPricingPage = lazy(() => import("./pages/InternationalPricingPage"));
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
+const ChinhNgachPricingPage = lazy(() => import("./pages/ChinhNgachPricingPage"));
 const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
 const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
@@ -122,6 +123,7 @@ const AppRoutes = () => {
               <Route path="blog/:slug" element={<BlogDetailPage />} />
               <Route path="international-pricing" element={<InternationalPricingPage />} />
               <Route path="domestic-pricing" element={<DomesticPricingPage />} />
+              <Route path="chinh-ngach-pricing" element={<ChinhNgachPricingPage />} />
               <Route path="thg-fulfill" element={<THGFulfillPage />} />
               <Route path="thg-express" element={<THGExpressPage />} />
               <Route path="thg-warehouse" element={<THGWarehousePage />} />

@@ -55,6 +55,7 @@ const BASE_ROUTES = [
   "/policy",
   "/shipping-policy",
   "/international-pricing",
+  "/chinh-ngach-pricing",
   "/domestic-pricing",
 ];
 

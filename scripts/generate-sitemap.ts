@@ -24,6 +24,7 @@ const STATIC_ROUTES = [
   "/community",
   "/community/reviews",
   "/international-pricing",
+  "/chinh-ngach-pricing",
   "/domestic-pricing",
 ];
 
