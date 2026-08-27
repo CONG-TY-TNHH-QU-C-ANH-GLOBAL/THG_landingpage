@@ -251,6 +251,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/partners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List THG business partners
+         * @description Returns live partner rows sorted by `position`. Not localized — rows are company names and URLs. `logo_url` is a fully-resolved absolute URL, or null when no logo is set. Draft partners are never returned.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Partner list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            partners: {
+                                id: number;
+                                position: number;
+                                name: string;
+                                logo_url: string | null;
+                                url: string | null;
+                                tier: string | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/translations": {
         parameters: {
             query?: never;
