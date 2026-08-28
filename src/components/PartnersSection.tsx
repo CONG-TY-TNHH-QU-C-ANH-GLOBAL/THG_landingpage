@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { useCmsPartners } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -21,26 +19,9 @@ import type { CmsPartner } from "@/lib/cmsSchemas";
 const PartnersSection = () => {
     const { tVi } = useI18n();
     const { data } = useCmsPartners();
+    const partners = data?.partners ?? [];
 
-    const groups = useMemo(() => {
-        const partners = data?.partners ?? [];
-        // Group by `tier` while preserving the operator's ordering: the first
-        // time a tier appears fixes its place, so reordering rows in the admin
-        // reorders the groups too. Untiered partners collect under one unlabelled
-        // group rendered last.
-        const byTier = new Map<string, CmsPartner[]>();
-        for (const p of partners) {
-            const key = p.tier?.trim() || "";
-            const bucket = byTier.get(key);
-            if (bucket) bucket.push(p);
-            else byTier.set(key, [p]);
-        }
-        return [...byTier.entries()]
-            .sort(([a], [b]) => (a === "" ? 1 : 0) - (b === "" ? 1 : 0))
-            .map(([tier, items]) => ({ tier, items }));
-    }, [data]);
-
-    if (groups.length === 0) return null;
+    if (partners.length === 0) return null;
 
     return (
         <section className="py-20 bg-background relative overflow-hidden">
@@ -58,22 +39,11 @@ const PartnersSection = () => {
                     </p>
                 </ScrollReveal>
 
-                <div className="max-w-5xl mx-auto space-y-8">
-                    {groups.map(({ tier, items }) => (
-                        <div key={tier || "_untiered"}>
-                            {tier && (
-                                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4 text-center">
-                                    {tier}
-                                </p>
-                            )}
-                            <div className="flex flex-wrap justify-center gap-4">
-                                {items.map((p, i) => (
-                                    <ScrollReveal key={p.id} delay={i * 60}>
-                                        <PartnerCard partner={p} />
-                                    </ScrollReveal>
-                                ))}
-                            </div>
-                        </div>
+                <div className="mx-auto flex max-w-6xl flex-wrap justify-center gap-4 sm:gap-5">
+                    {partners.map((partner, i) => (
+                        <ScrollReveal key={partner.id} delay={i * 60}>
+                            <PartnerCard partner={partner} />
+                        </ScrollReveal>
                     ))}
                 </div>
             </div>
@@ -83,7 +53,7 @@ const PartnersSection = () => {
 
 function PartnerCard({ partner }: Readonly<{ partner: CmsPartner }>) {
     const inner = (
-        <div className="h-24 w-44 rounded-2xl border border-border/60 bg-white/70 backdrop-blur-sm flex items-center justify-center px-5 transition-all hover:border-primary/40 hover:shadow-elevated hover:-translate-y-0.5">
+        <div className="flex h-24 w-40 items-center justify-center rounded-2xl border border-border/60 bg-white/70 px-4 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-elevated sm:w-44 sm:px-5">
             {partner.logo_url ? (
                 <img
                     src={partner.logo_url}
