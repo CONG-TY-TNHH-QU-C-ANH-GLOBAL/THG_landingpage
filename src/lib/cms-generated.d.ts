@@ -299,6 +299,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/leadership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List THG leadership cards
+         * @description Returns live Leadership cards sorted by position. Each card may carry one portrait or an ordered avatar group; media URLs are resolved server-side.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Leadership list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            leadership: {
+                                id: number;
+                                position: number;
+                                name: string;
+                                role: string | null;
+                                quote: string | null;
+                                avatars: {
+                                    url: string;
+                                    alt: string;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/translations": {
         parameters: {
             query?: never;
