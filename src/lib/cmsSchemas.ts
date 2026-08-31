@@ -150,6 +150,28 @@ export const partnersResponseSchema = z.object({
   partners: z.array(cmsPartnerSchema),
 });
 
+/* ---------- Leadership ---------- */
+
+export const cmsLeadershipAvatarSchema = z.object({
+  url: z.string(),
+  alt: z.string(),
+});
+export type CmsLeadershipAvatar = z.infer<typeof cmsLeadershipAvatarSchema>;
+
+export const cmsLeadershipMemberSchema = z.object({
+  id: z.number(),
+  position: z.number(),
+  name: z.string(),
+  role: z.string().nullable(),
+  quote: z.string().nullable(),
+  avatars: z.array(cmsLeadershipAvatarSchema),
+});
+export type CmsLeadershipMember = z.infer<typeof cmsLeadershipMemberSchema>;
+
+export const leadershipResponseSchema = z.object({
+  leadership: z.array(cmsLeadershipMemberSchema),
+});
+
 /* ---------- Integrations ---------- */
 
 export const cmsIntegrationSchema = z.object({

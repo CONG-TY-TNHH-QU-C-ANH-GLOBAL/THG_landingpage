@@ -108,6 +108,15 @@ export function useCmsPartners() {
   });
 }
 
+export function useCmsLeadership() {
+  return useQuery({
+    queryKey: ["cms", "leadership"],
+    queryFn: () => cmsClient.getLeadership(),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
 export function useCmsIntegrations() {
   return useQuery({
     queryKey: ["cms", "integrations"],

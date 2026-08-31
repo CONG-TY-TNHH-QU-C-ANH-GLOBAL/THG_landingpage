@@ -53,6 +53,7 @@ import {
   faqsResponseSchema,
   homepageResponseSchema,
   integrationsResponseSchema,
+  leadershipResponseSchema,
   jobResponseSchema,
   jobsResponseSchema,
   marqueeImagesResponseSchema,
@@ -213,6 +214,20 @@ describe("D5.3 — /api/v1/integrations Zod ↔ OpenAPI cross-check", () => {
 
   it("backward — source: OpenAPI-generated, target: Zod (Zod is not looser than contract)", () => {
     expectTypeOf<IntegrationsResponseFromOpenApi>().toExtend<IntegrationsResponseFromZod>();
+  });
+});
+
+type LeadershipResponseFromZod = z.infer<typeof leadershipResponseSchema>;
+type LeadershipResponseFromOpenApi =
+  paths["/api/v1/leadership"]["get"]["responses"]["200"]["content"]["application/json"];
+
+describe("Leadership — /api/v1/leadership Zod ↔ OpenAPI cross-check", () => {
+  it("forward — source: Zod, target: OpenAPI-generated", () => {
+    expectTypeOf<LeadershipResponseFromZod>().toExtend<LeadershipResponseFromOpenApi>();
+  });
+
+  it("backward — source: OpenAPI-generated, target: Zod", () => {
+    expectTypeOf<LeadershipResponseFromOpenApi>().toExtend<LeadershipResponseFromZod>();
   });
 });
 

@@ -30,6 +30,7 @@ import {
   faqsResponseSchema,
   homepageResponseSchema,
   integrationsResponseSchema,
+  leadershipResponseSchema,
   partnersResponseSchema,
   jobResponseSchema,
   jobsResponseSchema,
@@ -59,6 +60,8 @@ export type {
   CmsFaq,
   CmsHomepageBlock,
   CmsIntegration,
+  CmsLeadershipAvatar,
+  CmsLeadershipMember,
   CmsLeadInput,
   CmsMarqueeImage,
   CmsPolicyTextBlock,
@@ -154,6 +157,10 @@ export const cmsClient = {
 
   getPartners() {
     return fetchJson("/partners", partnersResponseSchema);
+  },
+
+  getLeadership() {
+    return fetchJson("/leadership", leadershipResponseSchema);
   },
 
   getIntegrations() {
