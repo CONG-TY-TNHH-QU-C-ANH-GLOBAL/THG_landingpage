@@ -7,10 +7,10 @@ import type { TranslationDict } from "../types";
 
 export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.badge": tr("Formal customs · Transparent · All-in", "Chính ngạch · Minh bạch · Trọn gói", "正规报关 · 透明 · 一站式"),
-  "chinhngach.title": tr("CN → US Shipping Rates — Updated 08/2026", "Bảng giá ship Trung Quốc → Hoa Kỳ — Cập nhật 08/2026", "中国 → 美国运费 — 更新于 08/2026"),
-  "chinhngach.subtitle": tr("Sea, air and express shipping from China to the US — compare transit time, cargo compatibility and duty/customs coverage.", "Cước Sea, Air và Express từ Trung Quốc đến Hoa Kỳ — so sánh thời gian, loại hàng và phạm vi bao gồm thuế/hải quan.", "从中国到美国的海运、空运与快递 — 对比时效、货物类型及关税/报关范围。"),
+  "chinhngach.title": tr("Formal Customs Shipping Rates — Vietnam → USA", "Bảng giá ship chính ngạch — Việt Nam → Hoa Kỳ", "正规报关运费 — 越南 → 美国"),
+  "chinhngach.subtitle": tr("Sea & air rates from Hai Phong, Ho Chi Minh and Da Nang to US ports — full customs paperwork, no hidden fees.", "Cước Sea & Air từ Hải Phòng, Hồ Chí Minh, Đà Nẵng đến các cảng Mỹ — đầy đủ thủ tục, không phát sinh ẩn phí.", "从海防、胡志明市、岘港至美国港口的海运与空运报价 — 手续齐全，无隐藏费用。"),
   "chinhngach.back_intl": tr("Back to international pricing", "Quay lại bảng giá quốc tế", "返回国际运费"),
-  "chinhngach.scope_notice": tr("Rates are for China → US cargo. Coverage differs by line: review each card carefully, especially DHL Express where duty and customs are not included. Contact THG for a shipment-specific quote.", "Bảng giá áp dụng cho hàng Trung Quốc → Hoa Kỳ. Phạm vi bao gồm khác nhau theo từng line: vui lòng xem kỹ từng card, đặc biệt DHL Express không gồm thuế và hải quan. Liên hệ THG để chốt giá theo lô hàng.", "以下报价适用于中国 → 美国货物。各线路包含范围不同，请仔细查看每张卡片，尤其 DHL 快递不含关税与报关。请联系 THG 获取按货物报价。"),
+  "chinhngach.scope_notice": tr("Rates below exclude domestic trucking in Vietnam, customs clearance, and last-mile delivery in the US. Contact THG for an all-in quote based on your actual shipment.", "Giá cước dưới đây chưa bao gồm phí trucking nội địa VN, thủ tục hải quan và last-mile delivery tại Mỹ. Liên hệ THG để được báo giá trọn gói theo lô hàng thực tế.", "以下运费不含越南境内拖车、报关及美国末端派送费用。请联系THG获取按实际货量的一站式报价。"),
   "chinhngach.table_pending": tr("This rate card is being updated — contact THG for the current quote.", "Bảng giá này đang được cập nhật — liên hệ THG để nhận báo giá hiện hành.", "该价目表正在更新中 — 请联系THG获取最新报价。"),
 
   "chinhngach.matson_title": tr("MATSON — Expedited Line", "MATSON — Line hỏa tốc", "MATSON — 加急航线"),
