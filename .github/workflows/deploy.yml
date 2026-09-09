@@ -141,7 +141,7 @@ jobs:
           overwrite: true
           rm: true
 
-      - name: Configure nginx SEO routing and cache headers
+      - name: Configure isolated landing virtual host and SEO routing
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -150,52 +150,87 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             set -eu
-            NGINX_CONF="/etc/nginx/snippets/thg-cache.conf"
-            NGINX_BACKUP="/tmp/thg-cache.conf.previous"
+            # Keep the sales application vhost completely separate. The landing
+            # site is static/prerendered and must own its exact host names.
+            NGINX_CONF="/etc/nginx/sites-available/thgfulfill"
+            NGINX_LINK="/etc/nginx/sites-enabled/thgfulfill"
+            NGINX_BACKUP="/tmp/thgfulfill.nginx.previous"
+            CERT="/etc/ssl/cloudflare/thgfulfill-origin.pem"
+            CERT_KEY="/etc/ssl/cloudflare/thgfulfill-origin.key"
+
+            # A wildcard certificate does not cover the apex hostname. Refuse
+            # to publish a broken Full (strict) origin until the dedicated
+            # certificate for both thgfulfill.com and *.thgfulfill.com exists.
+            if ! sudo test -s "$CERT" || ! sudo test -s "$CERT_KEY"; then
+              echo "::error::Missing THG landing Cloudflare Origin certificate at $CERT / $CERT_KEY" >&2
+              exit 1
+            fi
+            if ! sudo openssl x509 -in "$CERT" -noout -ext subjectAltName | grep -q 'DNS:thgfulfill.com'; then
+              echo "::error::Landing origin certificate does not cover thgfulfill.com" >&2
+              exit 1
+            fi
             if sudo test -f "$NGINX_CONF"; then
               sudo cp "$NGINX_CONF" "$NGINX_BACKUP"
             fi
             sudo tee $NGINX_CONF > /dev/null << 'EOF'
-            # Canonical scheme + host. `return` is safe in server-level if blocks.
-            if ($scheme = http) { return 308 https://thgfulfill.com$request_uri; }
-            if ($host = www.thgfulfill.com) { return 308 https://thgfulfill.com$request_uri; }
-
-            # Locale canonicalization and legacy route redirects.
-            location = / { return 308 https://thgfulfill.com/vi; }
-            location ~ ^/(en|vi|zh)(/.*)/$ { return 308 https://thgfulfill.com/$1$2; }
-            location ~ ^/(policy|shipping-policy|blog|international-pricing|domestic-pricing|chinh-ngach-pricing|thg-fulfill|thg-express|thg-warehouse|thg-order|catalog|tracking|careers|community)(/.*)?$ {
-                return 308 https://thgfulfill.com/vi$request_uri;
+            server {
+                listen 80;
+                listen [::]:80;
+                server_name thgfulfill.com www.thgfulfill.com;
+                return 308 https://thgfulfill.com$request_uri;
             }
 
-            # Only declared app routes may fall through to prerendered index.html.
-            # This prevents arbitrary paths from receiving a 200 SPA shell (soft 404).
-            location ~ ^/(en|vi|zh)(/(policy|shipping-policy|blog|international-pricing|domestic-pricing|chinh-ngach-pricing|thg-fulfill|thg-express|thg-warehouse|thg-order|catalog|tracking|careers|community))?$ {
-                try_files $uri $uri/ =404;
+            server {
+                listen 443 ssl http2;
+                listen [::]:443 ssl http2;
+                server_name www.thgfulfill.com;
+                ssl_certificate     /etc/ssl/cloudflare/thgfulfill-origin.pem;
+                ssl_certificate_key /etc/ssl/cloudflare/thgfulfill-origin.key;
+                return 308 https://thgfulfill.com$request_uri;
             }
-            location ~ ^/(en|vi|zh)/(blog|careers)/[^/]+$ {
-                try_files $uri $uri/ =404;
-            }
-            location ~ ^/(en|vi|zh)/community/([^/]+|reviews/[^/]+)$ {
-                try_files $uri $uri/ =404;
-            }
-            location ~ ^/(en|vi|zh)/ { return 404; }
 
-            # HTML files: never cache (so new deploys are picked up immediately)
-            location ~* \.html$ {
-                add_header Cache-Control "no-cache, no-store, must-revalidate" always;
-                add_header Pragma "no-cache" always;
-                add_header Expires "0" always;
-            }
-            # Hashed assets (JS/CSS/images): cache aggressively (Vite adds content hash)
-            location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?)$ {
-                expires 1y;
-                add_header Cache-Control "public, immutable" always;
+            server {
+                listen 443 ssl http2;
+                listen [::]:443 ssl http2;
+                server_name thgfulfill.com;
+
+                root /var/www/thgfulfill;
+                index index.html;
+                ssl_certificate     /etc/ssl/cloudflare/thgfulfill-origin.pem;
+                ssl_certificate_key /etc/ssl/cloudflare/thgfulfill-origin.key;
+                ssl_protocols TLSv1.2 TLSv1.3;
+                server_tokens off;
+
+                # Canonical URL and legacy route handling.
+                location = / { return 308 https://thgfulfill.com/vi; }
+                location ~ ^/(en|vi|zh)/$ { return 308 https://thgfulfill.com/$1; }
+                location ~ ^/(en|vi|zh)/(.*)/$ { return 308 https://thgfulfill.com/$1/$2; }
+                location ~ ^/(policy|shipping-policy|blog|international-pricing|domestic-pricing|chinh-ngach-pricing|thg-fulfill|thg-express|thg-warehouse|thg-order|catalog|tracking|careers|community)(/.*)?$ {
+                    return 308 https://thgfulfill.com/vi$request_uri;
+                }
+
+                # Prerendered files only: unknown paths receive an actual 404,
+                # never the SPA shell (which Google treats as a soft-404 risk).
+                location ~* \.html$ {
+                    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+                    add_header Pragma "no-cache" always;
+                    add_header Expires "0" always;
+                }
+                location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|webp|avif)$ {
+                    expires 1y;
+                    add_header Cache-Control "public, immutable" always;
+                }
+                location / {
+                    try_files $uri $uri/index.html =404;
+                }
+                location ~ /\. { deny all; }
             }
             EOF
+            sudo ln -sfn "$NGINX_CONF" "$NGINX_LINK"
             if sudo nginx -t; then
               sudo systemctl reload nginx
             else
-              if sudo test -f "$NGINX_BACKUP"; then sudo cp "$NGINX_BACKUP" "$NGINX_CONF"; else sudo rm -f "$NGINX_CONF"; fi
+              if sudo test -f "$NGINX_BACKUP"; then sudo cp "$NGINX_BACKUP" "$NGINX_CONF"; else sudo rm -f "$NGINX_CONF" "$NGINX_LINK"; fi
               sudo rm -rf /var/www/thgfulfill
               sudo cp -a /var/www/thgfulfill.previous /var/www/thgfulfill
               sudo nginx -t
@@ -204,15 +239,57 @@ jobs:
               exit 1
             fi
 
-      - name: Production SEO smoke crawl
-        id: production-seo-smoke
+      - name: SEO smoke crawl against the deployed origin
+        id: origin-seo-smoke
+        continue-on-error: true
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            set -eu
+            origin='127.0.0.1'
+            base='https://thgfulfill.com'
+            failed=0
+            exact_one() {
+              name="$1"
+              pattern="$2"
+              body="$3"
+              count="$(printf '%s' "$body" | grep -ioE "$pattern" | wc -l || true)"
+              if [ "$count" -ne 1 ]; then
+                echo "$route: $name count is $count" >&2
+                failed=1
+              fi
+            }
+            for route in /vi /en/thg-express /vi/domestic-pricing; do
+              html="$(curl --fail --silent --show-error --resolve "thgfulfill.com:443:$origin" -k "$base$route")" || { failed=1; continue; }
+              [ "$(printf '%s' "$html" | wc -c)" -ge 10000 ] || { echo "$route: response resembles SPA shell" >&2; failed=1; }
+              exact_one title '<title([^>]*)?>' "$html"
+              exact_one description '<meta[^>]*name=[^>]*description[^>]*>' "$html"
+              exact_one canonical '<link[^>]*rel=[^>]*canonical[^>]*>' "$html"
+              exact_one robots '<meta[^>]*name=[^>]*robots[^>]*>' "$html"
+              exact_one H1 '<h1([^>]*)?>' "$html"
+            done
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/seo-smoke-route-that-must-not-exist")"
+            [ "$status" = 404 ] || { echo "unknown route: expected 404, got $status" >&2; failed=1; }
+            redirect="$(curl --silent --show-error --resolve "thgfulfill.com:80:$origin" -D - -o /dev/null http://thgfulfill.com/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
+            [ "$redirect" = 'https://thgfulfill.com/vi' ] || { echo "root redirect: got $redirect" >&2; failed=1; }
+            redirect="$(curl --silent --show-error --resolve "www.thgfulfill.com:443:$origin" -k -D - -o /dev/null https://www.thgfulfill.com/en/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
+            [ "$redirect" = 'https://thgfulfill.com/en/' ] || { echo "www redirect: got $redirect" >&2; failed=1; }
+            [ "$failed" -eq 0 ]
+
+      - name: Public production SEO smoke crawl
+        id: public-seo-smoke
+        if: vars.PUBLIC_SEO_SMOKE == '1'
         continue-on-error: true
         env:
           SITE_BASE: https://thgfulfill.com
         run: node scripts/smoke-production-seo.mjs
 
       - name: Roll back failed production artifact
-        if: steps.production-seo-smoke.outcome == 'failure'
+        if: steps.origin-seo-smoke.outcome == 'failure' || steps.public-seo-smoke.outcome == 'failure'
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -228,7 +305,7 @@ jobs:
             sudo systemctl reload nginx
 
       - name: Fail release after rollback
-        if: steps.production-seo-smoke.outcome == 'failure'
+        if: steps.origin-seo-smoke.outcome == 'failure' || steps.public-seo-smoke.outcome == 'failure'
         run: |
           echo "::error::Production SEO smoke failed. Previous artifact was restored."
           exit 1
