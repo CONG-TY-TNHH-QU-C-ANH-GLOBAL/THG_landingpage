@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { CommunityStateNotice, CommunityWithdrawButton } from "@/components/community/communityPageBits";
 import { useCommunityWithdraw } from "@/components/community/communityWithdraw";
-import { JsonLdBreadcrumb, JsonLdQaPage } from "@/components/seo/JsonLd";
+import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { useCommunityQuestion } from "@/hooks/useCmsContent";
@@ -104,18 +104,8 @@ const CommunityQuestionPage = () => {
         // Index governance: thin/unverified/unanswered content stays out of
         // Google. While loading (or on 404) we also emit noindex — safe default.
         noindex={!q?.indexable}
+        availableLocales={["vi"]}
       />
-      {q?.indexable && q.expert_answer && (
-        <JsonLdQaPage
-          question={q.title}
-          text={q.body}
-          url={`https://thgfulfill.com/${language}/community/${q.slug}`}
-          authorName={q.author_name}
-          expertAnswer={q.expert_answer}
-          publishedAt={q.published_at}
-          upvoteCount={q.same_issue_count}
-        />
-      )}
       {q && (
         <JsonLdBreadcrumb
           items={[

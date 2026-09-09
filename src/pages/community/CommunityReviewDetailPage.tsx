@@ -15,7 +15,7 @@ import {
   CommunityWithdrawButton,
 } from "@/components/community/communityPageBits";
 import { useCommunityWithdraw } from "@/components/community/communityWithdraw";
-import { JsonLdBreadcrumb, JsonLdReview } from "@/components/seo/JsonLd";
+import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { useCommunityReview } from "@/hooks/useCmsContent";
 import { cmsClient } from "@/lib/cmsClient";
@@ -48,17 +48,8 @@ const CommunityReviewDetailPage = () => {
         description={r ? r.body.replace(/\s+/g, " ").slice(0, 160) : t("reviews.subtitle")}
         path={`/community/reviews/${slug}`}
         noindex={!r?.indexable}
+        availableLocales={["vi"]}
       />
-      {r?.indexable && r.rating != null && (
-        <JsonLdReview
-          name={r.title}
-          body={r.body}
-          url={`https://thgfulfill.com/${language}/community/reviews/${r.slug}`}
-          authorName={r.reviewer_name}
-          rating={r.rating}
-          publishedAt={r.published_at}
-        />
-      )}
       {r && (
         <JsonLdBreadcrumb
           items={[

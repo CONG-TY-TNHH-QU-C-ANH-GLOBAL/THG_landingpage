@@ -98,6 +98,7 @@ jobs:
           VITE_GTM_ID: ${{ secrets.VITE_GTM_ID }}
           VITE_FB_PIXEL_ID: ${{ secrets.VITE_FB_PIXEL_ID }}
           VITE_TIKTOK_PIXEL_ID: ${{ secrets.VITE_TIKTOK_PIXEL_ID }}
+          SEO_BUILD_STRICT: "1"
           # Optional Turnstile — LeadFormDialog uses DEV_BYPASS when blank
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
         run: |
@@ -107,18 +108,25 @@ jobs:
           fi
           bun run build
 
-      - name: Inject OG image URL from CMS into dist/index.html
-        env:
-          VITE_CMS_API_URL: ${{ secrets.VITE_CMS_API_URL }}
-        run: |
-          OG_URL=$(curl -sf "${VITE_CMS_API_URL}/site-settings" | jq -r '.settings.og_image_url // empty' 2>/dev/null || true)
-          if [ -n "$OG_URL" ]; then
-            echo "Injecting OG image URL: $OG_URL"
-            sed -i "s|<meta property=\"og:image\" content=\"[^\"]*\"|<meta property=\"og:image\" content=\"$OG_URL\"|g" dist/index.html
-            sed -i "s|<meta name=\"twitter:image\" content=\"[^\"]*\"|<meta name=\"twitter:image\" content=\"$OG_URL\"|g" dist/index.html
-          else
-            echo "No og_image_url set in CMS — keeping default from index.html"
-          fi
+      - name: Upload SEO build report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: seo-build-report
+          path: dist/seo-build-report.json
+
+      - name: Snapshot current production artifact
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            set -eu
+            sudo rm -rf /var/www/thgfulfill.previous
+            if [ -d /var/www/thgfulfill ]; then
+              sudo cp -a /var/www/thgfulfill /var/www/thgfulfill.previous
+            fi
 
       - name: Deploy to server via SSH
         uses: appleboy/scp-action@917f8b81dfc1ccd331fef9e2d61bdc6c8be94634 # v0.1.7
@@ -133,7 +141,7 @@ jobs:
           overwrite: true
           rm: true
 
-      - name: Configure nginx cache headers
+      - name: Configure nginx SEO routing and cache headers
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -141,9 +149,37 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            # Ensure nginx doesn't cache index.html so new deploys take effect immediately
+            set -eu
             NGINX_CONF="/etc/nginx/snippets/thg-cache.conf"
+            NGINX_BACKUP="/tmp/thg-cache.conf.previous"
+            if sudo test -f "$NGINX_CONF"; then
+              sudo cp "$NGINX_CONF" "$NGINX_BACKUP"
+            fi
             sudo tee $NGINX_CONF > /dev/null << 'EOF'
+            # Canonical scheme + host. `return` is safe in server-level if blocks.
+            if ($scheme = http) { return 308 https://thgfulfill.com$request_uri; }
+            if ($host = www.thgfulfill.com) { return 308 https://thgfulfill.com$request_uri; }
+
+            # Locale canonicalization and legacy route redirects.
+            location = / { return 308 https://thgfulfill.com/vi; }
+            location ~ ^/(en|vi|zh)(/.*)/$ { return 308 https://thgfulfill.com/$1$2; }
+            location ~ ^/(policy|shipping-policy|blog|international-pricing|domestic-pricing|chinh-ngach-pricing|thg-fulfill|thg-express|thg-warehouse|thg-order|catalog|tracking|careers|community)(/.*)?$ {
+                return 308 https://thgfulfill.com/vi$request_uri;
+            }
+
+            # Only declared app routes may fall through to prerendered index.html.
+            # This prevents arbitrary paths from receiving a 200 SPA shell (soft 404).
+            location ~ ^/(en|vi|zh)(/(policy|shipping-policy|blog|international-pricing|domestic-pricing|chinh-ngach-pricing|thg-fulfill|thg-express|thg-warehouse|thg-order|catalog|tracking|careers|community))?$ {
+                try_files $uri $uri/ =404;
+            }
+            location ~ ^/(en|vi|zh)/(blog|careers)/[^/]+$ {
+                try_files $uri $uri/ =404;
+            }
+            location ~ ^/(en|vi|zh)/community/([^/]+|reviews/[^/]+)$ {
+                try_files $uri $uri/ =404;
+            }
+            location ~ ^/(en|vi|zh)/ { return 404; }
+
             # HTML files: never cache (so new deploys are picked up immediately)
             location ~* \.html$ {
                 add_header Cache-Control "no-cache, no-store, must-revalidate" always;
@@ -156,5 +192,43 @@ jobs:
                 add_header Cache-Control "public, immutable" always;
             }
             EOF
-            # Test and reload nginx (only if config is valid)
-            sudo nginx -t && sudo systemctl reload nginx || echo "nginx config unchanged"
+            if sudo nginx -t; then
+              sudo systemctl reload nginx
+            else
+              if sudo test -f "$NGINX_BACKUP"; then sudo cp "$NGINX_BACKUP" "$NGINX_CONF"; else sudo rm -f "$NGINX_CONF"; fi
+              sudo rm -rf /var/www/thgfulfill
+              sudo cp -a /var/www/thgfulfill.previous /var/www/thgfulfill
+              sudo nginx -t
+              sudo systemctl reload nginx
+              echo "Nginx SEO routing was invalid; previous config and artifact restored." >&2
+              exit 1
+            fi
+
+      - name: Production SEO smoke crawl
+        id: production-seo-smoke
+        continue-on-error: true
+        env:
+          SITE_BASE: https://thgfulfill.com
+        run: node scripts/smoke-production-seo.mjs
+
+      - name: Roll back failed production artifact
+        if: steps.production-seo-smoke.outcome == 'failure'
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            set -eu
+            test -d /var/www/thgfulfill.previous
+            sudo rm -rf /var/www/thgfulfill
+            sudo cp -a /var/www/thgfulfill.previous /var/www/thgfulfill
+            sudo nginx -t
+            sudo systemctl reload nginx
+
+      - name: Fail release after rollback
+        if: steps.production-seo-smoke.outcome == 'failure'
+        run: |
+          echo "::error::Production SEO smoke failed. Previous artifact was restored."
+          exit 1

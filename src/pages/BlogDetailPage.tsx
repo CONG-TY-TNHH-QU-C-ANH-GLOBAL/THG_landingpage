@@ -94,12 +94,13 @@ const BlogDetailPage = () => {
                 ogType="article"
                 ogImage={featuredSrc ?? undefined}
                 publishedTime={article.date}
+                availableLocales={cms.data?.available_locales.length ? cms.data.available_locales : [lang]}
             />
             <JsonLdBreadcrumb
                 items={[
-                    { name: "Home", url: "https://thgfulfill.com/" },
-                    { name: t("blog.title"), url: "https://thgfulfill.com/blog" },
-                    { name: title, url: `https://thgfulfill.com/blog/${article.slug}` },
+                    { name: "Home", url: `https://thgfulfill.com/${lang}` },
+                    { name: t("blog.title"), url: `https://thgfulfill.com/${lang}/blog` },
+                    { name: title, url: `https://thgfulfill.com/${lang}/blog/${article.slug}` },
                 ]}
             />
             <JsonLdArticle

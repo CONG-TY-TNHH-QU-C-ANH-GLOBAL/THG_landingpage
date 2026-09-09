@@ -371,6 +371,9 @@ const blogPostSlideSchema = z.object({
 
 export const blogPostResponseSchema = z.object({
   locale: localeSchema,
+  // Default keeps the CMS-first rolling deploy backward compatible while the
+  // old Worker may still omit this newly-added field.
+  available_locales: z.array(localeSchema).default([]),
   post: z.object({
     slug: z.string(),
     title: z.string(),
@@ -416,6 +419,7 @@ const jobBenefitSchema = z.object({ i: z.string(), t: z.string(), d: z.string() 
 
 export const jobResponseSchema = z.object({
   locale: localeSchema,
+  available_locales: z.array(localeSchema).default([]),
   job: z.object({
     slug: z.string(),
     category: z.string().nullable(),
@@ -573,14 +577,32 @@ export const serviceBlocksResponseSchema = z.object({
 export const cmsLeadInputSchema = z.object({
   name: z.string(),
   email: z.string().email(),
+  company_url: z.string().url().optional(),
+  monthly_order_band: z.enum(["<100", "100_499", "500_1999", "2000_plus"]).optional(),
+  ship_to_markets: z.array(z.enum(["US", "EU_UK", "OTHER"])).optional(),
   phone: z.string().optional(),
   message: z.string().optional(),
   source_page: z.string(),
   locale: localeSchema,
   utm: z.record(z.string(), z.string()).optional(),
+  primary_service: z.enum(["fulfill", "express", "warehouse", "dropship"]).optional(),
+  service_interests: z.array(z.enum(["fulfill", "express", "warehouse", "dropship"])).optional(),
+  surface: z.enum(["global-services-dialog", "fulfill-inline", "express-inline", "warehouse-inline", "dropship-inline", "home-conversion-inline"]).optional(),
   turnstile_token: z.string(),
 });
 export type CmsLeadInput = z.infer<typeof cmsLeadInputSchema>;
+
+export const seoPagesResponseSchema = z.object({
+  pages: z.array(z.object({
+    route: z.string(),
+    locale: localeSchema,
+    title: z.string(),
+    meta_description: z.string().nullable(),
+    og_image_url: z.string().nullable(),
+    indexable: z.boolean(),
+    updated_at: z.number(),
+  })),
+});
 
 /* ---------- Community Hub (Q&A) ---------- */
 

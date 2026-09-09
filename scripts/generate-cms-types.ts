@@ -44,10 +44,10 @@ function resolveSpecUrl(): string {
   return `${base.replace(/\/+$/, "")}/openapi`;
 }
 
-const HEADER = (specUrl: string) => `/**
+const HEADER = `/**
  * THIS FILE IS AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
- * Source:  ${specUrl}
+ * Source:  CMS OpenAPI contract (/api/v1/openapi)
  * Run:     bun run generate:cms-types
  * CI:      bun run check:cms-types  (added in D3.3)
  *
@@ -66,7 +66,7 @@ async function main() {
     : `${specUrl}?_t=${Date.now()}`;
   const ast = await openapiTS(new URL(fetchUrl));
   const types = astToString(ast);
-  writeFileSync(OUTPUT_PATH, `${HEADER(specUrl)}\n${types}`, "utf-8");
+  writeFileSync(OUTPUT_PATH, `${HEADER}\n${types}`, "utf-8");
   console.log(`✓ Wrote ${OUTPUT_PATH}`);
   console.log(`  Source: ${specUrl}`);
 }

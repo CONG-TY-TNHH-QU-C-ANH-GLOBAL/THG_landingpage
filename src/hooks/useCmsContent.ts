@@ -145,6 +145,16 @@ export function useCmsSiteSettings() {
   });
 }
 
+export function useCmsSeoPages() {
+  return useQuery({
+    queryKey: ["cms", "seo-pages"],
+    queryFn: () => cmsClient.getSeoPages(),
+    select: (res) => res.pages,
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
 // Pricing data is operator-edited frequently. Refetch on every page mount so
 // admins see their just-saved changes without a hard refresh / 5-minute wait.
 export function useCmsPricing() {

@@ -4,8 +4,10 @@
 import { Helmet } from "react-helmet-async";
 
 import { useI18n } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n/types";
+import { useCmsSeoPages } from "@/hooks/useCmsContent";
+import { hrefLang, localizedUrl, normalizeSeoPath, SITE_BASE } from "@/lib/seoRoutes";
 
-const SITE_BASE = "https://thgfulfill.com";
 const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-default.jpg`;
 
 interface Props {
@@ -23,6 +25,8 @@ interface Props {
   publishedTime?: string;
   /** Mark page noindex (e.g. /agent internal tool) */
   noindex?: boolean;
+  /** Locales with genuinely published content. Static pages default to all locales. */
+  availableLocales?: readonly Language[];
 }
 
 const TWITTER_HANDLE = "@THGFulfill";
@@ -36,34 +40,49 @@ export function SeoHead({
   ogType = "website",
   publishedTime,
   noindex,
+  availableLocales = ["vi", "en", "zh"],
 }: Props) {
   const { language } = useI18n();
-  const fullPath = path.startsWith("/") ? path : `/${path}`;
+  const fullPath = normalizeSeoPath(path) || "/";
+  const seoPages = useCmsSeoPages();
+  const cmsSeo = seoPages.data?.find((page) => page.route === fullPath && page.locale === language);
+  const effectiveTitle = cmsSeo?.title || title;
+  const effectiveDescription = cmsSeo?.meta_description || description;
+  const effectiveOgImage = cmsSeo?.og_image_url || ogImage;
+  const effectiveNoindex = noindex || cmsSeo?.indexable === false;
   // With URL-prefix routing, canonical always includes the language segment.
-  const canonical = `${SITE_BASE}/${language}${fullPath}`;
+  const canonical = localizedUrl(language, fullPath);
+  const localeLinks = availableLocales.map((locale) => ({
+    locale,
+    hrefLang: hrefLang(locale),
+    href: localizedUrl(locale, fullPath),
+  }));
+  const defaultLocale = availableLocales.includes("vi") ? "vi" : availableLocales[0];
 
   return (
     <Helmet>
       <html lang={language === "zh" ? "zh-CN" : language} />
-      <title>{title}</title>
-      <meta name="description" content={description} />
+      <title>{effectiveTitle}</title>
+      <meta name="description" content={effectiveDescription} />
       <link rel="canonical" href={canonical} />
 
       {/* Hreflang — now that URL-prefix routing (/en/*, /vi/*, /zh/*) is live
           we can correctly declare all 3 alternate URLs for each page.
           x-default points to /vi as the primary audience locale. */}
-      <link rel="alternate" hrefLang="vi" href={`${SITE_BASE}/vi${fullPath}`} />
-      <link rel="alternate" hrefLang="en" href={`${SITE_BASE}/en${fullPath}`} />
-      <link rel="alternate" hrefLang="zh-CN" href={`${SITE_BASE}/zh${fullPath}`} />
-      <link rel="alternate" hrefLang="x-default" href={`${SITE_BASE}/vi${fullPath}`} />
+      {localeLinks.map((alternate) => (
+        <link key={alternate.locale} rel="alternate" hrefLang={alternate.hrefLang} href={alternate.href} />
+      ))}
+      {defaultLocale && (
+        <link rel="alternate" hrefLang="x-default" href={localizedUrl(defaultLocale, fullPath)} />
+      )}
 
       {/* OpenGraph */}
       <meta property="og:type" content={ogType} />
       <meta property="og:site_name" content="THG Fulfill" />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={effectiveTitle} />
+      <meta property="og:description" content={effectiveDescription} />
       <meta property="og:url" content={canonical} />
-      <meta property="og:image" content={ogImage} />
+      <meta property="og:image" content={effectiveOgImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
@@ -74,13 +93,13 @@ export function SeoHead({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content={TWITTER_HANDLE} />
       <meta name="twitter:creator" content={TWITTER_HANDLE} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:title" content={effectiveTitle} />
+      <meta name="twitter:description" content={effectiveDescription} />
+      <meta name="twitter:image" content={effectiveOgImage} />
       {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
       {/* Robots */}
-      {noindex ? (
+      {effectiveNoindex ? (
         <meta name="robots" content="noindex,nofollow" />
       ) : (
         <meta name="robots" content="index,follow" />

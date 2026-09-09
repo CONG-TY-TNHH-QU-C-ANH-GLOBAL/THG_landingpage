@@ -4,7 +4,7 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -17,6 +17,10 @@ import { cmsClient } from "@/lib/cmsClient";
 import { useTurnstile } from "@/lib/useTurnstile";
 import { getUtmPayload } from "@/lib/utm";
 import { DELAYS } from "@/lib/constants";
+import { trackEvent } from "@/lib/analytics";
+
+type ServiceKey = "fulfill" | "express" | "warehouse" | "dropship";
+type Market = "US" | "EU_UK" | "OTHER";
 
 interface Props {
   trigger: ReactNode;
@@ -24,14 +28,20 @@ interface Props {
   sourcePage?: string;
   /** Pre-fills the message textarea (e.g. a pricing quote context). */
   defaultMessage?: string;
+  primaryService?: ServiceKey;
+  surface?: "global-services-dialog" | "fulfill-inline" | "express-inline" | "warehouse-inline" | "dropship-inline" | "home-conversion-inline";
 }
 
-export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
+export function LeadFormDialog({ trigger, sourcePage, defaultMessage, primaryService, surface }: Props) {
   const { language, t } = useI18n();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: defaultMessage ?? "" });
+  const [step, setStep] = useState<1 | 2>(1);
+  const [form, setForm] = useState({
+    name: "", email: "", companyUrl: "", monthlyOrderBand: "", primaryService: primaryService ?? "",
+    markets: ["US"] as Market[], phone: "", message: defaultMessage ?? "",
+  });
   // Track which fields the user already touched so we only highlight invalid
   // ones after they've had a chance to enter something (avoids red borders
   // on initial render).
@@ -47,9 +57,13 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim()) {
+    if (!form.name.trim() || !form.email.trim() || !form.companyUrl.trim() || !form.monthlyOrderBand || !form.primaryService) {
       setTouched({ name: true, email: true });
       toast.error(t("lead_form.err_required"));
+      return;
+    }
+    if (step === 1) {
+      setStep(2);
       return;
     }
     const token = captcha.resolveSubmitToken();
@@ -64,14 +78,21 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
       await cmsClient.postLead({
         name: form.name.trim(),
         email: form.email.trim(),
+        company_url: form.companyUrl.trim(),
+        monthly_order_band: form.monthlyOrderBand as "<100" | "100_499" | "500_1999" | "2000_plus",
+        ship_to_markets: form.markets,
         phone: form.phone.trim() || undefined,
         message: form.message.trim() || undefined,
         source_page: path,
         locale: language,
         utm: Object.keys(utm).length > 0 ? utm : undefined,
+        primary_service: form.primaryService as ServiceKey,
+        service_interests: [form.primaryService as ServiceKey],
+        surface: surface ?? "global-services-dialog",
         turnstile_token: token,
       });
       setDone(true);
+      trackEvent("generate_lead", { service: form.primaryService, source_page: path, locale: language });
       toast.success(t("lead_form.success_toast"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("lead_form.err_generic"));
@@ -82,7 +103,8 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
   }
 
   function reset() {
-    setForm({ name: "", email: "", phone: "", message: defaultMessage ?? "" });
+    setForm({ name: "", email: "", companyUrl: "", monthlyOrderBand: "", primaryService: primaryService ?? "", markets: ["US"], phone: "", message: defaultMessage ?? "" });
+    setStep(1);
     setDone(false);
     setTouched({});
     captcha.resetForRetry();
@@ -93,6 +115,7 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
       open={open}
       onOpenChange={(o) => {
         setOpen(o);
+        if (o) trackEvent("form_start", { source_page: sourcePage ?? window.location.pathname });
         if (!o) setTimeout(reset, DELAYS.DIALOG_RESET_AFTER_CLOSE_MS);
       }}
     >
@@ -116,6 +139,13 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
           </div>
         ) : (
           <form onSubmit={onSubmit} className="space-y-3">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground" aria-label={`Step ${step} of 2`}>
+              <span className={`h-1.5 flex-1 rounded-full ${step >= 1 ? "bg-primary" : "bg-secondary"}`} />
+              <span className={`h-1.5 flex-1 rounded-full ${step >= 2 ? "bg-primary" : "bg-secondary"}`} />
+              <span>{step}/2</span>
+            </div>
+            {step === 1 ? (
+              <>
             <div>
               <Label htmlFor="lead-name">{t("lead_form.name_label")} *</Label>
               <Input
@@ -146,6 +176,42 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
               />
             </div>
             <div>
+              <Label htmlFor="lead-company-url">Company / store URL *</Label>
+              <Input id="lead-company-url" type="url" required value={form.companyUrl} onChange={(e) => set("companyUrl", e.target.value)} placeholder="https://yourstore.com" disabled={pending} />
+            </div>
+            <div>
+              <Label htmlFor="lead-service">Primary service *</Label>
+              <select
+                id="lead-service"
+                required
+                value={form.primaryService}
+                onChange={(e) => {
+                  set("primaryService", e.target.value);
+                  if (e.target.value) trackEvent("select_service", { service: e.target.value });
+                }}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Select a service</option>
+                <option value="fulfill">Fulfillment / POD</option>
+                <option value="express">International Express</option>
+                <option value="warehouse">US 3PL Warehouse</option>
+                <option value="dropship">Dropship / THG Order</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="lead-order-band">Monthly order volume *</Label>
+              <select id="lead-order-band" required value={form.monthlyOrderBand} onChange={(e) => set("monthlyOrderBand", e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="">Select monthly orders</option>
+                <option value="<100">Under 100</option>
+                <option value="100_499">100–499</option>
+                <option value="500_1999">500–1,999</option>
+                <option value="2000_plus">2,000+</option>
+              </select>
+            </div>
+              </>
+            ) : (
+              <>
+            <div>
               <Label htmlFor="lead-phone">{t("lead_form.phone_label")}</Label>
               <Input
                 id="lead-phone"
@@ -156,6 +222,26 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
                 disabled={pending}
               />
             </div>
+            <fieldset>
+              <legend className="text-sm font-medium mb-2">Ship-to markets *</legend>
+              <div className="flex flex-wrap gap-3">
+                {(["US", "EU_UK", "OTHER"] as Market[]).map((market) => (
+                  <label key={market} className="inline-flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={form.markets.includes(market)}
+                      onChange={(e) => setForm((current) => ({
+                        ...current,
+                        markets: e.target.checked
+                          ? [...current.markets, market]
+                          : current.markets.filter((item) => item !== market),
+                      }))}
+                    />
+                    {market === "EU_UK" ? "EU / UK" : market === "OTHER" ? "Other" : "US"}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <div>
               <Label htmlFor="lead-message">{t("lead_form.message_label")}</Label>
               <Textarea
@@ -167,8 +253,10 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
                 disabled={pending}
               />
             </div>
+              </>
+            )}
 
-            {captcha.enabled && (
+            {step === 2 && captcha.enabled && (
               <div className="flex justify-center" data-testid="lead-turnstile">
                 <Turnstile
                   ref={captcha.widgetRef}
@@ -181,16 +269,19 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage }: Props) {
               </div>
             )}
 
-            <Button type="submit" disabled={pending} className="w-full">
+            <div className="flex gap-2">
+            {step === 2 && <Button type="button" variant="outline" onClick={() => setStep(1)} disabled={pending}><ArrowLeft className="w-4 h-4" /></Button>}
+            <Button type="submit" disabled={pending || (step === 2 && form.markets.length === 0)} className="w-full">
               {pending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" aria-hidden="true" />
                   {t("lead_form.submitting")}
                 </>
               ) : (
-                t("lead_form.submit")
+                step === 1 ? "Continue" : t("lead_form.submit")
               )}
             </Button>
+            </div>
 
             <div className="text-[10px] text-center text-muted-foreground">
               {t("lead_form.consent")}

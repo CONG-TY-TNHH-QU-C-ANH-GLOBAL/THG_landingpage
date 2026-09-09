@@ -1,7 +1,7 @@
 /**
  * THIS FILE IS AUTO-GENERATED — DO NOT EDIT BY HAND.
  *
- * Source:  https://cms.thgfulfill.com/api/v1/openapi
+ * Source:  CMS OpenAPI contract (/api/v1/openapi)
  * Run:     bun run generate:cms-types
  * CI:      bun run check:cms-types  (added in D3.3)
  *
@@ -507,6 +507,7 @@ export interface paths {
                         "application/json": {
                             /** @enum {string} */
                             locale: "en" | "vi" | "zh";
+                            available_locales: ("en" | "vi" | "zh")[];
                             post: {
                                 slug: string;
                                 title: string;
@@ -711,6 +712,7 @@ export interface paths {
                         "application/json": {
                             /** @enum {string} */
                             locale: "en" | "vi" | "zh";
+                            available_locales: ("en" | "vi" | "zh")[];
                             job: {
                                 slug: string;
                                 category: string | null;
@@ -2036,7 +2038,58 @@ export interface paths {
                             blog: {
                                 slug: string;
                                 locale: string;
+                                available_locales: ("vi" | "en" | "zh")[];
                                 published_date: string | null;
+                                updated_at: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/seo-pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List live SEO metadata by route and locale
+         * @description Public SEO control-plane feed. Canonical URLs, hreflang and JSON-LD remain code-generated; editors control only reviewed page metadata and indexability.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live SEO metadata */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            pages: {
+                                route: string;
+                                /** @enum {string} */
+                                locale: "vi" | "en" | "zh";
+                                title: string;
+                                meta_description: string | null;
+                                og_image_url: string | null;
+                                indexable: boolean;
                                 updated_at: number;
                             }[];
                         };
@@ -2078,6 +2131,11 @@ export interface paths {
                         name: string;
                         /** Format: email */
                         email: string;
+                        /** Format: uri */
+                        company_url?: string | null;
+                        /** @enum {string|null} */
+                        monthly_order_band?: "<100" | "100_499" | "500_1999" | "2000_plus" | null;
+                        ship_to_markets?: ("US" | "EU_UK" | "OTHER")[] | null;
                         phone?: string | null;
                         message?: string | null;
                         source_page?: string | null;

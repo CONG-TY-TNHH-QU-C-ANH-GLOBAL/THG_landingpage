@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 import { useCmsSiteSettings } from "@/hooks/useCmsContent";
+import { trackEvent } from "@/lib/analytics";
 
 const STORAGE_KEY = "thg-consent-v1";
 
@@ -63,6 +64,16 @@ export function TrackingScripts() {
     };
   }, []);
 
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const anchor = (event.target as Element | null)?.closest("a[href]") as HTMLAnchorElement | null;
+      if (!anchor || anchor.origin === window.location.origin || !/^https?:$/.test(anchor.protocol)) return;
+      trackEvent("outbound_click", { destination_host: anchor.hostname, source_page: window.location.pathname });
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   // Don't fire until: (a) user consented AND (b) CMS settings query has resolved.
   // Loading state is brief (<300ms in cache hit, ~1s cold). Without this gate, we'd
   // either render with env-only IDs (missing CMS-set ones) or risk a double-injection
@@ -74,8 +85,9 @@ export function TrackingScripts() {
   const fb = pick(settings?.fb_pixel_id, ENV_FB);
   const tiktok = pick(settings?.tiktok_pixel_id, ENV_TIKTOK);
 
-  const ga4Init = ga4
-    ? `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4}',{anonymize_ip:true});`
+  const directGa4 = gtm ? undefined : ga4;
+  const ga4Init = directGa4
+    ? `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${directGa4}',{anonymize_ip:true});`
     : "";
 
   const gtmInit = gtm
@@ -93,8 +105,8 @@ export function TrackingScripts() {
   return (
     <Helmet>
       {gtm && <script>{gtmInit}</script>}
-      {ga4 && <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`} />}
-      {ga4 && <script>{ga4Init}</script>}
+      {directGa4 && <script async src={`https://www.googletagmanager.com/gtag/js?id=${directGa4}`} />}
+      {directGa4 && <script>{ga4Init}</script>}
       {fb && <script>{fbInit}</script>}
       {tiktok && <script>{tiktokInit}</script>}
     </Helmet>

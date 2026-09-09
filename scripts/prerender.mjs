@@ -14,7 +14,7 @@
 import { chromium } from "@playwright/test";
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const ROOT = process.cwd();
@@ -41,25 +41,12 @@ const BASE = `http://127.0.0.1:${PORT}`;
 // prerendered — both are shared externally (Google for Jobs, LinkedIn, Facebook,
 // Zalo) and need real meta + JSON-LD (JobPosting / Article) in the initial HTML.
 // Base routes (without lang prefix). These are expanded × 3 langs below.
-const BASE_ROUTES = [
-  "/",
-  "/thg-fulfill",
-  "/thg-express",
-  "/thg-warehouse",
-  "/thg-order",
-  "/catalog",
-  "/careers",
-  "/community",
-  "/community/reviews",
-  "/blog",
-  "/policy",
-  "/shipping-policy",
-  "/international-pricing",
-  "/chinh-ngach-pricing",
-  "/domestic-pricing",
-];
-
-const LANGS = ["vi", "en", "zh"];
+const registry = JSON.parse(
+  readFileSync(resolve(ROOT, "scripts", "seo-route-registry.json"), "utf8"),
+);
+const BASE_ROUTES = registry.staticRoutes;
+const LANGS = registry.locales;
+const STRICT = process.env.SEO_BUILD_STRICT === "1" || process.env.CI === "true";
 
 // Expand: each base route becomes /{lang} (for "/") or /{lang}/path for the rest.
 const STATIC_ROUTES = LANGS.flatMap((lang) =>
@@ -67,22 +54,30 @@ const STATIC_ROUTES = LANGS.flatMap((lang) =>
 );
 
 const CMS_API = process.env.VITE_CMS_API_URL ?? "http://localhost:8080/api/v1";
+const discoveryFailures = [];
+
+function recordDiscoveryFailure(source, message) {
+  discoveryFailures.push({ route: `<${source}>`, msg: message });
+}
 
 /** Fetch open-job slugs so each /careers/:slug gets a prerendered shell.
  *  Best-effort — if the CMS is unreachable we still prerender static routes. */
 async function fetchJobRoutes() {
   try {
-    const res = await fetch(`${CMS_API}/jobs?lang=vi`);
-    if (!res.ok) {
-      console.warn(`⚠ jobs fetch ${res.status} — skipping job-detail prerender`);
-      return [];
+    const routes = [];
+    for (const lang of LANGS) {
+      const res = await fetch(`${CMS_API}/jobs?lang=${lang}`);
+      if (!res.ok) {
+        recordDiscoveryFailure(`jobs:${lang}`, `CMS returned ${res.status}`);
+        continue;
+      }
+      const data = await res.json();
+      for (const job of data.jobs ?? []) routes.push(`/${lang}/careers/${job.slug}`);
     }
-    const data = await res.json();
-    const slugs = [...new Set((data.jobs ?? []).map((j) => j.slug))];
-    console.log(`✓ ${slugs.length} open jobs → /careers/:slug prerender`);
-    // Prerender each job detail for all langs
-    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/careers/${s}`));
+    console.log(`✓ ${routes.length} localized job routes → /careers/:slug prerender`);
+    return [...new Set(routes)];
   } catch (err) {
+    recordDiscoveryFailure("jobs", err instanceof Error ? err.message : String(err));
     console.warn(`⚠ jobs fetch failed (${err.message}) — skipping job-detail prerender`);
     return [];
   }
@@ -96,14 +91,20 @@ async function fetchBlogRoutes() {
   try {
     const res = await fetch(`${CMS_API}/sitemap`);
     if (!res.ok) {
+      recordDiscoveryFailure("sitemap", `CMS returned ${res.status}`);
       console.warn(`⚠ sitemap fetch ${res.status} — skipping blog-detail prerender`);
       return [];
     }
     const data = await res.json();
-    const slugs = [...new Set((data.blog ?? []).map((b) => b.slug))];
-    console.log(`✓ ${slugs.length} blog posts → /blog/:slug prerender`);
-    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/blog/${s}`));
+    const routes = (data.blog ?? []).flatMap((post) =>
+      (post.available_locales ?? [post.locale ?? "vi"]).map(
+        (lang) => `/${lang}/blog/${post.slug}`,
+      ),
+    );
+    console.log(`✓ ${routes.length} localized blog routes → /blog/:slug prerender`);
+    return [...new Set(routes)];
   } catch (err) {
+    recordDiscoveryFailure("sitemap", err instanceof Error ? err.message : String(err));
     console.warn(`⚠ blog fetch failed (${err.message}) — skipping blog-detail prerender`);
     return [];
   }
@@ -117,14 +118,16 @@ async function fetchCommunityRoutes() {
   try {
     const res = await fetch(`${CMS_API}/community/questions`);
     if (!res.ok) {
+      recordDiscoveryFailure("community", `CMS returned ${res.status}`);
       console.warn(`⚠ community fetch ${res.status} — skipping community-detail prerender`);
       return [];
     }
     const data = await res.json();
     const slugs = (data.questions ?? []).filter((q) => q.indexable).map((q) => q.slug);
     console.log(`✓ ${slugs.length} indexable community questions → /community/:slug prerender`);
-    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/community/${s}`));
+    return slugs.map((s) => `/vi/community/${s}`);
   } catch (err) {
+    recordDiscoveryFailure("community", err instanceof Error ? err.message : String(err));
     console.warn(`⚠ community fetch failed (${err.message}) — skipping community-detail prerender`);
     return [];
   }
@@ -138,18 +141,36 @@ async function fetchCommunityReviewRoutes() {
   try {
     const res = await fetch(`${CMS_API}/community/reviews`);
     if (!res.ok) {
+      recordDiscoveryFailure("reviews", `CMS returned ${res.status}`);
       console.warn(`⚠ reviews fetch ${res.status} — skipping review-detail prerender`);
       return [];
     }
     const data = await res.json();
     const slugs = (data.reviews ?? []).filter((r) => r.indexable).map((r) => r.slug);
     console.log(`✓ ${slugs.length} indexable community reviews → /community/reviews/:slug prerender`);
-    return LANGS.flatMap((lang) => slugs.map((s) => `/${lang}/community/reviews/${s}`));
+    return slugs.map((s) => `/vi/community/reviews/${s}`);
   } catch (err) {
+    recordDiscoveryFailure("reviews", err instanceof Error ? err.message : String(err));
     console.warn(`⚠ reviews fetch failed (${err.message}) — skipping review-detail prerender`);
     return [];
   }
 }
+
+async function verifySeoControlPlane() {
+  try {
+    const res = await fetch(`${CMS_API}/seo-pages`);
+    if (!res.ok) {
+      recordDiscoveryFailure("seo-pages", `CMS returned ${res.status}`);
+      return;
+    }
+    const data = await res.json();
+    if (!Array.isArray(data.pages)) recordDiscoveryFailure("seo-pages", "response has no pages array");
+  } catch (err) {
+    recordDiscoveryFailure("seo-pages", err instanceof Error ? err.message : String(err));
+  }
+}
+
+await verifySeoControlPlane();
 
 const ROUTES = [
   ...STATIC_ROUTES,
@@ -203,8 +224,15 @@ preview.stdout.on("data", (b) => process.stdout.write(`[preview] ${b}`));
 preview.stderr.on("data", (b) => process.stderr.write(`[preview] ${b}`));
 
 let browser;
-const failures = [];
+const failures = [...discoveryFailures];
 let successCount = 0;
+const report = {
+  strict: STRICT,
+  started_at: new Date().toISOString(),
+  expected_routes: ROUTES,
+  rendered: [],
+  failures,
+};
 try {
   await waitForReady(`${BASE}/`);
   browser = await chromium.launch();
@@ -217,6 +245,25 @@ try {
     // keep network busy past our wait conditions (CI Chromium can stall on
     // Cloudflare bot-detection from GH Actions IPs).
     extraHTTPHeaders: { "x-prerender": "1" },
+  });
+  // Browser requests originate from the ephemeral preview port, which is not
+  // necessarily on production CMS's CORS allowlist. Proxy CMS GETs through
+  // Node during the build and fulfill them into the page; this preserves the
+  // real response/status while removing a browser-only CORS failure mode.
+  const cmsOrigin = new URL(CMS_API).origin;
+  await context.route(`${cmsOrigin}/**`, async (route) => {
+    const request = route.request();
+    if (request.method() !== "GET") return route.continue();
+    try {
+      const response = await fetch(request.url(), { headers: { accept: "application/json" } });
+      const headers = Object.fromEntries(response.headers.entries());
+      delete headers["content-encoding"];
+      delete headers["content-length"];
+      headers["access-control-allow-origin"] = "*";
+      await route.fulfill({ status: response.status, headers, body: Buffer.from(await response.arrayBuffer()) });
+    } catch (error) {
+      await route.abort("connectionfailed");
+    }
   });
   // Cut requests we don't need for SEO HTML — analytics pixels, captcha
   // heartbeats, and external fonts. Saves time + avoids flaky externals.
@@ -243,12 +290,23 @@ try {
         { timeout: 8_000 },
       ).catch(() => { /* tolerate: route might legitimately reuse default title */ });
 
+      // A published route is not ready until its content H1 exists. Waiting
+      // here avoids capturing the transient loading shell of React Query.
+      await page.waitForSelector("h1", { timeout: 8_000 }).catch(() => {});
+
       // Final breath for any late helmet/microtask + main thread settle.
       await page.waitForTimeout(500);
 
       const title = await page.title();
       if (!title || title.length < 4) {
         throw new Error(`empty <title> — hydration likely failed`);
+      }
+      const routeState = await page.evaluate(() => ({
+        h1: document.querySelectorAll("h1").length,
+        robots: document.querySelector('meta[name="robots"]')?.getAttribute("content") ?? "",
+      }));
+      if (routeState.h1 !== 1 || /noindex/i.test(routeState.robots) || /^Not found/i.test(title)) {
+        throw new Error(`published route rendered invalid state (title=${JSON.stringify(title)}, H1=${routeState.h1}, robots=${JSON.stringify(routeState.robots)})`);
       }
 
       const html = "<!doctype html>\n" + await page.evaluate(() => document.documentElement.outerHTML);
@@ -257,6 +315,7 @@ try {
       writeFileSync(out, html, "utf8");
       console.log(`  ✓ ${route.padEnd(28)} → ${out.replace(ROOT, ".")}  (${(html.length / 1024).toFixed(1)} KB, "${title.slice(0, 60)}")`);
       successCount += 1;
+      report.rendered.push(route);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`  ✗ ${route.padEnd(28)} skipped: ${msg.split("\n")[0]}`);
@@ -277,10 +336,21 @@ try {
   preview.kill();
 }
 
+report.finished_at = new Date().toISOString();
+writeFileSync(
+  resolve(DIST, "seo-build-report.json"),
+  JSON.stringify(report, null, 2) + "\n",
+  "utf8",
+);
+
 // Only fail the build when nothing prerendered — a partial result is still
 // better than shipping plain CSR shells, and a single flaky route shouldn't
 // gate the whole deploy.
-if (successCount === 0) {
-  console.error("✗ No routes prerendered — failing build.");
+if (successCount === 0 || (STRICT && failures.length > 0)) {
+  console.error(
+    STRICT
+      ? "✗ Strict prerender failed: every published route is required."
+      : "✗ No routes prerendered — failing build.",
+  );
   process.exit(1);
 }

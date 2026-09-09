@@ -11,7 +11,6 @@ import PartnersSection from "@/components/PartnersSection";
 import LogisticsAnimationSection from "@/components/LogisticsAnimationSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import LeadershipSection from "@/components/LeadershipSection";
-import TrustBadgesSection from "@/components/TrustBadgesSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import ImageMarquee from "@/components/ImageMarquee";
@@ -65,7 +64,6 @@ const Index = () => {
       <LogisticsAnimationSection />
       <TestimonialsSection />
       <LeadershipSection />
-      <TrustBadgesSection />
       <FAQSection />
 
       {/* ════════════════════ IMAGE MARQUEE ════════════════════ */}
