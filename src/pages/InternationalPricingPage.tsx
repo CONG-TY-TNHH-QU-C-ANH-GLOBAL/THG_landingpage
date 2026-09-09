@@ -25,6 +25,7 @@ import EpacketPanel from "@/components/pricing/EpacketPanel";
 import ExpressVnUsPanel from "@/components/pricing/ExpressVnUsPanel";
 import ExpressCnUsPanel from "@/components/pricing/ExpressCnUsPanel";
 import { PricingSearchProvider, usePricingSearch } from "@/components/pricing/PricingSearchContext";
+import { trackEvent } from "@/lib/analytics";
 
 /* ═══════════════════════════════════════════════
    MAIN PAGE
@@ -47,6 +48,10 @@ const InternationalPricingContent = () => {
   useEffect(() => {
     lark.refetch();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    trackEvent("view_pricing", { pricing_type: "international", locale: lang });
+  }, [lang]);
 
   // State
   const [service, setService] = useState<ServiceTab>("epacket");

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { SeoHead } from "@/components/seo/SeoHead";
@@ -16,11 +16,13 @@ async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfi
     const { exportToExcel } = await import("@/lib/exportUtils");
     exportToExcel(config);
 }
-import { useLarkPricingContext, SyncBadge } from "@/components/pricing/LarkPricingProvider";
 import { useI18n } from "@/lib/i18n";
 import { WAREHOUSE_PACKAGING_URL } from "@/config/cmsAssets";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { Button } from "@/components/ui/button";
+import { ThreePlEstimator } from "@/components/pricing/ThreePlEstimator";
+import { THREE_PL_USPS_RATES } from "@/data/threePlPricing";
+import { trackEvent } from "@/lib/analytics";
 
 interface DomesticPricingRow {
     STT: string;
@@ -29,7 +31,7 @@ interface DomesticPricingRow {
     zones: Record<number, string>;
 }
 
-const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const ZONES = [1, 2, 3, 4, 5, 6, 7, 8];
 const INITIAL_ROWS = 6;
 
 // Format weight cell: add "oz" suffix if missing.
@@ -40,35 +42,21 @@ function formatWeight(weight: string): string {
 
 const DomesticPricingContent = () => {
     const { t, language } = useI18n();
-    const lark = useLarkPricingContext();
     const [showAll, setShowAll] = useState(false);
     const { scrollRef, canScrollLeft, canScrollRight, scrollBy } = useScrollAffordance(150);
 
-    // Always re-fetch fresh data when navigating to this page
     useEffect(() => {
-        lark.refetch();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        trackEvent("view_pricing", { pricing_type: "us_3pl", locale: language });
+    }, [language]);
 
-    // Read from CMS overlay (slug `usDomestic`) populated by useCmsPricingOverlay.
     const domesticPricingRows = useMemo<DomesticPricingRow[]>(() => {
-        const cmsRows = (lark.cmsOverlay["usDomestic"] as Array<Record<string, string>> | undefined) ?? [];
-        return cmsRows.map((r, idx) => ({
+        return THREE_PL_USPS_RATES.map((r, idx) => ({
             STT: String(idx + 1),
-            weight: r.kg ?? "",
-            gram: r.gram ?? "",
-            zones: {
-                1: r.z1 ?? "",
-                2: r.z2 ?? "",
-                3: r.z3 ?? "",
-                4: r.z4 ?? "",
-                5: r.z5 ?? "",
-                6: r.z6 ?? "",
-                7: r.z7 ?? "",
-                8: r.z8 ?? "",
-                9: r.z9 ?? "",
-            },
+            weight: String(r[0]),
+            gram: String(Math.round(r[0] * 28.3495)),
+            zones: Object.fromEntries(ZONES.map((zone) => [zone, r[zone].toFixed(2)])),
         }));
-    }, [lark.cmsOverlay]);
+    }, []);
 
     const displayRows = showAll ? domesticPricingRows : domesticPricingRows.slice(0, INITIAL_ROWS);
     const hasMore = domesticPricingRows.length > INITIAL_ROWS;
@@ -149,7 +137,6 @@ const DomesticPricingContent = () => {
                         <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
                             {t("domestic.hero_desc")} <span className="notranslate font-semibold">THG Warehouse</span>
                         </p>
-                        <div className="mt-2"><SyncBadge /></div>
                     </div>
                 </ScrollReveal>
 
@@ -195,7 +182,7 @@ const DomesticPricingContent = () => {
                                     <thead>
                                         <tr className="bg-navy text-white">
                                             <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider sticky left-0 bg-navy z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)] min-w-[50px] border-r border-white/20">{t("domestic.th_stt")}</th>
-                                            <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[80px] border-r border-white/20">Weight Not Over<br />(in ounces)</th>
+                                            <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[110px] border-r border-white/20">{t("domestic.weight_ounces")}</th>
                                             <th className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[70px] border-r border-white/20">Gram</th>
                                             {ZONES.map((z) => (
                                                 <th key={z} className="px-2 md:px-3 py-2 text-center font-semibold text-[10px] md:text-[11px] uppercase tracking-wider whitespace-nowrap min-w-[70px] border-r border-white/20 last:border-r-0">Zone {z}</th>
@@ -251,6 +238,10 @@ const DomesticPricingContent = () => {
                             </div>
                         )}
                     </div>
+                </ScrollReveal>
+
+                <ScrollReveal>
+                    <ThreePlEstimator />
                 </ScrollReveal>
 
                 {/* YouTube */}
@@ -363,6 +354,8 @@ const DomesticPricingContent = () => {
                         <p className="text-white/70 mb-5 text-sm max-w-lg mx-auto">{t("domestic.cta_desc")}</p>
                         <LeadFormDialog
                             sourcePage="/domestic-pricing#cta"
+                            primaryService="warehouse"
+                            surface="warehouse-inline"
                             trigger={
                                 <Button
                                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-[13px] hover:bg-primary/90 transition-colors shadow-lg shadow-primary/30"
@@ -379,7 +372,8 @@ const DomesticPricingContent = () => {
 };
 
 const DomesticPricingPage = () => {
-    const { t } = useI18n();
+    const { t, language } = useI18n();
+    const localizedPath = `/${language}/domestic-pricing`;
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
@@ -389,8 +383,8 @@ const DomesticPricingPage = () => {
             />
             <JsonLdBreadcrumb
                 items={[
-                    { name: "Home", url: "https://thgfulfill.com/" },
-                    { name: "Domestic Pricing", url: "https://thgfulfill.com/domestic-pricing" },
+                    { name: t("domestic.back_home"), url: `https://thgfulfill.com/${language}` },
+                    { name: t("domestic.hero_title"), url: `https://thgfulfill.com${localizedPath}` },
                 ]}
             />
             <Navbar />

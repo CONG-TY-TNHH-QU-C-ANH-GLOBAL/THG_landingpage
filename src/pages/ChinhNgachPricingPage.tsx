@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Ship, Plane, FileCheck, ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -10,6 +11,7 @@ import { CmsRateTable, CmsMetaList } from "@/components/pricing/CmsRateTable";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { trackEvent } from "@/lib/analytics";
 
 /** Rate-card slugs seeded by CMS migration 0042. Every one is read through the
  *  same schema-driven renderer, so column changes made in the Rate Card Builder
@@ -47,7 +49,11 @@ function SectionHeading({ icon: Icon, title, subtitle }: Readonly<{
 }
 
 const ChinhNgachPricingPage = () => {
-    const { t } = useI18n();
+    const { t, language } = useI18n();
+
+    useEffect(() => {
+        trackEvent("view_pricing", { pricing_type: "formal_customs", locale: language });
+    }, [language]);
 
     return (
         <div className="min-h-screen bg-cream">
@@ -58,8 +64,8 @@ const ChinhNgachPricingPage = () => {
             />
             <JsonLdBreadcrumb
                 items={[
-                    { name: "Home", url: "https://thgfulfill.com/" },
-                    { name: "Chinh Ngach Pricing", url: "https://thgfulfill.com/chinh-ngach-pricing" },
+                    { name: "Home", url: `https://thgfulfill.com/${language}` },
+                    { name: "Chinh Ngach Pricing", url: `https://thgfulfill.com/${language}/chinh-ngach-pricing` },
                 ]}
             />
             <Navbar variant="darkHero" />

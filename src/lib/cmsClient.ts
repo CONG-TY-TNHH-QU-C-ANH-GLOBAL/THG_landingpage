@@ -45,6 +45,7 @@ import {
   shippingRouteResponseSchema,
   shippingRoutesResponseSchema,
   siteSettingsResponseSchema,
+  seoPagesResponseSchema,
   testimonialsResponseSchema,
   translationsResponseSchema,
 } from "@/lib/cmsSchemas";
@@ -161,6 +162,10 @@ export const cmsClient = {
 
   getLeadership() {
     return fetchJson("/leadership", leadershipResponseSchema);
+  },
+
+  getSeoPages() {
+    return fetchJson("/seo-pages", seoPagesResponseSchema);
   },
 
   getIntegrations() {

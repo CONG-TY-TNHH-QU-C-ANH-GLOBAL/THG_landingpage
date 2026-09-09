@@ -1,4 +1,4 @@
-import { useEffect, useRef, ReactNode } from "react";
+import { useEffect, useRef, ReactNode, useState } from "react";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -9,6 +9,7 @@ interface ScrollRevealProps {
 
 const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }: ScrollRevealProps) => {
   const ref = useRef<HTMLDivElement>(null);
+  const [enhanced, setEnhanced] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -17,10 +18,10 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
     // Check for reduced-motion preference
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
-      el.style.opacity = "1";
-      el.style.transform = "none";
       return;
     }
+
+    setEnhanced(true);
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -30,7 +31,7 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
 
           setTimeout(() => {
             el.style.opacity = "1";
-            el.style.transform = "translate(0, 0) scale(1) perspective(1200px) rotateX(0) rotateY(0) translateZ(0)";
+            el.style.transform = "none";
 
             // Remove will-change after animation completes to free GPU memory
             const cleanup = () => {
@@ -68,8 +69,9 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
       ref={ref}
       className={className}
       style={{
-        opacity: 0,
-        transform: initialTransform,
+        // Progressive enhancement: prerendered HTML is visible without JS.
+        opacity: enhanced ? 0 : 1,
+        transform: enhanced ? initialTransform : "none",
         transition: `opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1)`,
         transitionDelay: `${delay}ms`,
       }}

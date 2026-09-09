@@ -2,87 +2,917 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://thgfulfill.com/</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/vi</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/thg-fulfill</loc>
-    <lastmod>2026-05-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/thg-fulfill" />
+    <loc>https://thgfulfill.com/en</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/thg-express</loc>
-    <lastmod>2026-05-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/thg-express" />
+    <loc>https://thgfulfill.com/zh</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/thg-warehouse</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/vi/thg-fulfill</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-fulfill" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/thg-order</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/en/thg-fulfill</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/thg-order" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-fulfill" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/catalog</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/zh/thg-fulfill</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/catalog" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-fulfill" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-fulfill" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/blog</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/vi/thg-express</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/blog" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-express" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-express" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-express" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-express" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/policy</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/en/thg-express</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/policy" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-express" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-express" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-express" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-express" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/shipping-policy</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/zh/thg-express</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-express" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-express" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-express" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-express" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/careers</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/vi/thg-warehouse</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/careers" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-warehouse" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/international-pricing</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/en/thg-warehouse</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-warehouse" />
   </url>
   <url>
-    <loc>https://thgfulfill.com/domestic-pricing</loc>
-    <lastmod>2026-05-15</lastmod>
+    <loc>https://thgfulfill.com/zh/thg-warehouse</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-warehouse" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-warehouse" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/thg-order</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-order" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-order" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-order" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-order" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/thg-order</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-order" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-order" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-order" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-order" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/thg-order</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-order" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-order" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-order" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-order" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/catalog</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/catalog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/catalog" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/catalog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/catalog" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/catalog</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/catalog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/catalog" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/catalog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/catalog" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/catalog</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/catalog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/catalog" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/catalog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/catalog" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/careers</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/careers</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/careers</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/community</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/community" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/community" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/community" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/community" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/community</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/community" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/community" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/community" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/community" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/community</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/community" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/community" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/community" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/community" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/community/reviews</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/community/reviews" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/community/reviews</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/community/reviews" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/community/reviews</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/community/reviews" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/community/reviews" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/blog" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/blog</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/blog" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/blog</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/blog" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/policy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/policy" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/policy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/policy" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/policy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/policy" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/shipping-policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/shipping-policy" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/shipping-policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/shipping-policy" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/shipping-policy</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/shipping-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/shipping-policy" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/international-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/international-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/international-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/international-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/international-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/international-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/international-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/chinh-ngach-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/chinh-ngach-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/chinh-ngach-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/chinh-ngach-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/chinh-ngach-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/chinh-ngach-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/chinh-ngach-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/domestic-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/domestic-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/domestic-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/domestic-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/domestic-pricing</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/domestic-pricing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/domestic-pricing" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/kham-pha-cac-dich-vu-van-chuyen-express-pho-bien</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/kham-pha-cac-dich-vu-van-chuyen-express-pho-bien" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/kham-pha-cac-dich-vu-van-chuyen-express-pho-bien" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-thiet-ke-san-pham-pod</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-thiet-ke-san-pham-pod" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-thiet-ke-san-pham-pod" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/event</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/event" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/event" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/baocaonguonhang</loc>
+    <lastmod>2026-06-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/baocaonguonhang" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/baocaonguonhang" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/bcnh-06-2026</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/bcnh-06-2026" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/bcnh-06-2026" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/bi-quyet-thuc-hien-don-dropship-xuyen-bien-gioi-hieu-qua</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/bi-quyet-thuc-hien-don-dropship-xuyen-bien-gioi-hieu-qua" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/bi-quyet-thuc-hien-don-dropship-xuyen-bien-gioi-hieu-qua" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/bi-quyet-dropship-xuyen-bien-gioi-kinh-nghiem-tu-nguoi-trong-cuoc</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/bi-quyet-dropship-xuyen-bien-gioi-kinh-nghiem-tu-nguoi-trong-cuoc" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/bi-quyet-dropship-xuyen-bien-gioi-kinh-nghiem-tu-nguoi-trong-cuoc" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-tinh-linh-hoat-cua-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-tinh-linh-hoat-cua-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-tinh-linh-hoat-cua-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/hieu-ro-qua-trinh-van-chuyen-express-cho-nguoi-ban-hang-online</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/hieu-ro-qua-trinh-van-chuyen-express-cho-nguoi-ban-hang-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/hieu-ro-qua-trinh-van-chuyen-express-cho-nguoi-ban-hang-online" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/cach-tao-san-pham-pod-doc-dao-de-noi-bat-tren-thi-truong</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/cach-tao-san-pham-pod-doc-dao-de-noi-bat-tren-thi-truong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/cach-tao-san-pham-pod-doc-dao-de-noi-bat-tren-thi-truong" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/nhung-luu-y-quan-trong-khi-quan-ly-kho-hang-cho-nguoi-ban-hang-online</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/nhung-luu-y-quan-trong-khi-quan-ly-kho-hang-cho-nguoi-ban-hang-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/nhung-luu-y-quan-trong-khi-quan-ly-kho-hang-cho-nguoi-ban-hang-online" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-chat-luong-in-an-trong-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-chat-luong-in-an-trong-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-chat-luong-in-an-trong-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-bien-san-pham-trong-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-bien-san-pham-trong-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-bien-san-pham-trong-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/kham-pha-qua-trinh-van-chuyen-express-cho-nguoi-ban-hang-online</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/kham-pha-qua-trinh-van-chuyen-express-cho-nguoi-ban-hang-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/kham-pha-qua-trinh-van-chuyen-express-cho-nguoi-ban-hang-online" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/trai-nghiem-dropship-xuyen-bien-gioi-goc-nhin-tu-nguoi-trong-cuoc</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/trai-nghiem-dropship-xuyen-bien-gioi-goc-nhin-tu-nguoi-trong-cuoc" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/trai-nghiem-dropship-xuyen-bien-gioi-goc-nhin-tu-nguoi-trong-cuoc" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-quy-trinh-san-xuat-pod-cho-nguoi-ban-hang-online</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-quy-trinh-san-xuat-pod-cho-nguoi-ban-hang-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-quy-trinh-san-xuat-pod-cho-nguoi-ban-hang-online" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/nhung-yeu-to-quan-trong-trong-quan-ly-kho-hang-hieu-qua</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/nhung-yeu-to-quan-trong-trong-quan-ly-kho-hang-hieu-qua" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/nhung-yeu-to-quan-trong-trong-quan-ly-kho-hang-hieu-qua" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-bien-thiet-ke-trong-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-bien-thiet-ke-trong-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-bien-thiet-ke-trong-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-quy-trinh-dong-goi-va-giao-hang-trong-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-quy-trinh-dong-goi-va-giao-hang-trong-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-quy-trinh-dong-goi-va-giao-hang-trong-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/kham-pha-cac-phuong-thuc-van-chuyen-express-pho-bien</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/kham-pha-cac-phuong-thuc-van-chuyen-express-pho-bien" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/kham-pha-cac-phuong-thuc-van-chuyen-express-pho-bien" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/chia-se-kinh-nghiem-dropship-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/chia-se-kinh-nghiem-dropship-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/chia-se-kinh-nghiem-dropship-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/meo-tao-thuong-hieu-ca-nhan-khi-ban-hang-pod-online</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/meo-tao-thuong-hieu-ca-nhan-khi-ban-hang-pod-online" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/meo-tao-thuong-hieu-ca-nhan-khi-ban-hang-pod-online" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online-2</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online-2" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online-2" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tich-hop-cong-nghe-trong-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tich-hop-cong-nghe-trong-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tich-hop-cong-nghe-trong-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-tinh-ben-vung-cua-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-tinh-ben-vung-cua-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-tinh-ben-vung-cua-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/qua-trinh-van-chuyen-express-lua-chon-phu-hop</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/qua-trinh-van-chuyen-express-lua-chon-phu-hop" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/qua-trinh-van-chuyen-express-lua-chon-phu-hop" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-chien-luoc-marketing-cho-seller-pod</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-chien-luoc-marketing-cho-seller-pod" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/meo-toi-uu-hoa-chien-luoc-marketing-cho-seller-pod" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/loi-ich-cua-he-thong-quan-ly-kho-hang-tu-dong</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/loi-ich-cua-he-thong-quan-ly-kho-hang-tu-dong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/loi-ich-cua-he-thong-quan-ly-kho-hang-tu-dong" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-chinh-san-pham-trong-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-chinh-san-pham-trong-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tuy-chinh-san-pham-trong-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tich-hop-he-thong-quan-ly-don-hang-trong-dich-vu-pod-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tich-hop-he-thong-quan-ly-don-hang-trong-dich-vu-pod-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/danh-gia-kha-nang-tich-hop-he-thong-quan-ly-don-hang-trong-dich-vu-pod-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/tim-hieu-ve-cac-dich-vu-van-chuyen-express-thong-dung</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/tim-hieu-ve-cac-dich-vu-van-chuyen-express-thong-dung" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/tim-hieu-ve-cac-dich-vu-van-chuyen-express-thong-dung" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/bi-quyet-thuc-hien-don-dropship-xuyen-bien-gioi-kinh-nghiem-tu-nguoi-trong-cuoc</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/bi-quyet-thuc-hien-don-dropship-xuyen-bien-gioi-kinh-nghiem-tu-nguoi-trong-cuoc" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/bi-quyet-thuc-hien-don-dropship-xuyen-bien-gioi-kinh-nghiem-tu-nguoi-trong-cuoc" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/hieu-ve-qua-trinh-van-chuyen-express-lua-chon-toi-uu</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/hieu-ve-qua-trinh-van-chuyen-express-lua-chon-toi-uu" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/hieu-ve-qua-trinh-van-chuyen-express-lua-chon-toi-uu" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/cap-nhat-xu-huong-dropship-xuyen-bien-gioi</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/cap-nhat-xu-huong-dropship-xuyen-bien-gioi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/cap-nhat-xu-huong-dropship-xuyen-bien-gioi" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online-3</loc>
+    <lastmod>2026-07-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online-3" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/blog/meo-quan-ly-kho-hang-hieu-qua-cho-nguoi-ban-hang-online-3" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/careers/engineer-ai-intern</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/engineer-ai-intern" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/careers/engineer-ai-intern</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/engineer-ai-intern" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/careers/engineer-ai-intern</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/engineer-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/engineer-ai-intern" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/careers/httpsthgfulfillcomvicareers</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/httpsthgfulfillcomvicareers" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/careers/httpsthgfulfillcomvicareers</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/httpsthgfulfillcomvicareers" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/careers/httpsthgfulfillcomvicareers</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/httpsthgfulfillcomvicareers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/httpsthgfulfillcomvicareers" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/careers/sales-pod</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-pod" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/careers/sales-pod</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-pod" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/careers/sales-pod</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-pod" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-pod" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/careers/sales-ship</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-ship" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/careers/sales-ship</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-ship" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/careers/sales-ship</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-ship" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-ship" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/careers/sales-wh</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-wh" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/careers/sales-wh</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-wh" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/careers/sales-wh</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/careers/sales-wh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/sales-wh" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/vi/careers/marketing-ai-intern</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/marketing-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/marketing-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/marketing-ai-intern" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/careers/marketing-ai-intern</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/careers/marketing-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/careers/marketing-ai-intern" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/careers/marketing-ai-intern" />
   </url>
 </urlset>

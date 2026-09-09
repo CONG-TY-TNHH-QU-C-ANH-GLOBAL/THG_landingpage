@@ -101,15 +101,16 @@ const JobDetailPage = () => {
 
   const accent = accentFor(job.cat);
   const description = buildDescription(job);
-  const url = `${SITE}/${language}/careers/${job.id}`;
+  const url = `${SITE}/${language}/careers/${slug}`;
 
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
         title={`${job.title} — ${t("careers.seo_title_suffix")}`}
         description={description}
-        path={`/careers/${job.id}`}
+        path={`/careers/${slug}`}
         ogType="article"
+        availableLocales={cms.data?.available_locales.length ? cms.data.available_locales : [language]}
       />
       <JsonLdJobPosting
         title={job.title}

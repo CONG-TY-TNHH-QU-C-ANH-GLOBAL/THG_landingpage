@@ -3,30 +3,28 @@
 //
 // Falls back to static-only routes if CMS API unreachable (dev offline scenario).
 
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const CMS_API = process.env.VITE_CMS_API_URL ?? "http://localhost:8080/api/v1";
-const SITE = process.env.SITE_BASE ?? "https://thgfulfill.com";
-const LANGS = ["vi", "en", "zh"] as const;
+const registry = JSON.parse(
+  readFileSync(resolve(process.cwd(), "scripts", "seo-route-registry.json"), "utf8"),
+) as {
+  siteBase: string;
+  defaultLocale: "vi";
+  locales: Array<"vi" | "en" | "zh">;
+  staticRoutes: string[];
+};
+const SITE = process.env.SITE_BASE ?? registry.siteBase;
+const LANGS = registry.locales;
+const STATIC_ROUTES = registry.staticRoutes;
+const STRICT = process.env.SEO_BUILD_STRICT === "1" || process.env.CI === "true";
+type Locale = (typeof LANGS)[number];
 
-const STATIC_ROUTES = [
-  "/",
-  "/thg-fulfill",
-  "/thg-express",
-  "/thg-warehouse",
-  "/thg-order",
-  "/catalog",
-  "/blog",
-  "/policy",
-  "/shipping-policy",
-  "/careers",
-  "/community",
-  "/community/reviews",
-  "/international-pricing",
-  "/chinh-ngach-pricing",
-  "/domestic-pricing",
-];
+function dynamicSourceFailure(message: string): void {
+  if (STRICT) throw new Error(message);
+  console.warn(`⚠ ${message}`);
+}
 
 interface SitemapEntry {
   loc: string;
@@ -51,18 +49,23 @@ function entryXml(e: SitemapEntry): string {
   return lines.join("\n");
 }
 
-function buildAlternates(langPath: string): SitemapEntry["alternates"] {
+function buildAlternates(
+  langPath: string,
+  locales: readonly Locale[] = LANGS,
+): SitemapEntry["alternates"] {
   // langPath is already lang-prefixed, e.g. "/vi/thg-fulfill" or "/en"
   // Strip the leading lang segment to get the base path ("/thg-fulfill" or "").
   const basePath = langPath.replace(/^\/(en|vi|zh)(\/|$)/, "/").replace(/\/$/, "") || "/";
   const base = basePath === "/" ? "" : basePath;
-  return [
-    { hreflang: "vi", href: `${SITE}/vi${base}` },
-    { hreflang: "en", href: `${SITE}/en${base}` },
-    { hreflang: "zh-CN", href: `${SITE}/zh${base}` },
-    // x-default → Vietnamese (primary audience)
-    { hreflang: "x-default", href: `${SITE}/vi${base}` },
-  ];
+  const mapped = locales.map((locale) => ({
+    hreflang: locale === "zh" ? "zh-CN" : locale,
+    href: `${SITE}/${locale}${base}`,
+  }));
+  const defaultLocale = locales.includes("vi") ? "vi" : locales[0];
+  if (defaultLocale) {
+    mapped.push({ hreflang: "x-default", href: `${SITE}/${defaultLocale}${base}` });
+  }
+  return mapped;
 }
 
 /** Expand one base path into a lang-prefixed entry per locale. */
@@ -71,15 +74,16 @@ function langEntries(
   lastmod: string,
   changefreq: SitemapEntry["changefreq"],
   priority: number,
+  locales: readonly Locale[] = LANGS,
 ): SitemapEntry[] {
-  return LANGS.map((lang) => {
+  return locales.map((lang) => {
     const langPath = basePath === "/" ? `/${lang}` : `/${lang}${basePath}`;
     return {
       loc: `${SITE}${langPath}`,
       lastmod,
       changefreq,
       priority,
-      alternates: buildAlternates(langPath),
+      alternates: buildAlternates(langPath, locales),
     };
   });
 }
@@ -90,24 +94,30 @@ async function fetchBlogEntries(): Promise<SitemapEntry[]> {
   try {
     const res = await fetch(`${CMS_API}/sitemap`);
     if (!res.ok) {
-      console.warn(`⚠ CMS sitemap endpoint returned ${res.status} — skipping blog/dynamic routes`);
+      dynamicSourceFailure(`CMS sitemap endpoint returned ${res.status} — skipping blog/dynamic routes`);
       return entries;
     }
     const data = (await res.json()) as {
       pages: Array<{ route: string; locale: string; updated_at: number }>;
-      blog: Array<{ slug: string; locale: string; published_date: string | null; updated_at: number }>;
+      blog: Array<{
+        slug: string;
+        locale: Locale;
+        available_locales?: Locale[];
+        published_date: string | null;
+        updated_at: number;
+      }>;
     };
-    // De-dupe blog slugs across locales (URL is same)
     const seenSlugs = new Set<string>();
     for (const post of data.blog) {
       if (seenSlugs.has(post.slug)) continue;
       seenSlugs.add(post.slug);
       const lastmod = post.published_date ?? new Date(post.updated_at * 1000).toISOString().slice(0, 10);
-      entries.push(...langEntries(`/blog/${post.slug}`, lastmod, "monthly", 0.6));
+      const locales = post.available_locales ?? [post.locale];
+      entries.push(...langEntries(`/blog/${post.slug}`, lastmod, "monthly", 0.6, locales));
     }
     console.log(`✓ Added ${seenSlugs.size} blog posts from CMS`);
   } catch (err) {
-    console.warn(`⚠ Cannot reach CMS API at ${CMS_API} — sitemap will only include static routes:`, (err as Error).message);
+    dynamicSourceFailure(`Cannot reach CMS API at ${CMS_API}: ${(err as Error).message}`);
   }
   return entries;
 }
@@ -117,21 +127,26 @@ async function fetchBlogEntries(): Promise<SitemapEntry[]> {
 async function fetchJobEntries(today: string): Promise<SitemapEntry[]> {
   const entries: SitemapEntry[] = [];
   try {
-    const res = await fetch(`${CMS_API}/jobs?lang=vi`);
-    if (!res.ok) {
-      console.warn(`⚠ CMS jobs endpoint returned ${res.status} — skipping job URLs`);
-      return entries;
+    const bySlug = new Map<string, Locale[]>();
+    for (const locale of LANGS) {
+      const res = await fetch(`${CMS_API}/jobs?lang=${locale}`);
+      if (!res.ok) {
+        dynamicSourceFailure(`CMS jobs endpoint (${locale}) returned ${res.status}`);
+        continue;
+      }
+      const data = (await res.json()) as { jobs: Array<{ slug: string }> };
+      for (const job of data.jobs ?? []) {
+        const locales = bySlug.get(job.slug) ?? [];
+        if (!locales.includes(locale)) locales.push(locale);
+        bySlug.set(job.slug, locales);
+      }
     }
-    const data = (await res.json()) as { jobs: Array<{ slug: string }> };
-    const seen = new Set<string>();
-    for (const job of data.jobs ?? []) {
-      if (seen.has(job.slug)) continue;
-      seen.add(job.slug);
-      entries.push(...langEntries(`/careers/${job.slug}`, today, "weekly", 0.7));
+    for (const [slug, locales] of bySlug) {
+      entries.push(...langEntries(`/careers/${slug}`, today, "weekly", 0.7, locales));
     }
-    console.log(`✓ Added ${seen.size} job postings from CMS`);
+    console.log(`✓ Added ${bySlug.size} job postings from CMS`);
   } catch (err) {
-    console.warn(`⚠ Cannot reach CMS jobs API — sitemap will omit job URLs:`, (err as Error).message);
+    dynamicSourceFailure(`Cannot reach CMS jobs API: ${(err as Error).message}`);
   }
   return entries;
 }
@@ -145,7 +160,7 @@ async function fetchCommunityEntries(today: string): Promise<SitemapEntry[]> {
   try {
     const res = await fetch(`${CMS_API}/community/questions`);
     if (!res.ok) {
-      console.warn(`⚠ CMS community endpoint returned ${res.status} — skipping community URLs`);
+      dynamicSourceFailure(`CMS community endpoint returned ${res.status}`);
       return entries;
     }
     const data = (await res.json()) as {
@@ -156,11 +171,11 @@ async function fetchCommunityEntries(today: string): Promise<SitemapEntry[]> {
       const lastmod = q.published_at
         ? new Date(q.published_at * 1000).toISOString().slice(0, 10)
         : today;
-      entries.push(...langEntries(`/community/${q.slug}`, lastmod, "weekly", 0.6));
+      entries.push(...langEntries(`/community/${q.slug}`, lastmod, "weekly", 0.6, ["vi"]));
     }
     console.log(`✓ Added ${indexable.length} indexable community questions from CMS`);
   } catch (err) {
-    console.warn(`⚠ Cannot reach CMS community API — sitemap will omit community URLs:`, (err as Error).message);
+    dynamicSourceFailure(`Cannot reach CMS community API: ${(err as Error).message}`);
   }
   return entries;
 }
@@ -174,7 +189,7 @@ async function fetchCommunityReviewEntries(today: string): Promise<SitemapEntry[
   try {
     const res = await fetch(`${CMS_API}/community/reviews`);
     if (!res.ok) {
-      console.warn(`⚠ CMS reviews endpoint returned ${res.status} — skipping review URLs`);
+      dynamicSourceFailure(`CMS reviews endpoint returned ${res.status}`);
       return entries;
     }
     const data = (await res.json()) as {
@@ -185,11 +200,11 @@ async function fetchCommunityReviewEntries(today: string): Promise<SitemapEntry[
       const lastmod = r.published_at
         ? new Date(r.published_at * 1000).toISOString().slice(0, 10)
         : today;
-      entries.push(...langEntries(`/community/reviews/${r.slug}`, lastmod, "weekly", 0.6));
+      entries.push(...langEntries(`/community/reviews/${r.slug}`, lastmod, "weekly", 0.6, ["vi"]));
     }
     console.log(`✓ Added ${indexable.length} indexable community reviews from CMS`);
   } catch (err) {
-    console.warn(`⚠ Cannot reach CMS reviews API — sitemap will omit review URLs:`, (err as Error).message);
+    dynamicSourceFailure(`Cannot reach CMS reviews API: ${(err as Error).message}`);
   }
   return entries;
 }
