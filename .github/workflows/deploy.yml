@@ -274,7 +274,9 @@ jobs:
             done
             status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/seo-smoke-route-that-must-not-exist")"
             [ "$status" = 404 ] || { echo "unknown route: expected 404, got $status" >&2; failed=1; }
-            redirect="$(curl --silent --show-error --resolve "thgfulfill.com:80:$origin" -D - -o /dev/null http://thgfulfill.com/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
+            # HTTP reaches HTTPS in two hops: resolve both ports locally so the
+            # check never accidentally follows the public DNS record mid-cutover.
+            redirect="$(curl --silent --show-error --location --resolve "thgfulfill.com:80:$origin" --resolve "thgfulfill.com:443:$origin" -k -o /dev/null -w '%{url_effective}' http://thgfulfill.com/)"
             [ "$redirect" = 'https://thgfulfill.com/vi' ] || { echo "root redirect: got $redirect" >&2; failed=1; }
             redirect="$(curl --silent --show-error --resolve "www.thgfulfill.com:443:$origin" -k -D - -o /dev/null https://www.thgfulfill.com/en/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
             [ "$redirect" = 'https://thgfulfill.com/en/' ] || { echo "www redirect: got $redirect" >&2; failed=1; }
