@@ -63,6 +63,11 @@ test.describe("Lead form modal", () => {
 
     await dialog.getByLabel(/Full name/i).fill("Jane Tester");
     await dialog.getByLabel(/^Email/i).fill("jane@example.com");
+    await dialog.getByLabel(/Company \/ store URL/i).fill("https://janes-store.example");
+    await dialog.getByLabel(/Primary service/i).selectOption("warehouse");
+    await dialog.getByLabel(/Monthly order volume/i).selectOption("500_1999");
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+
     await dialog.getByLabel(/Phone/i).fill("+1 415 555 0102");
     await dialog.getByLabel(/Your needs/i).fill("Need 200 orders/day fulfilled.");
     await dialog.getByRole("button", { name: /Send consultation request/i }).click();
@@ -71,6 +76,10 @@ test.describe("Lead form modal", () => {
     const payload = req.postDataJSON() as Record<string, unknown>;
     expect(payload.name).toBe("Jane Tester");
     expect(payload.email).toBe("jane@example.com");
+    expect(payload.company_url).toBe("https://janes-store.example");
+    expect(payload.primary_service).toBe("warehouse");
+    expect(payload.monthly_order_band).toBe("500_1999");
+    expect(payload.ship_to_markets).toEqual(["US"]);
     // DEV_BYPASS is acceptable only because VITE_TURNSTILE_SITE_KEY is empty.
     // CI runs that set the env var should see a real captcha token here.
     expect(payload.turnstile_token).toBeTruthy();
@@ -83,14 +92,11 @@ test.describe("Lead form modal", () => {
     const dialog = page.getByRole("dialog", { name: /Talk to us/i });
     await expect(dialog).toBeVisible();
 
-    // Bypass the native `required` so we can hit the JS validation path the
-    // production component uses (toast error, no network call).
-    await dialog
-      .getByLabel(/Full name/i)
-      .evaluate((el: HTMLInputElement) => (el.removeAttribute("required")));
-    await dialog
-      .getByLabel(/^Email/i)
-      .evaluate((el: HTMLInputElement) => (el.removeAttribute("required")));
+    // Bypass native validation so this reaches the component's cross-field
+    // validation path. Step one now qualifies name/email/company/service/volume.
+    for (const label of [/Full name/i, /^Email/i, /Company \/ store URL/i, /Primary service/i, /Monthly order volume/i]) {
+      await dialog.getByLabel(label).evaluate((el: HTMLElement) => el.removeAttribute("required"));
+    }
 
     let leadCalled = false;
     await page.route("**/api/v1/leads", async (route) => {
@@ -98,7 +104,7 @@ test.describe("Lead form modal", () => {
       await route.fulfill({ status: 200, body: "{}" });
     });
 
-    await dialog.getByRole("button", { name: /Send consultation request/i }).click();
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
 
     // The toast appears outside the dialog — sonner mounts at the document root.
     await expect(page.getByText(/Please fill in your name and email/i)).toBeVisible();
