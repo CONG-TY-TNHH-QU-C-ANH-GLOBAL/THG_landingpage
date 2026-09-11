@@ -29,7 +29,7 @@ export const pricingTranslations: TranslationDict = {
   "domestic.back_home": tr("Home", "Trang chủ", "首页"),
   "domestic.tab_domestic": tr("Domestic", "Nội Địa", "国内"),
   "domestic.tab_intl": tr("International", "Quốc Tế", "国际"),
-  "domestic.hero_title": tr("3PL Warehouse", "Biểu phí kho", "3PL仓库"),
+  "domestic.hero_title": tr("3PL Warehouse", "Biểu phí cước", "3PL仓库"),
   "domestic.hero_highlight": tr("Rate Card", "3PL", "费率表"),
   "domestic.hero_desc": tr("Transparent storage, pick-pack and US domestic shipping from", "Phí lưu kho, pick-pack và vận chuyển nội địa Mỹ minh bạch từ", "透明的仓储、拣货打包及美国境内配送服务，来自"),
   "domestic.table_title": tr("USPS Ground Advantage by Zone", "USPS Ground Advantage theo zone", "USPS Ground Advantage分区费率"),
