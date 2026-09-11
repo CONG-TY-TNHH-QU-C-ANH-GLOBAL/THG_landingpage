@@ -221,6 +221,14 @@ jobs:
                     add_header Cache-Control "public, immutable" always;
                 }
                 location / {
+                    # Extensionless prerendered routes (for example /vi and
+                    # /vi/domestic-pricing) resolve to index.html via
+                    # try_files. Apply the same no-store policy as .html files
+                    # so browsers never keep a previous page's content after a
+                    # deployment; hashed assets above remain immutable.
+                    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+                    add_header Pragma "no-cache" always;
+                    add_header Expires "0" always;
                     try_files $uri $uri/index.html =404;
                 }
                 location ~ /\. { deny all; }
