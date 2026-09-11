@@ -384,7 +384,7 @@ const DomesticPricingPage = () => {
             <JsonLdBreadcrumb
                 items={[
                     { name: t("domestic.back_home"), url: `https://thgfulfill.com/${language}` },
-                    { name: t("domestic.hero_title"), url: `https://thgfulfill.com${localizedPath}` },
+                    { name: `${t("domestic.hero_title")} ${t("domestic.hero_highlight")}`, url: `https://thgfulfill.com${localizedPath}` },
                 ]}
             />
             <Navbar />

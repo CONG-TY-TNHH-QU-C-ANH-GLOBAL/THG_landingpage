@@ -9,7 +9,7 @@ export const navTranslations: TranslationDict = {
   "nav.pricing": tr("Pricing list", "Bảng giá", "价格"),
   "nav.intl_pricing": tr("International Pricing", "Bảng giá Quốc tế", "国际运费"),
   "nav.intl_pricing_desc": tr("Transparent rates for VN/CN → US/UK/EU shipping", "Cước phí minh bạch cho tuyến VN/CN → US/UK/EU", "越南/中国到美国/英国/欧盟的透明运费"),
-  "nav.domestic_pricing": tr("3PL Warehouse Rates", "Biểu phí kho 3PL", "3PL仓库费率"),
+  "nav.domestic_pricing": tr("3PL Warehouse Rates", "Biểu phí cước 3PL", "3PL仓库费率"),
   "nav.domestic_pricing_desc": tr("US storage, pick-pack and domestic shipping rates", "Phí lưu kho, pick-pack và vận chuyển nội địa Mỹ", "美国仓储、拣货打包及境内运费"),
   "nav.policy": tr("Policy", "Chính sách", "政策"),
   "nav.news": tr("Blog", "Blog", "Blog"),
