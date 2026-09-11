@@ -267,9 +267,11 @@ jobs:
               html="$(curl --fail --silent --show-error --resolve "thgfulfill.com:443:$origin" -k "$base$route")" || { failed=1; continue; }
               [ "$(printf '%s' "$html" | wc -c)" -ge 10000 ] || { echo "$route: response resembles SPA shell" >&2; failed=1; }
               exact_one title '<title([^>]*)?>' "$html"
-              exact_one description '<meta[^>]*name=[^>]*description[^>]*>' "$html"
-              exact_one canonical '<link[^>]*rel=[^>]*canonical[^>]*>' "$html"
-              exact_one robots '<meta[^>]*name=[^>]*robots[^>]*>' "$html"
+              # Match the primary SEO fields exactly; do not count Twitter's
+              # separate `twitter:description` card metadata as a duplicate.
+              exact_one description '<meta[[:space:]][^>]*name="description"[^>]*>' "$html"
+              exact_one canonical '<link[[:space:]][^>]*rel="canonical"[^>]*>' "$html"
+              exact_one robots '<meta[[:space:]][^>]*name="robots"[^>]*>' "$html"
               exact_one H1 '<h1([^>]*)?>' "$html"
             done
             status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/seo-smoke-route-that-must-not-exist")"
