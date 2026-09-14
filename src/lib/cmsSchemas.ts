@@ -172,6 +172,31 @@ export const leadershipResponseSchema = z.object({
   leadership: z.array(cmsLeadershipMemberSchema),
 });
 
+/* ---------- Events ---------- */
+export const cmsEventSchema = z.object({
+  id: z.number(),
+  slug: z.string(),
+  locale: localeSchema,
+  title: z.string(),
+  summary: z.string().nullable(),
+  body_md: z.string().nullable(),
+  cover_url: z.string().nullable(),
+  event_date: z.string(),
+  end_date: z.string().nullable(),
+  location: z.string().nullable(),
+  role: z.string().nullable(),
+  url: z.string().nullable(),
+  video_url: z.string().nullable(),
+  seo_title: z.string().nullable(),
+  seo_description: z.string().nullable(),
+});
+export type CmsEvent = z.infer<typeof cmsEventSchema>;
+export const eventsResponseSchema = z.object({
+  locale: localeSchema,
+  events: z.array(cmsEventSchema),
+});
+export const eventResponseSchema = z.object({ event: cmsEventSchema });
+
 /* ---------- Integrations ---------- */
 
 export const cmsIntegrationSchema = z.object({
@@ -253,8 +278,7 @@ export const cmsSiteSettingsSchema = z.object({
     .catch([])
     .transform((arr) =>
       arr.filter(
-        (item): item is CmsTerminologyGroup =>
-          cmsTerminologyGroupSchema.safeParse(item).success,
+        (item): item is CmsTerminologyGroup => cmsTerminologyGroupSchema.safeParse(item).success,
       ),
     ),
 });
@@ -587,21 +611,32 @@ export const cmsLeadInputSchema = z.object({
   utm: z.record(z.string(), z.string()).optional(),
   primary_service: z.enum(["fulfill", "express", "warehouse", "dropship"]).optional(),
   service_interests: z.array(z.enum(["fulfill", "express", "warehouse", "dropship"])).optional(),
-  surface: z.enum(["global-services-dialog", "fulfill-inline", "express-inline", "warehouse-inline", "dropship-inline", "home-conversion-inline"]).optional(),
+  surface: z
+    .enum([
+      "global-services-dialog",
+      "fulfill-inline",
+      "express-inline",
+      "warehouse-inline",
+      "dropship-inline",
+      "home-conversion-inline",
+    ])
+    .optional(),
   turnstile_token: z.string(),
 });
 export type CmsLeadInput = z.infer<typeof cmsLeadInputSchema>;
 
 export const seoPagesResponseSchema = z.object({
-  pages: z.array(z.object({
-    route: z.string(),
-    locale: localeSchema,
-    title: z.string(),
-    meta_description: z.string().nullable(),
-    og_image_url: z.string().nullable(),
-    indexable: z.boolean(),
-    updated_at: z.number(),
-  })),
+  pages: z.array(
+    z.object({
+      route: z.string(),
+      locale: localeSchema,
+      title: z.string(),
+      meta_description: z.string().nullable(),
+      og_image_url: z.string().nullable(),
+      indexable: z.boolean(),
+      updated_at: z.number(),
+    }),
+  ),
 });
 
 /* ---------- Community Hub (Q&A) ---------- */

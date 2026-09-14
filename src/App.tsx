@@ -1,5 +1,13 @@
 import { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import * as Sentry from "@sentry/react";
@@ -46,13 +54,17 @@ const CommunityPage = lazy(() => import("./pages/community/CommunityPage"));
 const CommunityQuestionPage = lazy(() => import("./pages/community/CommunityQuestionPage"));
 const CommunityReviewsListPage = lazy(() => import("./pages/community/CommunityReviewsListPage"));
 const CommunityReviewDetailPage = lazy(() => import("./pages/community/CommunityReviewDetailPage"));
+const EventsPage = lazy(() => import("./pages/events/EventsPage"));
+const EventDetailPage = lazy(() => import("./pages/events/EventDetailPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
  */
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return null;
 };
 
@@ -63,7 +75,9 @@ const ScrollToTop = () => {
  * the user wanders across pages before converting.
  */
 const UtmCapture = () => {
-  useEffect(() => { captureUtmOnce(); }, []);
+  useEffect(() => {
+    captureUtmOnce();
+  }, []);
   return null;
 };
 
@@ -109,7 +123,13 @@ const AppRoutes = () => {
   return (
     <>
       <ScrollToTop />
-      <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div></div>}>
+      <Suspense
+        fallback={
+          <div className="h-screen w-full flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+          </div>
+        }
+      >
         <ErrorBoundary key={location.pathname}>
           <Routes>
             {/* Root redirect — send bare / to default locale */}
@@ -132,6 +152,8 @@ const AppRoutes = () => {
               <Route path="tracking" element={<TrackingPage />} />
               <Route path="careers" element={<CareersPage />} />
               <Route path="careers/:slug" element={<JobDetailPage />} />
+              <Route path="events" element={<EventsPage />} />
+              <Route path="events/:slug" element={<EventDetailPage />} />
               <Route path="community" element={<CommunityPage />} />
               {/* Static "reviews" segment outranks the dynamic :slug in v6. */}
               <Route path="community/reviews" element={<CommunityReviewsListPage />} />
@@ -147,7 +169,13 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <Sentry.ErrorBoundary fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin" /></div>}>
+  <Sentry.ErrorBoundary
+    fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    }
+  >
     <ErrorBoundary>
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>

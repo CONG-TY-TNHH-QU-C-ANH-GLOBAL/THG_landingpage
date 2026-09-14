@@ -8,7 +8,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { cmsClient, type Locale } from "@/lib/cmsClient";
 
 const STALE_MS = 5 * 60 * 1000; // 5 minutes — matches CMS edge cache TTL
-const GC_MS = 30 * 60 * 1000;   // 30 minutes
+const GC_MS = 30 * 60 * 1000; // 30 minutes
 // Community list is keyed per category, so a tab opened before a question is
 // published would otherwise cache an empty result for 5 min and look like a
 // broken filter. Keep it near-fresh so switching tabs revalidates fast.
@@ -114,6 +114,26 @@ export function useCmsLeadership() {
     queryFn: () => cmsClient.getLeadership(),
     staleTime: STALE_MS,
     gcTime: GC_MS,
+  });
+}
+
+export function useCmsEvents(locale: Locale) {
+  return useQuery({
+    queryKey: ["cms", "events", locale],
+    queryFn: () => cmsClient.getEvents(locale),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
+export function useCmsEvent(slug: string, locale: Locale) {
+  return useQuery({
+    queryKey: ["cms", "event", slug, locale],
+    queryFn: () => cmsClient.getEvent(slug, locale),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+    enabled: !!slug,
+    retry: false,
   });
 }
 

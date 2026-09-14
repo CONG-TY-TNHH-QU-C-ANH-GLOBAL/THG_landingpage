@@ -3,13 +3,31 @@
   "defaultLocale": "vi",
   "locales": ["vi", "en", "zh"],
   "staticRoutes": [
-    "/", "/thg-fulfill", "/thg-express", "/thg-warehouse", "/thg-order",
-    "/catalog", "/careers", "/community", "/community/reviews", "/blog",
-    "/policy", "/shipping-policy", "/international-pricing",
-    "/chinh-ngach-pricing", "/domestic-pricing"
+    "/",
+    "/thg-fulfill",
+    "/thg-express",
+    "/thg-warehouse",
+    "/thg-order",
+    "/catalog",
+    "/careers",
+    "/events",
+    "/community",
+    "/community/reviews",
+    "/blog",
+    "/policy",
+    "/shipping-policy",
+    "/international-pricing",
+    "/chinh-ngach-pricing",
+    "/domestic-pricing"
   ],
   "commercialRoutes": [
-    "/", "/thg-fulfill", "/thg-express", "/thg-warehouse", "/thg-order",
-    "/international-pricing", "/chinh-ngach-pricing", "/domestic-pricing"
+    "/",
+    "/thg-fulfill",
+    "/thg-express",
+    "/thg-warehouse",
+    "/thg-order",
+    "/international-pricing",
+    "/chinh-ngach-pricing",
+    "/domestic-pricing"
   ]
 }

@@ -31,6 +31,8 @@ import {
   homepageResponseSchema,
   integrationsResponseSchema,
   leadershipResponseSchema,
+  eventResponseSchema,
+  eventsResponseSchema,
   partnersResponseSchema,
   jobResponseSchema,
   jobsResponseSchema,
@@ -164,6 +166,14 @@ export const cmsClient = {
     return fetchJson("/leadership", leadershipResponseSchema);
   },
 
+  getEvents(locale: Locale) {
+    return fetchJson(`/events?lang=${locale}`, eventsResponseSchema);
+  },
+
+  getEvent(slug: string, locale: Locale) {
+    return fetchJson(`/events/${encodeURIComponent(slug)}?lang=${locale}`, eventResponseSchema);
+  },
+
   getSeoPages() {
     return fetchJson("/seo-pages", seoPagesResponseSchema);
   },
@@ -242,7 +252,9 @@ export const cmsClient = {
       try {
         const body = (await res.json()) as { error?: string };
         if (body.error) message = body.error;
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       throw new Error(message);
     }
     const parsed = applicantCvUploadResponseSchema.safeParse(await res.json());
@@ -259,7 +271,10 @@ export const cmsClient = {
   },
 
   getShippingRoute(slug: string, locale: Locale) {
-    return fetchJson(`/shipping-routes/${encodeURIComponent(slug)}?lang=${locale}`, shippingRouteResponseSchema);
+    return fetchJson(
+      `/shipping-routes/${encodeURIComponent(slug)}?lang=${locale}`,
+      shippingRouteResponseSchema,
+    );
   },
 
   getPolicies(locale: Locale) {
