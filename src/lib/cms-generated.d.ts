@@ -350,6 +350,163 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List live THG events for a locale
+         * @description Returns published Event cards ordered by event date, newest first.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live event list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            events: {
+                                id: number;
+                                slug: string;
+                                /** @enum {string} */
+                                locale: "en" | "vi" | "zh";
+                                title: string;
+                                summary: string | null;
+                                body_md: string | null;
+                                cover_url: string | null;
+                                event_date: string;
+                                end_date: string | null;
+                                location: string | null;
+                                role: string | null;
+                                url: string | null;
+                                video_url: string | null;
+                                seo_title: string | null;
+                                seo_description: string | null;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/events/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one live THG event by slug and locale
+         * @description Returns an event only when its locale row is published.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live event detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            event: {
+                                id: number;
+                                slug: string;
+                                /** @enum {string} */
+                                locale: "en" | "vi" | "zh";
+                                title: string;
+                                summary: string | null;
+                                body_md: string | null;
+                                cover_url: string | null;
+                                event_date: string;
+                                end_date: string | null;
+                                location: string | null;
+                                role: string | null;
+                                url: string | null;
+                                video_url: string | null;
+                                seo_title: string | null;
+                                seo_description: string | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Event not found or not published */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/translations": {
         parameters: {
             query?: never;
