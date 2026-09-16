@@ -7,7 +7,7 @@ import type { TranslationDict } from "../types";
 
 export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.badge": tr("Formal customs · Transparent · All-in", "Chính ngạch · Minh bạch · Trọn gói", "正规报关 · 透明 · 一站式"),
-  "chinhngach.title": tr("Formal Customs Shipping Rates — Vietnam → USA", "Bảng giá ship chính ngạch — Việt Nam → Hoa Kỳ", "正规报关运费 — 越南 → 美国"),
+  "chinhngach.title": tr("Formal Customs Shipping & Rate Card", "Vận chuyển Chính ngạch và Biểu phí", "正规报关运输与费率表"),
   "chinhngach.subtitle": tr("Sea & air rates from Hai Phong, Ho Chi Minh and Da Nang to US ports — full customs paperwork, no hidden fees.", "Cước Sea & Air từ Hải Phòng, Hồ Chí Minh, Đà Nẵng đến các cảng Mỹ — đầy đủ thủ tục, không phát sinh ẩn phí.", "从海防、胡志明市、岘港至美国港口的海运与空运报价 — 手续齐全，无隐藏费用。"),
   "chinhngach.back_intl": tr("Back to international pricing", "Quay lại bảng giá quốc tế", "返回国际运费"),
   "chinhngach.scope_notice": tr("Rates below exclude domestic trucking in Vietnam, customs clearance, and last-mile delivery in the US. Contact THG for an all-in quote based on your actual shipment.", "Giá cước dưới đây chưa bao gồm phí trucking nội địa VN, thủ tục hải quan và last-mile delivery tại Mỹ. Liên hệ THG để được báo giá trọn gói theo lô hàng thực tế.", "以下运费不含越南境内拖车、报关及美国末端派送费用。请联系THG获取按实际货量的一站式报价。"),
@@ -32,6 +32,8 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.meta_cfs_us": tr("CFS — destination (US)", "Kho đích tại Mỹ", "美国目的仓"),
   "chinhngach.meta_sea_thuong_cutoff": tr("Cut-off & frequency", "Cut-off & tần suất", "截关与班期"),
   "chinhngach.meta_excl_matson": tr("Not included", "Chưa bao gồm", "不含"),
+  "chinhngach.meta_excl_matson_lcl": tr("LCL — not included", "LCL — chưa bao gồm", "散货 — 不含"),
+  "chinhngach.meta_excl_matson_fcl": tr("FCL — not included", "FCL — chưa bao gồm", "整柜 — 不含"),
   "chinhngach.meta_excl_sea_lcl": tr("LCL — not included", "LCL — chưa bao gồm", "散货 — 不含"),
   "chinhngach.meta_excl_sea_fcl": tr("FCL — not included", "FCL — chưa bao gồm", "整柜 — 不含"),
   "chinhngach.meta_excl_air": tr("Air — not included", "Air — chưa bao gồm", "空运 — 不含"),
