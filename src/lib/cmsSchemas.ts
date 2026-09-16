@@ -181,6 +181,9 @@ export const cmsEventSchema = z.object({
   summary: z.string().nullable(),
   body_md: z.string().nullable(),
   cover_url: z.string().nullable(),
+  /** Social share image. Optional for the same cross-deploy reason as `photos`;
+   *  null means "fall back to the cover". */
+  og_image_url: z.string().nullable().optional().default(null),
   event_date: z.string(),
   end_date: z.string().nullable(),
   location: z.string().nullable(),
@@ -191,11 +194,33 @@ export const cmsEventSchema = z.object({
   seo_description: z.string().nullable(),
 });
 export type CmsEvent = z.infer<typeof cmsEventSchema>;
+
+/** One gallery photo. `src` is always usable — CMS drops photos whose media row
+ *  no longer resolves rather than publishing a null src. */
+export const cmsEventPhotoSchema = z.object({
+  src: z.string(),
+  caption: z.string().nullable(),
+});
+export type CmsEventPhoto = z.infer<typeof cmsEventPhotoSchema>;
+
+/** Detail adds the gallery. Every new field is OPTIONAL with a default on
+ *  purpose: the two repos deploy independently, so this page has to parse a
+ *  response from a CMS that has not shipped the gallery endpoint yet. Without
+ *  the defaults the whole event page would fail validation during the window
+ *  between the two deploys. */
+export const cmsEventDetailSchema = cmsEventSchema.extend({
+  photos: z.array(cmsEventPhotoSchema).optional().default([]),
+});
+export type CmsEventDetail = z.infer<typeof cmsEventDetailSchema>;
+
 export const eventsResponseSchema = z.object({
   locale: localeSchema,
   events: z.array(cmsEventSchema),
 });
-export const eventResponseSchema = z.object({ event: cmsEventSchema });
+export const eventResponseSchema = z.object({
+  event: cmsEventDetailSchema,
+  available_locales: z.array(localeSchema).optional().default([]),
+});
 
 /* ---------- Integrations ---------- */
 

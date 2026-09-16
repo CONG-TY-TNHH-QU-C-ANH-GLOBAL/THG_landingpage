@@ -35,16 +35,34 @@ function isMoney(col: RateColumn): boolean {
 
 /** Cents appear only on amounts that have them: $4.50 and $6.05 keep both
  *  digits, $84 and $16,901 stay whole. A uniform 2-dp column would read as
- *  false precision on the whole-dollar rows, and 0-dp would print "$4.5". */
-function formatCell(value: CellValue, col: RateColumn): string {
+ *  false precision on the whole-dollar rows, and 0-dp would print "$4.5".
+ *
+ *  `approx` prefixes "~". The source rate sheets mark every figure that way and
+ *  close with "giá tạm tính": these are indications to quote against, not fixed
+ *  prices, and a bare "$155" reads as a commitment THG has not made. */
+function formatCell(value: CellValue, col: RateColumn, approx = false): string {
     if (value === null || value === undefined || value === "") return "—";
     if (!isMoney(col)) return String(value);
     const num = typeof value === "number" ? value : Number(String(value).replace(/[$,]/g, ""));
     if (!Number.isFinite(num)) return String(value);
+    const tilde = approx ? "~" : "";
     const isUsd = col.semantic === "money_usd" || (col.currency ?? "").toUpperCase() === "USD";
-    if (!isUsd) return num.toLocaleString("vi-VN");
+    if (!isUsd) return tilde + num.toLocaleString("vi-VN");
     const dp = Number.isInteger(num) ? 0 : 2;
-    return `$${num.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+    return `${tilde}$${num.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+}
+
+/** Marks the summary row of a breakdown table: which column to read, and the
+ *  values that mean "this row is the total, not another component of it". */
+export interface TotalRowRule {
+    code: string;
+    values: readonly string[];
+}
+
+function isTotalRow(row: RateRow, rule?: TotalRowRule): boolean {
+    if (!rule) return false;
+    const cell = row[rule.code];
+    return typeof cell === "string" && rule.values.includes(cell);
 }
 
 /**
@@ -58,7 +76,15 @@ function formatCell(value: CellValue, col: RateColumn): string {
  * page ship before operations has verified the figures — the section simply
  * stays in its "being updated" state until the table is flipped to live.
  */
-export function CmsRateTable({ slug }: Readonly<{ slug: string }>) {
+export function CmsRateTable({ slug, approx = false, totalRow }: Readonly<{
+    slug: string;
+    /** Render money cells as "~$155" and caption the card as provisional. */
+    approx?: boolean;
+    /** Set the summary row apart so it cannot be mistaken for a component of
+     *  itself. A flat breakdown where "Total" looks like "Ocean Freight" invites
+     *  the reader to add the total back into its own parts. */
+    totalRow?: TotalRowRule;
+}>) {
     const { t } = useI18n();
     const { data, isLoading } = useCmsPricingTable(slug);
     const table = data?.table;
@@ -89,6 +115,11 @@ export function CmsRateTable({ slug }: Readonly<{ slug: string }>) {
                 {table.description && (
                     <p className="text-white/70 text-[12px] mt-0.5">{table.description}</p>
                 )}
+                {approx && (
+                    <p className="text-primary text-[11.5px] mt-1 font-semibold">
+                        {t("chinhngach.approx_note")}
+                    </p>
+                )}
             </div>
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-[13px]">
@@ -105,25 +136,30 @@ export function CmsRateTable({ slug }: Readonly<{ slug: string }>) {
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, i) => (
-                            <tr
-                                key={i}
-                                className="border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors"
-                            >
-                                {columns.map((col) => {
-                                    const money = isMoney(col);
-                                    return (
-                                        <td
-                                            key={col.code}
-                                            className={`px-5 py-3 ${money ? "font-bold text-navy notranslate" : "text-foreground/80"}`}
-                                            translate={money ? "no" : undefined}
-                                        >
-                                            {formatCell(row[col.code], col)}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
+                        {rows.map((row, i) => {
+                            const total = isTotalRow(row, totalRow);
+                            return (
+                                <tr
+                                    key={i}
+                                    className={total
+                                        ? "border-y-2 border-primary/40 bg-[#FFF8E7]"
+                                        : "border-b border-[var(--pricing-border)] last:border-0 hover:bg-[#FFFBF0] transition-colors"}
+                                >
+                                    {columns.map((col) => {
+                                        const money = isMoney(col);
+                                        return (
+                                            <td
+                                                key={col.code}
+                                                className={`px-5 py-3 ${total ? "font-black text-navy" : money ? "font-bold text-navy notranslate" : "text-foreground/80"} ${total && money ? "notranslate" : ""}`}
+                                                translate={money ? "no" : undefined}
+                                            >
+                                                {formatCell(row[col.code], col, approx)}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

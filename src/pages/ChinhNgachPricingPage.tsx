@@ -31,6 +31,12 @@ const SLUGS = {
  *  still renders one while a database is mid-migration. 0050 blanks it and
  *  CmsMetaList drops blank values, so only the split pair survives afterwards. */
 const MATSON_META = ["matson_etd", "matson_cutoff", "matson_transit_port", "matson_transit_inland", "matson_transit_total", "cfs_haiphong", "cfs_hochiminh", "cfs_us", "excl_matson", "excl_matson_lcl", "excl_matson_fcl"] as const;
+/** The MATSON FCL card is a breakdown: Ocean Freight + FAF + MAF, then Total.
+ *  Flat, the summary row is indistinguishable from the components it sums, so a
+ *  reader can add it back into them. "Tổng cước" is accepted alongside "Total"
+ *  so a later rename of the cell in the Rate Card Builder keeps the emphasis. */
+const FCL_TOTAL_ROW = { code: "charge", values: ["Total", "Tổng cước"] } as const;
+
 const SEA_META = ["sea_thuong_cutoff", "excl_sea_lcl", "excl_sea_fcl"] as const;
 const AIR_META = ["excl_air"] as const;
 const VALIDITY_META = ["validity"] as const;
@@ -113,9 +119,9 @@ const ChinhNgachPricingPage = () => {
                         <SectionHeading icon={Ship} title={t("chinhngach.matson_title")} subtitle={t("chinhngach.matson_subtitle")} />
                         <div className="space-y-4">
                             <CmsMetaList slug={SLUGS.meta} keys={MATSON_META} />
-                            <CmsRateTable slug={SLUGS.matsonLcl} />
-                            <CmsRateTable slug={SLUGS.matsonSurcharge} />
-                            <CmsRateTable slug={SLUGS.matsonFcl} />
+                            <CmsRateTable slug={SLUGS.matsonLcl} approx />
+                            <CmsRateTable slug={SLUGS.matsonSurcharge} approx />
+                            <CmsRateTable slug={SLUGS.matsonFcl} approx totalRow={FCL_TOTAL_ROW} />
                             <CmsMetaList slug={SLUGS.meta} keys={VALIDITY_META} />
                         </div>
                     </section>
@@ -126,8 +132,8 @@ const ChinhNgachPricingPage = () => {
                     <section className="mb-12">
                         <SectionHeading icon={Ship} title={t("chinhngach.sea_title")} subtitle={t("chinhngach.sea_subtitle")} />
                         <div className="space-y-4">
-                            <CmsRateTable slug={SLUGS.seaLcl} />
-                            <CmsRateTable slug={SLUGS.seaFcl} />
+                            <CmsRateTable slug={SLUGS.seaLcl} approx />
+                            <CmsRateTable slug={SLUGS.seaFcl} approx />
                             <CmsMetaList slug={SLUGS.meta} keys={SEA_META} />
                         </div>
                     </section>
@@ -138,7 +144,7 @@ const ChinhNgachPricingPage = () => {
                     <section className="mb-12">
                         <SectionHeading icon={Plane} title={t("chinhngach.air_title")} subtitle={t("chinhngach.air_subtitle")} />
                         <div className="space-y-4">
-                            <CmsRateTable slug={SLUGS.air} />
+                            <CmsRateTable slug={SLUGS.air} approx />
                             <CmsMetaList slug={SLUGS.meta} keys={AIR_META} />
                         </div>
                     </section>
@@ -148,7 +154,7 @@ const ChinhNgachPricingPage = () => {
                 <ScrollReveal>
                     <section className="mb-12">
                         <SectionHeading icon={FileCheck} title={t("chinhngach.customs_title")} subtitle={t("chinhngach.customs_subtitle")} />
-                        <CmsRateTable slug={SLUGS.customs} />
+                        <CmsRateTable slug={SLUGS.customs} approx />
                     </section>
                 </ScrollReveal>
 
