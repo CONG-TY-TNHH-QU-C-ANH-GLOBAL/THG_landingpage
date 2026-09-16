@@ -11,12 +11,18 @@ export interface RateLeaf {
   desc: string;
   price?: string;
   note?: string;
+  /** Draws the row as an offer rather than a charge: primary accent bar, tinted
+   *  background, and the price as the same FREE pill the packaging cards use.
+   *  For a line that is good news — the 90-day free storage — which read as just
+   *  another fee when it was styled like one. */
+  highlight?: boolean;
 }
 
 export interface RateItem {
   label: string;
   price?: string;
   note?: string;
+  highlight?: boolean;
   subRows?: RateLeaf[];
 }
 
@@ -60,20 +66,44 @@ function NoteRow({ note }: Readonly<{ note: string }>) {
 }
 
 function LeafRow({ leaf, indented }: Readonly<{ leaf: RateLeaf; indented: boolean }>) {
+  // The accent bar is 3px of the row's left padding, so a highlighted row stays
+  // flush with the plain ones above and below it.
+  const rowClass = leaf.highlight
+    ? "border-l-4 border-l-primary bg-primary/[0.13] pl-4 pr-5"
+    : `bg-card px-5 ${indented ? "pl-9" : ""}`;
+
   return (
-    <div
-      className={`flex items-start justify-between gap-6 border-b border-border/40 bg-card px-5 py-3.5 ${indented ? "pl-9" : ""}`}
-    >
+    <div className={`flex items-start justify-between gap-6 border-b border-border/40 py-3.5 ${rowClass}`}>
       <div className="min-w-0">
-        <p className="text-[14px] font-medium text-muted-foreground">{leaf.desc}</p>
+        <p
+          className={
+            leaf.highlight
+              ? "text-[14.5px] font-extrabold text-navy"
+              : "text-[14px] font-medium text-muted-foreground"
+          }
+        >
+          {leaf.desc}
+        </p>
         {leaf.note ? (
-          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground/80">{leaf.note}</p>
+          <p
+            className={`mt-1 text-[12px] leading-relaxed ${leaf.highlight ? "text-navy/70" : "text-muted-foreground/80"}`}
+          >
+            {leaf.note}
+          </p>
         ) : null}
       </div>
       {leaf.price ? (
-        <p className="whitespace-pre-line text-right text-[14px] font-extrabold text-navy">
-          {leaf.price}
-        </p>
+        leaf.highlight ? (
+          // Filled, not the outlined packaging-card pill: this one sits in a
+          // column of black price figures and has to win against them.
+          <span className="inline-block flex-shrink-0 whitespace-nowrap rounded-full bg-primary px-4 py-1 text-[13.5px] font-black uppercase tracking-wide text-primary-foreground shadow-sm shadow-primary/30">
+            {leaf.price}
+          </span>
+        ) : (
+          <p className="whitespace-pre-line text-right text-[14px] font-extrabold text-navy">
+            {leaf.price}
+          </p>
+        )
       ) : null}
     </div>
   );
@@ -84,8 +114,19 @@ function ItemRows({ item, term }: Readonly<{ item: RateItem; term: string }>) {
     if (term && !leafHaystack(item).includes(term)) return null;
     return (
       <>
-        <LeafRow leaf={{ desc: item.label, price: item.price }} indented={false} />
-        {item.note ? <NoteRow note={item.note} /> : null}
+        <LeafRow
+          leaf={{
+            desc: item.label,
+            price: item.price,
+            // A highlighted row keeps its note inside itself. NoteRow is the
+            // amber ⚠ caveat band — right for "this rate has a catch", wrong for
+            // the terms of an offer, which would read as a warning about it.
+            note: item.highlight ? item.note : undefined,
+            highlight: item.highlight,
+          }}
+          indented={false}
+        />
+        {item.note && !item.highlight ? <NoteRow note={item.note} /> : null}
       </>
     );
   }

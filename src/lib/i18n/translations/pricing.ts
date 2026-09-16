@@ -139,7 +139,25 @@ export const pricingTranslations: TranslationDict = {
   "pt.export_excel": tr("Export to Excel", "Xuất Excel", "导出Excel"),
   "pt.swipe_hint": tr("👉 Swipe to see more", "👉 Vuốt ngang để xem thêm", "👉 滑动查看更多"),
   "pt.export_pdf": tr("Export to PDF", "Xuất PDF", "导出PDF"),
+  // SUPERSEDED by domestic.storage_free_label + domestic.storage_free_note below,
+  // which put this offer inside the Storage rate rows. Kept because the CMS
+  // translation overlay may hold operator-edited copy for this key; delete it
+  // there first, then here.
   "domestic.free_storage_promo": tr("✨ Free 90-day storage for first-time warehouse customers / 1 CBM", "✨ Miễn phí lưu kho 90 ngày cho khách hàng sử dụng kho lần đầu tiên / 1 CBM", "✨ 首次使用仓库的客户享90天免费仓储 / 1 CBM"),
+  // The same offer as free_storage_promo, split so it can sit INSIDE the Storage
+  // band as a rate row instead of as a banner under the whole catalogue — a
+  // reader comparing storage prices never had to scroll past the table to find
+  // out the first 90 days are free.
+  "domestic.storage_free_label": tr("First 90 days of storage", "Miễn phí lưu kho 90 ngày đầu", "前 90 天仓储"),
+  "domestic.storage_free_note": tr("For first-time warehouse customers — 1 CBM.", "Dành cho khách hàng sử dụng kho lần đầu — 1 CBM.", "首次使用仓库的客户 — 1 CBM。"),
+  // Hero stat strip on /domestic-pricing. These are SELLING POINTS, not counts:
+  // the strip used to show "1-8 zones / 24 weight rows / 9 services", which are
+  // facts about the tables further down the page rather than reasons to read it.
+  // Each value below is the headline of a rate stated in full in those tables.
+  "domestic.stat_receiving": tr("Receiving", "Nhập kho", "入库"),
+  "domestic.stat_storage_value": tr("90 days", "90 ngày", "90 天"),
+  "domestic.stat_storage_label": tr("Free storage", "Miễn phí lưu kho", "免费仓储"),
+  "domestic.stat_pickpack_label": tr("Pick & pack from", "Pick & pack từ", "拣货打包 起"),
   "pricing.step1_origin": tr("Step 1 — Choose Origin Country", "Bước 1 — Chọn Quốc Gia Gửi Hàng", "第 1 步 — 选择发货国"),
   "pricing.step2_service": tr("Step 2 — Choose Service Type", "Bước 2 — Chọn Loại Dịch Vụ", "第 2 步 — 选择服务类型"),
   "pricing.step4_cargo": tr("Step 4 — Choose Cargo Type", "Bước 4 — Chọn Loại Hàng", "第 4 步 — 选择货物类型"),

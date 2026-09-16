@@ -105,7 +105,18 @@ const DomesticPricingContent = () => {
         {
             key: "storage",
             title: t("domestic.cat_storage"),
-            items: [{ label: t("fulfill.s3"), price: t("fulfill.s3_price") }],
+            items: [
+                { label: t("fulfill.s3"), price: t("fulfill.s3_price") },
+                // The 90-day free window is part of what storage COSTS, so it
+                // belongs in the storage rows, not in a banner below the
+                // catalogue where it sat before.
+                {
+                    label: t("domestic.storage_free_label"),
+                    price: t("domestic.pkg_free"),
+                    note: t("domestic.storage_free_note"),
+                    highlight: true,
+                },
+            ],
         },
         {
             key: "outbound",
@@ -174,13 +185,15 @@ const DomesticPricingContent = () => {
         },
     ], [t]);
 
+    // Every value here is the headline of a rate the tables below state in full:
+    // s1_price is the inbound receiving line, 90 days is the storage promo, and
+    // $1.20 is the cheapest outbound tier (≤ 2 lbs). Nothing goes in this strip
+    // that the rate card cannot back up — a "0% carrier markup" stat was dropped
+    // for exactly that reason.
     const heroMetrics = [
-        { value: "1–8", label: "Zone" },
-        { value: String(domesticPricingRows.length), label: t("domestic.weight_ounces") },
-        {
-            value: String(rateCategories.reduce((sum, cat) => sum + cat.items.length, 0)),
-            label: t("domestic.th_service"),
-        },
+        { value: t("fulfill.s1_price"), label: t("domestic.stat_receiving") },
+        { value: t("domestic.stat_storage_value"), label: t("domestic.stat_storage_label") },
+        { value: "$1.20", label: t("domestic.stat_pickpack_label") },
     ];
 
     const trustItems = [
@@ -233,11 +246,15 @@ const DomesticPricingContent = () => {
                         {t("domestic.hero_desc")} <span className="notranslate font-semibold text-white">THG Warehouse</span>
                     </p>
 
-                    <ul className="mt-9 flex flex-wrap gap-x-10 gap-y-5">
+                    {/* No max-width on the label: capping it at 150px is what forced the
+                        longer localized labels onto a second line, so the four items sat at
+                        different heights. They wrap by word only when the viewport is
+                        genuinely too narrow. */}
+                    <ul className="mt-9 flex flex-wrap gap-x-12 gap-y-6">
                         {heroMetrics.map((metric) => (
-                            <li key={metric.label} className="border-l-[3px] border-primary pl-3.5">
-                                <p className="text-[28px] font-extrabold leading-none">{metric.value}</p>
-                                <p className="rate-eyebrow mt-1.5 max-w-[150px] text-white/70">{metric.label}</p>
+                            <li key={metric.label} className="border-l-4 border-primary pl-4">
+                                <p className="text-[30px] font-extrabold leading-none md:text-[34px]">{metric.value}</p>
+                                <p className="rate-eyebrow mt-2 text-white/55">{metric.label}</p>
                             </li>
                         ))}
                     </ul>
@@ -301,10 +318,10 @@ const DomesticPricingContent = () => {
                             <p className="rate-eyebrow text-primary">{t("domestic.fulfill_desc")}</p>
                             <h2 className="rate-section-title mt-3 font-bold text-navy">{t("domestic.fulfill_title")}</h2>
                         </div>
+                        {/* The free-storage promo used to be an amber banner here. It is now a
+                            highlighted row inside the Storage band, where someone reading the
+                            storage rates actually sees it. */}
                         <FulfillmentRateCatalog categories={rateCategories} />
-                        <p className="mx-auto mt-5 max-w-[900px] rounded-[14px] border border-amber-200/70 bg-amber-50 px-5 py-4 text-center text-[12px] font-bold italic text-amber-800 dark:bg-amber-900/20 dark:text-amber-300 md:text-[13px]">
-                            {t("domestic.free_storage_promo")}
-                        </p>
                     </ScrollReveal>
                 </div>
             </section>
