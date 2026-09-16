@@ -27,7 +27,10 @@ const SLUGS = {
     meta: "chinhNgachMeta",
 } as const;
 
-const MATSON_META = ["matson_etd", "matson_cutoff", "matson_transit_port", "matson_transit_inland", "matson_transit_total", "cfs_haiphong", "cfs_hochiminh", "cfs_us", "excl_matson"] as const;
+/** `excl_matson` is the pre-0050 blended exclusion note, kept here so the page
+ *  still renders one while a database is mid-migration. 0050 blanks it and
+ *  CmsMetaList drops blank values, so only the split pair survives afterwards. */
+const MATSON_META = ["matson_etd", "matson_cutoff", "matson_transit_port", "matson_transit_inland", "matson_transit_total", "cfs_haiphong", "cfs_hochiminh", "cfs_us", "excl_matson", "excl_matson_lcl", "excl_matson_fcl"] as const;
 const SEA_META = ["sea_thuong_cutoff", "excl_sea_lcl", "excl_sea_fcl"] as const;
 const AIR_META = ["excl_air"] as const;
 const VALIDITY_META = ["validity"] as const;
