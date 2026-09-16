@@ -29,50 +29,54 @@ export function ThreePlEstimator() {
     : null;
 
   return (
-    <section className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden mb-7">
-      <div className="bg-navy px-5 py-4 text-white flex items-center gap-3">
-        <Calculator className="h-5 w-5 text-primary" aria-hidden="true" />
+    <section className="overflow-hidden rounded-[16px] border border-border/60 bg-card shadow-sm">
+      <div className="flex items-center gap-3 bg-navy px-5 py-4 text-white">
+        <Calculator className="h-5 w-5 flex-shrink-0 text-primary" aria-hidden="true" />
         <div>
-          <h2 className="font-bold">{t("domestic.estimator_title")}</h2>
-          <p className="text-xs text-white/70">{t("domestic.estimator_desc")}</p>
+          <h2 className="rate-eyebrow">{t("domestic.estimator_title")}</h2>
+          <p className="mt-1 text-xs text-white/60">{t("domestic.estimator_desc")}</p>
         </div>
       </div>
-      <div className="grid gap-6 p-5 md:grid-cols-[1.3fr_1fr]">
-        <div className="grid grid-cols-2 gap-4">
-          <label className="text-sm font-medium">{t("domestic.weight_lbs")}
-            <input type="number" min="0" step="0.1" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2" />
+      <div className="grid gap-6 p-5 md:grid-cols-2 md:p-6">
+        <div className="grid grid-cols-2 gap-4 self-start">
+          <label className="block">
+            <span className="rate-eyebrow block text-muted-foreground">{t("domestic.weight_lbs")}</span>
+            <input type="number" min="0" step="0.1" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className="mt-1.5 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground" />
           </label>
-          <label className="text-sm font-medium">Zone
-            <select value={zone} onChange={(e) => setZone(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2">
+          <label className="block">
+            <span className="rate-eyebrow block text-muted-foreground">Zone</span>
+            <select value={zone} onChange={(e) => setZone(Number(e.target.value))} className="mt-1.5 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground">
               {Array.from({ length: 8 }, (_, index) => index + 1).map((item) => <option key={item} value={item}>Zone {item}</option>)}
             </select>
           </label>
           {[t("domestic.length"), t("domestic.width"), t("domestic.height")].map((label, index) => {
             const value = [length, width, height][index];
             const setter = [setLength, setWidth, setHeight][index];
-            return <label key={label} className="text-sm font-medium">{label} (inch)
-              <input type="number" min="0" value={value} onChange={(e) => setter(Number(e.target.value))} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2" />
+            return <label key={label} className="block">
+              <span className="rate-eyebrow block text-muted-foreground">{label} (inch)</span>
+              <input type="number" min="0" value={value} onChange={(e) => setter(Number(e.target.value))} className="mt-1.5 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground" />
             </label>;
           })}
-          <label className="text-sm font-medium">{t("domestic.packaging")}
-            <select value={packagingKey} onChange={(e) => setPackagingKey(e.target.value)} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2">
+          <label className="col-span-2 block">
+            <span className="rate-eyebrow block text-muted-foreground">{t("domestic.packaging")}</span>
+            <select value={packagingKey} onChange={(e) => setPackagingKey(e.target.value)} className="mt-1.5 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground">
               {THREE_PL_PACKAGING.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
           </label>
         </div>
-        <div className="rounded-xl bg-secondary/40 p-5" aria-live="polite">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">{t("domestic.billable_weight")}</p>
-          <p className="text-2xl font-bold text-navy">{estimate.billable.toFixed(2)} lbs</p>
-          <div className="mt-4 space-y-2 text-sm">
-            <div className="flex justify-between gap-4"><span>Pick & pack</span><strong>{estimate.tier ? money(estimate.tier.price) : t("domestic.custom_quote")}</strong></div>
-            <div className="flex justify-between gap-4"><span>{estimate.packaging.label}</span><strong>{estimate.packaging.note === "Included" ? t("domestic.packaging_included") : estimate.packaging.note === "No handling fee" ? t("domestic.no_handling_fee") : money(estimate.packaging.price)}</strong></div>
-            <div className="flex justify-between gap-4"><span>USPS Ground Advantage</span><strong>{estimate.shipping != null ? money(estimate.shipping) : t("domestic.contact")}</strong></div>
+        <div className="rounded-[14px] bg-secondary/50 p-5" aria-live="polite">
+          <p className="rate-eyebrow text-muted-foreground">{t("domestic.billable_weight")}</p>
+          <p className="mt-1.5 text-2xl font-extrabold text-navy">{estimate.billable.toFixed(2)} lbs</p>
+          <div className="mt-5 space-y-2.5 text-[13px]">
+            <div className="flex justify-between gap-4"><span className="text-muted-foreground">Pick &amp; pack</span><strong>{estimate.tier ? money(estimate.tier.price) : t("domestic.custom_quote")}</strong></div>
+            <div className="flex justify-between gap-4"><span className="text-muted-foreground">{estimate.packaging.label}</span><strong>{estimate.packaging.note === "Included" ? t("domestic.packaging_included") : estimate.packaging.note === "No handling fee" ? t("domestic.no_handling_fee") : money(estimate.packaging.price)}</strong></div>
+            <div className="flex justify-between gap-4"><span className="text-muted-foreground">USPS Ground Advantage</span><strong>{estimate.shipping != null ? money(estimate.shipping) : t("domestic.contact")}</strong></div>
           </div>
-          <div className="mt-5 border-t border-border pt-4 flex items-end justify-between">
-            <span className="font-semibold">{t("domestic.estimated_total")}</span>
-            <strong className="text-3xl text-primary">{total == null ? t("domestic.contact") : money(total)}</strong>
+          <div className="mt-5 flex items-end justify-between border-t border-border pt-4">
+            <span className="rate-eyebrow text-muted-foreground">{t("domestic.estimated_total")}</span>
+            <strong className="text-3xl font-extrabold leading-none text-primary">{total == null ? t("domestic.contact") : money(total)}</strong>
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">{t("domestic.estimator_disclaimer")}</p>
+          <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">{t("domestic.estimator_disclaimer")}</p>
         </div>
       </div>
     </section>

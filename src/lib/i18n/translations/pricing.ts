@@ -51,6 +51,24 @@ export const pricingTranslations: TranslationDict = {
   "domestic.no_handling_fee": tr("No handling fee", "Không phí xử lý", "无操作费"),
   "domestic.fuel_surcharge": tr("Shipping cost includes USPS 8% fuel surcharge", "Phí vận chuyển đã bao gồm 8% phụ phí nhiên liệu USPS", "运费包含8%的USPS燃油附加费"),
   "domestic.swipe_hint": tr("👉 Swipe to see more zones", "👉 Vuốt ngang để xem thêm zone", "👉 滑动查看更多区域"),
+  "domestic.rate_search_empty": tr("No matching fee found", "Không tìm thấy khoản phí phù hợp", "未找到匹配的费用"),
+  "domestic.rate_search_placeholder": tr("Search fees (e.g. \"inspection\", \"box\", \"storage\")…", "Tìm khoản phí (vd: kiểm đếm, hộp, lưu kho)…", "搜索费用（如\"验货\"、\"纸箱\"、\"仓储\"）…"),
+  "domestic.rate_items": tr("{count} items", "{count} mục", "{count} 项"),
+  "domestic.cat_inbound": tr("Inbound", "Nhập kho", "入库"),
+  "domestic.cat_storage": tr("Storage", "Lưu kho", "仓储"),
+  "domestic.cat_outbound": tr("Outbound", "Xuất kho", "出库"),
+  "domestic.cat_returns": tr("Returns", "Hàng trả", "退货"),
+  "domestic.pkg_eyebrow": tr("Packaging", "Bao bì", "包装"),
+  "domestic.pkg_intro": tr("Use ours, or ship us your own branded packaging — we store and use yours at no handling charge.", "Dùng bao bì của THG, hoặc gửi bao bì thương hiệu riêng của bạn — THG lưu và dùng, không tính phí xử lý.", "使用我们的包装，或寄来您自己的品牌包装——我们代为存放使用，不收操作费。"),
+  "domestic.pkg_free": tr("Free", "Miễn phí", "免费"),
+  "domestic.pkg_poly_desc": tr("Included on every order that ships in a bag — no charge, no catch.", "Đã bao gồm cho mọi đơn đóng túi — không tính thêm phí.", "所有袋装订单均已包含——不额外收费。"),
+  "domestic.pkg_bubble_unit": tr("/ bag", "/ túi", "/ 袋"),
+  "domestic.pkg_bubble_desc": tr("Padded protection for small, knock-sensitive items.", "Lớp đệm bảo vệ cho hàng nhỏ, dễ móp méo.", "为易碰撞的小件商品提供缓冲保护。"),
+  "domestic.pkg_carton_title": tr("Carton box", "Thùng carton", "纸箱"),
+  "domestic.pkg_carton_desc": tr("Three stock sizes. Non-stock dimensions quoted on request.", "Ba kích thước có sẵn. Kích thước khác báo giá theo yêu cầu.", "三种常备尺寸。其他尺寸按需报价。"),
+  "domestic.pkg_own_title": tr("Your own packaging", "Bao bì riêng của bạn", "您自己的包装"),
+  "domestic.pkg_own_value": tr("No handling fee", "Không phí xử lý", "无操作费"),
+  "domestic.pkg_own_desc": tr("Send us your branded packaging — received, stored and used at no extra charge.", "Gửi bao bì thương hiệu của bạn — THG nhận, lưu và sử dụng, không tính thêm phí.", "寄来您的品牌包装——我们接收、存放并使用，不额外收费。"),
   "domestic.collapse": tr("Collapse", "Thu gọn", "收起"),
   "domestic.see_more": tr("See more ({count} rows)", "Xem thêm ({count} dòng)", "查看更多 ({count} 行)"),
   "domestic.video_title": tr("Fulfillment Pricing Guide Video", "Video Hướng Dẫn Bảng Giá Fulfill", "Fulfillment定价指南视频"),
@@ -121,7 +139,25 @@ export const pricingTranslations: TranslationDict = {
   "pt.export_excel": tr("Export to Excel", "Xuất Excel", "导出Excel"),
   "pt.swipe_hint": tr("👉 Swipe to see more", "👉 Vuốt ngang để xem thêm", "👉 滑动查看更多"),
   "pt.export_pdf": tr("Export to PDF", "Xuất PDF", "导出PDF"),
+  // SUPERSEDED by domestic.storage_free_label + domestic.storage_free_note below,
+  // which put this offer inside the Storage rate rows. Kept because the CMS
+  // translation overlay may hold operator-edited copy for this key; delete it
+  // there first, then here.
   "domestic.free_storage_promo": tr("✨ Free 90-day storage for first-time warehouse customers / 1 CBM", "✨ Miễn phí lưu kho 90 ngày cho khách hàng sử dụng kho lần đầu tiên / 1 CBM", "✨ 首次使用仓库的客户享90天免费仓储 / 1 CBM"),
+  // The same offer as free_storage_promo, split so it can sit INSIDE the Storage
+  // band as a rate row instead of as a banner under the whole catalogue — a
+  // reader comparing storage prices never had to scroll past the table to find
+  // out the first 90 days are free.
+  "domestic.storage_free_label": tr("First 90 days of storage", "Miễn phí lưu kho 90 ngày đầu", "前 90 天仓储"),
+  "domestic.storage_free_note": tr("For first-time warehouse customers — 1 CBM.", "Dành cho khách hàng sử dụng kho lần đầu — 1 CBM.", "首次使用仓库的客户 — 1 CBM。"),
+  // Hero stat strip on /domestic-pricing. These are SELLING POINTS, not counts:
+  // the strip used to show "1-8 zones / 24 weight rows / 9 services", which are
+  // facts about the tables further down the page rather than reasons to read it.
+  // Each value below is the headline of a rate stated in full in those tables.
+  "domestic.stat_receiving": tr("Receiving", "Nhập kho", "入库"),
+  "domestic.stat_storage_value": tr("90 days", "90 ngày", "90 天"),
+  "domestic.stat_storage_label": tr("Free storage", "Miễn phí lưu kho", "免费仓储"),
+  "domestic.stat_pickpack_label": tr("Pick & pack from", "Pick & pack từ", "拣货打包 起"),
   "pricing.step1_origin": tr("Step 1 — Choose Origin Country", "Bước 1 — Chọn Quốc Gia Gửi Hàng", "第 1 步 — 选择发货国"),
   "pricing.step2_service": tr("Step 2 — Choose Service Type", "Bước 2 — Chọn Loại Dịch Vụ", "第 2 步 — 选择服务类型"),
   "pricing.step4_cargo": tr("Step 4 — Choose Cargo Type", "Bước 4 — Chọn Loại Hàng", "第 4 步 — 选择货物类型"),
