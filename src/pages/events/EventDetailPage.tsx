@@ -1,7 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ArrowLeft, CalendarDays, ExternalLink, PlayCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, CalendarDays, ExternalLink, PlayCircle, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { useCmsEvent } from "@/hooks/useCmsContent";
@@ -16,6 +17,23 @@ export default function EventDetailPage() {
   const { language } = useI18n();
   const query = useCmsEvent(slug, language);
   const event = query.data?.event;
+  const photos = event?.photos ?? [];
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  // Arrow keys and Escape while the lightbox is open, matching the blog gallery.
+  // Bound on every render but only listening while open, so nothing leaks.
+  useEffect(() => {
+    if (lightboxIdx === null || photos.length === 0) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxIdx(null);
+      if (e.key === "ArrowLeft")
+        setLightboxIdx((i) => (i !== null && i > 0 ? i - 1 : photos.length - 1));
+      if (e.key === "ArrowRight")
+        setLightboxIdx((i) => (i !== null && i < photos.length - 1 ? i + 1 : 0));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIdx, photos.length]);
   if (query.isLoading)
     return (
       <div className="min-h-screen">
@@ -41,6 +59,7 @@ export default function EventDetailPage() {
       </div>
     );
   const image = event.cover_url ?? thumbnail(event.video_url);
+  const shareImage = event.og_image_url ?? image ?? undefined;
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
@@ -48,6 +67,8 @@ export default function EventDetailPage() {
         description={event.seo_description ?? event.summary ?? ""}
         path={`/events/${event.slug}`}
         noindex={language !== "vi"}
+        ogImage={shareImage}
+        ogImageAlt={event.title}
       />
       <Navbar />
       <main className="container mx-auto max-w-4xl px-4 pt-28 pb-20">
@@ -92,6 +113,30 @@ export default function EventDetailPage() {
         <article className="prose prose-slate mt-10 max-w-none prose-headings:text-navy prose-a:text-primary">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{event.body_md ?? ""}</ReactMarkdown>
         </article>
+        {photos.length > 0 && (
+          <section className="mt-10">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Hình ảnh sự kiện ({photos.length})
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {photos.map((photo, i) => (
+                <button
+                  key={photo.src}
+                  onClick={() => setLightboxIdx(i)}
+                  className="aspect-video overflow-hidden rounded-lg border border-border transition-opacity hover:opacity-90"
+                >
+                  <img
+                    src={photo.src}
+                    alt={photo.caption ?? `${event.title} — ảnh ${i + 1}`}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
         <div className="mt-10 flex flex-wrap gap-3">
           {event.video_url && (
             <a
@@ -115,6 +160,44 @@ export default function EventDetailPage() {
           )}
         </div>
       </main>
+
+      {lightboxIdx !== null && photos[lightboxIdx] && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setLightboxIdx(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={photos[lightboxIdx].caption ?? "Ảnh sự kiện"}
+        >
+          <button
+            onClick={() => setLightboxIdx(null)}
+            aria-label="Đóng"
+            className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <figure
+            className="max-h-full w-full max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={photos[lightboxIdx].src}
+              alt={photos[lightboxIdx].caption ?? event.title}
+              className="max-h-[80vh] w-full rounded-xl object-contain"
+            />
+            {photos[lightboxIdx].caption && (
+              <figcaption className="mt-3 text-center text-sm text-white/80">
+                {photos[lightboxIdx].caption}
+              </figcaption>
+            )}
+            {photos.length > 1 && (
+              <p className="mt-2 text-center text-xs text-white/50">
+                {lightboxIdx + 1} / {photos.length} — dùng phím ← → để xem tiếp
+              </p>
+            )}
+          </figure>
+        </div>
+      )}
     </div>
   );
 }
