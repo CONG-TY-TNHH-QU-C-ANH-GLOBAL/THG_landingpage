@@ -10,8 +10,9 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.title": tr("Formal Customs Shipping & Rate Card", "Vận chuyển Chính ngạch và Biểu phí", "正规报关运输与费率表"),
   "chinhngach.subtitle": tr("Sea & air rates from Hai Phong, Ho Chi Minh and Da Nang to US ports — full customs paperwork, no hidden fees.", "Cước Sea & Air từ Hải Phòng, Hồ Chí Minh, Đà Nẵng đến các cảng Mỹ — đầy đủ thủ tục, không phát sinh ẩn phí.", "从海防、胡志明市、岘港至美国港口的海运与空运报价 — 手续齐全，无隐藏费用。"),
   "chinhngach.back_intl": tr("Back to international pricing", "Quay lại bảng giá quốc tế", "返回国际运费"),
-  "chinhngach.scope_notice": tr("Rates below exclude domestic trucking in Vietnam, customs clearance, and last-mile delivery in the US. Contact THG for an all-in quote based on your actual shipment.", "Giá cước dưới đây chưa bao gồm phí trucking nội địa VN, thủ tục hải quan và last-mile delivery tại Mỹ. Liên hệ THG để được báo giá trọn gói theo lô hàng thực tế.", "以下运费不含越南境内拖车、报关及美国末端派送费用。请联系THG获取按实际货量的一站式报价。"),
+  "chinhngach.scope_notice": tr("Every figure below is indicative (~), not a fixed price, and excludes domestic trucking in Vietnam, customs clearance, and last-mile delivery in the US. Send us your shipment and THG will quote it exactly, all in.", "Toàn bộ mốc giá dưới đây chỉ là giá tạm tính (~), không phải giá chốt, và chưa bao gồm phí trucking nội địa VN, thủ tục hải quan và last-mile delivery tại Mỹ. Gửi thông tin lô hàng để THG báo giá chính xác, trọn gói.", "以下所有价格均为参考价（~），并非最终报价，且不含越南境内拖车、报关及美国末端派送费用。请提供货物信息，THG将给出准确的一站式报价。"),
   "chinhngach.table_pending": tr("This rate card is being updated — contact THG for the current quote.", "Bảng giá này đang được cập nhật — liên hệ THG để nhận báo giá hiện hành.", "该价目表正在更新中 — 请联系THG获取最新报价。"),
+  "chinhngach.approx_note": tr("~ Indicative only — confirmed per shipment", "~ Giá tạm tính — chốt theo từng lô hàng", "~ 仅为参考价 — 按每批货确认"),
 
   "chinhngach.matson_title": tr("MATSON — Expedited Line", "MATSON — Line hỏa tốc", "MATSON — 加急航线"),
   "chinhngach.matson_subtitle": tr("Expedited ocean service to Long Beach, CA · weekly sailing", "Dịch vụ biển hỏa tốc đi Long Beach, CA · tàu chạy hàng tuần", "至加州长滩的加急海运 · 每周班次"),
