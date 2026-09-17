@@ -122,6 +122,55 @@ async function fetchBlogEntries(): Promise<SitemapEntry[]> {
   return entries;
 }
 
+// 2b. Events from CMS (best-effort). Covers the list page as well as each
+//     event, because "/events" is deliberately absent from registry.staticRoutes
+//     — see fetchEventRoutes() in scripts/prerender.mjs. Listing it statically
+//     would claim /en/events and /zh/events, which are not prerendered and do
+//     not exist until event translations land.
+//
+//     Asks per locale and records which ones answered, so hreflang alternates
+//     name only the locales an event actually has. Locales appear here on their
+//     own as translations are reviewed, matching what prerender emits.
+async function fetchEventEntries(today: string): Promise<SitemapEntry[]> {
+  const entries: SitemapEntry[] = [];
+  try {
+    const bySlug = new Map<string, { locales: Locale[]; lastmod: string }>();
+    const listLocales: Locale[] = [];
+    for (const locale of LANGS) {
+      const res = await fetch(`${CMS_API}/events?lang=${locale}`);
+      if (!res.ok) {
+        dynamicSourceFailure(`CMS events endpoint (${locale}) returned ${res.status}`);
+        continue;
+      }
+      const data = (await res.json()) as {
+        events: Array<{ slug: string; event_date?: string | null }>;
+      };
+      const events = data.events ?? [];
+      if (events.length === 0) continue;
+      listLocales.push(locale);
+      for (const event of events) {
+        if (!event.slug) continue;
+        const seen = bySlug.get(event.slug);
+        if (seen) {
+          if (!seen.locales.includes(locale)) seen.locales.push(locale);
+        } else {
+          bySlug.set(event.slug, { locales: [locale], lastmod: event.event_date || today });
+        }
+      }
+    }
+    if (listLocales.length > 0) {
+      entries.push(...langEntries("/events", today, "weekly", 0.7, listLocales));
+    }
+    for (const [slug, { locales, lastmod }] of bySlug) {
+      entries.push(...langEntries(`/events/${slug}`, lastmod, "monthly", 0.6, locales));
+    }
+    console.log(`✓ Added ${bySlug.size} events from CMS`);
+  } catch (err) {
+    dynamicSourceFailure(`Cannot reach CMS events API: ${(err as Error).message}`);
+  }
+  return entries;
+}
+
 // 3. Open job postings from CMS (best-effort). Each JD has its own URL so HR
 //    can distribute it + Google for Jobs can index it.
 async function fetchJobEntries(today: string): Promise<SitemapEntry[]> {
@@ -220,6 +269,7 @@ async function main() {
 
   entries.push(
     ...(await fetchBlogEntries()),
+    ...(await fetchEventEntries(today)),
     ...(await fetchJobEntries(today)),
     ...(await fetchCommunityEntries(today)),
     ...(await fetchCommunityReviewEntries(today)),
