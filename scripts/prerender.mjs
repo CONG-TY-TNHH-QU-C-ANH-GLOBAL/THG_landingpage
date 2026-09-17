@@ -110,6 +110,46 @@ async function fetchBlogRoutes() {
   }
 }
 
+/** Fetch the event list AND detail routes. Events are shared on Zalo and
+ *  Facebook and carry their own OG image, so the meta has to be in the initial
+ *  HTML — without this the whole section 404s, list page included.
+ *
+ *  Emits BOTH "/:lang/events" and "/:lang/events/:slug", and deliberately does
+ *  NOT go in registry.staticRoutes. A static route is expanded across all three
+ *  locales unconditionally, but an event exists in a locale only once its
+ *  translation is reviewed: GET /events?lang=en currently returns nothing, so
+ *  /en/events renders an empty list, which the app marks noindex, which the
+ *  publish guard below counts as a failure — and STRICT is on in CI. Listing
+ *  "/events" statically therefore fails the build, which is why it was pulled
+ *  in the first place ("defer localized event prerender").
+ *
+ *  Driving both route shapes off the API response instead means a locale is
+ *  prerendered only when it has something to show, and new locales light up on
+ *  their own as translations land, with no further change here. */
+async function fetchEventRoutes() {
+  try {
+    const routes = [];
+    for (const lang of LANGS) {
+      const res = await fetch(`${CMS_API}/events?lang=${lang}`);
+      if (!res.ok) {
+        recordDiscoveryFailure(`events:${lang}`, `CMS returned ${res.status}`);
+        continue;
+      }
+      const data = await res.json();
+      const slugs = (data.events ?? []).map((e) => e.slug).filter(Boolean);
+      if (slugs.length === 0) continue;
+      routes.push(`/${lang}/events`);
+      for (const slug of slugs) routes.push(`/${lang}/events/${slug}`);
+    }
+    console.log(`✓ ${routes.length} localized event routes → /events + /events/:slug prerender`);
+    return [...new Set(routes)];
+  } catch (err) {
+    recordDiscoveryFailure("events", err instanceof Error ? err.message : String(err));
+    console.warn(`⚠ events fetch failed (${err.message}) — skipping event prerender`);
+    return [];
+  }
+}
+
 /** Fetch indexable community-question slugs so each /community/:slug gets a
  *  prerendered shell with QAPage JSON-LD + real meta. ONLY indexable questions
  *  (published + verified + non-empty expert answer) — everything else is
@@ -176,6 +216,7 @@ const ROUTES = [
   ...STATIC_ROUTES,
   ...(await fetchJobRoutes()),
   ...(await fetchBlogRoutes()),
+  ...(await fetchEventRoutes()),
   ...(await fetchCommunityRoutes()),
   ...(await fetchCommunityReviewRoutes()),
 ];
