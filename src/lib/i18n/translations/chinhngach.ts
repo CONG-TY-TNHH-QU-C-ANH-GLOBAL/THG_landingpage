@@ -14,6 +14,16 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.table_pending": tr("This rate card is being updated — contact THG for the current quote.", "Bảng giá này đang được cập nhật — liên hệ THG để nhận báo giá hiện hành.", "该价目表正在更新中 — 请联系THG获取最新报价。"),
   "chinhngach.approx_note": tr("~ Indicative only — confirmed per shipment", "~ Giá tạm tính — chốt theo từng lô hàng", "~ 仅为参考价 — 按每批货确认"),
 
+  "chinhngach.tabs_label": tr("Formal customs sections", "Các mục chính ngạch", "正规报关栏目"),
+  "chinhngach.tab_rates": tr("Rates", "Bảng giá", "价目表"),
+  "chinhngach.tab_lookup": tr("Document lookup", "Tra cứu giấy tờ", "单证查询"),
+  "chinhngach.tab_templates": tr("Templates", "Mẫu giấy tờ", "单证模板"),
+
+  "chinhngach.lookup_title": tr("Export document lookup", "Tra cứu giấy tờ xuất khẩu", "出口单证查询"),
+  "chinhngach.lookup_subtitle": tr("30 commodities · 139 certificate types, grouped by industry and by whether customs will insist", "30 mặt hàng · 139 loại chứng từ, phân theo ngành hàng và mức độ bắt buộc", "30类商品 · 139种单证，按行业与强制程度分类"),
+  "chinhngach.templates_title": tr("Paperwork templates", "Mẫu giấy tờ", "单证模板"),
+  "chinhngach.templates_subtitle": tr("Commercial Invoice, Packing List, IOR agreement and the VN export declaration — how to fill each, with sample files", "Commercial Invoice, Packing List, hợp đồng IOR và tờ khai xuất VN — hướng dẫn điền kèm file mẫu", "商业发票、装箱单、IOR协议与越南出口报关单 — 填写指引及样本文件"),
+
   "chinhngach.matson_title": tr("MATSON — Expedited Line", "MATSON — Line hỏa tốc", "MATSON — 加急航线"),
   "chinhngach.matson_subtitle": tr("Expedited ocean service to Long Beach, CA · weekly sailing", "Dịch vụ biển hỏa tốc đi Long Beach, CA · tàu chạy hàng tuần", "至加州长滩的加急海运 · 每周班次"),
   "chinhngach.sea_title": tr("Standard Sea Freight", "Sea chính ngạch thường", "普通海运"),

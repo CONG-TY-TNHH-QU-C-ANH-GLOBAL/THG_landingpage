@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Ship, Plane, FileCheck, ArrowLeft, ArrowRight } from "lucide-react";
+import { Ship, Plane, FileCheck, FileSearch, FileText, ArrowLeft, ArrowRight } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
@@ -8,6 +8,8 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { CmsRateTable, CmsMetaList } from "@/components/pricing/CmsRateTable";
+import { ChinhNgachDocsLookup } from "@/components/pricing/ChinhNgachDocsLookup";
+import { ChinhNgachTemplates } from "@/components/pricing/ChinhNgachTemplates";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -41,6 +43,25 @@ const SEA_META = ["sea_thuong_cutoff", "excl_sea_lcl", "excl_sea_fcl"] as const;
 const AIR_META = ["excl_air"] as const;
 const VALIDITY_META = ["validity"] as const;
 
+/** The source sheet (XKCN Hub v6.0) opens on three cards — rates, the export
+ *  document lookup, and the paperwork templates. Only the rates were ported
+ *  originally; these tabs bring the other two onto the same page rather than
+ *  scattering them across three URLs, which is how the sheet reads.
+ *
+ *  Tab state lives in the URL hash so a tab can be linked to and survives a
+ *  reload. A plain useState would send every shared link back to the rates. */
+const TABS = [
+    { id: "bang-gia", icon: Ship, labelKey: "chinhngach.tab_rates" },
+    { id: "tra-cuu", icon: FileSearch, labelKey: "chinhngach.tab_lookup" },
+    { id: "mau-giay-to", icon: FileText, labelKey: "chinhngach.tab_templates" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
+function isTabId(value: string): value is TabId {
+    return TABS.some((tab) => tab.id === value);
+}
+
 function SectionHeading({ icon: Icon, title, subtitle }: Readonly<{
     icon: typeof Ship; title: string; subtitle?: string;
 }>) {
@@ -59,10 +80,30 @@ function SectionHeading({ icon: Icon, title, subtitle }: Readonly<{
 
 const ChinhNgachPricingPage = () => {
     const { t, language } = useI18n();
+    const [tab, setTab] = useState<TabId>(() => {
+        const fromHash = typeof window === "undefined" ? "" : window.location.hash.replace(/^#/, "");
+        return isTabId(fromHash) ? fromHash : "bang-gia";
+    });
 
     useEffect(() => {
         trackEvent("view_pricing", { pricing_type: "formal_customs", locale: language });
     }, [language]);
+
+    // Back/forward should move between tabs, since selecting one writes history.
+    useEffect(() => {
+        const onHash = () => {
+            const next = window.location.hash.replace(/^#/, "");
+            setTab(isTabId(next) ? next : "bang-gia");
+        };
+        window.addEventListener("hashchange", onHash);
+        return () => window.removeEventListener("hashchange", onHash);
+    }, []);
+
+    function selectTab(next: TabId) {
+        setTab(next);
+        window.history.pushState(null, "", next === "bang-gia" ? window.location.pathname : `#${next}`);
+        trackEvent("view_pricing", { pricing_type: "formal_customs", tab: next, locale: language });
+    }
 
     return (
         <div className="min-h-screen bg-cream">
@@ -109,6 +150,30 @@ const ChinhNgachPricingPage = () => {
                     <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t("chinhngach.back_intl")}
                 </Link>
 
+                <div role="tablist" aria-label={t("chinhngach.tabs_label")} className="flex flex-wrap gap-2 mb-6">
+                    {TABS.map(({ id, icon: Icon, labelKey }) => (
+                        <button
+                            key={id}
+                            type="button"
+                            role="tab"
+                            id={`tab-${id}`}
+                            aria-selected={tab === id}
+                            aria-controls={`panel-${id}`}
+                            onClick={() => selectTab(id)}
+                            className={`inline-flex items-center gap-2 text-[13.5px] font-semibold px-4 py-2.5 rounded-xl border transition-colors ${
+                                tab === id
+                                    ? "bg-navy text-white border-navy"
+                                    : "bg-white text-foreground/70 border-[var(--pricing-border)] hover:bg-[#FFFBF0] hover:text-navy"
+                            }`}
+                        >
+                            <Icon className={`w-4 h-4 ${tab === id ? "text-primary" : "text-muted-foreground"}`} aria-hidden="true" />
+                            {t(labelKey)}
+                        </button>
+                    ))}
+                </div>
+
+                {tab === "bang-gia" && (
+                <div role="tabpanel" id="panel-bang-gia" aria-labelledby="tab-bang-gia">
                 <div className="bg-[#FFF8E7] border border-primary/30 rounded-xl p-4 sm:p-5 mb-8">
                     <p className="text-[13px] text-navy leading-relaxed">{t("chinhngach.scope_notice")}</p>
                 </div>
@@ -157,6 +222,31 @@ const ChinhNgachPricingPage = () => {
                         <CmsRateTable slug={SLUGS.customs} approx />
                     </section>
                 </ScrollReveal>
+
+                </div>
+                )}
+
+                {tab === "tra-cuu" && (
+                    <div role="tabpanel" id="panel-tra-cuu" aria-labelledby="tab-tra-cuu" className="mb-12">
+                        <SectionHeading
+                            icon={FileSearch}
+                            title={t("chinhngach.lookup_title")}
+                            subtitle={t("chinhngach.lookup_subtitle")}
+                        />
+                        <ChinhNgachDocsLookup />
+                    </div>
+                )}
+
+                {tab === "mau-giay-to" && (
+                    <div role="tabpanel" id="panel-mau-giay-to" aria-labelledby="tab-mau-giay-to" className="mb-12">
+                        <SectionHeading
+                            icon={FileText}
+                            title={t("chinhngach.templates_title")}
+                            subtitle={t("chinhngach.templates_subtitle")}
+                        />
+                        <ChinhNgachTemplates />
+                    </div>
+                )}
 
                 {/* ══════════ CTA ══════════ */}
                 <ScrollReveal>
