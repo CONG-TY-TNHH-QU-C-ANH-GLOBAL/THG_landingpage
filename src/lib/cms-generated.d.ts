@@ -390,6 +390,7 @@ export interface paths {
                                 summary: string | null;
                                 body_md: string | null;
                                 cover_url: string | null;
+                                og_image_url: string | null;
                                 event_date: string;
                                 end_date: string | null;
                                 location: string | null;
@@ -454,6 +455,9 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            available_locales: ("en" | "vi" | "zh")[];
                             event: {
                                 id: number;
                                 slug: string;
@@ -463,6 +467,7 @@ export interface paths {
                                 summary: string | null;
                                 body_md: string | null;
                                 cover_url: string | null;
+                                og_image_url: string | null;
                                 event_date: string;
                                 end_date: string | null;
                                 location: string | null;
@@ -471,6 +476,10 @@ export interface paths {
                                 video_url: string | null;
                                 seo_title: string | null;
                                 seo_description: string | null;
+                                photos: {
+                                    src: string;
+                                    caption: string | null;
+                                }[];
                             };
                         };
                     };
