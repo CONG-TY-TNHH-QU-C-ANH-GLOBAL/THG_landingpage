@@ -331,9 +331,19 @@ try {
         { timeout: 8_000 },
       ).catch(() => { /* tolerate: route might legitimately reuse default title */ });
 
-      // A published route is not ready until its content H1 exists. Waiting
-      // here avoids capturing the transient loading shell of React Query.
+      // A published route is not ready until its content H1 exists.
       await page.waitForSelector("h1", { timeout: 8_000 }).catch(() => {});
+
+      // …but an <h1> alone is NOT readiness for a CMS-backed list. The heading
+      // is plain JSX and paints immediately while the list is still in flight,
+      // so waiting only on it captured the loading shell — that is how /blog
+      // shipped with zero article links in its HTML. PrerenderSignal mirrors
+      // React Query's in-flight count onto window.__cmsFetching; wait for it to
+      // reach 0 so list content is present before we snapshot.
+      await page.waitForFunction(() => window.__cmsFetching === 0, { timeout: 15_000 })
+        .catch(() => {
+          console.warn(`⚠ ${route} — CMS queries still in flight at snapshot time`);
+        });
 
       // Final breath for any late helmet/microtask + main thread settle.
       await page.waitForTimeout(500);

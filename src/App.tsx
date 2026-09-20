@@ -20,6 +20,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { ConsentBanner } from "@/components/cookie/ConsentBanner";
 import { TrackingScripts } from "@/components/analytics/TrackingScripts";
 import { FloatingContact } from "@/components/FloatingContact";
+import { PrerenderSignal } from "@/components/seo/PrerenderSignal";
 import { captureUtmOnce } from "@/lib/utm";
 
 // QueryClient — singleton across re-renders. CMS content has 5min stale time,
@@ -185,6 +186,7 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <LarkPricingProvider>
+                  <PrerenderSignal />
                   <UtmCapture />
                   <AppRoutes />
                   <FloatingContact />

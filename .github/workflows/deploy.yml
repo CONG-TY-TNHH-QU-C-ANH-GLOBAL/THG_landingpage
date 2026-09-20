@@ -292,6 +292,33 @@ jobs:
             [ "$redirect" = 'https://thgfulfill.com/en/' ] || { echo "www redirect: got $redirect" >&2; failed=1; }
             [ "$failed" -eq 0 ]
 
+      # Cloudflare caches public HTML at the edge (Cache Rule "Cache Public HTML
+      # Only", Edge TTL 1h). Without a purge, visitors — and the public smoke
+      # crawl below — can be served the previous release for up to that TTL.
+      # Runs before the public crawl so that check validates the new artifact.
+      # Missing secrets downgrade to a warning: a stale edge cache expires on
+      # its own, so it must not fail a release that deployed correctly.
+      - name: Purge Cloudflare cache
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ZONE_ID:-}" ]; then
+            echo "::warning::CF_API_TOKEN / CF_ZONE_ID not set — skipping edge purge"
+            exit 0
+          fi
+          response="$(curl --silent --show-error --fail-with-body \
+            -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')"
+          echo "$response"
+          case "$response" in
+            *'"success":true'*) echo "Edge cache purged." ;;
+            *) echo "::error::Cloudflare purge failed" >&2; exit 1 ;;
+          esac
+
       - name: Public production SEO smoke crawl
         id: public-seo-smoke
         if: vars.PUBLIC_SEO_SMOKE == '1'
