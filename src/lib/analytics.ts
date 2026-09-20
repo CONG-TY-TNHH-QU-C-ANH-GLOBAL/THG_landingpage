@@ -1,6 +1,15 @@
 const CONSENT_KEY = "thg-consent-v1";
 
-type SeoEvent = "form_start" | "select_service" | "view_pricing" | "generate_lead" | "outbound_click";
+type SeoEvent =
+  | "form_start"
+  | "select_service"
+  | "view_pricing"
+  | "generate_lead"
+  | "outbound_click"
+  /** A paperwork template was downloaded from /chinh-ngach-pricing. Kept
+   *  distinct from view_pricing: taking the IOR contract is an intent signal,
+   *  not a page view. */
+  | "download_template";
 
 export function trackEvent(event: SeoEvent, params: Record<string, string | number | boolean> = {}): void {
   if (typeof window === "undefined") return;
