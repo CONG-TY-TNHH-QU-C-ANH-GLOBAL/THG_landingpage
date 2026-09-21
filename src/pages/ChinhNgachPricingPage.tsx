@@ -10,6 +10,9 @@ import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { CmsRateTable, CmsMetaList } from "@/components/pricing/CmsRateTable";
 import { ChinhNgachDocsLookup } from "@/components/pricing/ChinhNgachDocsLookup";
 import { ChinhNgachTemplates } from "@/components/pricing/ChinhNgachTemplates";
+import { ChinhNgachCostEstimator } from "@/components/pricing/ChinhNgachCostEstimator";
+import { ChinhNgachRateGuide } from "@/components/pricing/ChinhNgachRateGuide";
+import { ChinhNgachRateWorkspace } from "@/components/pricing/ChinhNgachRateWorkspace";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -173,57 +176,70 @@ const ChinhNgachPricingPage = () => {
                 </div>
 
                 {tab === "bang-gia" && (
-                <div role="tabpanel" id="panel-bang-gia" aria-labelledby="tab-bang-gia">
-                <div className="bg-[#FFF8E7] border border-primary/30 rounded-xl p-4 sm:p-5 mb-8">
-                    <p className="text-[13px] text-navy leading-relaxed">{t("chinhngach.scope_notice")}</p>
-                </div>
-
-                {/* ══════════ MATSON ══════════ */}
-                <ScrollReveal>
-                    <section className="mb-12">
-                        <SectionHeading icon={Ship} title={t("chinhngach.matson_title")} subtitle={t("chinhngach.matson_subtitle")} />
-                        <div className="space-y-4">
-                            <CmsMetaList slug={SLUGS.meta} keys={MATSON_META} />
-                            <CmsRateTable slug={SLUGS.matsonLcl} approx />
-                            <CmsRateTable slug={SLUGS.matsonSurcharge} approx />
-                            <CmsRateTable slug={SLUGS.matsonFcl} approx totalRow={FCL_TOTAL_ROW} />
-                            <CmsMetaList slug={SLUGS.meta} keys={VALIDITY_META} />
-                        </div>
-                    </section>
-                </ScrollReveal>
-
-                {/* ══════════ SEA THƯỜNG ══════════ */}
-                <ScrollReveal>
-                    <section className="mb-12">
-                        <SectionHeading icon={Ship} title={t("chinhngach.sea_title")} subtitle={t("chinhngach.sea_subtitle")} />
-                        <div className="space-y-4">
-                            <CmsRateTable slug={SLUGS.seaLcl} approx />
-                            <CmsRateTable slug={SLUGS.seaFcl} approx />
-                            <CmsMetaList slug={SLUGS.meta} keys={SEA_META} />
-                        </div>
-                    </section>
-                </ScrollReveal>
-
-                {/* ══════════ AIR ══════════ */}
-                <ScrollReveal>
-                    <section className="mb-12">
-                        <SectionHeading icon={Plane} title={t("chinhngach.air_title")} subtitle={t("chinhngach.air_subtitle")} />
-                        <div className="space-y-4">
-                            <CmsRateTable slug={SLUGS.air} approx />
-                            <CmsMetaList slug={SLUGS.meta} keys={AIR_META} />
-                        </div>
-                    </section>
-                </ScrollReveal>
-
-                {/* ══════════ HẢI QUAN ══════════ */}
-                <ScrollReveal>
-                    <section className="mb-12">
-                        <SectionHeading icon={FileCheck} title={t("chinhngach.customs_title")} subtitle={t("chinhngach.customs_subtitle")} />
-                        <CmsRateTable slug={SLUGS.customs} approx />
-                    </section>
-                </ScrollReveal>
-
-                </div>
+                    <div role="tabpanel" id="panel-bang-gia" aria-labelledby="tab-bang-gia" className="mb-12">
+                        <ChinhNgachRateWorkspace
+                            copy={{
+                                rateTab: t("chinhngach.rate_view_rates"),
+                                guideTab: t("chinhngach.rate_view_guide"),
+                                estimateTab: t("chinhngach.rate_view_estimate"),
+                                laneLabel: t("chinhngach.rate_lane_label"),
+                                matson: t("chinhngach.matson_title"),
+                                matsonHint: t("chinhngach.rate_lane_matson_hint"),
+                                sea: t("chinhngach.sea_title"),
+                                seaHint: t("chinhngach.rate_lane_sea_hint"),
+                                air: t("chinhngach.air_title"),
+                                airHint: t("chinhngach.rate_lane_air_hint"),
+                                customs: t("chinhngach.customs_title"),
+                                customsHint: t("chinhngach.rate_lane_customs_hint"),
+                            }}
+                            notice={
+                                <div className="rounded-xl border border-primary/30 bg-[#FFF8E7] p-4 sm:p-5">
+                                    <p className="text-[13px] leading-relaxed text-navy">{t("chinhngach.scope_notice")}</p>
+                                </div>
+                            }
+                            rates={{
+                                matson: (
+                                    <div>
+                                        <SectionHeading icon={Ship} title={t("chinhngach.matson_title")} subtitle={t("chinhngach.matson_subtitle")} />
+                                        <div className="space-y-4">
+                                            <CmsMetaList slug={SLUGS.meta} keys={MATSON_META} />
+                                            <CmsRateTable slug={SLUGS.matsonLcl} approx />
+                                            <CmsRateTable slug={SLUGS.matsonSurcharge} approx />
+                                            <CmsRateTable slug={SLUGS.matsonFcl} approx totalRow={FCL_TOTAL_ROW} />
+                                            <CmsMetaList slug={SLUGS.meta} keys={VALIDITY_META} />
+                                        </div>
+                                    </div>
+                                ),
+                                sea: (
+                                    <div>
+                                        <SectionHeading icon={Ship} title={t("chinhngach.sea_title")} subtitle={t("chinhngach.sea_subtitle")} />
+                                        <div className="space-y-4">
+                                            <CmsRateTable slug={SLUGS.seaLcl} approx />
+                                            <CmsRateTable slug={SLUGS.seaFcl} approx />
+                                            <CmsMetaList slug={SLUGS.meta} keys={SEA_META} />
+                                        </div>
+                                    </div>
+                                ),
+                                air: (
+                                    <div>
+                                        <SectionHeading icon={Plane} title={t("chinhngach.air_title")} subtitle={t("chinhngach.air_subtitle")} />
+                                        <div className="space-y-4">
+                                            <CmsRateTable slug={SLUGS.air} approx />
+                                            <CmsMetaList slug={SLUGS.meta} keys={AIR_META} />
+                                        </div>
+                                    </div>
+                                ),
+                                customs: (
+                                    <div>
+                                        <SectionHeading icon={FileCheck} title={t("chinhngach.customs_title")} subtitle={t("chinhngach.customs_subtitle")} />
+                                        <CmsRateTable slug={SLUGS.customs} approx />
+                                    </div>
+                                ),
+                            }}
+                            guide={<ChinhNgachRateGuide />}
+                            estimator={<ChinhNgachCostEstimator />}
+                        />
+                    </div>
                 )}
 
                 {tab === "tra-cuu" && (
