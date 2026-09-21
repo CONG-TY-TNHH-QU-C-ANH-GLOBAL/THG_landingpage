@@ -22,7 +22,7 @@ describe("ChinhNgachRateWorkspace", () => {
     expect(screen.getByRole("region", { name: "MATSON — Line hỏa tốc" })).toBeVisible();
     expect(screen.queryByRole("region", { name: "Sea chính ngạch thường" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("tab", { name: /Sea thường/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /Sea chính ngạch thường/i }));
     expect(screen.getByRole("region", { name: "Sea chính ngạch thường" })).toBeVisible();
     expect(screen.queryByRole("region", { name: "MATSON — Line hỏa tốc" })).not.toBeInTheDocument();
   });
