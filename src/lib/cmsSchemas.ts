@@ -438,6 +438,32 @@ export const blogPostResponseSchema = z.object({
   }),
 });
 
+const blogPreviewAssetSchema = z.string().url().refine((value) => value.startsWith("https://"));
+
+export const blogPreviewResponseSchema = z.object({
+  ok: z.literal(true),
+  preview: z.object({
+    externalId: z.string(),
+    versionId: z.string(),
+    kind: z.literal("blog"),
+    locale: localeSchema,
+    slug: z.string(),
+    expiresAt: z.string().datetime({ offset: true }),
+    title: z.string(),
+    excerpt: z.string().nullable(),
+    body_md: z.string(),
+    category: z.string().nullable(),
+    published_date: z.string().nullable(),
+    seo_title: z.string().nullable(),
+    seo_description: z.string().nullable(),
+    thumbnail_url: blogPreviewAssetSchema.nullable().optional().default(null),
+    slides: z
+      .array(z.object({ src: blogPreviewAssetSchema, alt_text: z.string() }))
+      .optional()
+      .default([]),
+  }),
+});
+
 /* ---------- Jobs / careers ---------- */
 
 const jobSummarySchema = z.object({

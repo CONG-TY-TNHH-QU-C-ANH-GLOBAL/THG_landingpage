@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb, JsonLdArticle } from "@/components/seo/JsonLd";
 
-import { useCmsBlogPost } from "@/hooks/useCmsContent";
+import { useCmsBlogPost, useCmsBlogPreview } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { ArrowLeft, ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react";
 
@@ -22,27 +22,31 @@ interface DisplayArticle {
 }
 
 const BlogDetailPage = () => {
-    const { slug } = useParams<{ slug: string }>();
+    const { slug, token } = useParams<{ slug?: string; token?: string }>();
     const { t, language: lang } = useI18n();
     const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-    const cms = useCmsBlogPost(slug ?? "", lang);
+    const isPreview = Boolean(token);
+    const cms = useCmsBlogPost(slug ?? "", lang, !isPreview);
+    const preview = useCmsBlogPreview(token ?? "");
 
     const article: DisplayArticle | undefined = useMemo(() => {
-        if (!cms.data?.post) return undefined;
-        const p = cms.data.post;
+        const p = isPreview ? preview.data?.preview : cms.data?.post;
+        if (!p) return undefined;
         return {
             slug: p.slug,
             category: p.category ?? "Báo cáo",
-            date: p.published_date ?? new Date(p.updated_at * 1000).toISOString().slice(0, 10),
+            date: p.published_date ?? (isPreview
+                ? new Date().toISOString().slice(0, 10)
+                : new Date(cms.data!.post.updated_at * 1000).toISOString().slice(0, 10)),
             title: p.title,
             excerpt: p.excerpt ?? "",
             body_md: p.body_md ?? null,
             slides: p.slides,
             thumbnail_url: p.thumbnail_url ?? null,
         };
-    }, [cms.data, slug]);
+    }, [cms.data, preview.data, isPreview]);
 
-    useEffect(() => { window.scrollTo(0, 0); }, [slug]);
+    useEffect(() => { window.scrollTo(0, 0); }, [slug, token]);
 
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
@@ -57,7 +61,7 @@ const BlogDetailPage = () => {
     }, [lightboxIdx, article]);
 
     if (!article) {
-        if (cms.isLoading) {
+        if ((isPreview ? preview.isLoading : cms.isLoading)) {
             return (
                 <div className="min-h-screen bg-background">
                     <Navbar />
@@ -67,7 +71,7 @@ const BlogDetailPage = () => {
         }
         return (
             <div className="min-h-screen bg-background">
-                <SeoHead title="Not found — THG Fulfill" description="" path={`/blog/${slug ?? ""}`} noindex />
+                <SeoHead title="Not found — THG Fulfill" description="" path={isPreview ? `/blog-preview/${token ?? ""}` : `/blog/${slug ?? ""}`} noindex noReferrer={isPreview} />
                 <Navbar />
                 <div className="pt-28 pb-20 text-center">
                     <p className="text-xl text-muted-foreground">{t("blog.not_found")}</p>
@@ -90,30 +94,37 @@ const BlogDetailPage = () => {
             <SeoHead
                 title={`${title} — THG Fulfill`}
                 description={description}
-                path={`/blog/${article.slug}`}
+                path={isPreview ? `/blog-preview/${token ?? ""}` : `/blog/${article.slug}`}
                 ogType="article"
                 ogImage={featuredSrc ?? undefined}
                 publishedTime={article.date}
                 availableLocales={cms.data?.available_locales.length ? cms.data.available_locales : [lang]}
+                noindex={isPreview}
+                noReferrer={isPreview}
             />
-            <JsonLdBreadcrumb
+            {!isPreview && <JsonLdBreadcrumb
                 items={[
                     { name: "Home", url: `https://thgfulfill.com/${lang}` },
                     { name: t("blog.title"), url: `https://thgfulfill.com/${lang}/blog` },
                     { name: title, url: `https://thgfulfill.com/${lang}/blog/${article.slug}` },
                 ]}
-            />
-            <JsonLdArticle
+            />}
+            {!isPreview && <JsonLdArticle
                 headline={title}
                 description={description}
                 image={featuredSrc ?? undefined}
                 datePublished={article.date}
                 url={`https://thgfulfill.com/${lang}/blog/${article.slug}`}
-            />
+            />}
             <Navbar />
 
             <div className="pt-24 pb-20">
                 <div className="max-w-[860px] mx-auto px-4 sm:px-6">
+                    {isPreview && (
+                        <div role="status" className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
+                            Bản xem trước để duyệt · Chưa xuất bản
+                        </div>
+                    )}
 
                     {/* Header */}
                     <Link to={`/${lang}/blog`} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-5">

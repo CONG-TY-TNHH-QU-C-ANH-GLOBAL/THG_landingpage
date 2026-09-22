@@ -25,6 +25,7 @@ import {
   communityWithdrawResponseSchema,
   blogListResponseSchema,
   blogPostResponseSchema,
+  blogPreviewResponseSchema,
   cmsLeadInputSchema,
   contactLocationsResponseSchema,
   faqsResponseSchema,
@@ -210,6 +211,13 @@ export const cmsClient = {
 
   getBlogPost(slug: string, locale: Locale) {
     return fetchJson(`/blog/${encodeURIComponent(slug)}?lang=${locale}`, blogPostResponseSchema);
+  },
+
+  getBlogPreview(token: string) {
+    if (!/^[a-f0-9]{64}$/.test(token)) {
+      return Promise.reject(new Error("Preview token không hợp lệ"));
+    }
+    return fetchJson(`/blog-previews/${token}`, blogPreviewResponseSchema);
   },
 
   getJobs(locale: Locale, category?: string) {

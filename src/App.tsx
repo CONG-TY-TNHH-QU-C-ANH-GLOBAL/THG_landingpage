@@ -142,6 +142,7 @@ const AppRoutes = () => {
               <Route path="shipping-policy" element={<ShippingPolicyPage />} />
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/:slug" element={<BlogDetailPage />} />
+              <Route path="blog-preview/:token" element={<BlogDetailPage />} />
               <Route path="international-pricing" element={<InternationalPricingPage />} />
               <Route path="domestic-pricing" element={<DomesticPricingPage />} />
               <Route path="chinh-ngach-pricing" element={<ChinhNgachPricingPage />} />

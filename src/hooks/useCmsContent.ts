@@ -276,14 +276,26 @@ export function useCmsPolicy(slug: string, locale: Locale) {
   });
 }
 
-export function useCmsBlogPost(slug: string, locale: Locale) {
+export function useCmsBlogPost(slug: string, locale: Locale, enabled = true) {
   return useQuery({
     queryKey: ["cms", "blog", "post", slug, locale],
     queryFn: () => cmsClient.getBlogPost(slug, locale),
     staleTime: STALE_MS,
     gcTime: GC_MS,
-    enabled: !!slug,
+    enabled: enabled && !!slug,
     retry: false,
+  });
+}
+
+export function useCmsBlogPreview(token: string) {
+  return useQuery({
+    queryKey: ["cms", "blog", "preview", token],
+    queryFn: () => cmsClient.getBlogPreview(token),
+    staleTime: 0,
+    gcTime: 0,
+    enabled: /^[a-f0-9]{64}$/.test(token),
+    retry: false,
+    refetchOnMount: "always",
   });
 }
 

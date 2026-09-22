@@ -25,6 +25,8 @@ interface Props {
   publishedTime?: string;
   /** Mark page noindex (e.g. /agent internal tool) */
   noindex?: boolean;
+  /** Prevent capability URLs (for example review previews) leaking via Referer. */
+  noReferrer?: boolean;
   /** Locales with genuinely published content. Static pages default to all locales. */
   availableLocales?: readonly Language[];
 }
@@ -40,6 +42,7 @@ export function SeoHead({
   ogType = "website",
   publishedTime,
   noindex,
+  noReferrer,
   availableLocales = ["vi", "en", "zh"],
 }: Props) {
   const { language } = useI18n();
@@ -104,6 +107,7 @@ export function SeoHead({
       ) : (
         <meta name="robots" content="index,follow" />
       )}
+      {noReferrer && <meta name="referrer" content="no-referrer" />}
     </Helmet>
   );
 }
