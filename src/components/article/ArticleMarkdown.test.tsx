@@ -10,14 +10,25 @@ const ID = "q7NiFssAaRE";
 // IntersectionObserver, so report every element as visible straight away.
 beforeAll(() => {
   class VisibleObserver {
-    constructor(private cb: IntersectionObserverCallback) {}
-    observe(el: Element) {
-      this.cb([{ isIntersecting: true, target: el } as IntersectionObserverEntry], this as never);
+    private readonly cb: IntersectionObserverCallback;
+    constructor(cb: IntersectionObserverCallback) {
+      this.cb = cb;
     }
-    unobserve() {}
-    disconnect() {}
+    observe(el: Element) {
+      const entry = { isIntersecting: true, target: el } as IntersectionObserverEntry;
+      this.cb([entry], this as unknown as IntersectionObserver);
+    }
+    unobserve() {
+      // Nothing to release: observe() reports visibility synchronously.
+    }
+    disconnect() {
+      // Same as unobserve().
+    }
   }
-  Object.defineProperty(window, "IntersectionObserver", { writable: true, value: VisibleObserver });
+  Object.defineProperty(globalThis, "IntersectionObserver", {
+    writable: true,
+    value: VisibleObserver,
+  });
 });
 
 function renderMd(markdown: string) {

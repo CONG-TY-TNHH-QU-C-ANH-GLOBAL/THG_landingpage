@@ -16,6 +16,6 @@ describe("formatEventDates", () => {
   });
 
   it("leaves a value it cannot parse untouched", () => {
-    expect(formatEventDates("Q4/2026", undefined)).toBe("Q4/2026");
+    expect(formatEventDates("Q4/2026", null)).toBe("Q4/2026");
   });
 });
