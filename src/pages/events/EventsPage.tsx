@@ -4,12 +4,9 @@ import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { useCmsEvents } from "@/hooks/useCmsContent";
+import { formatEventDates } from "@/lib/eventDates";
 import { useI18n } from "@/lib/i18n";
-
-const thumbnail = (url: string | null) => {
-  const id = url?.match(/(?:youtu\.be\/|v=)([\w-]{11})/)?.[1];
-  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : null;
-};
+import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
 
 export default function EventsPage() {
   const { language } = useI18n();
@@ -50,7 +47,8 @@ export default function EventsPage() {
         )}
         <section className="grid gap-7 md:grid-cols-2">
           {query.data?.events.map((event, index) => {
-            const image = event.cover_url ?? thumbnail(event.video_url);
+            const videoId = parseYouTubeId(event.video_url);
+            const image = event.cover_url ?? youtubeThumb(videoId);
             return (
               <ScrollReveal key={event.id} delay={index * 80}>
                 <Link
@@ -70,17 +68,17 @@ export default function EventsPage() {
                         THG
                       </div>
                     )}
-                    {event.video_url && (
+                    {videoId ? (
                       <span className="absolute inset-0 grid place-items-center">
                         <PlayCircle className="h-14 w-14 text-white drop-shadow-lg" />
                       </span>
-                    )}
+                    ) : null}
                   </div>
                   <div className="p-6">
                     <div className="mb-3 flex flex-wrap gap-3 text-xs font-medium text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
                         <CalendarDays className="h-3.5 w-3.5" />
-                        {event.event_date}
+                        {formatEventDates(event.event_date, event.end_date)}
                       </span>
                       {event.role && <span>{event.role}</span>}
                     </div>

@@ -21,7 +21,10 @@ export function parseYouTubeId(url: string | null | undefined): string | null {
   if (host === "youtube.com" || host === "m.youtube.com" || host === "music.youtube.com") {
     if (u.pathname === "/watch") return idOk(u.searchParams.get("v"));
     const parts = u.pathname.split("/").filter(Boolean);
-    if (parts.length >= 2 && ["shorts", "embed", "v"].includes(parts[0])) return idOk(parts[1]);
+    // "live" = a finished livestream/webinar recording, e.g. youtube.com/live/ID.
+    // CMS mirrors this list (src/components/cms/article/youtube.ts) so its
+    // "will play on the website" check matches what the site accepts.
+    if (parts.length >= 2 && ["shorts", "embed", "v", "live"].includes(parts[0])) return idOk(parts[1]);
   }
   return null;
 }

@@ -1,8 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import Navbar from "@/components/Navbar";
+import { ArticleMarkdown } from "@/components/article/ArticleMarkdown";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb, JsonLdArticle } from "@/components/seo/JsonLd";
 
@@ -153,13 +152,7 @@ const BlogDetailPage = () => {
                     )}
 
                     {/* Article body */}
-                    {article.body_md && (
-                        <div className="prose prose-neutral max-w-none prose-headings:text-navy prose-headings:font-bold prose-h2:text-xl prose-h2:mt-8 prose-h3:text-lg prose-p:text-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-navy prose-ul:text-foreground prose-ol:text-foreground prose-li:my-0.5 prose-img:rounded-xl prose-img:shadow-md prose-table:text-sm mb-10">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {article.body_md}
-                            </ReactMarkdown>
-                        </div>
-                    )}
+                    {article.body_md ? <ArticleMarkdown markdown={article.body_md} className="mb-10" /> : null}
 
                     {/* Gallery — remaining slides */}
                     {gallerySlides.length > 0 && (
