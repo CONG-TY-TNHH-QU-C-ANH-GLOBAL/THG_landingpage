@@ -1,17 +1,15 @@
 import { Link, useParams } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { useEffect, useState } from "react";
-import { ArrowLeft, CalendarDays, ExternalLink, PlayCircle, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, ExternalLink, MapPin, PlayCircle, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { ArticleMarkdown } from "@/components/article/ArticleMarkdown";
+import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { useCmsEvent } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import { formatEventDates } from "@/lib/eventDates";
+import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
 
-const thumbnail = (url: string | null) => {
-  const id = url?.match(/(?:youtu\.be\/|v=)([\w-]{11})/)?.[1];
-  return id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : null;
-};
 export default function EventDetailPage() {
   const { slug = "" } = useParams();
   const { language } = useI18n();
@@ -58,7 +56,10 @@ export default function EventDetailPage() {
         </div>
       </div>
     );
-  const image = event.cover_url ?? thumbnail(event.video_url);
+  // A YouTube link plays in place of the cover; the cover (or the video's own
+  // thumbnail) still feeds the list card and the social share image.
+  const videoId = parseYouTubeId(event.video_url);
+  const image = event.cover_url ?? youtubeThumb(videoId);
   const shareImage = event.og_image_url ?? image ?? undefined;
   return (
     <div className="min-h-screen bg-background">
@@ -80,12 +81,22 @@ export default function EventDetailPage() {
           Tất cả Event
         </Link>
         <header className="mt-8">
-          <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
               <CalendarDays className="h-4 w-4" />
-              {event.event_date}
+              {formatEventDates(event.event_date, event.end_date)}
             </span>
-            {event.role && <span>{event.role}</span>}
+            {event.location && (
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="h-4 w-4" />
+                {event.location}
+              </span>
+            )}
+            {event.role && (
+              <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                {event.role}
+              </span>
+            )}
           </div>
           <h1 className="mt-4 text-4xl font-bold tracking-tight text-navy md:text-5xl">
             {event.title}
@@ -94,25 +105,20 @@ export default function EventDetailPage() {
             <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{event.summary}</p>
           )}
         </header>
-        {image && (
-          <div className="relative mt-8 overflow-hidden rounded-3xl bg-navy">
-            <img src={image} alt={event.title} className="aspect-video w-full object-cover" />
-            {event.video_url && (
-              <a
-                href={event.video_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="absolute inset-0 grid place-items-center"
-              >
-                <PlayCircle className="h-16 w-16 text-white drop-shadow-lg" />
-                <span className="sr-only">Mở video</span>
-              </a>
-            )}
-          </div>
+        {videoId ? (
+          <ServiceVideoCard videoId={videoId} title={event.title} className="mt-8" />
+        ) : (
+          image && (
+            <div className="mt-8 overflow-hidden rounded-3xl bg-navy">
+              <img src={image} alt={event.title} className="aspect-video w-full object-cover" />
+            </div>
+          )
         )}
-        <article className="prose prose-slate mt-10 max-w-none prose-headings:text-navy prose-a:text-primary">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{event.body_md ?? ""}</ReactMarkdown>
-        </article>
+        {event.body_md && (
+          <article className="mt-10">
+            <ArticleMarkdown markdown={event.body_md} />
+          </article>
+        )}
         {photos.length > 0 && (
           <section className="mt-10">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -138,14 +144,14 @@ export default function EventDetailPage() {
         )}
 
         <div className="mt-10 flex flex-wrap gap-3">
-          {event.video_url && (
+          {videoId && (
             <a
-              href={event.video_url}
+              href={`https://youtu.be/${videoId}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
             >
-              Xem recording <PlayCircle className="h-4 w-4" />
+              Xem trên YouTube <PlayCircle className="h-4 w-4" />
             </a>
           )}
           {event.url && (
