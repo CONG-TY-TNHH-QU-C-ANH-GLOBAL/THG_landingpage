@@ -20,6 +20,7 @@ import {
 
 import { CATEGORIES, NO_SERIES_KEY, categoryIcons } from "@/pages/catalog/data";
 import { resolveSwatch } from "@/pages/catalog/variantColors";
+import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { ColorPreview } from "@/pages/catalog/ColorPreview";
 import { DELAYS, LIMITS } from "@/lib/constants";
 
@@ -645,6 +646,30 @@ const CatalogPage = () => {
             const activeSeriesLabel = activeSeriesKey === NO_SERIES_KEY ? "" : activeSeriesKey;
             const activeSwatch = resolveSwatch(activeSeriesLabel);
 
+            /* Ảnh thật của từng màu, nối qua TÊN FILE — API không cho đường
+               nào khác (variants[].color là null, variant không có trường ảnh).
+               Có ảnh thật thì bấm màu nhảy tới ảnh đó; không có thì rơi về
+               khung minh hoạ. Xem variantImages.ts để biết quy ước đặt tên và
+               số liệu đo trên toàn catalog. */
+            const visibleImages = selectedProduct.images.filter((img) => !brokenImages.has(img));
+            const imagesBySeries = matchImagesToSeries(visibleImages, seriesKeys);
+            /* Vị trí ảnh trong dải slide bị dịch đi khi có khung minh hoạ đứng
+               đầu và các video chen giữa. Tính offset một lần ở đây để chỗ
+               nhảy slide và chỗ dựng slide dùng CHUNG một con số — hai nơi tự
+               tính riêng là hai nơi sẽ lệch. */
+            const videoSlides = (selectedProduct.videos ?? []).filter((v) => parseYouTubeId(v)).length;
+            const previewSlides = (activeSwatch ? 1 : 0) + videoSlides;
+
+            /* Số slide đứng trước ảnh SAU KHI bấm sang màu `key`.
+               Không dùng `previewSlides` để tính chỗ nhảy được: khung minh hoạ
+               chỉ tồn tại khi màu ĐANG chọn tra được mã màu, nên chính cú bấm
+               lại làm đổi số slide đứng trước. Mở sản phẩm 1717 ra là màu
+               "Berry" (không có trong bảng màu → không có khung minh hoạ), bấm
+               "Black" thì khung minh hoạ xuất hiện và mọi ảnh dịch đi một chỗ —
+               kết quả là hiện ảnh áo xanh thay vì áo đen. */
+            const previewSlidesAfter = (key: string) =>
+              (resolveSwatch(key === NO_SERIES_KEY ? "" : key) ? 1 : 0) + videoSlides;
+
             // priceSbsl = Ship by Merchant (seller ships, higher price)
             // priceSbtt = Ship by Label (TikTok provides label, lower price)
             // Pre-compute BOTH channels explicitly so the per-tab range
@@ -702,7 +727,9 @@ const CatalogPage = () => {
                     {/* THG-CAT-006: media slider = video YouTube (slot đầu, click-to-play) + ảnh tĩnh. */}
                     {(() => {
                       const validVideos = (selectedProduct.videos ?? []).filter((v) => parseYouTubeId(v));
-                      const imageList = selectedProduct.images.filter((img) => !brokenImages.has(img));
+                      // Dùng chung mảng đã lọc với chỗ tính imagesBySeries, để
+                      // chỉ số ảnh ở hai nơi luôn trỏ vào cùng một tấm.
+                      const imageList = visibleImages;
                       /* Slide "xem màu" đứng ĐẦU, trước cả video.
                          Catalog không có ảnh riêng theo màu — một áo 6 series
                          dùng chung 4 tấm mockup — nên bấm "Light Brown" không
@@ -841,6 +868,18 @@ const CatalogPage = () => {
                                       <span className="w-6 h-6 rounded-full bg-black/55 flex items-center justify-center text-white text-[10px] pl-0.5">▶</span>
                                     </span>
                                   )}
+                                  {/* Chấm màu ở góc: tấm này là ảnh CỦA màu
+                                      đang chọn. Không có chấm nghĩa là ảnh
+                                      chung, không phải ảnh sai. */}
+                                  {m.kind === "image"
+                                    && activeSwatch
+                                    && (imagesBySeries.get(activeSeriesKey) ?? []).includes(i - previewSlides) && (
+                                    <span
+                                      className="absolute bottom-0.5 right-0.5 w-2.5 h-2.5 rounded-full border border-white shadow-sm"
+                                      style={{ background: activeSwatch.hex }}
+                                      aria-hidden="true"
+                                    />
+                                  )}
                                 </button>
                               ))}
                             </div>
@@ -976,13 +1015,16 @@ const CatalogPage = () => {
                                     // price update immediately (matches mockup).
                                     if (g && g[0]?.id) setSelectedVariantId(g[0].id);
                                     else setSelectedVariantId(null);
-                                    /* Nhảy về slide xem màu để cú bấm hiện ra
-                                       NGAY TRÊN KHUNG HÌNH. Ảnh mockup dùng
-                                       chung cho mọi màu, nên nếu đang xem ảnh
-                                       số 3 mà đổi màu thì khung hình đứng im và
-                                       khách tưởng bấm hụt. Chỉ nhảy khi màu này
-                                       vẽ được — không thì để nguyên chỗ đang xem. */
-                                    if (resolveSwatch(key)) {
+                                    /* Bấm màu phải hiện ra NGAY TRÊN KHUNG
+                                       HÌNH, nếu không khách tưởng bấm hụt.
+                                       Ưu tiên ẢNH THẬT của màu đó; không có
+                                       thì rơi về khung minh hoạ; không có cả
+                                       hai thì để nguyên chỗ đang xem. */
+                                    const shots = imagesBySeries.get(key);
+                                    if (shots && shots.length) {
+                                      setActiveImage(previewSlidesAfter(key) + shots[0]);
+                                      setVideoPlaying(false);
+                                    } else if (resolveSwatch(key)) {
                                       setActiveImage(0);
                                       setVideoPlaying(false);
                                     }
