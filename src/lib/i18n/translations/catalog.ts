@@ -29,19 +29,13 @@ export const catalogTranslations: TranslationDict = {
   "catalog.empty_title": tr("No products found", "Không tìm thấy sản phẩm", "未找到产品"),
   "catalog.empty_hint": tr("Try adjusting your search or filter", "Hãy thử điều chỉnh từ khóa hoặc bộ lọc", "请尝试调整搜索或筛选条件"),
 
-  // Khung xem màu trong modal sản phẩm. Nhãn "minh hoạ" là bắt buộc chứ không
-  // phải cho đẹp: catalog không có ảnh riêng theo màu nên hình đó là hình vẽ,
-  // và khách đặt hàng theo đúng thứ họ nhìn thấy trên màn hình.
-  "catalog.color_preview_tab": tr("Colour", "Xem màu", "颜色"),
-  "catalog.color_preview_illustration": tr(
-    "Colour illustration — not a product photo",
-    "Hình minh hoạ màu — không phải ảnh chụp sản phẩm",
-    "颜色示意图 — 非实物照片",
-  ),
-  "catalog.color_preview_relative_size": tr(
-    "size shown relatively",
-    "dáng theo size, chỉ mang tính tương đối",
-    "尺码为相对示意",
-  ),
+  // Modal sản phẩm — chọn màu.
   "catalog.selected_color": tr("Colour", "Màu", "颜色"),
+  // Hiện khi màu đang chọn chưa có ảnh riêng. Gặp thật: Comfort Colors 1717 có
+  // 18 màu nhưng mới 11 tấm ảnh áo. Im lặng thì khách tưởng trang bị lỗi.
+  "catalog.no_photo_for_color": tr(
+    "No photo yet for {color} — showing the current image",
+    "Chưa có ảnh riêng cho màu {color} — đang hiện ảnh hiện tại",
+    "{color} 暂无专属照片 — 显示当前图片",
+  ),
 };
