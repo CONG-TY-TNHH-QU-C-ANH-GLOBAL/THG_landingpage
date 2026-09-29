@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 
 import { CATEGORIES, NO_SERIES_KEY, categoryIcons } from "@/pages/catalog/data";
+import { resolveSwatch } from "@/pages/catalog/variantColors";
+import { ColorPreview } from "@/pages/catalog/ColorPreview";
 import { DELAYS, LIMITS } from "@/lib/constants";
 
 const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
@@ -636,6 +638,13 @@ const CatalogPage = () => {
             // when there's a single series and we're not showing the tab row.
             const variantSectionLabel = hasRealSeries ? "Model" : "Sizes";
 
+            /* Màu đang chọn, tra từ tên series. `null` khi tên không nằm trong
+               bảng màu — lúc đó slide xem màu không xuất hiện và chip series
+               hiện chữ như cũ. Xem variantColors.ts: thà không hiện màu còn
+               hơn hiện sai màu, vì khách đặt hàng theo thứ nhìn thấy. */
+            const activeSeriesLabel = activeSeriesKey === NO_SERIES_KEY ? "" : activeSeriesKey;
+            const activeSwatch = resolveSwatch(activeSeriesLabel);
+
             // priceSbsl = Ship by Merchant (seller ships, higher price)
             // priceSbtt = Ship by Label (TikTok provides label, lower price)
             // Pre-compute BOTH channels explicitly so the per-tab range
@@ -694,7 +703,14 @@ const CatalogPage = () => {
                     {(() => {
                       const validVideos = (selectedProduct.videos ?? []).filter((v) => parseYouTubeId(v));
                       const imageList = selectedProduct.images.filter((img) => !brokenImages.has(img));
-                      const media: Array<{ kind: "video" | "image"; url: string }> = [
+                      /* Slide "xem màu" đứng ĐẦU, trước cả video.
+                         Catalog không có ảnh riêng theo màu — một áo 6 series
+                         dùng chung 4 tấm mockup — nên bấm "Light Brown" không
+                         có tấm ảnh nâu nào để hiện. Slide này vẽ ra màu đó.
+                         Chỉ thêm khi tra được mã màu; tên lạ thì bỏ qua, thà
+                         không hiện còn hơn hiện sai màu. */
+                      const media: Array<{ kind: "video" | "image" | "swatch"; url: string }> = [
+                        ...(activeSwatch ? [{ kind: "swatch" as const, url: "" }] : []),
                         ...validVideos.map((url) => ({ kind: "video" as const, url })),
                         ...imageList.map((url) => ({ kind: "image" as const, url })),
                       ];
@@ -702,7 +718,20 @@ const CatalogPage = () => {
                       return (
                         <>
                           <div className="relative flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/50 to-gray-50/50 min-h-[240px]">
-                            {cur?.kind === "video" ? (() => {
+                            {cur?.kind === "swatch" && activeSwatch ? (
+                              <ColorPreview
+                                key={`${activeSeriesLabel}-${selectedVariant?.variant ?? ""}`}
+                                swatch={activeSwatch}
+                                colorName={activeSeriesLabel}
+                                size={selectedVariant?.variant}
+                                sizeRun={currentGroup.map((v) => v.variant)}
+                                category={selectedProduct.category}
+                                labels={{
+                                  illustration: t("catalog.color_preview_illustration"),
+                                  relativeSize: t("catalog.color_preview_relative_size"),
+                                }}
+                              />
+                            ) : cur?.kind === "video" ? (() => {
                               const short = isYouTubeShort(cur.url);
                               // Shorts (dọc): khung 9:16 cao cố định ~520px (cap 68vh màn thấp),
                               // w-auto → căn giữa cột, chừa hở trên/dưới (không dính thumbnail).
@@ -741,6 +770,34 @@ const CatalogPage = () => {
                             ) : (
                               <Package className="w-20 h-20 text-muted-foreground/30" />
                             )}
+
+                            {/* Huy hiệu lựa chọn — đè lên MỌI slide, kể cả ảnh
+                                chụp. Ảnh mockup không đổi theo màu được, nên
+                                đây là chỗ duy nhất khách thấy lựa chọn của mình
+                                phản hồi ngay trên khung hình. `key` đổi theo
+                                lựa chọn để React dựng lại và animation chạy
+                                lại mỗi lần bấm. */}
+                            {cur?.kind !== "swatch" && (activeSwatch || selectedVariant?.variant) && (
+                              <div
+                                key={`badge-${activeSeriesLabel}-${selectedVariant?.variant ?? ""}`}
+                                className="absolute left-4 bottom-4 flex items-center gap-2 rounded-full bg-white/92 backdrop-blur px-3 py-1.5 shadow-sm border border-border/40 animate-in fade-in slide-in-from-bottom-1 duration-300"
+                              >
+                                {activeSwatch && (
+                                  <span
+                                    className="w-4 h-4 rounded-full border border-black/15 flex-shrink-0"
+                                    style={{ background: activeSwatch.hex }}
+                                  />
+                                )}
+                                <span className="text-xs font-semibold text-foreground leading-none">
+                                  {activeSwatch ? activeSeriesLabel : t("catalog.selected_color")}
+                                </span>
+                                {selectedVariant?.variant && (
+                                  <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 rounded-full px-1.5 py-0.5 leading-none">
+                                    {selectedVariant.variant}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                           {media.length > 1 && (
                             <div className="flex gap-2 overflow-x-auto p-3 border-t border-border/30 bg-white">
@@ -748,15 +805,37 @@ const CatalogPage = () => {
                                 <button
                                   key={i}
                                   onClick={() => { setActiveImage(i); setVideoPlaying(false); }}
-                                  className={`relative w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i ? "border-blue-600" : "border-border/30 opacity-60 hover:opacity-100"}`}
+                                  /* Ô màu KHÔNG được làm mờ: `opacity-60` đổi
+                                     luôn màu người ta nhìn thấy — đỏ thành
+                                     hồng nhạt — và khách chọn màu theo đúng ô
+                                     đó. Ảnh thì mờ được vì mờ không làm sai
+                                     nội dung ảnh. */
+                                  className={`relative w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${activeImage === i
+                                    ? "border-blue-600"
+                                    : m.kind === "swatch"
+                                      ? "border-border/40 hover:border-blue-300"
+                                      : "border-border/30 opacity-60 hover:opacity-100"
+                                    }`}
+                                  title={m.kind === "swatch" ? `${t("catalog.color_preview_tab")} — ${activeSeriesLabel}` : undefined}
                                 >
-                                  <img
-                                    loading="lazy"
-                                    src={(m.kind === "video" ? youtubeThumb(m.url) : m.url) ?? ""}
-                                    alt={`${selectedProduct.name} — ${m.kind} ${i + 1}`}
-                                    onError={() => { if (m.kind === "image") markBroken(m.url); }}
-                                    className="w-full h-full object-contain p-0.5"
-                                  />
+                                  {m.kind === "swatch" && activeSwatch ? (
+                                    /* Ô nhỏ tô thẳng màu đang chọn — đổi theo
+                                       series nên khách thấy ngay nó là ô màu,
+                                       không phải một tấm ảnh nữa. */
+                                    <span
+                                      className="block w-full h-full transition-colors duration-300"
+                                      style={{ background: activeSwatch.hex }}
+                                      aria-label={activeSeriesLabel}
+                                    />
+                                  ) : (
+                                    <img
+                                      loading="lazy"
+                                      src={(m.kind === "video" ? youtubeThumb(m.url) : m.url) ?? ""}
+                                      alt={`${selectedProduct.name} — ${m.kind} ${i + 1}`}
+                                      onError={() => { if (m.kind === "image") markBroken(m.url); }}
+                                      className="w-full h-full object-contain p-0.5"
+                                    />
+                                  )}
                                   {m.kind === "video" && (
                                     <span className="absolute inset-0 flex items-center justify-center">
                                       <span className="w-6 h-6 rounded-full bg-black/55 flex items-center justify-center text-white text-[10px] pl-0.5">▶</span>
@@ -883,6 +962,9 @@ const CatalogPage = () => {
                             {seriesKeys.map((key) => {
                               const isActive = key === activeSeriesKey;
                               const label = key === NO_SERIES_KEY ? "Other" : key;
+                              // Tra được mã màu thì hiện ô màu thật; không tra
+                              // được thì giữ nguyên chip chữ. Không tô đại.
+                              const chipSwatch = key === NO_SERIES_KEY ? null : resolveSwatch(key);
                               return (
                                 <button
                                   key={key}
@@ -894,12 +976,32 @@ const CatalogPage = () => {
                                     // price update immediately (matches mockup).
                                     if (g && g[0]?.id) setSelectedVariantId(g[0].id);
                                     else setSelectedVariantId(null);
+                                    /* Nhảy về slide xem màu để cú bấm hiện ra
+                                       NGAY TRÊN KHUNG HÌNH. Ảnh mockup dùng
+                                       chung cho mọi màu, nên nếu đang xem ảnh
+                                       số 3 mà đổi màu thì khung hình đứng im và
+                                       khách tưởng bấm hụt. Chỉ nhảy khi màu này
+                                       vẽ được — không thì để nguyên chỗ đang xem. */
+                                    if (resolveSwatch(key)) {
+                                      setActiveImage(0);
+                                      setVideoPlaying(false);
+                                    }
                                   }}
-                                  className={`px-3 py-1 rounded-md text-xs font-medium border-[1.5px] transition-all ${isActive
+                                  aria-pressed={isActive}
+                                  className={`flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-md text-xs font-medium border-[1.5px] transition-all ${isActive
                                     ? "bg-blue-50 text-blue-700 border-blue-300"
                                     : "bg-white text-muted-foreground border-border/40 hover:border-blue-300 hover:text-blue-600"
                                     }`}
                                 >
+                                  {chipSwatch && (
+                                    <span
+                                      className={`w-4 h-4 rounded-full flex-shrink-0 transition-all ${isActive
+                                        ? "ring-2 ring-offset-1 ring-blue-500"
+                                        : "border border-black/15"
+                                        }`}
+                                      style={{ background: chipSwatch.hex }}
+                                    />
+                                  )}
                                   {label}
                                 </button>
                               );
