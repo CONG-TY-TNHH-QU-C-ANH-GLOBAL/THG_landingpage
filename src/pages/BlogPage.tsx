@@ -20,6 +20,29 @@ interface DisplayPost {
   slidesCount: number;
 }
 
+/** Card image, or a branded block when the post has none — an empty slot
+ *  renders as a blank white panel (the "Event" post did exactly that).
+ *  Absolutely positioned so it always fills its (relative) frame: as a flex
+ *  child with h-full the featured image only covered a strip of its panel. */
+function PostCover({ post, className }: Readonly<{ post: DisplayPost; className: string }>) {
+  if (post.thumbnail) {
+    return (
+      <img
+        src={post.thumbnail}
+        alt={post.title}
+        className={`absolute inset-0 h-full w-full object-cover ${className}`}
+        loading="lazy"
+      />
+    );
+  }
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-navy text-white/80">
+      <span className="text-4xl font-bold tracking-tight">THG</span>
+      <span className="text-xs font-medium uppercase tracking-[0.2em] text-white/60">{post.category}</span>
+    </div>
+  );
+}
+
 const BlogPage = () => {
   const { t, language } = useI18n();
   const [activeCategory, setActiveCategory] = useState("All");
@@ -45,7 +68,8 @@ const BlogPage = () => {
 
   const sorted = [...posts].sort((a, b) => b.date.localeCompare(a.date));
   const filtered = activeCategory === "All" ? sorted : sorted.filter((p) => p.category === activeCategory);
-  const featured = filtered[0];
+  // The featured slot is half image: give it the newest post that has one.
+  const featured = filtered.find((p) => p.thumbnail) ?? filtered[0];
   const rest = filtered.filter((p) => p.slug !== featured?.slug);
 
   return (
@@ -96,8 +120,8 @@ const BlogPage = () => {
             <ScrollReveal delay={150}>
               <Link to={`/${language}/blog/${featured.slug}`} className="glass-card rounded-3xl overflow-hidden mb-10 group cursor-pointer hover-lift block">
                 <div className="grid md:grid-cols-2 gap-0">
-                  <div className="bg-secondary/10 min-h-[280px] flex items-center justify-center overflow-hidden">
-                    {featured.thumbnail && <img src={featured.thumbnail} alt={featured.title} className="w-full h-full object-cover max-h-[400px] group-hover:scale-105 transition-transform duration-500" loading="lazy" />}
+                  <div className="relative bg-secondary/10 min-h-[280px] overflow-hidden">
+                    <PostCover post={featured} className="group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="p-8 md:p-10 flex flex-col justify-center">
                     <div className="flex items-center gap-3 mb-4">
@@ -118,8 +142,8 @@ const BlogPage = () => {
             {rest.map((post, i) => (
               <ScrollReveal key={post.slug} delay={i * 80}>
                 <Link to={`/${language}/blog/${post.slug}`} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
-                  <div className="bg-secondary/10 h-56 flex items-center justify-center overflow-hidden">
-                    {post.thumbnail && <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" loading="lazy" />}
+                  <div className="relative bg-secondary/10 h-56 overflow-hidden">
+                    <PostCover post={post} className="object-top group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="p-6 flex-1 flex flex-col">
                     <div className="flex items-center gap-3 mb-3">
