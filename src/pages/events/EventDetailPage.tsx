@@ -86,17 +86,17 @@ export default function EventDetailPage() {
               <CalendarDays className="h-4 w-4" />
               {formatEventDates(event.event_date, event.end_date)}
             </span>
-            {event.location && (
+            {event.location ? (
               <span className="inline-flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
                 {event.location}
               </span>
-            )}
-            {event.role && (
+            ) : null}
+            {event.role ? (
               <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                 {event.role}
               </span>
-            )}
+            ) : null}
           </div>
           <h1 className="mt-4 text-4xl font-bold tracking-tight text-navy md:text-5xl">
             {event.title}
@@ -107,18 +107,17 @@ export default function EventDetailPage() {
         </header>
         {videoId ? (
           <ServiceVideoCard videoId={videoId} title={event.title} className="mt-8" />
-        ) : (
-          image && (
-            <div className="mt-8 overflow-hidden rounded-3xl bg-navy">
-              <img src={image} alt={event.title} className="aspect-video w-full object-cover" />
-            </div>
-          )
-        )}
-        {event.body_md && (
+        ) : null}
+        {!videoId && image ? (
+          <div className="mt-8 overflow-hidden rounded-3xl bg-navy">
+            <img src={image} alt={event.title} className="aspect-video w-full object-cover" />
+          </div>
+        ) : null}
+        {event.body_md ? (
           <article className="mt-10">
             <ArticleMarkdown markdown={event.body_md} />
           </article>
-        )}
+        ) : null}
         {photos.length > 0 && (
           <section className="mt-10">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -144,7 +143,7 @@ export default function EventDetailPage() {
         )}
 
         <div className="mt-10 flex flex-wrap gap-3">
-          {videoId && (
+          {videoId ? (
             <a
               href={`https://youtu.be/${videoId}`}
               target="_blank"
@@ -153,7 +152,7 @@ export default function EventDetailPage() {
             >
               Xem trên YouTube <PlayCircle className="h-4 w-4" />
             </a>
-          )}
+          ) : null}
           {event.url && (
             <a
               href={event.url}

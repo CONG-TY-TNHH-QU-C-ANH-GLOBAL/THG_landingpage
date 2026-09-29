@@ -152,7 +152,7 @@ const BlogDetailPage = () => {
                     )}
 
                     {/* Article body */}
-                    {article.body_md && <ArticleMarkdown markdown={article.body_md} className="mb-10" />}
+                    {article.body_md ? <ArticleMarkdown markdown={article.body_md} className="mb-10" /> : null}
 
                     {/* Gallery — remaining slides */}
                     {gallerySlides.length > 0 && (

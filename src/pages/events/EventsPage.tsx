@@ -68,11 +68,11 @@ export default function EventsPage() {
                         THG
                       </div>
                     )}
-                    {videoId && (
+                    {videoId ? (
                       <span className="absolute inset-0 grid place-items-center">
                         <PlayCircle className="h-14 w-14 text-white drop-shadow-lg" />
                       </span>
-                    )}
+                    ) : null}
                   </div>
                   <div className="p-6">
                     <div className="mb-3 flex flex-wrap gap-3 text-xs font-medium text-muted-foreground">

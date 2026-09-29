@@ -56,9 +56,9 @@ const components: Components = {
     return (
       <figure className="not-prose my-8">
         <ServiceVideoCard videoId={video.id} title={video.label ?? "Video"} />
-        {video.label && (
+        {video.label ? (
           <figcaption className="mt-3 text-center text-sm text-muted-foreground">{video.label}</figcaption>
-        )}
+        ) : null}
       </figure>
     );
   },
