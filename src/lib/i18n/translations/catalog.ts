@@ -28,4 +28,20 @@ export const catalogTranslations: TranslationDict = {
   "catalog.contact_quote_hint": tr("Contact us for pricing", "Liên hệ để nhận báo giá", "联系我们获取报价"),
   "catalog.empty_title": tr("No products found", "Không tìm thấy sản phẩm", "未找到产品"),
   "catalog.empty_hint": tr("Try adjusting your search or filter", "Hãy thử điều chỉnh từ khóa hoặc bộ lọc", "请尝试调整搜索或筛选条件"),
+
+  // Khung xem màu trong modal sản phẩm. Nhãn "minh hoạ" là bắt buộc chứ không
+  // phải cho đẹp: catalog không có ảnh riêng theo màu nên hình đó là hình vẽ,
+  // và khách đặt hàng theo đúng thứ họ nhìn thấy trên màn hình.
+  "catalog.color_preview_tab": tr("Colour", "Xem màu", "颜色"),
+  "catalog.color_preview_illustration": tr(
+    "Colour illustration — not a product photo",
+    "Hình minh hoạ màu — không phải ảnh chụp sản phẩm",
+    "颜色示意图 — 非实物照片",
+  ),
+  "catalog.color_preview_relative_size": tr(
+    "size shown relatively",
+    "dáng theo size, chỉ mang tính tương đối",
+    "尺码为相对示意",
+  ),
+  "catalog.selected_color": tr("Colour", "Màu", "颜色"),
 };
