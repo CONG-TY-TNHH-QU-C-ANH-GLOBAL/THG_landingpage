@@ -40,38 +40,43 @@ export const VARIANT_IMAGE_MAP: Record<string, ProductImageMap> = {
   },
 };
 
-/* ── CHƯA GẮN — cần Vận hành xác nhận ────────────────────────────────────
+/* ── ĐÃ ĐỐI CHIẾU VỚI BẢNG MÀU CÔNG TY ───────────────────────────────────
 
-   Comfort Colors 1717, bốn tấm KHÔNG gắn được, vì màu đo được không khớp rõ
-   ràng với bất kỳ tên nào trong danh sách 18 màu của sản phẩm:
+   Nguồn: "Bảng màu - 2D.xlsx" — 7 sản phẩm, 72 dòng màu, 38 mã màu chính
+   thức. Mã màu nằm ở màu chữ của ký tự █, không phải màu nền ô.
 
-     78-1-.png   #f0727c  hồng san hô   — gần "Watermelon" của Comfort Colors,
-                                          màu đó không có trong danh sách.
-                                          "Crimson" thì đỏ sẫm hơn hẳn.
-     THG-3-.png  #76aca5  xanh ngọc     — gần "Seafoam", không có trong danh
-                                          sách. "Light Green" là xanh sage nhạt.
-     123-1-.png  #beb29a  be cát        — gần "Sandstone". "Yam" là cam đất.
-     99-1-.png   #5f746d  xanh rêu đậm  — gần "Blue Spruce", không có trong
-                                          danh sách. "Moss" đã gắn cho a-1-.png.
+   Bảy màu ở bảng trên đã được kiểm bằng cách đặt ẢNH cạnh Ô MÀU CHÍNH THỨC,
+   nhìn từng cặp một. Cả bảy khớp.
 
-   Và 1717.jpg là BẢNG SIZE, không phải ảnh áo — không gắn cho màu nào.
+   BỐN TẤM KHÔNG GẮN ĐƯỢC. Đã so với cả 11 màu còn lại của sản phẩm, không
+   tấm nào khớp — đây là kết luận dựa trên bảng của công ty, không phải phỏng
+   đoán:
 
-   Mười một màu này KHÔNG CÓ ẢNH NÀO: Blue Jean, Chambray, Crimson, Espresso,
+     78-1-.png   hồng san hô   ≠ Yam #c96a2d (cam đất) · ≠ Crimson #9e2a2f (đỏ sẫm)
+     THG-3-.png  xanh ngọc     ≠ Light Green #a8c686 (xanh vàng) · ≠ Chambray #8daec7 (xanh lam)
+     123-1-.png  be cát        ≠ Grey #b8b8b8 · ≠ Light Green #a8c686
+     99-1-.png   xanh rêu đậm  ≠ Moss #6e7a47 (đã gắn cho a-1-.png) · ≠ Graphite #51565c
+
+   Tức là Vận hành đã up ảnh của những màu KHÔNG nằm trong 18 màu sản phẩm này
+   bán. Và 1717.jpg là bảng size, không phải ảnh áo.
+
+   MƯỜI MỘT MÀU KHÔNG CÓ ẢNH NÀO: Blue Jean, Chambray, Crimson, Espresso,
    Graphite, Grey, Light Green, Navy, Pepper, White, Yam.
 
-   Espresso là nâu đậm — trong 12 tấm không có tấm nâu nào. Nên bấm Espresso mà
-   khung hình đứng im không phải lỗi giao diện: chưa có ảnh để nhảy tới. Giao
-   diện nói rõ điều đó thay vì im lặng.
+   Espresso là nâu đậm (#4a2f24 theo bảng công ty) — trong 12 tấm không có tấm
+   nâu nào. Bấm Espresso mà khung hình đứng im KHÔNG phải lỗi giao diện.
 
-   Hai việc cần Vận hành làm, theo thứ tự đáng làm:
-     1. Xác nhận 4 tấm trên là màu gì → ghi vào bảng, xong ngay.
+   Việc cần Vận hành làm:
+     1. Xác nhận 4 tấm trên là màu gì, hoặc gỡ chúng nếu là ảnh sai sản phẩm.
      2. Up ảnh cho 11 màu còn thiếu. Đặt tên có màu, ví dụ espresso-1.png, thì
-        không cần ai gắn tay nữa, kể cả cho sản phẩm mới.
+        không cần ai gắn tay nữa.
+     3. Bổ sung ô màu cho BERRY (1717) trong file Excel — dòng đó chỉ có chữ,
+        không có ô █. Mã đang dùng là màu đo từ chính ảnh 56-1-.png.
 
    BÀI HỌC khi điền bảng này: lần đầu điền, bốn dòng bị gắn sai vì ghép nhầm vị
-   trí trong dải ảnh với tên file — ảnh thứ 7 trong dải không phải là file thứ
-   7 mình đang nhìn. Luôn chạy scripts/propose-variant-images.mjs để lấy tên
-   file ĐI KÈM màu đo được, đừng đếm bằng mắt.                                */
+   trí trong dải ảnh với tên file — ảnh thứ 7 trong dải không phải file thứ 7
+   mình đang nhìn. Luôn chạy scripts/propose-variant-images.mjs để lấy tên file
+   ĐI KÈM màu đo được, đừng đếm bằng mắt.                                    */
 
 const fileNameOf = (url: string): string => {
   const path = url.split("?")[0].split("/").pop() || "";

@@ -59,3 +59,34 @@ describe("resolveSwatch", () => {
     }
   });
 });
+
+describe("bảng màu công ty", () => {
+  // Mã lấy từ 'Bảng màu - 2D.xlsx'. Nếu một dòng ở đây hỏng nghĩa là file sinh
+  // ra đã lệch khỏi bảng gốc — chạy lại py scripts/gen-catalog-palette.py.
+  const OFFICIAL: Array<[string, string]> = [
+    ["Ivory", "#f5f1e8"],
+    ["Orchid", "#b08cc9"],
+    ["Blossom", "#e8b7c7"],
+    ["Moss", "#6e7a47"],
+    ["Denim", "#3d5a80"],
+    ["Espresso", "#4a2f24"],
+    ["Crimson", "#9e2a2f"],
+    ["Yam", "#c96a2d"],
+    ["Blue Jean", "#6f8faf"],
+    ["Chambray", "#8daec7"],
+    ["Graphite", "#51565c"],
+    ["Pepper", "#4a4a4a"],
+  ];
+
+  it("dùng mã chính thức, không dùng mã tôi tự ước lượng", () => {
+    for (const [name, hex] of OFFICIAL) {
+      expect(resolveSwatch(name)?.hex, name).toBe(hex);
+    }
+  });
+
+  it("màu bảng công ty chưa ghi thì rơi về bảng dự phòng, không phải null", () => {
+    // BERRY của 1717 không có ô màu trong file Excel. Ô màu vẫn phải vẽ được,
+    // chỉ là mã đến từ bảng dự phòng.
+    expect(resolveSwatch("Berry")).not.toBeNull();
+  });
+});

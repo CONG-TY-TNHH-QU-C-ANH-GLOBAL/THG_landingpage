@@ -1,21 +1,20 @@
-// Tên màu (series) → mã màu thật để vẽ swatch.
+// Tên màu (series) → mã màu, để vẽ ô màu trong modal sản phẩm.
 //
-// VÌ SAO CẦN: API catalog trả `images` ở CẤP SẢN PHẨM, không có ảnh riêng cho
-// từng màu. Một áo có 6 series nhưng chỉ 4 tấm ảnh mockup dùng chung. Nên
-// không thể đổi ảnh theo màu — thứ duy nhất khác giữa các variant là SKU.
+// HAI NGUỒN, BẢNG CÔNG TY ĐỨNG TRƯỚC:
 //
-// Cách bù: vẽ đúng màu ra bằng swatch và một hình minh hoạ, để khách nhìn
-// thấy màu mình đang chọn thay vì đọc chữ "Light Brown".
+//   1. catalogPalette.generated.ts — sinh từ "Bảng màu - 2D.xlsx", 38 màu kèm
+//      72 mã SKU. Đây là mã màu CHÍNH THỨC do công ty xác nhận.
+//   2. FALLBACK bên dưới — ước lượng theo tên, chỉ dùng cho màu chưa có trong
+//      bảng công ty.
 //
-// KHÔNG ĐOÁN. Tên nào không có trong bảng thì trả `null`, và giao diện hiện
-// chip chữ như cũ. Đoán sai một màu còn tệ hơn không hiện màu: khách đặt hàng
-// theo thứ họ nhìn thấy trên màn hình.
+// KHÔNG ĐOÁN. Tên nào không có ở cả hai nguồn thì trả `null` và giao diện hiện
+// chip chữ như cũ. Tô sai một màu còn tệ hơn không tô: khách đặt hàng theo
+// đúng thứ họ nhìn thấy trên màn hình.
 //
-// Mười tên đang có thật trong catalog (soát ngày 28/09/2026 trên 40 sản phẩm):
-//   Black · Blue · Gray · Green · Light Brown · Light brown · Navy · Pink ·
-//   Red · White
-// Lưu ý "Light Brown" và "Light brown" — dữ liệu không nhất quán hoa/thường,
+// Dữ liệu catalog không nhất quán hoa thường ("Light Brown" và "Light brown"),
 // nên tra cứu luôn chuẩn hoá về chữ thường.
+
+import { CATALOG_PALETTE } from "./catalogPalette.generated";
 
 export interface VariantSwatch {
   /** Mã màu để tô. */
@@ -24,9 +23,11 @@ export interface VariantSwatch {
   isLight: boolean;
 }
 
-/** Màu chọn theo sắc độ vải thật, không phải màu nguyên bản rực rỡ — một chiếc
- *  áo "Red" ngoài đời không bao giờ là #ff0000. */
-const PALETTE: Record<string, string> = {
+/** Dự phòng cho màu chưa có trong bảng công ty. Chọn theo sắc độ vải thật, không
+ *  phải màu nguyên bản rực rỡ — áo "Red" ngoài đời không bao giờ là #ff0000.
+ *  Màu nào được bổ sung vào file Excel thì mã ở đây tự hết tác dụng, vì bảng
+ *  công ty được tra trước. */
+const FALLBACK: Record<string, string> = {
   // Mười tên đang có trong catalog
   black: "#1c1c1e",
   blue: "#2f5fd0",
@@ -35,6 +36,9 @@ const PALETTE: Record<string, string> = {
   "light brown": "#b08155",
   navy: "#1f2a44",
   pink: "#efa3bb",
+  // Bảng công ty chưa ghi ô màu cho BERRY (1717). Mã này đo TỪ CHÍNH ẢNH sản
+  // phẩm của công ty (56-1-.png, vùng thân áo) — không phải màu tự nghĩ ra.
+  berry: "#8c6078",
   red: "#c0322f",
   white: "#f6f5f2",
 
@@ -98,12 +102,23 @@ const normalize = (raw: string): string =>
  * Trả `null` khi không chắc — giao diện sẽ hiện chip chữ như cũ. Đó là hành vi
  * đúng: thà không hiện màu còn hơn hiện sai màu.
  */
+/* Khoá của bảng công ty phải đi qua ĐÚNG hàm chuẩn hoá đang dùng để tra, nếu
+   không sẽ trượt trong im lặng: `normalize` đổi "Grey" thành "gray", mà bảng
+   công ty ghi khoá là "GREY" — tra thẳng sẽ không thấy và rơi xuống bảng dự
+   phòng dù bảng công ty có màu đó. */
+const OFFICIAL: Record<string, string> = Object.fromEntries(
+  Object.entries(CATALOG_PALETTE).map(([name, hex]) => [normalize(name), hex]),
+);
+
+/** Bảng công ty tra trước, dự phòng tra sau. */
+const lookup = (key: string): string | undefined => OFFICIAL[key] ?? FALLBACK[key];
+
 export function resolveSwatch(name?: string | null): VariantSwatch | null {
   if (!name) return null;
   const key = normalize(name);
   if (!key) return null;
 
-  const hex = PALETTE[key];
+  const hex = lookup(key);
   if (hex) return { hex, isLight: isLightHex(hex) };
 
   // Tên ghép kiểu "Navy Blue" hay "Light Brown Melange": thử từ cuối về đầu để
@@ -112,7 +127,7 @@ export function resolveSwatch(name?: string | null): VariantSwatch | null {
   const words = key.split(" ");
   for (let start = 0; start < words.length; start += 1) {
     for (let end = words.length; end > start + 1; end -= 1) {
-      const candidate = PALETTE[words.slice(start, end).join(" ")];
+      const candidate = lookup(words.slice(start, end).join(" "));
       if (candidate) return { hex: candidate, isLight: isLightHex(candidate) };
     }
   }
