@@ -16,7 +16,7 @@ const report = JSON.parse(readFileSync(reportPath, "utf8"));
 const errors = [];
 
 function fileFor(route) {
-  return resolve(dist, route.replace(/^\//, ""), "index.html");
+  return resolve(dist, decodeURIComponent(route).replace(/^\//, ""), "index.html");
 }
 
 function matches(html, pattern) {

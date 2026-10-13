@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { Link, Navigate, useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
@@ -23,6 +24,7 @@ import { resolveSwatch } from "@/pages/catalog/variantColors";
 import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { manualImagesBySeries } from "@/pages/catalog/variantImageMap";
 import { DELAYS, LIMITS } from "@/lib/constants";
+import { catalogPath } from "@/lib/catalogRoutes";
 
 const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
 
@@ -39,7 +41,14 @@ const CatalogPage = () => {
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [activeOrigin, setActiveOrigin] = useState<string>("");
-  const [activeCollections, setActiveCollections] = useState<string[]>([]);
+  // The active campaign lives in the URL (/:lang/catalog/:collection) so a tag can
+  // be shared as a link. Single-select; still an array because the catalog API
+  // takes a `collection` list.
+  const { collection: activeCollection } = useParams<{ collection?: string }>();
+  const activeCollections = useMemo(
+    () => (activeCollection ? [activeCollection] : []),
+    [activeCollection],
+  );
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -220,30 +229,38 @@ const CatalogPage = () => {
     setPage(1);
   };
 
-  // Single-select, matching handleCategory/handleOrigin above: picking another
-  // campaign replaces the current one rather than stacking onto it. Operations
-  // read the accumulating selection as a bug — the rail's two other filters have
-  // never behaved that way, so the tags looked broken by comparison. Clicking the
-  // active tag still clears it. State stays an array because the catalog API takes
-  // a `collection` list; only the selection rule changes.
-  const handleCollection = (slug: string) => {
-    setActiveCollections((prev) => (prev.includes(slug) ? [] : [slug]));
-    setPage(1);
-  };
+  // Back/forward between collections changes the URL without a click, so the
+  // page reset has to follow the URL too (the tag links also reset it on click).
+  useEffect(() => { setPage(1); }, [activeCollection]);
 
   const totalAll = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
+
+  // Name from the Hub once loaded; until then a title-cased slug, so the
+  // prerendered title never depends on how fast the Hub answers.
+  const activeCollectionName = activeCollection
+    ? collections.find((c) => c.slug === activeCollection)?.name
+      ?? activeCollection.replace(/[-_]+/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase())
+    : null;
+
+  // Unknown slug (renamed or removed in the Hub) → back to the full catalog.
+  if (activeCollection && collections.length > 0 && !collections.some((c) => c.slug === activeCollection)) {
+    return <Navigate to={catalogPath(language)} replace />;
+  }
 
   return (
     <div className="min-h-screen bg-cream">
       <SeoHead
-        title={t("seo.catalog_title")}
+        title={activeCollectionName ? `${activeCollectionName} — ${t("seo.catalog_title")}` : t("seo.catalog_title")}
         description={t("seo.catalog_desc")}
-        path="/catalog"
+        path={activeCollection ? `/catalog/${encodeURIComponent(activeCollection)}` : "/catalog"}
       />
       <JsonLdBreadcrumb
         items={[
           { name: "Home", url: "https://thgfulfill.com/" },
           { name: t("catalog_page.title"), url: "https://thgfulfill.com/catalog" },
+          ...(activeCollection && activeCollectionName
+            ? [{ name: activeCollectionName, url: `https://thgfulfill.com${catalogPath(language, activeCollection)}` }]
+            : []),
         ]}
       />
       <Navbar variant="darkHero" />
@@ -298,7 +315,9 @@ const CatalogPage = () => {
             {collections.length > 0 && (
               <div className="pb-4 mb-2 border-b border-border/30">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.tags_label")}</p>
-                {/* One tag per row. Wrapping packed the short names into shared
+                {/* Tags are links (/:lang/catalog/:slug) so each campaign has a shareable,
+                    crawlable URL; clicking the active tag goes back to /:lang/catalog.
+                    One tag per row. Wrapping packed the short names into shared
                     rows (Kid + Pet, DTF + 2D) while long ones took a row alone,
                     so the column read as ragged. `items-start` keeps each pill at
                     its content width instead of stretching to the rail. */}
@@ -306,16 +325,18 @@ const CatalogPage = () => {
                   {collections.map((c) => {
                     const on = activeCollections.includes(c.slug);
                     return (
-                      <button
+                      <Link
                         key={c.id}
-                        onClick={() => handleCollection(c.slug)}
+                        to={catalogPath(language, on ? null : c.slug)}
+                        onClick={() => setPage(1)}
+                        aria-current={on ? "page" : undefined}
                         className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${on ? "text-white border-transparent" : "text-foreground/70 border-border hover:bg-secondary"}`}
                         style={on ? { backgroundColor: c.color || "#1e293b" } : undefined}
                       >
                         {c.icon && <span>{c.icon}</span>}
                         <span>{c.name}</span>
                         {typeof c.count === "number" && <span className="text-xs opacity-70">{c.count}</span>}
-                      </button>
+                      </Link>
                     );
                   })}
                 </div>

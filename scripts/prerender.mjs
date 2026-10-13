@@ -196,6 +196,34 @@ async function fetchCommunityReviewRoutes() {
   }
 }
 
+/** Fetch catalog collection slugs (Christmas, Halloween, …) so each
+ *  /:lang/catalog/:collection gets a prerendered shell. nginx serves
+ *  prerendered files only, so without this a shared campaign link — or a
+ *  refresh on one — is a hard 404. Collections come from the Hub's public
+ *  catalog API, not the CMS; the slug is encoded exactly as the app's
+ *  catalogPath() encodes it. */
+async function fetchCatalogCollectionRoutes() {
+  const catalogApi = process.env.VITE_CATALOG_API_URL || "https://hub.thgfulfill.com/api/public/catalog";
+  try {
+    const res = await fetch(`${catalogApi}?limit=1`);
+    if (!res.ok) {
+      recordDiscoveryFailure("catalog-collections", `Catalog API returned ${res.status}`);
+      return [];
+    }
+    const data = await res.json();
+    const slugs = (data.collections ?? []).map((c) => c.slug).filter(Boolean);
+    const routes = LANGS.flatMap((lang) =>
+      slugs.map((slug) => `/${lang}/catalog/${encodeURIComponent(slug)}`),
+    );
+    console.log(`✓ ${routes.length} localized catalog collection routes → /catalog/:collection prerender`);
+    return [...new Set(routes)];
+  } catch (err) {
+    recordDiscoveryFailure("catalog-collections", err instanceof Error ? err.message : String(err));
+    console.warn(`⚠ catalog collections fetch failed (${err.message}) — skipping collection prerender`);
+    return [];
+  }
+}
+
 async function verifySeoControlPlane() {
   try {
     const res = await fetch(`${CMS_API}/seo-pages`);
@@ -217,6 +245,7 @@ const ROUTES = [
   ...(await fetchJobRoutes()),
   ...(await fetchBlogRoutes()),
   ...(await fetchEventRoutes()),
+  ...(await fetchCatalogCollectionRoutes()),
   ...(await fetchCommunityRoutes()),
   ...(await fetchCommunityReviewRoutes()),
 ];
@@ -229,7 +258,8 @@ if (!existsSync(DIST)) {
 /** Resolve `dist/<route>/index.html` (homepage stays at dist/index.html). */
 function outputPath(route) {
   if (route === "/") return resolve(DIST, "index.html");
-  return resolve(DIST, route.replace(/^\//, ""), "index.html");
+  // nginx matches the decoded $uri against the filesystem, so write decoded paths.
+  return resolve(DIST, decodeURIComponent(route).replace(/^\//, ""), "index.html");
 }
 
 /** Poll the preview server until it answers 200 (max 60s). */
