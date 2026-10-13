@@ -7,7 +7,7 @@ import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse, type CatalogCollection } from "@/lib/catalogApi";
-import { countryFlag, countryName } from "@/lib/country-flags";
+import { countryFlag, countryName, groupOriginCounts, normalizeCountryCode } from "@/lib/country-flags";
 import { parseYouTubeId, youtubeThumb, youtubeEmbedUrl, isYouTubeShort } from "@/lib/youtube";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -236,8 +236,13 @@ const CatalogPage = () => {
     setPage(1);
   };
 
+  // One rail row per country even when the Hub stores it under several codes
+  // (GB + UK both read "Vương quốc Anh").
+  const originGroups = useMemo(() => groupOriginCounts(originCounts), [originCounts]);
+  const activeOriginCode = activeOrigin ? normalizeCountryCode(activeOrigin) : "";
+
   const handleOrigin = (origin: string) => {
-    setActiveOrigin(activeOrigin === origin ? "" : origin);
+    setActiveOrigin(activeOriginCode && activeOriginCode === normalizeCountryCode(origin) ? "" : origin);
     setPage(1);
   };
 
@@ -402,19 +407,17 @@ const CatalogPage = () => {
                 nước (UK/TH/JP/AU…) với cờ + tên theo ISO, KHÔNG hardcode. */}
             <div className="pt-4 border-t border-border/30">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 pb-2">{t("catalog.origin_label")}</p>
-              {Object.keys(originCounts)
-                .filter((o) => o && o !== "Unknown" && (originCounts[o] || 0) > 0)
-                .sort((a, b) => (originCounts[b] || 0) - (originCounts[a] || 0))
-                .map((o) => (
+              {originGroups.map((g) => (
                   <button
-                    key={o}
-                    onClick={() => handleOrigin(o)}
-                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-all ${activeOrigin === o ? "bg-primary/10 text-primary font-semibold" : "text-foreground/70 hover:bg-secondary"
+                    key={g.code}
+                    // The Hub filters on a single raw value; send the one holding most products.
+                    onClick={() => handleOrigin(g.rawKeys[0])}
+                    className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-all ${activeOriginCode === g.code ? "bg-primary/10 text-primary font-semibold" : "text-foreground/70 hover:bg-secondary"
                       }`}
                   >
-                    <span className="text-base">{countryFlag(o)}</span>
-                    <span className="truncate">{countryName(o, language)}</span>
-                    <span className="ml-auto text-xs opacity-70">{originCounts[o]}</span>
+                    <span className="text-base">{countryFlag(g.code)}</span>
+                    <span className="truncate">{countryName(g.code, language)}</span>
+                    <span className="ml-auto text-xs opacity-70">{g.count}</span>
                   </button>
                 ))}
             </div>

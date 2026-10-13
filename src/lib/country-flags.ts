@@ -58,3 +58,29 @@ export function countryName(code: string, locale: Lang = "vi"): string {
     return upper;
   }
 }
+
+export interface OriginGroup {
+  /** Canonical ISO code shown to the user (UK → GB). */
+  code: string;
+  /** Raw Hub values that normalize to `code`, largest count first. */
+  rawKeys: string[];
+  count: number;
+}
+
+/** Collapse Hub origin counts that name the same country (e.g. "GB" + "UK",
+ *  or a stray lowercase/space variant) into one row per country, sorted by
+ *  count. Empty and "Unknown" keys are dropped, as the rail always did. */
+export function groupOriginCounts(counts: Record<string, number>): OriginGroup[] {
+  const groups = new Map<string, OriginGroup>();
+  for (const [raw, n] of Object.entries(counts)) {
+    if (!raw || raw.trim() === "" || raw === "Unknown" || !(n > 0)) continue;
+    const code = normalizeCountryCode(raw);
+    const group = groups.get(code) ?? { code, rawKeys: [], count: 0 };
+    group.rawKeys.push(raw);
+    group.count += n;
+    groups.set(code, group);
+  }
+  const out = [...groups.values()];
+  for (const g of out) g.rawKeys.sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+  return out.sort((a, b) => b.count - a.count);
+}
