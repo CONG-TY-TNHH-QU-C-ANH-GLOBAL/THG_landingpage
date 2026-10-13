@@ -6,7 +6,7 @@ import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
-import { fetchCatalog, fetchProduct, type CatalogProduct, type CatalogResponse, type CatalogCollection } from "@/lib/catalogApi";
+import { fetchCatalogForOrigins, fetchOriginCounts, fetchProduct, type CatalogProduct, type CatalogResponse, type CatalogCollection } from "@/lib/catalogApi";
 import { countryFlag, countryName, groupOriginCounts, normalizeCountryCode } from "@/lib/country-flags";
 import { parseYouTubeId, youtubeThumb, youtubeEmbedUrl, isYouTubeShort } from "@/lib/youtube";
 import {
@@ -43,7 +43,9 @@ const CatalogPage = () => {
   const [categories, setCategories] = useState<string[]>(CATEGORIES);
 
   const [activeCategory, setActiveCategory] = useState<string>("");
-  const [activeOrigin, setActiveOrigin] = useState<string>("");
+  // Every Hub code of the selected country (["GB", "UK"]); empty = no filter.
+  const [activeOriginKeys, setActiveOriginKeys] = useState<string[]>([]);
+  const activeOrigin = activeOriginKeys[0] ?? "";
   // The active campaign lives in the URL (/:lang/catalog/:collection) so a tag can
   // be shared as a link. Single-select; still an array because the catalog API
   // takes a `collection` list.
@@ -196,14 +198,13 @@ const CatalogPage = () => {
     const seq = ++loadSeq.current;
     setLoading(true);
     try {
-      const res: CatalogResponse = await fetchCatalog({
+      const res: CatalogResponse = await fetchCatalogForOrigins({
         page,
         limit: PAGE_LIMIT,
         category: activeCategory || undefined,
-        origin: activeOrigin || undefined,
         search: search || undefined,
         collection: activeCollections.length ? activeCollections : undefined,
-      });
+      }, activeOriginKeys);
       if (seq !== loadSeq.current) return;
       setLoadError(false);
       setProducts(res.data);
@@ -218,7 +219,7 @@ const CatalogPage = () => {
     } finally {
       if (seq === loadSeq.current) setLoading(false);
     }
-  }, [page, activeCategory, activeOrigin, search, activeCollections]);
+  }, [page, activeCategory, activeOriginKeys, search, activeCollections]);
 
   useEffect(() => { loadProducts(); }, [loadProducts]);
 
@@ -238,11 +239,42 @@ const CatalogPage = () => {
 
   // One rail row per country even when the Hub stores it under several codes
   // (GB + UK both read "Vương quốc Anh").
-  const originGroups = useMemo(() => groupOriginCounts(originCounts), [originCounts]);
   const activeOriginCode = activeOrigin ? normalizeCountryCode(activeOrigin) : "";
 
-  const handleOrigin = (origin: string) => {
-    setActiveOrigin(activeOriginCode && activeOriginCode === normalizeCountryCode(origin) ? "" : origin);
+  // The Hub's originCounts ignore every filter, so inside a collection, category
+  // or search they list countries that then filter down to zero products.
+  // Count origins within that scope instead. "loading" hides the list rather
+  // than flash the global counts; on error we fall back to the global counts.
+  const originScoped = !!(activeCategory || search || activeCollections.length);
+  const [scopedOriginCounts, setScopedOriginCounts] = useState<Record<string, number> | "loading" | "error">("error");
+  useEffect(() => {
+    if (!originScoped) return;
+    let cancelled = false;
+    setScopedOriginCounts("loading");
+    fetchOriginCounts({
+      category: activeCategory || undefined,
+      search: search || undefined,
+      collection: activeCollections.length ? activeCollections : undefined,
+    })
+      .then((counts) => { if (!cancelled) setScopedOriginCounts(counts); })
+      .catch(() => { if (!cancelled) setScopedOriginCounts("error"); });
+    return () => { cancelled = true; };
+  }, [originScoped, activeCategory, search, activeCollections]);
+
+  const originGroups = useMemo(() => {
+    if (originScoped && scopedOriginCounts === "loading") return [];
+    const counts = originScoped && typeof scopedOriginCounts === "object" ? scopedOriginCounts : originCounts;
+    const groups = groupOriginCounts(counts);
+    // Keep the active country visible (count 0) so it can still be cleared here.
+    if (activeOriginCode && !groups.some((g) => g.code === activeOriginCode)) {
+      groups.push({ code: activeOriginCode, rawKeys: activeOriginKeys, count: 0 });
+    }
+    return groups;
+  }, [originScoped, scopedOriginCounts, originCounts, activeOriginCode, activeOriginKeys]);
+
+  const handleOrigin = (rawKeys: string[]) => {
+    const code = rawKeys[0] ? normalizeCountryCode(rawKeys[0]) : "";
+    setActiveOriginKeys(activeOriginCode && activeOriginCode === code ? [] : rawKeys);
     setPage(1);
   };
 
@@ -410,8 +442,7 @@ const CatalogPage = () => {
               {originGroups.map((g) => (
                   <button
                     key={g.code}
-                    // The Hub filters on a single raw value; send the one holding most products.
-                    onClick={() => handleOrigin(g.rawKeys[0])}
+                    onClick={() => handleOrigin(g.rawKeys)}
                     className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-all ${activeOriginCode === g.code ? "bg-primary/10 text-primary font-semibold" : "text-foreground/70 hover:bg-secondary"
                       }`}
                   >
@@ -467,7 +498,7 @@ const CatalogPage = () => {
               {activeOrigin && (
                 <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-xs font-medium">
                   {countryFlag(activeOrigin)} {countryName(activeOrigin, language)}
-                  <X className="w-3 h-3 cursor-pointer" onClick={() => { setActiveOrigin(""); setPage(1); }} />
+                  <X className="w-3 h-3 cursor-pointer" onClick={() => { setActiveOriginKeys([]); setPage(1); }} />
                 </span>
               )}
             </div>
