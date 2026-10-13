@@ -105,3 +105,68 @@ export async function fetchProduct(id: string): Promise<CatalogProduct> {
   if (!res.ok) throw new Error(`Product API error: ${res.status}`);
   return res.json();
 }
+
+const ORIGIN_SCAN_PAGE_LIMIT = 100;
+const ORIGIN_SCAN_MAX_PAGES = 20;
+
+/** Origin counts within a filtered scope (collection / category / search).
+ *
+ *  The Hub's `originCounts` always covers the WHOLE catalog, whatever filters
+ *  the request carries — so inside "Christmas" the rail offered France (9),
+ *  Germany (18)… and every one of them filtered down to zero products. This
+ *  scans the scoped product list (no origin filter) and counts origins itself.
+ *  Products without an origin are counted under "Unknown", as the Hub does.
+ *  Throws when the scope is larger than the scan budget, so the caller can
+ *  fall back instead of showing partial counts. */
+export async function fetchOriginCounts(
+  params: Pick<CatalogParams, "category" | "search" | "collection">,
+): Promise<Record<string, number>> {
+  const counts: Record<string, number> = {};
+  for (let page = 1; page <= ORIGIN_SCAN_MAX_PAGES; page++) {
+    const res = await fetchCatalog({ ...params, page, limit: ORIGIN_SCAN_PAGE_LIMIT });
+    for (const p of res.data) {
+      const key = p.origin && p.origin.trim() ? p.origin : "Unknown";
+      counts[key] = (counts[key] || 0) + 1;
+    }
+    if (page >= (res.pagination.pages || 1) || res.data.length === 0) return counts;
+  }
+  throw new Error("Origin scan exceeded its page budget");
+}
+
+/** Catalog page for a country the Hub stores under several codes (GB + UK).
+ *
+ *  The Hub filters on one `origin` value, so asking for "GB" alone silently
+ *  drops the products filed under "UK". With more than one code, fetch every
+ *  matching product per code, merge them (deduped by id, code order kept) and
+ *  paginate here. A single code is a plain pass-through to fetchCatalog. */
+export async function fetchCatalogForOrigins(
+  params: Omit<CatalogParams, "origin">,
+  origins: string[],
+): Promise<CatalogResponse> {
+  if (origins.length <= 1) return fetchCatalog({ ...params, origin: origins[0] || undefined });
+
+  let meta: CatalogResponse | null = null;
+  const seen = new Set<string>();
+  const merged: CatalogProduct[] = [];
+  for (const origin of origins) {
+    for (let page = 1; ; page++) {
+      if (page > ORIGIN_SCAN_MAX_PAGES) throw new Error("Origin merge exceeded its page budget");
+      const res = await fetchCatalog({ ...params, origin, page, limit: ORIGIN_SCAN_PAGE_LIMIT });
+      meta ??= res;
+      for (const p of res.data) {
+        if (seen.has(p.id)) continue;
+        seen.add(p.id);
+        merged.push(p);
+      }
+      if (page >= (res.pagination.pages || 1) || res.data.length === 0) break;
+    }
+  }
+
+  const limit = params.limit || 20;
+  const page = params.page || 1;
+  return {
+    ...(meta as CatalogResponse),
+    data: merged.slice((page - 1) * limit, page * limit),
+    pagination: { page, limit, total: merged.length, pages: Math.ceil(merged.length / limit) },
+  };
+}
