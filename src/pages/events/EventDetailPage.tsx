@@ -6,13 +6,14 @@ import { ArticleMarkdown } from "@/components/article/ArticleMarkdown";
 import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { useCmsEvent } from "@/hooks/useCmsContent";
+import { CmsHttpError } from "@/lib/cmsClient";
 import { useI18n } from "@/lib/i18n";
 import { formatEventDates } from "@/lib/eventDates";
 import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
 
 export default function EventDetailPage() {
   const { slug = "" } = useParams();
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const query = useCmsEvent(slug, language);
   const event = query.data?.event;
   const photos = event?.photos ?? [];
@@ -36,7 +37,20 @@ export default function EventDetailPage() {
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="pt-40 text-center text-muted-foreground">Đang tải Event…</div>
+        <div className="pt-40 text-center text-muted-foreground">{t("event.loading")}</div>
+      </div>
+    );
+  if (!event && !(query.error instanceof CmsHttpError && query.error.status === 404))
+    return (
+      <div className="min-h-screen">
+        <SeoHead title="Event — THG Fulfill" description="" path={`/events/${slug}`} />
+        <Navbar />
+        <div className="pt-40 text-center" role="alert">
+          <p className="text-muted-foreground">{t("event.load_error")}</p>
+          <button type="button" onClick={() => void query.refetch()} disabled={query.isFetching} className="text-primary font-semibold mt-4">
+            {t("blog.retry")}
+          </button>
+        </div>
       </div>
     );
   if (!event)
@@ -50,8 +64,9 @@ export default function EventDetailPage() {
         />
         <Navbar />
         <div className="pt-40 text-center">
+          <p className="text-muted-foreground">{t("event.not_found")}</p>
           <Link className="text-primary" to={`/${language}/events`}>
-            Quay lại Event
+            {t("event.back")}
           </Link>
         </div>
       </div>

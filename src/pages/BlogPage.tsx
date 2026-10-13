@@ -99,7 +99,15 @@ const BlogPage = () => {
           {cmsList.isLoading && (
             <div className="text-center text-muted-foreground py-12">{t("blog.list_loading")}</div>
           )}
-          {!cmsList.isLoading && posts.length === 0 && (
+          {cmsList.isError && (
+            <div className="text-center py-12" role="alert">
+              <p className="text-muted-foreground">{t("blog.load_error")}</p>
+              <button type="button" onClick={() => void cmsList.refetch()} disabled={cmsList.isFetching} className="text-primary font-semibold mt-4">
+                {t("blog.retry")}
+              </button>
+            </div>
+          )}
+          {!cmsList.isLoading && !cmsList.isError && posts.length === 0 && (
             <div className="text-center text-muted-foreground py-12">
               {t("blog.list_empty")}
             </div>
@@ -139,8 +147,8 @@ const BlogPage = () => {
           )}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rest.map((post, i) => (
-              <ScrollReveal key={post.slug} delay={i * 80}>
+            {rest.map((post) => (
+              <ScrollReveal key={post.slug}>
                 <Link to={`/${language}/blog/${post.slug}`} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
                   <div className="relative bg-secondary/10 h-56 overflow-hidden">
                     <PostCover post={post} className="object-top group-hover:scale-105 transition-transform duration-500" />

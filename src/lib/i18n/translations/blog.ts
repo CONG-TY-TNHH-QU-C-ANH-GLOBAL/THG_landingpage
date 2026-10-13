@@ -18,4 +18,12 @@ export const blogTranslations: TranslationDict = {
   "blog.not_found": tr("Article not found", "Không tìm thấy bài viết", "未找到文章"),
   "blog.list_loading": tr("Loading articles...", "Đang tải bài viết...", "正在加载文章…"),
   "blog.list_empty": tr("No articles yet. Please check back later.", "Chưa có bài viết nào. Vui lòng quay lại sau.", "暂无文章，请稍后再来。"),
+  "blog.load_error": tr("Unable to load articles. Please try again.", "Chưa thể tải bài viết. Vui lòng thử lại.", "暂时无法加载文章，请重试。"),
+  "blog.retry": tr("Try again", "Thử lại", "重试"),
+  "blog.preview": tr("Review preview · Not published", "Bản xem trước để duyệt · Chưa xuất bản", "审核预览 · 尚未发布"),
+  "event.loading": tr("Loading events…", "Đang tải sự kiện…", "正在加载活动…"),
+  "event.load_error": tr("Unable to load events. Please try again.", "Chưa thể tải sự kiện. Vui lòng thử lại.", "暂时无法加载活动，请重试。"),
+  "event.not_found": tr("Event not found", "Không tìm thấy sự kiện", "未找到活动"),
+  "event.back": tr("Back to events", "Quay lại sự kiện", "返回活动列表"),
+  "event.empty": tr("No events published in this language yet.", "Chưa có sự kiện được xuất bản cho ngôn ngữ này.", "此语言暂无已发布活动。"),
 };

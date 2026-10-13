@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/i18n";
 import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
 
 export default function EventsPage() {
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const query = useCmsEvents(language);
   return (
     <div className="min-h-screen bg-background">
@@ -33,24 +33,27 @@ export default function EventsPage() {
           </header>
         </ScrollReveal>
         {query.isLoading && (
-          <p className="py-16 text-center text-muted-foreground">Đang tải sự kiện…</p>
+          <p className="py-16 text-center text-muted-foreground">{t("event.loading")}</p>
         )}
         {query.isError && (
-          <p className="py-16 text-center text-muted-foreground">
-            Chưa thể tải danh sách Event. Vui lòng thử lại sau.
-          </p>
+          <div className="py-16 text-center" role="alert">
+            <p className="text-muted-foreground">{t("event.load_error")}</p>
+            <button type="button" onClick={() => void query.refetch()} disabled={query.isFetching} className="text-primary font-semibold mt-4">
+              {t("blog.retry")}
+            </button>
+          </div>
         )}
         {!query.isLoading && !query.isError && query.data?.events.length === 0 && (
           <p className="py-16 text-center text-muted-foreground">
-            Chưa có Event được xuất bản cho ngôn ngữ này.
+            {t("event.empty")}
           </p>
         )}
         <section className="grid gap-7 md:grid-cols-2">
-          {query.data?.events.map((event, index) => {
+          {query.data?.events.map((event) => {
             const videoId = parseYouTubeId(event.video_url);
             const image = event.cover_url ?? youtubeThumb(videoId);
             return (
-              <ScrollReveal key={event.id} delay={index * 80}>
+              <ScrollReveal key={event.id}>
                 <Link
                   to={`/${language}/events/${event.slug}`}
                   className="group block h-full overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
