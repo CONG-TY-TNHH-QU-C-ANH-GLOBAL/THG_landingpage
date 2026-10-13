@@ -22,6 +22,7 @@ import { TrackingScripts } from "@/components/analytics/TrackingScripts";
 import { FloatingContact } from "@/components/FloatingContact";
 import { PrerenderSignal } from "@/components/seo/PrerenderSignal";
 import { captureUtmOnce } from "@/lib/utm";
+import { routeIdentity } from "@/lib/catalogRoutes";
 
 // QueryClient — singleton across re-renders. CMS content has 5min stale time,
 // so refetches are cheap. Consider hydration once SSR/prerender lands.
@@ -63,9 +64,11 @@ const EventDetailPage = lazy(() => import("./pages/events/EventDetailPage"));
  */
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  // Collection switches inside the catalog keep their scroll position.
+  const identity = routeIdentity(pathname);
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [identity]);
   return null;
 };
 
@@ -131,7 +134,7 @@ const AppRoutes = () => {
           </div>
         }
       >
-        <ErrorBoundary key={location.pathname}>
+        <ErrorBoundary key={routeIdentity(location.pathname)}>
           <Routes>
             {/* Root redirect — send bare / to default locale */}
             <Route path="/" element={<Navigate to="/vi" replace />} />
@@ -149,7 +152,9 @@ const AppRoutes = () => {
               <Route path="thg-express" element={<THGExpressPage />} />
               <Route path="thg-warehouse" element={<THGWarehousePage />} />
               <Route path="thg-order" element={<THGOrderPage />} />
-              <Route path="catalog" element={<CatalogPage />} />
+              {/* One route with an optional segment so switching collections keeps the
+                  same CatalogPage instance (no remount, no refetch of the rail). */}
+              <Route path="catalog/:collection?" element={<CatalogPage />} />
               <Route path="tracking" element={<TrackingPage />} />
               <Route path="careers" element={<CareersPage />} />
               <Route path="careers/:slug" element={<JobDetailPage />} />
