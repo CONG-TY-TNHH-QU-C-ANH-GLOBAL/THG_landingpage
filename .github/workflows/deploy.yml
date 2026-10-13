@@ -220,6 +220,17 @@ jobs:
                     expires 1y;
                     add_header Cache-Control "public, immutable" always;
                 }
+                # Catalog collections (/vi/catalog/christmas). Prerendered ones are
+                # served as-is; a collection the build did not prerender (created in
+                # the Hub after the last deploy, empty, or the Hub was down) falls
+                # back to the catalog shell, and the app selects the collection
+                # from the URL. Never a 404 for a shared campaign link.
+                location ~ ^/(en|vi|zh)/catalog/[^/.]+$ {
+                    add_header Cache-Control "no-cache, no-store, must-revalidate" always;
+                    add_header Pragma "no-cache" always;
+                    add_header Expires "0" always;
+                    try_files $uri/index.html /$1/catalog/index.html =404;
+                }
                 location / {
                     # Extensionless prerendered routes (for example /vi and
                     # /vi/domestic-pricing) resolve to index.html via
@@ -282,6 +293,10 @@ jobs:
               exact_one robots '<meta[[:space:]][^>]*name="robots"[^>]*>' "$html"
               exact_one H1 '<h1([^>]*)?>' "$html"
             done
+            # A collection the build did not prerender must fall back to the
+            # catalog shell (200), never 404.
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/catalog/seo-smoke-unknown-collection")"
+            [ "$status" = 200 ] || { echo "catalog collection fallback: expected 200, got $status" >&2; failed=1; }
             status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/seo-smoke-route-that-must-not-exist")"
             [ "$status" = 404 ] || { echo "unknown route: expected 404, got $status" >&2; failed=1; }
             # HTTP reaches HTTPS in two hops: resolve both ports locally so the

@@ -197,29 +197,38 @@ async function fetchCommunityReviewRoutes() {
 }
 
 /** Fetch catalog collection slugs (Christmas, Halloween, …) so each
- *  /:lang/catalog/:collection gets a prerendered shell. nginx serves
- *  prerendered files only, so without this a shared campaign link — or a
- *  refresh on one — is a hard 404. Collections come from the Hub's public
- *  catalog API, not the CMS; the slug is encoded exactly as the app's
- *  catalogPath() encodes it. */
+ *  /:lang/catalog/:collection gets a prerendered, indexable page.
+ *
+ *  BEST-EFFORT BY DESIGN. Collections live in the Hub, not the CMS, and the
+ *  Hub must never be able to block a landing deploy (every CMS publish rides
+ *  on this build). A collection page that is not prerendered still works:
+ *  nginx falls back to /:lang/catalog/index.html for /:lang/catalog/<slug>
+ *  (see deploy.yml) and the app selects the collection from the URL. So a Hub
+ *  error here is a warning, never a discovery failure, and these routes go in
+ *  OPTIONAL_ROUTES so a bad render is skipped rather than failing STRICT.
+ *
+ *  Empty collections (count 0) are not prerendered: a page with no products is
+ *  thin content, and the app marks it noindex anyway. The slug is encoded
+ *  exactly as the app's catalogPath() encodes it. */
 async function fetchCatalogCollectionRoutes() {
   const catalogApi = process.env.VITE_CATALOG_API_URL || "https://hub.thgfulfill.com/api/public/catalog";
   try {
-    const res = await fetch(`${catalogApi}?limit=1`);
+    const res = await fetch(`${catalogApi}?limit=1`, { signal: AbortSignal.timeout(15_000) });
     if (!res.ok) {
-      recordDiscoveryFailure("catalog-collections", `Catalog API returned ${res.status}`);
+      console.warn(`⚠ catalog collections: Hub returned ${res.status} — collection pages fall back to the SPA shell`);
       return [];
     }
     const data = await res.json();
-    const slugs = (data.collections ?? []).map((c) => c.slug).filter(Boolean);
+    const slugs = (data.collections ?? [])
+      .filter((c) => c?.slug && !(typeof c.count === "number" && c.count <= 0))
+      .map((c) => c.slug);
     const routes = LANGS.flatMap((lang) =>
       slugs.map((slug) => `/${lang}/catalog/${encodeURIComponent(slug)}`),
     );
-    console.log(`✓ ${routes.length} localized catalog collection routes → /catalog/:collection prerender`);
+    console.log(`✓ ${routes.length} localized catalog collection routes → /catalog/:collection prerender (best-effort)`);
     return [...new Set(routes)];
   } catch (err) {
-    recordDiscoveryFailure("catalog-collections", err instanceof Error ? err.message : String(err));
-    console.warn(`⚠ catalog collections fetch failed (${err.message}) — skipping collection prerender`);
+    console.warn(`⚠ catalog collections fetch failed (${err.message}) — collection pages fall back to the SPA shell`);
     return [];
   }
 }
@@ -240,15 +249,22 @@ async function verifySeoControlPlane() {
 
 await verifySeoControlPlane();
 
+const catalogCollectionRoutes = await fetchCatalogCollectionRoutes();
+// Routes whose render may fail without failing the build — they are skipped
+// (no file written) and served by an nginx fallback instead.
+const OPTIONAL_ROUTES = new Set(catalogCollectionRoutes);
+
 const ROUTES = [
   ...STATIC_ROUTES,
   ...(await fetchJobRoutes()),
   ...(await fetchBlogRoutes()),
   ...(await fetchEventRoutes()),
-  ...(await fetchCatalogCollectionRoutes()),
+  ...catalogCollectionRoutes,
   ...(await fetchCommunityRoutes()),
   ...(await fetchCommunityReviewRoutes()),
 ];
+
+const CATALOG_ROUTE = /^\/(en|vi|zh)\/catalog(\/[^/]+)?$/;
 
 if (!existsSync(DIST)) {
   console.error("✗ dist/ missing — run `bun run build` first.");
@@ -302,6 +318,7 @@ const report = {
   started_at: new Date().toISOString(),
   expected_routes: ROUTES,
   rendered: [],
+  skipped: [],
   failures,
 };
 try {
@@ -375,8 +392,45 @@ try {
           console.warn(`⚠ ${route} — CMS queries still in flight at snapshot time`);
         });
 
+      // The catalog grid comes from the Hub through a plain fetch, which
+      // __cmsFetching does not see. CatalogPage publishes its own state on
+      // [data-catalog-state]; wait until it leaves "loading" so the snapshot
+      // has the products instead of the skeleton.
+      if (CATALOG_ROUTE.test(route)) {
+        await page.waitForFunction(
+          () => {
+            const state = document.querySelector("[data-catalog-state]")?.getAttribute("data-catalog-state");
+            return !!state && state !== "loading";
+          },
+          { timeout: 20_000 },
+        ).catch(() => {
+          console.warn(`⚠ ${route} — catalog still loading at snapshot time`);
+        });
+      }
+
       // Final breath for any late helmet/microtask + main thread settle.
       await page.waitForTimeout(500);
+
+      // A collection page is only worth shipping when it shows that
+      // collection's products. Anything else — Hub error or timeout, an empty
+      // collection, or the app redirecting an unknown slug back to /catalog —
+      // would publish thin or duplicate content, so it is skipped and left to
+      // the nginx fallback.
+      if (OPTIONAL_ROUTES.has(route)) {
+        const catalog = await page.evaluate(() => {
+          const el = document.querySelector("[data-catalog-state]");
+          return {
+            state: el?.getAttribute("data-catalog-state") ?? "",
+            total: Number(el?.getAttribute("data-catalog-total") ?? "0"),
+            path: window.location.pathname,
+          };
+        });
+        if (catalog.path !== route && decodeURIComponent(catalog.path) !== decodeURIComponent(route)) {
+          throw new Error(`collection redirected to ${catalog.path}`);
+        }
+        if (catalog.state !== "ready") throw new Error(`catalog state is "${catalog.state}"`);
+        if (!(catalog.total > 0)) throw new Error("collection has no products");
+      }
 
       const title = await page.title();
       if (!title || title.length < 4) {
@@ -399,8 +453,13 @@ try {
       report.rendered.push(route);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`  ✗ ${route.padEnd(28)} skipped: ${msg.split("\n")[0]}`);
-      failures.push({ route, msg });
+      if (OPTIONAL_ROUTES.has(route)) {
+        console.warn(`  ⚠ ${route.padEnd(28)} not prerendered (nginx fallback serves it): ${msg.split("\n")[0]}`);
+        report.skipped.push({ route, msg });
+      } else {
+        console.error(`  ✗ ${route.padEnd(28)} skipped: ${msg.split("\n")[0]}`);
+        failures.push({ route, msg });
+      }
     } finally {
       await page.close();
     }
@@ -408,7 +467,8 @@ try {
 
   await context.close();
   const skippedNote = failures.length ? ` (${failures.length} skipped)` : "";
-  console.log(`\n✓ Prerendered ${successCount}/${ROUTES.length} routes${skippedNote}`);
+  const optionalNote = report.skipped.length ? `, ${report.skipped.length} optional route(s) left to the nginx fallback` : "";
+  console.log(`\n✓ Prerendered ${successCount}/${ROUTES.length} routes${skippedNote}${optionalNote}`);
 } catch (err) {
   console.error("✗ Prerender setup failed:", err);
   failures.push({ route: "<setup>", msg: err instanceof Error ? err.message : String(err) });

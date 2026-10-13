@@ -32,6 +32,9 @@ const CatalogPage = () => {
   const { t, language } = useI18n();
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  // Whether the last catalog request failed. Read by the prerender (via
+  // data-catalog-state) so a Hub error is never snapshotted as an empty page.
+  const [loadError, setLoadError] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, total: 0, pages: 0 });
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [originCounts, setOriginCounts] = useState<Record<string, number>>({});
@@ -184,7 +187,13 @@ const CatalogPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Collection links and back/forward can fire requests faster than the Hub
+  // answers; only the newest request may write state, so an older response can
+  // never paint the previous collection's products under the current URL.
+  const loadSeq = useRef(0);
+
   const loadProducts = useCallback(async () => {
+    const seq = ++loadSeq.current;
     setLoading(true);
     try {
       const res: CatalogResponse = await fetchCatalog({
@@ -195,6 +204,8 @@ const CatalogPage = () => {
         search: search || undefined,
         collection: activeCollections.length ? activeCollections : undefined,
       });
+      if (seq !== loadSeq.current) return;
+      setLoadError(false);
       setProducts(res.data);
       setPagination(res.pagination);
       setCategoryCounts(res.categoryCounts);
@@ -203,8 +214,9 @@ const CatalogPage = () => {
       if (res.categories?.length) setCategories(res.categories.map((c) => c.name));
     } catch {
       // API not available yet — keep empty state
+      if (seq === loadSeq.current) setLoadError(true);
     } finally {
-      setLoading(false);
+      if (seq === loadSeq.current) setLoading(false);
     }
   }, [page, activeCategory, activeOrigin, search, activeCollections]);
 
@@ -242,17 +254,31 @@ const CatalogPage = () => {
       ?? activeCollection.replace(/[-_]+/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase())
     : null;
 
+  // An empty campaign is thin content: keep it out of the index. Only once the
+  // Hub has actually answered, so a slow or failed request never sets noindex.
+  const emptyCollection = !!activeCollection && !loading && !loadError && pagination.total === 0;
+  const catalogState = loading ? "loading" : loadError ? "error" : "ready";
+
   // Unknown slug (renamed or removed in the Hub) → back to the full catalog.
   if (activeCollection && collections.length > 0 && !collections.some((c) => c.slug === activeCollection)) {
     return <Navigate to={catalogPath(language)} replace />;
   }
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div
+      className="min-h-screen bg-cream"
+      data-catalog-state={catalogState}
+      data-catalog-total={catalogState === "ready" ? pagination.total : undefined}
+    >
       <SeoHead
         title={activeCollectionName ? `${activeCollectionName} — ${t("seo.catalog_title")}` : t("seo.catalog_title")}
-        description={t("seo.catalog_desc")}
+        description={
+          activeCollectionName
+            ? `${activeCollectionName}${catalogState === "ready" ? ` — ${pagination.total} ${t("catalog.products_count")}` : ""}. ${t("seo.catalog_desc")}`
+            : t("seo.catalog_desc")
+        }
         path={activeCollection ? `/catalog/${encodeURIComponent(activeCollection)}` : "/catalog"}
+        noindex={emptyCollection}
       />
       <JsonLdBreadcrumb
         items={[
