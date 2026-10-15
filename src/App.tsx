@@ -23,6 +23,7 @@ import { FloatingContact } from "@/components/FloatingContact";
 import { PrerenderSignal } from "@/components/seo/PrerenderSignal";
 import { captureUtmOnce } from "@/lib/utm";
 import { routeIdentity } from "@/lib/catalogRoutes";
+import { loadBlogDetail, loadEventDetail } from "@/lib/articleNavigation";
 
 // QueryClient — singleton across re-renders. CMS content has 5min stale time,
 // so refetches are cheap. Consider hydration once SSR/prerender lands.
@@ -48,7 +49,7 @@ const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
 const ChinhNgachPricingPage = lazy(() => import("./pages/ChinhNgachPricingPage"));
 const CatalogPage = lazy(() => import("./pages/CatalogPage"));
 const ShippingPolicyPage = lazy(() => import("./pages/ShippingPolicyPage"));
-const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage"));
+const BlogDetailPage = lazy(loadBlogDetail);
 const CareersPage = lazy(() => import("./pages/CareersPage"));
 const JobDetailPage = lazy(() => import("./pages/JobDetailPage"));
 const TrackingPage = lazy(() => import("./pages/TrackingPage"));
@@ -57,7 +58,7 @@ const CommunityQuestionPage = lazy(() => import("./pages/community/CommunityQues
 const CommunityReviewsListPage = lazy(() => import("./pages/community/CommunityReviewsListPage"));
 const CommunityReviewDetailPage = lazy(() => import("./pages/community/CommunityReviewDetailPage"));
 const EventsPage = lazy(() => import("./pages/events/EventsPage"));
-const EventDetailPage = lazy(() => import("./pages/events/EventDetailPage"));
+const EventDetailPage = lazy(loadEventDetail);
 
 /**
  * ScrollToTop — resets scroll on every route change.

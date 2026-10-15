@@ -5,6 +5,7 @@ import { tr } from "../helpers";
 import type { TranslationDict } from "../types";
 
 export const blogTranslations: TranslationDict = {
+  "blog.contents": tr("Contents", "Nội dung chính", "目录"),
   "blog.title": tr("News & Insights", "Tin tức & Kiến thức", "新闻与见解"),
   "blog.subtitle": tr("Stay updated with the latest from THG", "Cập nhật tin tức mới nhất từ THG", "关注THG的最新动态"),
   "news.read_more": tr("Read more", "Đọc thêm", "阅读更多"),

@@ -122,16 +122,16 @@ export default function EventDetailPage() {
           )}
         </header>
         {videoId ? (
-          <ServiceVideoCard videoId={videoId} title={event.title} className="mt-8" />
+          <ServiceVideoCard videoId={videoId} title={event.title} className="mt-8" clickToPlay />
         ) : null}
         {!videoId && image ? (
           <div className="mt-8 overflow-hidden rounded-3xl bg-navy">
-            <img src={image} alt={event.title} className="aspect-video w-full object-cover" />
+            <img src={image} alt={event.title} loading="eager" decoding="async" className="aspect-video w-full object-cover" />
           </div>
         ) : null}
         {event.body_md ? (
           <article className="mt-10">
-            <ArticleMarkdown markdown={event.body_md} />
+            <ArticleMarkdown markdown={event.body_md} contentsLabel={t("blog.contents")} />
           </article>
         ) : null}
         {photos.length > 0 && (
