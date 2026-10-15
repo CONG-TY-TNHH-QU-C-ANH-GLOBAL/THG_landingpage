@@ -23,6 +23,11 @@ interface DisplayArticle {
     seo_description: string | null;
 }
 
+function isMissingArticle(error: unknown, isPreview: boolean, token: string | undefined, expired: boolean, expiresAt: string | undefined) {
+    if (error instanceof CmsHttpError && error.status === 404) return true;
+    return isPreview && (!/^[a-f0-9]{64}$/.test(token ?? "") || expired || Boolean(expiresAt && Date.parse(expiresAt) <= Date.now()));
+}
+
 const BlogDetailPage = () => {
     const { slug, token } = useParams<{ slug?: string; token?: string }>();
     const { t, language: lang } = useI18n();
@@ -84,7 +89,7 @@ const BlogDetailPage = () => {
                 </div>
             );
         }
-        const missing = (query.error instanceof CmsHttpError && query.error.status === 404) || (isPreview && (!/^[a-f0-9]{64}$/.test(token ?? "") || previewExpired || (expiresAt && Date.parse(expiresAt) <= Date.now())));
+        const missing = isMissingArticle(query.error, isPreview, token, previewExpired, expiresAt);
         if (!missing) {
             return (
                 <div className="min-h-screen bg-background">
@@ -150,7 +155,7 @@ const BlogDetailPage = () => {
 
             <div className="pt-24 pb-20">
                 <div className="max-w-[860px] mx-auto px-4 sm:px-6">
-                    {isPreview && <div role="status" className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">{t("blog.preview")}</div>}
+                    {isPreview && <output className="mb-5 block rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">{t("blog.preview")}</output>}
 
                     {/* Header */}
                     <Link to={`/${lang}/blog`} className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-5">
