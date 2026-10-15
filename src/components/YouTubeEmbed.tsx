@@ -9,6 +9,7 @@ interface YouTubeEmbedProps {
   controls?: boolean;
   loop?: boolean;
   className?: string;
+  clickToPlay?: boolean;
 }
 
 const YouTubeEmbed = ({
@@ -20,11 +21,13 @@ const YouTubeEmbed = ({
   controls = true,
   loop = false,
   className = "",
+  clickToPlay = false,
 }: YouTubeEmbedProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    if (clickToPlay) return;
     const el = ref.current;
     if (!el) return;
 
@@ -40,10 +43,10 @@ const YouTubeEmbed = ({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [clickToPlay]);
 
   const params = new URLSearchParams();
-  if (autoplay) params.set("autoplay", "1");
+  if (autoplay || (clickToPlay && isVisible)) params.set("autoplay", "1");
   if (muted || autoplay) params.set("mute", "1");
   if (!controls) params.set("controls", "0");
   if (loop) {
@@ -70,6 +73,11 @@ const YouTubeEmbed = ({
           className="absolute inset-0 w-full h-full border-0"
           loading="lazy"
         />
+      ) : clickToPlay ? (
+        <button type="button" aria-label={`Play ${title}`} onClick={() => setIsVisible(true)} className="absolute inset-0 grid w-full place-items-center text-white">
+          <img src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+          <span className="relative rounded-full bg-black/70 px-6 py-4 text-2xl" aria-hidden="true">▶</span>
+        </button>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { parseYouTubeId } from "@/lib/youtube";
 import { cn } from "@/lib/utils";
+import { articleOutline } from "./article-outline";
 
 /**
  * The article body renderer shared by blog posts and events (CMS `body_md`).
@@ -57,14 +58,15 @@ const components: Components = {
     if (!video) return <p>{children}</p>;
     return (
       <figure className="not-prose my-8">
-        <ServiceVideoCard videoId={video.id} title={video.label ?? "Video"} />
+        <ServiceVideoCard videoId={video.id} title={video.label ?? "Video"} clickToPlay />
         {video.label ? (
           <figcaption className="mt-3 text-center text-sm text-muted-foreground">{video.label}</figcaption>
         ) : null}
       </figure>
     );
   },
-  a({ href, children }) {
+  a({ href, children, className }) {
+    if (href?.startsWith("#")) return <a href={href} className={className}>{children}</a>;
     // In-site paths stay in the SPA; everything else opens beside the article.
     if (href?.startsWith("/") && !href.startsWith("//")) return <Link to={href}>{children}</Link>;
     return (
@@ -76,15 +78,22 @@ const components: Components = {
   img({ src, alt }) {
     return <img src={typeof src === "string" ? src : undefined} alt={alt ?? ""} loading="lazy" />;
   },
+  table({ children }) {
+    return (
+      <div className="not-prose my-6 max-w-full overflow-x-auto rounded-lg border border-border" role="region" aria-label="Table" tabIndex={0}>
+        <table className="w-full border-collapse text-sm [&_th]:border-b [&_th]:bg-muted [&_th]:p-3 [&_th]:text-left [&_td]:border-b [&_td]:p-3">{children}</table>
+      </div>
+    );
+  },
 };
 
 const PROSE =
   "prose prose-neutral max-w-none prose-headings:text-navy prose-headings:font-bold prose-h2:text-xl prose-h2:mt-8 prose-h3:text-lg prose-p:text-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-navy prose-ul:text-foreground prose-ol:text-foreground prose-li:my-0.5 prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:py-1 prose-blockquote:not-italic prose-blockquote:font-normal prose-blockquote:text-foreground [&_blockquote_p]:before:content-none [&_blockquote_p]:after:content-none prose-img:rounded-xl prose-img:shadow-md prose-table:text-sm";
 
-export function ArticleMarkdown({ markdown, className }: { markdown: string; className?: string }) {
+export function ArticleMarkdown({ markdown, className, contentsLabel = "Nội dung chính" }: { markdown: string; className?: string; contentsLabel?: string }) {
   return (
     <div className={cn(PROSE, className)}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[[articleOutline, { label: contentsLabel }]]} components={components}>
         {markdown}
       </ReactMarkdown>
     </div>

@@ -173,7 +173,8 @@ const BlogDetailPage = () => {
                                 src={featuredSrc}
                                 alt={featuredAlt}
                                 className="w-full h-auto"
-                                loading="lazy"
+                                loading="eager"
+                                decoding="async"
                             />
                             <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm flex items-center gap-1.5">
                                 <ZoomIn className="w-3.5 h-3.5" />
@@ -190,7 +191,7 @@ const BlogDetailPage = () => {
                     )}
 
                     {/* Article body */}
-                    {article.body_md ? <ArticleMarkdown markdown={article.body_md} className="mb-10" /> : null}
+                    {article.body_md ? <ArticleMarkdown markdown={article.body_md} contentsLabel={t("blog.contents")} className="mb-10" /> : null}
 
                     {/* Gallery — remaining slides */}
                     {gallerySlides.length > 0 && (

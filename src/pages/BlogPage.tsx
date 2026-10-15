@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { prepareArticle } from "@/lib/articleNavigation";
 import Navbar from "@/components/Navbar";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
@@ -44,6 +46,7 @@ function PostCover({ post, className }: Readonly<{ post: DisplayPost; className:
 }
 
 const BlogPage = () => {
+  const client = useQueryClient();
   const { t, language } = useI18n();
   const [activeCategory, setActiveCategory] = useState("All");
 
@@ -126,7 +129,7 @@ const BlogPage = () => {
 
           {featured && (
             <ScrollReveal delay={150}>
-              <Link to={`/${language}/blog/${featured.slug}`} className="glass-card rounded-3xl overflow-hidden mb-10 group cursor-pointer hover-lift block">
+              <Link to={`/${language}/blog/${featured.slug}`} onPointerDown={() => prepareArticle(client, "blog", featured.slug, language)} onMouseEnter={() => prepareArticle(client, "blog", featured.slug, language)} onFocus={() => prepareArticle(client, "blog", featured.slug, language)} className="glass-card rounded-3xl overflow-hidden mb-10 group cursor-pointer hover-lift block">
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="relative bg-secondary/10 min-h-[280px] overflow-hidden">
                     <PostCover post={featured} className="group-hover:scale-105 transition-transform duration-500" />
@@ -149,7 +152,7 @@ const BlogPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rest.map((post) => (
               <ScrollReveal key={post.slug}>
-                <Link to={`/${language}/blog/${post.slug}`} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
+                <Link to={`/${language}/blog/${post.slug}`} onPointerDown={() => prepareArticle(client, "blog", post.slug, language)} onMouseEnter={() => prepareArticle(client, "blog", post.slug, language)} onFocus={() => prepareArticle(client, "blog", post.slug, language)} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
                   <div className="relative bg-secondary/10 h-56 overflow-hidden">
                     <PostCover post={post} className="object-top group-hover:scale-105 transition-transform duration-500" />
                   </div>

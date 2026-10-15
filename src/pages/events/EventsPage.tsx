@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { prepareArticle } from "@/lib/articleNavigation";
 import { CalendarDays, ArrowRight, PlayCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -9,6 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
 
 export default function EventsPage() {
+  const client = useQueryClient();
   const { language, t } = useI18n();
   const query = useCmsEvents(language);
   return (
@@ -56,6 +59,9 @@ export default function EventsPage() {
               <ScrollReveal key={event.id}>
                 <Link
                   to={`/${language}/events/${event.slug}`}
+                  onPointerDown={() => prepareArticle(client, "event", event.slug, language)}
+                  onMouseEnter={() => prepareArticle(client, "event", event.slug, language)}
+                  onFocus={() => prepareArticle(client, "event", event.slug, language)}
                   className="group block h-full overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div className="relative aspect-[16/8] bg-navy">

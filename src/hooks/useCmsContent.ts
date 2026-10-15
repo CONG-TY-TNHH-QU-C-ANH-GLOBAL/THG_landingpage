@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { cmsClient, type Locale } from "@/lib/cmsClient";
+import { blogPostQueryOptions, eventQueryOptions } from "@/lib/articleNavigation";
 
 const STALE_MS = 5 * 60 * 1000; // 5 minutes — matches CMS edge cache TTL
 const GC_MS = 30 * 60 * 1000; // 30 minutes
@@ -128,10 +129,7 @@ export function useCmsEvents(locale: Locale) {
 
 export function useCmsEvent(slug: string, locale: Locale) {
   return useQuery({
-    queryKey: ["cms", "event", slug, locale],
-    queryFn: () => cmsClient.getEvent(slug, locale),
-    staleTime: STALE_MS,
-    gcTime: GC_MS,
+    ...eventQueryOptions(slug, locale),
     enabled: !!slug,
     retry: false,
   });
@@ -278,10 +276,7 @@ export function useCmsPolicy(slug: string, locale: Locale) {
 
 export function useCmsBlogPost(slug: string, locale: Locale, enabled = true) {
   return useQuery({
-    queryKey: ["cms", "blog", "post", slug, locale],
-    queryFn: () => cmsClient.getBlogPost(slug, locale),
-    staleTime: STALE_MS,
-    gcTime: GC_MS,
+    ...blogPostQueryOptions(slug, locale),
     enabled: enabled && !!slug,
     retry: false,
   });

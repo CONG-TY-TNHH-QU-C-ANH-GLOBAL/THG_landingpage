@@ -11,12 +11,14 @@ export function ServiceVideoCard({
   title,
   aspectRatio = "16/9",
   className,
+  clickToPlay = false,
 }: Readonly<{
   videoId: string;
   title?: string;
   /** CSS aspect-ratio of the embed, e.g. "16/9" or "9/16". */
   aspectRatio?: string;
   className?: string;
+  clickToPlay?: boolean;
 }>) {
   return (
     <div
@@ -25,7 +27,7 @@ export function ServiceVideoCard({
         className,
       )}
     >
-      <YouTubeEmbed videoId={videoId} title={title} aspectRatio={aspectRatio} />
+      <YouTubeEmbed key={videoId} videoId={videoId} title={title} aspectRatio={aspectRatio} clickToPlay={clickToPlay} />
     </div>
   );
 }
