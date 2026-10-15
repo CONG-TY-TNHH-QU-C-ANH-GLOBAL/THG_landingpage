@@ -25,6 +25,7 @@ import {
   communityWithdrawResponseSchema,
   blogListResponseSchema,
   blogPostResponseSchema,
+  blogPreviewResponseSchema,
   cmsLeadInputSchema,
   contactLocationsResponseSchema,
   faqsResponseSchema,
@@ -85,6 +86,13 @@ const BASE = import.meta.env.VITE_CMS_API_URL || "http://localhost:8080/api/v1";
 
 // ---------- Internal fetch helper ----------
 
+export class CmsHttpError extends Error {
+  constructor(public readonly status: number, message: string) {
+    super(message);
+    this.name = "CmsHttpError";
+  }
+}
+
 /** Fetch JSON from CMS and validate against a Zod schema. The returned type
  *  is inferred from the schema so callers never restate the shape inline. */
 async function fetchJson<T extends z.ZodTypeAny>(
@@ -108,7 +116,7 @@ async function fetchJson<T extends z.ZodTypeAny>(
     } catch {
       // ignore JSON parse errors
     }
-    throw new Error(`CMS ${path}: ${message}`);
+    throw new CmsHttpError(res.status, `CMS ${path}: ${message}`);
   }
   const json: unknown = await res.json();
   const parsed = schema.safeParse(json);
@@ -210,6 +218,11 @@ export const cmsClient = {
 
   getBlogPost(slug: string, locale: Locale) {
     return fetchJson(`/blog/${encodeURIComponent(slug)}?lang=${locale}`, blogPostResponseSchema);
+  },
+
+  getBlogPreview(token: string, signal?: AbortSignal) {
+    if (!/^[a-f0-9]{64}$/.test(token)) return Promise.reject(new Error("Preview token không hợp lệ"));
+    return fetchJson(`/blog-previews/${token}`, blogPreviewResponseSchema, { cache: "no-store", referrerPolicy: "no-referrer", signal });
   },
 
   getJobs(locale: Locale, category?: string) {

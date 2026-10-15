@@ -1,18 +1,20 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowLeft, CalendarDays, ExternalLink, MapPin, PlayCircle, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, ExternalLink, MapPin, PlayCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { ArticleMarkdown } from "@/components/article/ArticleMarkdown";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { useCmsEvent } from "@/hooks/useCmsContent";
+import { CmsHttpError } from "@/lib/cmsClient";
 import { useI18n } from "@/lib/i18n";
 import { formatEventDates } from "@/lib/eventDates";
 import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
 
 export default function EventDetailPage() {
   const { slug = "" } = useParams();
-  const { language } = useI18n();
+  const { language, t } = useI18n();
   const query = useCmsEvent(slug, language);
   const event = query.data?.event;
   const photos = event?.photos ?? [];
@@ -36,7 +38,20 @@ export default function EventDetailPage() {
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="pt-40 text-center text-muted-foreground">Đang tải Event…</div>
+        <div className="pt-40 text-center text-muted-foreground">{t("event.loading")}</div>
+      </div>
+    );
+  if (!event && !(query.error instanceof CmsHttpError && query.error.status === 404))
+    return (
+      <div className="min-h-screen">
+        <SeoHead title="Event — THG Fulfill" description="" path={`/events/${slug}`} />
+        <Navbar />
+        <div className="pt-40 text-center" role="alert">
+          <p className="text-muted-foreground">{t("event.load_error")}</p>
+          <button type="button" onClick={() => void query.refetch()} disabled={query.isFetching} className="text-primary font-semibold mt-4">
+            {t("blog.retry")}
+          </button>
+        </div>
       </div>
     );
   if (!event)
@@ -50,8 +65,9 @@ export default function EventDetailPage() {
         />
         <Navbar />
         <div className="pt-40 text-center">
+          <p className="text-muted-foreground">{t("event.not_found")}</p>
           <Link className="text-primary" to={`/${language}/events`}>
-            Quay lại Event
+            {t("event.back")}
           </Link>
         </div>
       </div>
@@ -167,24 +183,10 @@ export default function EventDetailPage() {
       </main>
 
       {lightboxIdx !== null && photos[lightboxIdx] && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-          onClick={() => setLightboxIdx(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label={photos[lightboxIdx].caption ?? "Ảnh sự kiện"}
-        >
-          <button
-            onClick={() => setLightboxIdx(null)}
-            aria-label="Đóng"
-            className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20"
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <figure
-            className="max-h-full w-full max-w-4xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <Dialog open onOpenChange={(open) => { if (!open) setLightboxIdx(null); }}>
+          <DialogContent className="max-w-4xl border-0 bg-black/90 pt-12 text-white" aria-describedby={undefined}>
+          <DialogTitle className="sr-only">{photos[lightboxIdx].caption ?? "Ảnh sự kiện"}</DialogTitle>
+          <figure className="max-h-full w-full">
             <img
               src={photos[lightboxIdx].src}
               alt={photos[lightboxIdx].caption ?? event.title}
@@ -201,7 +203,8 @@ export default function EventDetailPage() {
               </p>
             )}
           </figure>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

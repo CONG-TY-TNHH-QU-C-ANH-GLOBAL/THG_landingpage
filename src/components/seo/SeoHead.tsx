@@ -25,6 +25,7 @@ interface Props {
   publishedTime?: string;
   /** Mark page noindex (e.g. /agent internal tool) */
   noindex?: boolean;
+  noReferrer?: boolean;
   /** Locales with genuinely published content. Static pages default to all locales. */
   availableLocales?: readonly Language[];
 }
@@ -40,6 +41,7 @@ export function SeoHead({
   ogType = "website",
   publishedTime,
   noindex,
+  noReferrer,
   availableLocales = ["vi", "en", "zh"],
 }: Props) {
   const { language } = useI18n();
@@ -61,6 +63,7 @@ export function SeoHead({
 
   return (
     <Helmet>
+      {noReferrer && <meta name="referrer" content="no-referrer" />}
       <html lang={language === "zh" ? "zh-CN" : language} />
       <title>{effectiveTitle}</title>
       <meta name="description" content={effectiveDescription} />

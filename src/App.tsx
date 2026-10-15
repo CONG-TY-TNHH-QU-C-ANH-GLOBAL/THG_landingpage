@@ -85,6 +85,12 @@ const UtmCapture = () => {
   return null;
 };
 
+const PublicTracking = () => {
+  const { pathname } = useLocation();
+  if (/^\/(?:(?:[a-z]{2})\/)?blog-preview\//i.test(pathname)) return null;
+  return <><UtmCapture /><TrackingScripts /></>;
+};
+
 /**
  * LangLayout — validates the :lang URL prefix, syncs it to I18n context,
  * and redirects invalid lang codes to /vi/rest-of-path.
@@ -145,6 +151,7 @@ const AppRoutes = () => {
               <Route path="shipping-policy" element={<ShippingPolicyPage />} />
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/:slug" element={<BlogDetailPage />} />
+              <Route path="blog-preview/:token" element={<BlogDetailPage />} />
               <Route path="international-pricing" element={<InternationalPricingPage />} />
               <Route path="domestic-pricing" element={<DomesticPricingPage />} />
               <Route path="chinh-ngach-pricing" element={<ChinhNgachPricingPage />} />
@@ -192,11 +199,10 @@ const App = () => (
               <BrowserRouter>
                 <LarkPricingProvider>
                   <PrerenderSignal />
-                  <UtmCapture />
+                  <PublicTracking />
                   <AppRoutes />
                   <FloatingContact />
                   <ConsentBanner />
-                  <TrackingScripts />
                 </LarkPricingProvider>
               </BrowserRouter>
             </TooltipProvider>
