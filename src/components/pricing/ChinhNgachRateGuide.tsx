@@ -1,94 +1,152 @@
-import { BookOpen, Box, CheckCircle2, Plane, Ship } from "lucide-react";
+import { GUIDE_BLOCKS, type GuideBlock, type GuideTone } from "@/data/chinhNgachGuide";
+import { RichText } from "@/components/pricing/RichText";
 
-import { useI18n } from "@/lib/i18n";
+/** The sheet's own palette, kept rather than mapped onto the site's generic
+ *  tones: green means "this is the right choice", amber means "only in these
+ *  cases", blue means "cross-reference". Re-colouring would flatten that. */
+const BOX: Record<GuideTone, string> = {
+    green: "bg-[#E3F4EA] border-[#A9D8BC]",
+    amber: "bg-[#fffbeb] border-[#fde68a]",
+    blue: "bg-[#eff6ff] border-[#bfdbfe]",
+    gray: "bg-[#f7fafd] border-[#DDD8CE]",
+};
 
-export function ChinhNgachRateGuide() {
-  const { t } = useI18n();
+const NOTE: Record<GuideTone, string> = {
+    green: "bg-[#E3F4EA] border-[#A9D8BC] text-[#1A8754]",
+    amber: "bg-[#fffbeb] border-[#fde68a] text-[#92400e]",
+    blue: "bg-[#eff6ff] border-[#bfdbfe] text-[#1E5BC6]",
+    gray: "bg-[#f7fafd] border-[#DDD8CE] text-muted-foreground",
+};
 
-  const modes = [
-    { icon: Ship, title: t("chinhngach.guide_matson"), detail: t("chinhngach.guide_matson_desc"), tone: "bg-[#FFF8E7] border-primary/35" },
-    { icon: Ship, title: t("chinhngach.guide_sea"), detail: t("chinhngach.guide_sea_desc"), tone: "bg-sky-50 border-sky-200" },
-    { icon: Plane, title: t("chinhngach.guide_air"), detail: t("chinhngach.guide_air_desc"), tone: "bg-violet-50 border-violet-200" },
-  ];
-
-  return (
-    <div className="space-y-5">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy via-[#142b4c] to-[#1c3b63] p-5 text-white sm:p-7">
-        <div className="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-primary/10" />
-        <div className="relative flex items-start gap-4">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-navy">
-            <BookOpen className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <div>
-            <p className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-primary">{t("chinhngach.guide_badge")}</p>
-            <h3 className="mt-1 text-xl font-black sm:text-2xl">{t("chinhngach.guide_title")}</h3>
-            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-white/70">{t("chinhngach.guide_desc")}</p>
-          </div>
-        </div>
-      </div>
-
-      <section className="rounded-xl border border-[var(--pricing-border)] bg-white p-4 sm:p-5">
-        <h4 className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">{t("chinhngach.guide_modes_title")}</h4>
-        <div className="grid gap-3 md:grid-cols-3">
-          {modes.map(({ icon: Icon, title, detail, tone }) => (
-            <div key={title} className={`rounded-xl border p-4 ${tone}`}>
-              <Icon className="mb-3 h-5 w-5 text-navy" aria-hidden="true" />
-              <p className="text-[13px] font-black text-navy">{title}</p>
-              <p className="mt-1 text-[12px] leading-relaxed text-foreground/65">{detail}</p>
+/** Navy block, gold serif numeral, navy2 body — the sheet's section marker.
+ *  The numeral is a label ("?", "1", "📖"), not an ordinal, so it is rendered
+ *  as given instead of being counted. */
+function Banner({ num, title, sub }: Readonly<{ num: string; title: string; sub: string }>) {
+    return (
+        <div className="flex items-stretch overflow-hidden rounded-[10px]">
+            <div className="flex w-12 flex-shrink-0 items-center justify-center bg-navy font-serif text-xl font-extrabold text-primary">
+                {num}
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-          <div className="flex items-center gap-2 text-emerald-900">
-            <Box className="h-5 w-5" aria-hidden="true" />
-            <h4 className="font-black">{t("chinhngach.guide_lcl_title")}</h4>
-          </div>
-          <p className="mt-2 text-[13px] leading-relaxed text-emerald-950/70">{t("chinhngach.guide_lcl_desc")}</p>
-        </div>
-        <div className="rounded-xl border border-sky-200 bg-sky-50 p-5">
-          <div className="flex items-center gap-2 text-sky-950">
-            <Ship className="h-5 w-5" aria-hidden="true" />
-            <h4 className="font-black">{t("chinhngach.guide_fcl_title")}</h4>
-          </div>
-          <p className="mt-2 text-[13px] leading-relaxed text-sky-950/70">{t("chinhngach.guide_fcl_desc")}</p>
-        </div>
-        <div className="rounded-xl border border-primary/35 bg-[#FFF8E7] px-4 py-3 text-[13px] text-navy md:col-span-2">
-          <strong>{t("chinhngach.guide_rule_label")}</strong> {t("chinhngach.guide_rule")}
-        </div>
-      </section>
-
-      <section className="rounded-xl border border-[var(--pricing-border)] bg-white p-4 sm:p-5">
-        <h4 className="mb-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">{t("chinhngach.guide_read_title")}</h4>
-        <ol className="grid gap-3 md:grid-cols-3">
-          {[1, 2, 3].map((step) => (
-            <li key={step} className="flex gap-3 rounded-xl border border-navy/10 bg-[#FAFAF8] p-4">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-navy text-[12px] font-black text-primary">{step}</span>
-              <div>
-                <p className="text-[13px] font-black text-navy">{t(`chinhngach.guide_step_${step}_title`)}</p>
-                <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">{t(`chinhngach.guide_step_${step}_desc`)}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="rounded-xl border border-[var(--pricing-border)] bg-white p-4 sm:p-5">
-        <h4 className="mb-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">{t("chinhngach.guide_glossary")}</h4>
-        <dl className="grid gap-2 sm:grid-cols-2">
-          {["wm", "cfs", "etd", "fcl"].map((key) => (
-            <div key={key} className="rounded-lg border border-navy/10 bg-[#FAFAF8] px-3.5 py-3">
-              <dt className="flex items-center gap-1.5 text-[12px] font-black text-navy">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-                {t(`chinhngach.guide_term_${key}`)}
-              </dt>
-              <dd className="mt-1 text-[11.5px] leading-relaxed text-muted-foreground">{t(`chinhngach.guide_term_${key}_desc`)}</dd>
+            <div className="flex-1 bg-[#1B2A4A] px-[18px] py-[13px]">
+                <p className="text-base font-extrabold text-white">{title}</p>
+                {sub && <p className="text-[12px] text-[#8aa0c4]">{sub}</p>}
             </div>
-          ))}
-        </dl>
-      </section>
-    </div>
-  );
+        </div>
+    );
+}
+
+function Block({ block, onJump }: Readonly<{ block: GuideBlock; onJump?: () => void }>) {
+    switch (block.kind) {
+        case "divider":
+            return <hr className="my-6 border-0 border-t border-[#DDD8CE]" />;
+
+        case "banner":
+            return <Banner num={block.num} title={block.title} sub={block.sub} />;
+
+        case "para":
+            return (
+                <p className="text-[13px] leading-relaxed text-foreground/80">
+                    <RichText html={block.html} />
+                </p>
+            );
+
+        case "cols":
+            return (
+                <div className="grid gap-3 sm:grid-cols-2">
+                    {block.boxes.map((box) => (
+                        <div key={box.heading} className={`rounded-[9px] border px-4 py-3.5 ${BOX[box.tone] ?? BOX.gray}`}>
+                            <p className="mb-1.5 text-[13px] font-bold text-navy">{box.heading}</p>
+                            {box.text && <p className="text-[12.5px] leading-relaxed text-foreground/80">{box.text}</p>}
+                            {box.items.length > 0 && (
+                                <ul className="space-y-1">
+                                    {box.items.map((it) => (
+                                        <li key={it} className="relative pl-3 text-[12.5px] leading-snug text-foreground/80">
+                                            <span className="absolute left-0 top-[0.55em] h-1 w-1 rounded-full bg-muted-foreground" aria-hidden="true" />
+                                            {it}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+
+        case "note":
+            return (
+                <p className={`rounded-lg border px-3.5 py-2.5 text-[12.5px] leading-relaxed ${NOTE[block.tone] ?? NOTE.gray}`}>
+                    <RichText html={block.html} />
+                    {block.link && onJump && (
+                        <>
+                            {" "}
+                            <button type="button" onClick={onJump} className="font-bold underline underline-offset-2">
+                                {block.link}
+                            </button>
+                        </>
+                    )}
+                </p>
+            );
+
+        case "table":
+            return (
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-[13px]">
+                        <thead>
+                            <tr>
+                                {block.head.map((h, i) => (
+                                    <th
+                                        key={h}
+                                        className={`bg-navy px-3 py-2.5 text-left text-[11px] font-bold text-white ${i === 0 ? "rounded-l-md" : ""} ${i === block.head.length - 1 ? "rounded-r-md" : ""}`}
+                                    >
+                                        {h}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {block.rows.map((r, i) => (
+                                <tr
+                                    key={i}
+                                    className={r.hl ? "bg-[#fdf8ec] font-semibold text-navy" : i % 2 === 1 ? "bg-[#f9f8f5]" : ""}
+                                >
+                                    {r.cells.map((c, j) => (
+                                        <td
+                                            key={j}
+                                            className={`border-b border-[#eef1f7] px-[11px] py-2 ${c.pr ? "font-mono text-[14px] font-extrabold text-[#0d6e3f]" : ""}`}
+                                        >
+                                            {c.txt}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+
+        case "gloss":
+            return (
+                <dl className="grid gap-2 sm:grid-cols-2">
+                    {block.items.map((g) => (
+                        <div key={g.term} className="rounded-lg border border-[#DDD8CE] bg-white px-[13px] py-2.5">
+                            <dt className="text-[12.5px] font-bold text-navy">{g.term}</dt>
+                            <dd className="text-[12px] text-muted-foreground">{g.def}</dd>
+                        </div>
+                    ))}
+                </dl>
+            );
+
+        default:
+            return null;
+    }
+}
+
+export function ChinhNgachRateGuide({ onJumpToQuotation }: Readonly<{ onJumpToQuotation?: () => void }>) {
+    return (
+        <div className="space-y-4">
+            {GUIDE_BLOCKS.map((block, i) => (
+                <Block key={i} block={block} onJump={onJumpToQuotation} />
+            ))}
+        </div>
+    );
 }
