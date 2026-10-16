@@ -87,7 +87,7 @@ test.describe("Formal pricing workspace", () => {
     await page.goto("/vi/chinh-ngach-pricing");
   });
 
-  test("switches compact rate lanes and exposes guide plus live estimate", async ({ page }) => {
+  test("switches compact rate lanes and exposes the guide and worked quotations", async ({ page }) => {
     await expect(page.getByRole("tab", { name: "Hướng dẫn đọc bảng giá" })).toBeVisible();
     await expect(page.getByRole("region", { name: "MATSON — Line hỏa tốc" })).toBeVisible();
 
@@ -95,14 +95,20 @@ test.describe("Formal pricing workspace", () => {
     await expect(page.getByRole("region", { name: "Sea chính ngạch thường" })).toContainText("Sea thường — LCL");
     await expect(page.getByRole("region", { name: "MATSON — Line hỏa tốc" })).toHaveCount(0);
 
+    // Reading guide follows the source sheet: numbered banners, LCL vs FCL,
+    // and a cross-reference that switches to the estimate view in place.
     await page.getByRole("tab", { name: "Hướng dẫn đọc bảng giá" }).click();
-    await expect(page.getByRole("heading", { name: "Đọc bảng giá trong 3 phút" })).toBeVisible();
-    await expect(page.getByText("LCL · Hàng lẻ")).toBeVisible();
+    await expect(page.getByText("Vận chuyển chính ngạch là gì?")).toBeVisible();
+    await expect(page.getByText("LCL — Hàng lẻ")).toBeVisible();
+    await page.getByRole("button", { name: "Xem tab Dự toán chi phí →" }).click();
 
-    await page.getByRole("tab", { name: "Dự toán chi phí" }).click();
-    await expect(page.getByRole("heading", { name: "Dự toán nhanh chi phí vận chuyển" })).toBeVisible();
-    await page.getByLabel("Hải quan xuất VN").selectOption("0");
-    await expect(page.getByText("~$144.96")).toBeVisible();
+    // Cost estimate is the sheet's four worked quotations, grouped by origin.
+    const estimate = page.locator("#formal-panel-estimate");
+    await expect(estimate.getByText("MATSON CLX · DDP · HPH → HOU")).toBeVisible();
+    await expect(estimate.getByText("~6,584")).toBeVisible();
+    await estimate.getByRole("tab", { name: /20DC\s*ZIM · HPH/ }).click();
+    await expect(estimate.getByText("ZIM · DDP · HPH → LAX → HOU", { exact: true })).toBeVisible();
+    await expect(estimate.getByText("~18,572")).toBeVisible();
 
     await page.screenshot({ path: "test-results/chinh-ngach-desktop.png", fullPage: false });
   });
@@ -110,7 +116,9 @@ test.describe("Formal pricing workspace", () => {
   test("fits the workspace on a 375px viewport", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.getByRole("tab", { name: "Dự toán chi phí" }).click();
-    await expect(page.getByText("Thông tin lô hàng")).toBeVisible();
+    // The cost table is wider than a phone; it must scroll inside its own box,
+    // never push the page sideways.
+    await expect(page.locator("#formal-panel-estimate").getByText("MATSON CLX · DDP · HPH → HOU")).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     await page.screenshot({ path: "test-results/chinh-ngach-mobile.png", fullPage: false });
