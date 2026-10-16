@@ -81,7 +81,7 @@ const DomesticPricingContent = () => {
             row.gram,
             ...ZONES.map(z => row.zones[z])
         ]);
-        return { filename: 'THG_Domestic_Pricing_All_Zones', headers, rows };
+        return { filename: 'TH_Group_Domestic_Pricing_All_Zones', headers, rows };
     }, [domesticPricingRows]);
 
     const rateCategories = useMemo<RateCategory[]>(() => [
@@ -243,7 +243,7 @@ const DomesticPricingContent = () => {
                         {t("domestic.hero_title")} <span className="text-primary">{t("domestic.hero_highlight")}</span>
                     </h1>
                     <p className="mt-4 max-w-[65ch] text-sm leading-relaxed text-white/70 md:text-base">
-                        {t("domestic.hero_desc")} <span className="notranslate font-semibold text-white">THG Warehouse</span>
+                        {t("domestic.hero_desc")} <span className="notranslate font-semibold text-white">TH Group Warehouse</span>
                     </p>
 
                     {/* No max-width on the label: capping it at 150px is what forced the
@@ -299,7 +299,7 @@ const DomesticPricingContent = () => {
                                 <iframe
                                     className="absolute left-0 top-0 h-full w-full"
                                     src="https://www.youtube.com/embed/k-oETHQF7tE?start=19"
-                                    title="THG Fulfillment Pricing Guide"
+                                    title="TH Group Fulfillment Pricing Guide"
                                     loading="lazy"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen

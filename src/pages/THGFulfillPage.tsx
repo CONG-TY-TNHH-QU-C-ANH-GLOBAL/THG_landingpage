@@ -6,7 +6,7 @@ import { JsonLdService, JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import ScrollReveal from "@/components/ScrollReveal";
 import ImageMarquee from "@/components/ImageMarquee";
 import FAQAccordion from "@/components/FAQAccordion";
-import thgHeroImage from "@/assets/THG.jpg";
+import thGroupHeroImage from "@/assets/th-group-hero.webp";
 import { useI18n } from "@/lib/i18n";
 import { useCmsServices } from "@/hooks/useCmsContent";
 import { Package, ArrowRight, Zap, Palette, Shirt, Printer } from "lucide-react";
@@ -55,17 +55,17 @@ const THGFulfillPage = () => {
         title={t("seo.fulfill_title")}
         description={t("seo.fulfill_desc")}
         path="/thg-fulfill"
-        ogImage={thgHeroImage}
+        ogImage={thGroupHeroImage}
       />
       <JsonLdService
-        name="THG Fulfill â€” POD & Dropship Fulfillment"
+        name="TH Group Fulfill â€” POD & Dropship Fulfillment"
         description="End-to-end Print-on-Demand and Dropship fulfillment from Vietnam, China and USA warehouses. Optimized basecost, multi-route shipping, transparent pricing."
         url="https://thgfulfill.com/thg-fulfill"
       />
       <JsonLdBreadcrumb
         items={[
           { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "THG Fulfill", url: "https://thgfulfill.com/thg-fulfill" },
+          { name: "TH Group Fulfill", url: "https://thgfulfill.com/thg-fulfill" },
         ]}
       />
       <Navbar />
@@ -87,7 +87,7 @@ const THGFulfillPage = () => {
               </ScrollReveal>
               <ScrollReveal delay={100}>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy tracking-tight mb-6" >
-                  THG <span className="text-gradient-gold">Fulfill</span>
+                  TH Group <span className="text-gradient-gold">Fulfill</span>
                 </h1>
               </ScrollReveal>
               <ScrollReveal delay={200}>
@@ -160,10 +160,10 @@ const THGFulfillPage = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-center gap-6 flex-wrap">
             <ScrollReveal delay={100}>
-              <ServiceVideoCard videoId="AveVks7bdMM" title="THG Fulfill Short 1" aspectRatio="315/560" className="w-[280px] md:w-[300px] hover:shadow-2xl transition-all hover:-translate-y-2" />
+              <ServiceVideoCard videoId="AveVks7bdMM" title="TH Group Fulfill Short 1" aspectRatio="315/560" className="w-[280px] md:w-[300px] hover:shadow-2xl transition-all hover:-translate-y-2" />
             </ScrollReveal>
             <ScrollReveal delay={200}>
-              <ServiceVideoCard videoId="UrnZpvRVb0U" title="THG Fulfill Short 2" aspectRatio="315/560" className="w-[280px] md:w-[300px] hover:shadow-2xl transition-all hover:-translate-y-2" />
+              <ServiceVideoCard videoId="UrnZpvRVb0U" title="TH Group Fulfill Short 2" aspectRatio="315/560" className="w-[280px] md:w-[300px] hover:shadow-2xl transition-all hover:-translate-y-2" />
             </ScrollReveal>
           </div>
         </div>
@@ -175,9 +175,9 @@ const THGFulfillPage = () => {
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {[
-              { id: "UwaZw5Eh-Yg", title: "THG Fulfill Overview 1" },
-              { id: "ZA37yjN-_x8", title: "THG Fulfill Overview 2" },
-              { id: "6GkUcZhun90", title: "THG Fulfill Overview 3" },
+              { id: "UwaZw5Eh-Yg", title: "TH Group Fulfill Overview 1" },
+              { id: "ZA37yjN-_x8", title: "TH Group Fulfill Overview 2" },
+              { id: "6GkUcZhun90", title: "TH Group Fulfill Overview 3" },
             ].map((v, i) => (
               <ScrollReveal key={v.id} delay={(i + 1) * 100} direction="up">
                 <ServiceVideoCard videoId={v.id} title={v.title} aspectRatio="9/16" />
@@ -213,7 +213,7 @@ const THGFulfillPage = () => {
           <ScrollReveal>
             <SectionHeader
               eyebrow={t("fulfill_page.solution_subtitle")}
-              title="THG Fulfill â€“"
+              title="TH Group Fulfill â€“"
               titleHighlight={t("fulfill_page.solution_highlight")}
               description={t("fulfill_page.solution_desc")}
             />
@@ -242,7 +242,7 @@ const THGFulfillPage = () => {
               <div className="grid lg:grid-cols-2 gap-8 items-center">
                 <ServiceVideoCard
                   videoId="2VEEFotO42I"
-                  title="THG Fulfill Introduction"
+                  title="TH Group Fulfill Introduction"
                   className="order-2 lg:order-1 hover:shadow-2xl transition-all hover:-translate-y-1"
                 />
                 <div className="order-1 lg:order-2">
@@ -345,7 +345,7 @@ const THGFulfillPage = () => {
           <ScrollReveal delay={100}>
             <ServiceVideoCard
               videoId="AzlW2irPANQ"
-              title="THG - HÆ°á»›ng dáº«n cÃ¡ch lÃªn Ä‘Æ¡n trÃªn Ecount ERP"
+              title="TH Group - HÆ°á»›ng dáº«n cÃ¡ch lÃªn Ä‘Æ¡n trÃªn Ecount ERP"
               className="max-w-3xl mx-auto"
             />
           </ScrollReveal>

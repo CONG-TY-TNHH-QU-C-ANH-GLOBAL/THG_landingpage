@@ -33,7 +33,7 @@ const CommunityReviewsListPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={`${t("reviews.title")} — THG Fulfill`}
+        title={`${t("reviews.title")} — TH Group Fulfill`}
         description={t("reviews.subtitle")}
         path="/community/reviews"
       />

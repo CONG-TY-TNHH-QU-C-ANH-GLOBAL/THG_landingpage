@@ -81,7 +81,7 @@ export function SeoHead({
 
       {/* OpenGraph */}
       <meta property="og:type" content={ogType} />
-      <meta property="og:site_name" content="THG Fulfill" />
+      <meta property="og:site_name" content="TH Group Fulfill" />
       <meta property="og:title" content={effectiveTitle} />
       <meta property="og:description" content={effectiveDescription} />
       <meta property="og:url" content={canonical} />

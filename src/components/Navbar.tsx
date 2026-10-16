@@ -19,7 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";
-import thgLogo from "@/assets/thg-logo.png";
+import thGroupLogo from "@/assets/th-group-logo.svg";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { DELAYS, SCROLL } from "@/lib/constants";
 
@@ -221,11 +221,11 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
         <Link to={`/${language}`} className="flex items-center gap-3 group">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5 ${tone.logoBox}`}
+            className={`w-16 h-10 rounded-xl flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5 ${tone.logoBox}`}
           >
             <img
-              src={thgLogo}
-              alt="THG"
+              src={thGroupLogo}
+              alt="TH Group"
               className="w-full h-full object-contain brightness-0 invert"
             />
           </div>
@@ -233,7 +233,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
             <span
               className={`text-base font-bold leading-tight tracking-tight block ${tone.brandText}`}
             >
-              THG Fulfill
+              TH Group Fulfill
             </span>
             <span className={`text-[9px] tracking-[0.15em] uppercase block ${tone.brandSub}`}>
               Transport Happiness Group

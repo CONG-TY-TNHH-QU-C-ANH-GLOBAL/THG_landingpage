@@ -124,11 +124,11 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
     {
         id: "ior", icon: "🛡️",
         title: "Hợp đồng ủy thác nhập khẩu (IOR)",
-        sub: "Warehouse & Order Fulfillment Service Agreement — tải file mẫu THG",
+        sub: "Warehouse & Order Fulfillment Service Agreement — tải file mẫu TH Group",
         blocks: [
             { kind: "prose", title: "📘 IOR là gì?", paras: [
                 "<strong>IOR (Importer of Record)</strong> — Người Nhập Khẩu Chính Thức — là cá nhân hoặc tổ chức <strong>chịu trách nhiệm pháp lý</strong> về việc hàng hóa được nhập khẩu hợp pháp vào Mỹ. IOR phải có mã số thuế hoặc EIN tại Mỹ, đứng tên trên tờ khai hải quan CBP, và chịu trách nhiệm nộp thuế nhập khẩu.",
-                "Với doanh nghiệp Việt Nam <strong>chưa có công ty LLC tại Mỹ</strong>, THG cung cấp dịch vụ IOR thông qua đối tác <strong>RES Trade &amp; Transit LLC</strong> — đứng tên nhập khẩu hàng hóa thay mặt khách hàng.",
+                "Với doanh nghiệp Việt Nam <strong>chưa có công ty LLC tại Mỹ</strong>, TH Group cung cấp dịch vụ IOR thông qua đối tác <strong>RES Trade &amp; Transit LLC</strong> — đứng tên nhập khẩu hàng hóa thay mặt khách hàng.",
             ] },
             { kind: "facts", title: "", items: [
                 { label: "Bên cung cấp IOR", value: "RES Trade & Transit LLC502 W 7th ST STE 100, Erie, PA 16592" },
@@ -152,9 +152,9 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
             ] },
             { kind: "steps", title: "📋 Quy trình ký kết và sử dụng IOR", items: [
                 { n: "01", heading: "Tải file hợp đồng mẫu", body: "Tải về file DOCX bên dưới, điền thông tin Bên A (doanh nghiệp của bạn): tên, địa chỉ, mã số thuế, người đại diện." },
-                { n: "02", heading: "Gửi cho THG review", body: "Gửi bản điền về sale@thgfulfill.com để THG kiểm tra và kết nối với đối tác RES Trade & Transit LLC tại Mỹ." },
-                { n: "03", heading: "Ký kết & hiệu lực", body: "Hai bên ký kết điện tử hoặc bản cứng. Hợp đồng có hiệu lực ngay — THG cung cấp số hợp đồng để gắn vào bộ chứng từ xuất khẩu." },
-                { n: "04", heading: "Sử dụng IOR cho lô hàng", body: "Ghi thông tin RES Trade & Transit LLC vào Commercial Invoice và bộ chứng từ. THG đứng tên thông quan tại CBP thay bạn." },
+                { n: "02", heading: "Gửi cho TH Group review", body: "Gửi bản điền về sale@thgfulfill.com để TH Group kiểm tra và kết nối với đối tác RES Trade & Transit LLC tại Mỹ." },
+                { n: "03", heading: "Ký kết & hiệu lực", body: "Hai bên ký kết điện tử hoặc bản cứng. Hợp đồng có hiệu lực ngay — TH Group cung cấp số hợp đồng để gắn vào bộ chứng từ xuất khẩu." },
+                { n: "04", heading: "Sử dụng IOR cho lô hàng", body: "Ghi thông tin RES Trade & Transit LLC vào Commercial Invoice và bộ chứng từ. TH Group đứng tên thông quan tại CBP thay bạn." },
             ] },
             { kind: "files", title: "", note: "📁 File hợp đồng mẫu song ngữ Anh–Việt. Mở bằng Microsoft Word hoặc Google Docs để chỉnh sửa thông tin Bên A.", footer: "Cần hỗ trợ điền và ký hợp đồng? Liên hệ <strong>sale@thgfulfill.com</strong> · <strong>033 512 4089</strong>", files: [
                 { file: "THG_IOR_Agreement_Mau.docx", label: "⬇️Tải hợp đồng IOR mẫu (.docx)" },
@@ -189,7 +189,7 @@ export const DOC_TEMPLATES: readonly DocTemplate[] = [
                 { tone: "vang", name: "🟡 Luồng Vàng", tag: "Kiểm CT", desc: "Hải quan kiểm tra chứng từ giấy tờ" },
                 { tone: "do", name: "🔴 Luồng Đỏ", tag: "Kiểm hàng", desc: "Kiểm tra thực tế hàng hóa · Mất thêm 1–3 ngày" },
             ] },
-            { kind: "callout", tone: "blue", html: "💡 <strong>THG hỗ trợ toàn bộ:</strong> Khai báo tờ khai hải quan điện tử, nộp ISF, và thông quan nhập khẩu tại CBP — doanh nghiệp chỉ cần cung cấp thông tin hàng hóa và chứng từ. Liên hệ <strong>sale@thgfulfill.com</strong> để được hỗ trợ." },
+            { kind: "callout", tone: "blue", html: "💡 <strong>TH Group hỗ trợ toàn bộ:</strong> Khai báo tờ khai hải quan điện tử, nộp ISF, và thông quan nhập khẩu tại CBP — doanh nghiệp chỉ cần cung cấp thông tin hàng hóa và chứng từ. Liên hệ <strong>sale@thgfulfill.com</strong> để được hỗ trợ." },
         ],
     },
 ];

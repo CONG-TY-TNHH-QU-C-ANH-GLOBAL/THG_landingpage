@@ -44,7 +44,7 @@ export default function EventDetailPage() {
   if (!event && !(query.error instanceof CmsHttpError && query.error.status === 404))
     return (
       <div className="min-h-screen">
-        <SeoHead title="Event — THG Fulfill" description="" path={`/events/${slug}`} />
+        <SeoHead title="Event — TH Group Fulfill" description="" path={`/events/${slug}`} />
         <Navbar />
         <div className="pt-40 text-center" role="alert">
           <p className="text-muted-foreground">{t("event.load_error")}</p>
@@ -58,7 +58,7 @@ export default function EventDetailPage() {
     return (
       <div className="min-h-screen">
         <SeoHead
-          title="Event not found — THG Fulfill"
+          title="Event not found — TH Group Fulfill"
           description=""
           path={`/events/${slug}`}
           noindex
@@ -80,7 +80,7 @@ export default function EventDetailPage() {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={event.seo_title ?? `${event.title} — THG Fulfill`}
+        title={event.seo_title ?? `${event.title} — TH Group Fulfill`}
         description={event.seo_description ?? event.summary ?? ""}
         path={`/events/${event.slug}`}
         noindex={language !== "vi"}

@@ -61,7 +61,7 @@ const ILLUSTRATIONS: Record<string, () => JSX.Element> = {
         <div className="flex items-end gap-2">
           <div className="w-28 h-20 bg-navy/10 rounded-t-lg border border-border/40 flex items-center justify-center relative">
             <span className="text-3xl">🏭</span>
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary/80 text-primary-foreground text-[8px] font-bold px-2 py-0.5 rounded-full">THG</div>
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary/80 text-primary-foreground text-[8px] font-bold px-2 py-0.5 rounded-full">TH Group</div>
           </div>
         </div>
         <div className="flex items-center gap-3">

@@ -6,7 +6,7 @@ import type { CmsPartner } from "@/lib/cmsSchemas";
 
 /**
  * Business partners, distinct from the integrations strip below it. Integrations
- * claims THG syncs with a platform; this claims a working relationship with a
+ * claims TH Group syncs with a platform; this claims a working relationship with a
  * company, so the CMS keeps them in separate tables with separate publishing.
  *
  * THE SECTION DISAPPEARS WHEN THERE IS NOTHING TO SHOW. The CMS filters drafts

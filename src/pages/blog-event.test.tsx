@@ -11,7 +11,7 @@ import BlogDetailPage from "./BlogDetailPage";
 import EventsPage from "./events/EventsPage";
 import EventDetailPage from "./events/EventDetailPage";
 
-vi.mock("@/components/Navbar", () => ({ default: () => <nav>THG</nav> }));
+vi.mock("@/components/Navbar", () => ({ default: () => <nav>TH Group</nav> }));
 
 const post = {
   slug: "shipment-guide", title: "Visible article title", excerpt: "Article excerpt",

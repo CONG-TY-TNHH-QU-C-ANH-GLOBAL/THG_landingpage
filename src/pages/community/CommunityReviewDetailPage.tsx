@@ -44,7 +44,7 @@ const CommunityReviewDetailPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={r ? `${r.title} — THG Fulfill` : `${t("reviews.title")} — THG Fulfill`}
+        title={r ? `${r.title} — TH Group Fulfill` : `${t("reviews.title")} — TH Group Fulfill`}
         description={r ? r.body.replace(/\s+/g, " ").slice(0, 160) : t("reviews.subtitle")}
         path={`/community/reviews/${slug}`}
         noindex={!r?.indexable}

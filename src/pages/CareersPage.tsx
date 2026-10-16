@@ -23,7 +23,7 @@ const FILTERS = [
 
 const WHY_CARDS = [
     { icon: "🌍", title: "Môi trường quốc tế", desc: "Làm việc với khách hàng, supplier và đối tác tại VN, TQ, Mỹ và Châu Âu mỗi ngày." },
-    { icon: "🚀", title: "Tăng trưởng cùng công ty", desc: "Gia nhập THG ở giai đoạn scale-up — cơ hội thăng tiến rõ ràng, lộ trình phát triển minh bạch." },
+    { icon: "🚀", title: "Tăng trưởng cùng công ty", desc: "Gia nhập TH Group ở giai đoạn scale-up — cơ hội thăng tiến rõ ràng, lộ trình phát triển minh bạch." },
     { icon: "🎓", title: "Đào tạo bài bản", desc: "Được đào tạo chuyên sâu về E-commerce, logistics quốc tế, POD/Dropship từ đội ngũ chuyên gia." },
     { icon: "💛", title: 'Văn hóa "Happiness"', desc: "Company Trip hàng năm, thưởng tháng 13, môi trường trẻ trung, cởi mở, tôn trọng cá nhân." },
 ];
@@ -32,10 +32,10 @@ const REWARDS = [
     { icon: "🏆", tag: "KPI hàng tháng", name: "Thưởng xếp hạng Grade", desc: "Đánh giá hiệu suất cuối mỗi tháng theo 3 mức Grade B / A / A+. Thưởng tự động, minh bạch.", featured: false },
     { icon: "💼", tag: "Sales · CSKH", name: "Thưởng chốt đơn lớn", desc: "Thưởng trên từng đơn có giá trị cao được chốt thành công — từ Express, Dropship, POD đến Warehouse US.", featured: false },
     { icon: "📦", tag: "Vận chuyển", name: "Thưởng Express Bulk", desc: "Thưởng phân tầng theo khối lượng đơn hàng vận chuyển: trên 50kg, trên 100kg, trên 500kg.", featured: false },
-    { icon: "🌟", tag: "Khai thác", name: "Thưởng khách hàng mới", desc: "Ghi nhận ngay khi đưa được một khách hàng mới vào giao dịch lần đầu với THG.", featured: false },
+    { icon: "🌟", tag: "Khai thác", name: "Thưởng khách hàng mới", desc: "Ghi nhận ngay khi đưa được một khách hàng mới vào giao dịch lần đầu với TH Group.", featured: false },
     { icon: "⭐", tag: "Upgrade", name: "Thưởng khách hàng lên VIP", desc: "Khi chăm sóc khách hàng đạt ngưỡng VIP trong tháng, Sales và CSKH cùng nhận thưởng.", featured: false },
     { icon: "📈", tag: "Doanh thu", name: "Thưởng tỷ lệ chốt cao", desc: "Sales/CS cá nhân đạt tỷ lệ chốt request ≥ 80% sẽ nhận thưởng hiệu suất.", featured: false },
-    { icon: "🤝", tag: "Upsell", name: "Thưởng Upsell thành công", desc: "Thưởng khi giới thiệu thành công thêm dịch vụ THG cho khách hàng đang có.", featured: false },
+    { icon: "🤝", tag: "Upsell", name: "Thưởng Upsell thành công", desc: "Thưởng khi giới thiệu thành công thêm dịch vụ TH Group cho khách hàng đang có.", featured: false },
     { icon: "✅", tag: "Hiệu suất", name: "Thưởng 100% task đúng hạn", desc: "Hoàn thành 100% task được giao trong tháng mà không có task nào trễ hạn.", featured: false },
     { icon: "👑", tag: "CEO Award", name: "Nhân viên xuất sắc tháng", desc: "Giải thưởng do chính CEO chọn mỗi tháng — kèm tiền thưởng và Certificate ghi nhận.", featured: true },
 ];
@@ -109,7 +109,7 @@ const CareersPage = () => {
                 </div>
             </section>
 
-            {/* ═══ WHY THG ═══ */}
+            {/* ═══ WHY TH Group ═══ */}
             <section className="py-6 bg-background">
                 <div className="container mx-auto px-4 max-w-6xl">
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

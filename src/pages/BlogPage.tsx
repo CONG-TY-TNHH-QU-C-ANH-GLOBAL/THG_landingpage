@@ -39,7 +39,7 @@ function PostCover({ post, className }: Readonly<{ post: DisplayPost; className:
   }
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-navy text-white/80">
-      <span className="text-4xl font-bold tracking-tight">THG</span>
+      <span className="text-4xl font-bold tracking-tight">TH Group</span>
       <span className="text-xs font-medium uppercase tracking-[0.2em] text-white/60">{post.category}</span>
     </div>
   );
@@ -78,7 +78,7 @@ const BlogPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={`${t("blog.title")} — THG Fulfill`}
+        title={`${t("blog.title")} — TH Group Fulfill`}
         description={t("blog.subtitle")}
         path="/blog"
       />

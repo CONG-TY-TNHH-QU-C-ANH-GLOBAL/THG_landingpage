@@ -73,14 +73,14 @@ const THGExpressPage = () => {
         ogImage={EXPRESS_HERO_URL}
       />
       <JsonLdService
-        name="THG Express — International Shipping"
+        name="TH Group Express — International Shipping"
         description="Multi-route international shipping from Vietnam and China to USA: Sea 20-25 days, Air 3-5 days, Express 6-10 days. TikTok Shop supported."
         url="https://thgfulfill.com/thg-express"
       />
       <JsonLdBreadcrumb
         items={[
           { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "THG Express", url: "https://thgfulfill.com/thg-express" },
+          { name: "TH Group Express", url: "https://thgfulfill.com/thg-express" },
         ]}
       />
       <Navbar />
@@ -94,7 +94,7 @@ const THGExpressPage = () => {
         <div className="container relative z-10 mx-auto px-4 text-center">
           <ScrollReveal direction="up">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-navy mb-6 tracking-tight">
-              THG <span className="text-gradient-gold">EXPRESS</span>
+              TH Group <span className="text-gradient-gold">EXPRESS</span>
             </h1>
             <h2 className="text-xl md:text-2xl text-muted-foreground font-medium mb-4">
               {t("express_page.hero_subtitle")}
@@ -157,7 +157,7 @@ const THGExpressPage = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {[
-              { id: "BJmuA108gok", title: "Bảng Giá THG Line Tiktok" },
+              { id: "BJmuA108gok", title: "Bảng Giá TH Group Line Tiktok" },
               { id: "fIg0fhQlVXg", title: "Ship Hàng Đi Mỹ" },
               { id: "MXpMVfLgKTw", title: "Thủ Tục Hải Quan Global" },
             ].map((v, i) => (
@@ -249,7 +249,7 @@ const THGExpressPage = () => {
               <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
                 <img
                   src="https://w.ladicdn.com/s850x850/67e69e24e8a7ba001127c80a/img_9979-20250724025706-v7ewy.jpg"
-                  alt="THG Express Boxes"
+                  alt="TH Group Express Boxes"
                   className="w-full h-auto object-cover"
                 />
               </div>
@@ -291,7 +291,7 @@ const THGExpressPage = () => {
         </div>
       </section>
 
-      {/* 6. TẠI SAO CHỌN THG EXPRESS */}
+      {/* 6. TẠI SAO CHỌN TH Group EXPRESS */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <ScrollReveal>

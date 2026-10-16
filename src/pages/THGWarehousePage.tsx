@@ -95,14 +95,14 @@ const THGWarehousePage = () => {
         ogImage={WAREHOUSE_PACKAGING_URL}
       />
       <JsonLdService
-        name="THG Warehouse US — Last-Mile Fulfillment"
+        name="TH Group Warehouse US — Last-Mile Fulfillment"
         description="US-based warehousing in Pennsylvania (Milford, PA) and North Carolina (Winston-Salem, NC). 2-5 day domestic delivery, transparent storage and pick-pack fees."
         url="https://thgfulfill.com/thg-warehouse"
       />
       <JsonLdBreadcrumb
         items={[
           { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "THG Warehouse", url: "https://thgfulfill.com/thg-warehouse" },
+          { name: "TH Group Warehouse", url: "https://thgfulfill.com/thg-warehouse" },
         ]}
       />
       <Navbar />
@@ -136,8 +136,8 @@ const THGWarehousePage = () => {
           {/* Hero videos */}
           <ScrollReveal delay={300}>
             <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6 lg:gap-8 mb-8">
-              <ServiceVideoCard videoId="KPhQYnkYA68" title="THG Warehouse Tour 1" className="hover:-translate-y-1 transition-transform" />
-              <ServiceVideoCard videoId="blS1dmH_xb8" title="THG Warehouse Tour 2" className="hover:-translate-y-1 transition-transform" />
+              <ServiceVideoCard videoId="KPhQYnkYA68" title="TH Group Warehouse Tour 1" className="hover:-translate-y-1 transition-transform" />
+              <ServiceVideoCard videoId="blS1dmH_xb8" title="TH Group Warehouse Tour 2" className="hover:-translate-y-1 transition-transform" />
             </div>
           </ScrollReveal>
           <ScrollReveal delay={400}>
@@ -175,7 +175,7 @@ const THGWarehousePage = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <ScrollReveal>
-            <SectionHeader className="mb-12" eyebrow="THG Warehouse" title={t("warehouse_page.solution_title")} />
+            <SectionHeader className="mb-12" eyebrow="TH Group Warehouse" title={t("warehouse_page.solution_title")} />
           </ScrollReveal>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {features.map((f, i) => (
@@ -224,7 +224,7 @@ const THGWarehousePage = () => {
                 </div>
                 <ServiceVideoCard
                   videoId="eJF-6mn2APQ"
-                  title="THG Warehouse Cost"
+                  title="TH Group Warehouse Cost"
                   className="order-1 lg:order-2 hover:shadow-2xl transition-all hover:-translate-y-1"
                 />
               </div>
@@ -241,7 +241,7 @@ const THGWarehousePage = () => {
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {["wcJ_iwwDcBM", "Gi_zlY_Hmw4", "qeADCwk23JU"].map((videoId, i) => (
               <ScrollReveal key={videoId} delay={i * 100}>
-                <ServiceVideoCard videoId={videoId} title={`THG Warehouse packing ${i + 1}`} aspectRatio="9/16" />
+                <ServiceVideoCard videoId={videoId} title={`TH Group Warehouse packing ${i + 1}`} aspectRatio="9/16" />
               </ScrollReveal>
             ))}
           </div>
@@ -300,7 +300,7 @@ const THGWarehousePage = () => {
               </div>
             </ScrollReveal>
             <ScrollReveal delay={200} direction="right">
-              <ServiceVideoCard videoId="o46X3StSbnY" title="THG Warehouse OMS" />
+              <ServiceVideoCard videoId="o46X3StSbnY" title="TH Group Warehouse OMS" />
             </ScrollReveal>
           </div>
         </div>
