@@ -1,15 +1,15 @@
-# THG Fulfill — Landing Page
+# TH Group Fulfill — Landing Page
 
-> **AI Context Note:** This is the **company landing page for THGFulfill** (thgfulfill.com), a Vietnamese fulfillment & print-on-demand service. All editable content (blog posts, hero text, services, translations, etc.) is driven by a **headless CMS** at `https://cms.thgfulfill.com/api/v1`. The frontend is a React + TypeScript SPA — you are working on the frontend repo only, not the CMS backend.
+> **AI Context Note:** This is the **company landing page for TH Group Fulfill** (thgfulfill.com), a Vietnamese fulfillment & print-on-demand service. All editable content (blog posts, hero text, services, translations, etc.) is driven by a **headless CMS** at `https://cms.thgfulfill.com/api/v1`. The frontend is a React + TypeScript SPA — you are working on the frontend repo only, not the CMS backend.
 
 ---
 
 ## Project Purpose
 
-Landing page for **THG Fulfill** — a logistics/fulfillment company offering:
-- Print-on-demand & dropshipping (THG Fulfill service)
-- International express shipping (THG Express)
-- Domestic warehousing (THG Warehouse)
+Landing page for **TH Group Fulfill** — a logistics/fulfillment company offering:
+- Print-on-demand & dropshipping (TH Group Fulfill service)
+- International express shipping (TH Group Express)
+- Domestic warehousing (TH Group Warehouse)
 
 Target audience: Vietnamese e-commerce sellers on Shopee, TikTok Shop, Etsy, Amazon, etc.
 
@@ -34,7 +34,7 @@ Target audience: Vietnamese e-commerce sellers on Shopee, TikTok Shop, Etsy, Ama
 
 ## CMS Integration
 
-All dynamic content is fetched from the **THGFulfill CMS REST API**:
+All dynamic content is fetched from the **TH Group Fulfill CMS REST API**:
 
 | Env | Base URL |
 |---|---|
