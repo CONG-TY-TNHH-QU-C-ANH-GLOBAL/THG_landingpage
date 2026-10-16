@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, Search } from "lucide-react";
 
 import {
     CATEGORY_ICONS,
@@ -10,57 +9,87 @@ import {
 } from "@/data/chinhNgachDocs";
 import { RichText } from "@/components/pricing/RichText";
 
-/** Tier styling, ordered as the source sheet presents them: what customs will
- *  always ask for, what it asks for only under a condition, and what merely
- *  helps the sale. Keeping them visually distinct is the point of the tab —
- *  a flat list of 11 certificates does not say which ones block a shipment. */
+/** The sheet's own tier palette. Not decorative: green/amber/blue is the same
+ *  three-way coding the sidebar legend explains, and freight staff read it that
+ *  way. Generic Tailwind tones would break the legend's promise. */
 const TIERS = [
-    { key: "req", label: "Bắt buộc", dot: "bg-emerald-600", chip: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-    { key: "cond", label: "Có điều kiện", dot: "bg-amber-500", chip: "bg-amber-50 text-amber-800 border-amber-200" },
-    { key: "opt", label: "Tùy chọn", dot: "bg-slate-400", chip: "bg-slate-50 text-slate-600 border-slate-200" },
+    { key: "req", label: "🟢 Bắt buộc", legend: "Bắt buộc", dot: "#1b4332", chip: "bg-[#d8edd4] text-[#1b4332]" },
+    { key: "cond", label: "🟡 Có điều kiện", legend: "Có điều kiện", dot: "#7a4f00", chip: "bg-[#fff1cc] text-[#7a4f00]" },
+    { key: "opt", label: "🔵 Tùy chọn", legend: "Tùy chọn", dot: "#1a3a5c", chip: "bg-[#dce9f5] text-[#1a3a5c]" },
 ] as const;
 
-function GoodsCard({ item, open, onToggle }: Readonly<{
-    item: GoodsItem; open: boolean; onToggle: () => void;
+/** The sidebar abbreviates where the results heading does not — the sheet keeps
+ *  every entry in the 220px column to one line. */
+const SIDEBAR_LABELS: Partial<Record<CategoryKey, string>> = {
+    all: "Tất cả",
+    go: "Gỗ / Thủ công",
+};
+
+function Highlight({ text, term }: Readonly<{ text: string; term: string }>) {
+    if (!term) return <>{text}</>;
+    const i = text.toLowerCase().indexOf(term.toLowerCase());
+    if (i < 0) return <>{text}</>;
+    return (
+        <>
+            {text.slice(0, i)}
+            <mark className="rounded-sm bg-[#fff3b0] px-0.5 text-inherit">{text.slice(i, i + term.length)}</mark>
+            {text.slice(i + term.length)}
+        </>
+    );
+}
+
+function GoodsCard({ item, open, onToggle, term }: Readonly<{
+    item: GoodsItem; open: boolean; onToggle: () => void; term: string;
 }>) {
     const total = item.docs.req.length + item.docs.cond.length + item.docs.opt.length;
     return (
-        <div className="bg-white border border-[var(--pricing-border)] rounded-xl overflow-hidden">
+        <div className="overflow-hidden rounded-[9px] border border-[#DDD8CE] bg-white shadow-[0_1px_3px_rgba(0,0,0,.04)] transition-shadow hover:shadow-[0_3px_12px_rgba(0,0,0,.09)]">
             <button
                 type="button"
                 onClick={onToggle}
                 aria-expanded={open}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#FFFBF0] transition-colors"
+                className="flex w-full items-center gap-[11px] px-[15px] py-3 text-left transition-colors hover:bg-[#fafaf8]"
             >
-                <span className="w-7 h-7 rounded-lg bg-navy/5 text-navy text-[12px] font-bold grid place-items-center flex-shrink-0">
+                <span className="flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-md bg-navy font-mono text-[11px] font-semibold text-primary">
                     {item.id}
                 </span>
-                <span className="flex-1 min-w-0">
-                    <span className="block text-[14px] font-bold text-navy truncate">{item.name}</span>
-                    <span className="block text-[12px] text-muted-foreground font-mono">{item.hs}</span>
+                <span className="min-w-0 flex-1">
+                    <span className="block text-[13.5px] font-bold text-navy">
+                        <Highlight text={item.name} term={term} />
+                    </span>
+                    <span className="mt-0.5 inline-block rounded border border-[#DDD8CE] bg-cream px-1.5 font-mono text-[10px] text-muted-foreground">
+                        {item.hs}
+                    </span>
                 </span>
-                <span className="text-[12px] text-muted-foreground whitespace-nowrap">{total} loại</span>
-                <ChevronDown
-                    className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+                <span className="flex-shrink-0 font-mono text-[11px] text-muted-foreground">{total} loại</span>
+                <span
+                    className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full transition-all ${open ? "rotate-180 bg-cream" : ""}`}
                     aria-hidden="true"
-                />
+                >
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                        <path d="M2.5 4.5l4 4 4-4" stroke="#718096" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </span>
             </button>
 
             {open && (
-                <div className="px-4 pb-4 pt-1 border-t border-[var(--pricing-border)] space-y-3">
-                    {TIERS.map(({ key, label, dot, chip }) => {
+                <div className="border-t border-[#DDD8CE] px-4 py-3.5">
+                    {TIERS.map(({ key, label, chip }) => {
                         const docs = item.docs[key];
                         if (docs.length === 0) return null;
                         return (
-                            <div key={key}>
-                                <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-1.5">
-                                    <span className={`w-1.5 h-1.5 rounded-full ${dot}`} aria-hidden="true" />
-                                    {label} <span className="font-normal">({docs.length})</span>
+                            <div key={key} className="mb-3 last:mb-0">
+                                <p className="mb-1.5 border-b border-[#DDD8CE] pb-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                                    {label} ({docs.length})
                                 </p>
-                                <ul className="flex flex-wrap gap-1.5">
+                                <ul className="flex flex-wrap gap-[5px]">
                                     {docs.map((doc) => (
-                                        <li key={doc} className={`text-[12px] px-2 py-1 rounded-md border ${chip}`}>
-                                            {doc}
+                                        <li
+                                            key={doc}
+                                            className={`inline-flex items-center gap-[5px] rounded-[5px] px-[9px] py-1 text-[12px] font-medium leading-tight ${chip}`}
+                                        >
+                                            <span className="h-1 w-1 flex-shrink-0 rounded-full bg-current" aria-hidden="true" />
+                                            <Highlight text={doc} term={term} />
                                         </li>
                                     ))}
                                 </ul>
@@ -68,8 +97,8 @@ function GoodsCard({ item, open, onToggle }: Readonly<{
                         );
                     })}
                     {item.note && (
-                        <p className="text-[12.5px] text-navy leading-relaxed bg-[#FFF8E7] border border-primary/30 rounded-lg px-3 py-2">
-                            <RichText html={item.note} />
+                        <p className="mt-[11px] rounded-r-md border-l-[3px] border-primary bg-[#fff8ec] px-[13px] py-2.5 text-[12px] leading-relaxed text-[#5c4a00]">
+                            ⚠️ <RichText html={item.note} />
                         </p>
                     )}
                 </div>
@@ -89,22 +118,34 @@ export function ChinhNgachDocsLookup() {
         return c;
     }, []);
 
+    const term = query.trim();
     const results = useMemo(() => {
-        const q = query.trim().toLowerCase();
+        const q = term.toLowerCase();
         return GOODS.filter((g) => {
             if (cat !== "all" && g.cat !== cat) return false;
             if (!q) return true;
-            // Searching the certificate names too, so "phytosanitary" finds the
-            // commodities that need one — the reverse lookup operations actually do.
+            // Certificate names are searched too, so "phytosanitary" finds the
+            // commodities that need one — the reverse lookup operations do daily.
             return (
                 g.name.toLowerCase().includes(q) ||
                 g.hs.toLowerCase().includes(q) ||
-                g.docs.req.some((d) => d.toLowerCase().includes(q)) ||
-                g.docs.cond.some((d) => d.toLowerCase().includes(q)) ||
-                g.docs.opt.some((d) => d.toLowerCase().includes(q))
+                [...g.docs.req, ...g.docs.cond, ...g.docs.opt].join(" ").toLowerCase().includes(q)
             );
         });
-    }, [cat, query]);
+    }, [cat, term]);
+
+    /** The sheet labels groups only while searching: browsing one category needs
+     *  no heading, but a free-text hit list spans categories and does. */
+    const grouped = useMemo(() => {
+        if (!term) return null;
+        const g = new Map<CategoryKey, GoodsItem[]>();
+        for (const item of results) {
+            const arr = g.get(item.cat) ?? [];
+            arr.push(item);
+            g.set(item.cat, arr);
+        }
+        return [...g.entries()];
+    }, [results, term]);
 
     const toggle = (id: number) =>
         setOpenIds((prev) => {
@@ -114,69 +155,120 @@ export function ChinhNgachDocsLookup() {
             return next;
         });
 
+    function pickCategory(key: CategoryKey) {
+        setCat(key);
+        setQuery("");
+    }
+
+    const cards = (items: readonly GoodsItem[]) =>
+        items.map((item) => (
+            <GoodsCard key={item.id} item={item} open={openIds.has(item.id)} onToggle={() => toggle(item.id)} term={term} />
+        ));
+
     return (
-        <div className="space-y-5">
-            <div className="bg-[#FFF8E7] border border-primary/30 rounded-xl p-4 sm:p-5">
-                <p className="text-[13px] text-navy leading-relaxed">
-                    <strong className="font-bold">Bộ chứng từ bắt buộc mọi lô hàng:</strong> Commercial Invoice ·
+        <div>
+            <div className="mb-4 flex items-start gap-2.5 rounded-[9px] bg-navy px-4 py-3.5 text-[12.5px] leading-relaxed text-white/85">
+                <span aria-hidden="true">📌</span>
+                <p>
+                    <strong className="text-[#ffd87a]">Bộ chứng từ bắt buộc mọi lô hàng:</strong> Commercial Invoice ·
                     Packing List · B/L hoặc AWB · Tờ khai hải quan xuất khẩu · C/O (Form B / EVFTA / RCEP tùy thị
-                    trường). Các giấy tờ bên dưới là phát sinh thêm tùy từng mặt hàng.
+                    trường). Các giấy tờ bên dưới là <strong className="text-[#ffd87a]">phát sinh thêm</strong> tùy từng
+                    mặt hàng.
                 </p>
             </div>
 
-            <div>
-                <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">Chọn ngành hàng</p>
-                <div className="flex flex-wrap gap-2">
-                    {(Object.keys(CATEGORY_LABELS) as CategoryKey[]).map((key) => (
-                        <button
-                            key={key}
-                            type="button"
-                            onClick={() => setCat(key)}
-                            aria-pressed={cat === key}
-                            className={`flex items-center gap-1.5 text-[12.5px] px-3 py-1.5 rounded-lg border transition-colors ${
-                                cat === key
-                                    ? "bg-navy text-white border-navy font-semibold"
-                                    : "bg-white text-foreground/80 border-[var(--pricing-border)] hover:bg-[#FFFBF0]"
-                            }`}
+            <div className="grid items-start gap-5 lg:grid-cols-[220px_1fr]">
+                <aside className="overflow-hidden rounded-[10px] border border-[#DDD8CE] bg-white shadow-[0_1px_4px_rgba(0,0,0,.05)] lg:sticky lg:top-[76px]">
+                    <p className="bg-navy px-[15px] py-3 text-[10px] font-bold uppercase tracking-wider text-white/60">
+                        Chọn ngành hàng
+                    </p>
+                    <ul className="p-[7px]">
+                        {(Object.keys(CATEGORY_LABELS) as CategoryKey[]).map((key) => {
+                            const on = cat === key;
+                            return (
+                                <li key={key}>
+                                    <button
+                                        type="button"
+                                        onClick={() => pickCategory(key)}
+                                        aria-pressed={on}
+                                        className={`mb-px flex w-full items-center gap-2.5 rounded-[7px] px-2.5 py-2 text-left text-[12.5px] font-medium transition-colors ${
+                                            on ? "bg-navy text-white" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+                                        }`}
+                                    >
+                                        <span className="w-5 flex-shrink-0 text-center text-[14px]" aria-hidden="true">
+                                            {CATEGORY_ICONS[key]}
+                                        </span>
+                                        <span className="flex-1">{SIDEBAR_LABELS[key] ?? CATEGORY_LABELS[key]}</span>
+                                        <span
+                                            className={`flex-shrink-0 rounded-[7px] px-1.5 py-px font-mono text-[10px] ${on ? "bg-white/[.22]" : "bg-black/[.08]"}`}
+                                        >
+                                            {counts[key] ?? 0}
+                                        </span>
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                    <div className="border-t border-[#DDD8CE] px-[15px] py-[11px]">
+                        <p className="mb-[7px] text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                            Phân loại
+                        </p>
+                        {TIERS.map(({ key, legend, dot }) => (
+                            <p key={key} className="mb-1 flex items-center gap-[7px] text-[11.5px] text-muted-foreground">
+                                <span className="h-[7px] w-[7px] flex-shrink-0 rounded-full" style={{ background: dot }} aria-hidden="true" />
+                                {legend}
+                            </p>
+                        ))}
+                    </div>
+                </aside>
+
+                <div>
+                    <div className="relative mb-[13px]">
+                        <svg
+                            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+                            width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"
                         >
-                            <span aria-hidden="true">{CATEGORY_ICONS[key]}</span>
-                            {key === "all" ? "Tất cả" : CATEGORY_LABELS[key]}
-                            <span className={cat === key ? "text-white/60" : "text-muted-foreground"}>
-                                {counts[key] ?? 0}
-                            </span>
-                        </button>
-                    ))}
+                            <circle cx="6.5" cy="6.5" r="5" stroke="#b0aaa0" strokeWidth="1.5" />
+                            <path d="M10.5 10.5L14 14" stroke="#b0aaa0" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        <input
+                            type="search"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder="Tìm mặt hàng… (vd: cà phê, gỗ, pin)"
+                            aria-label="Tìm mặt hàng hoặc loại chứng từ"
+                            className="w-full rounded-[9px] border-[1.5px] border-[#DDD8CE] bg-white py-2.5 pl-[38px] pr-4 text-[13.5px] text-foreground outline-none transition-colors placeholder:text-[#b0aaa0] focus:border-navy"
+                        />
+                    </div>
+
+                    <div className="mb-[11px] flex items-center justify-between">
+                        <p className="text-[13.5px] font-semibold text-navy">{CATEGORY_LABELS[cat]}</p>
+                        <p className="rounded-full border border-[#DDD8CE] bg-white px-2.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+                            {results.length} kết quả
+                        </p>
+                    </div>
+
+                    {results.length === 0 ? (
+                        <p className="px-5 py-10 text-center text-sm italic text-muted-foreground">
+                            Không tìm thấy mặt hàng phù hợp — liên hệ TH Group để được tư vấn bộ chứng từ cho lô hàng của bạn.
+                        </p>
+                    ) : grouped ? (
+                        <div className="flex flex-col gap-2.5">
+                            {grouped.map(([key, items]) => (
+                                <div key={key} className="flex flex-col gap-2.5">
+                                    <p className="flex items-center gap-[7px] px-1 pb-[5px] pt-2.5 font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                        <span className="h-[11px] w-[3px] flex-none rounded-sm bg-primary" aria-hidden="true" />
+                                        {CATEGORY_LABELS[key]} <span className="font-normal">({items.length})</span>
+                                    </p>
+                                    {cards(items)}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-2.5">{cards(results)}</div>
+                    )}
                 </div>
             </div>
-
-            <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Tìm mặt hàng hoặc loại chứng từ… (vd: cà phê, pin, phytosanitary)"
-                    aria-label="Tìm mặt hàng hoặc loại chứng từ"
-                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-[var(--pricing-border)] bg-white text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/40"
-                />
-            </div>
-
-            <div className="flex items-center justify-between">
-                <p className="text-[13px] font-bold text-navy">{CATEGORY_LABELS[cat]}</p>
-                <p className="text-[12px] text-muted-foreground">{results.length} kết quả</p>
-            </div>
-
-            {results.length === 0 ? (
-                <p className="bg-white border border-[var(--pricing-border)] rounded-xl p-8 text-center text-muted-foreground text-sm italic">
-                    Không tìm thấy mặt hàng phù hợp — liên hệ TH Group để được tư vấn bộ chứng từ cho lô hàng của bạn.
-                </p>
-            ) : (
-                <div className="space-y-2">
-                    {results.map((item) => (
-                        <GoodsCard key={item.id} item={item} open={openIds.has(item.id)} onToggle={() => toggle(item.id)} />
-                    ))}
-                </div>
-            )}
         </div>
     );
 }

@@ -47,7 +47,9 @@ export function ChinhNgachRateWorkspace({
   copy?: Partial<FormalRateWorkspaceCopy>;
   rates?: Partial<Record<FormalRateLane, ReactNode>>;
   notice?: ReactNode;
-  guide?: ReactNode;
+  /** A function form receives a callback that switches to the estimate
+   *  view, so the guide's cross-reference can be a real control. */
+  guide?: ReactNode | ((goToEstimate: () => void) => ReactNode);
   estimator?: ReactNode;
 }>) {
   const copy = { ...DEFAULT_COPY, ...copyOverride };
@@ -138,7 +140,7 @@ export function ChinhNgachRateWorkspace({
 
       {view === "guide" && (
         <div role="tabpanel" aria-label={copy.guideTab} id="formal-panel-guide" aria-labelledby="formal-tab-guide" className="pt-5">
-          {guide ?? <p className="rounded-xl bg-white p-5 text-sm text-navy">LCL và FCL được giải thích theo từng bước.</p>}
+          {(typeof guide === "function" ? guide(() => setView("estimate")) : guide) ?? <p className="rounded-xl bg-white p-5 text-sm text-navy">LCL và FCL được giải thích theo từng bước.</p>}
         </div>
       )}
 

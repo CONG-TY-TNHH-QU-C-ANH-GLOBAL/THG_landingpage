@@ -10,7 +10,7 @@ import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { CmsRateTable, CmsMetaList } from "@/components/pricing/CmsRateTable";
 import { ChinhNgachDocsLookup } from "@/components/pricing/ChinhNgachDocsLookup";
 import { ChinhNgachTemplates } from "@/components/pricing/ChinhNgachTemplates";
-import { ChinhNgachCostEstimator } from "@/components/pricing/ChinhNgachCostEstimator";
+import { ChinhNgachQuotations } from "@/components/pricing/ChinhNgachQuotations";
 import { ChinhNgachRateGuide } from "@/components/pricing/ChinhNgachRateGuide";
 import { ChinhNgachRateWorkspace } from "@/components/pricing/ChinhNgachRateWorkspace";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
@@ -236,8 +236,8 @@ const ChinhNgachPricingPage = () => {
                                     </div>
                                 ),
                             }}
-                            guide={<ChinhNgachRateGuide />}
-                            estimator={<ChinhNgachCostEstimator />}
+                            guide={(goToEstimate) => <ChinhNgachRateGuide onJumpToQuotation={goToEstimate} />}
+                            estimator={<ChinhNgachQuotations />}
                         />
                     </div>
                 )}
