@@ -8,14 +8,16 @@ import type { Language } from "@/lib/i18n/types";
 import { useCmsSeoPages } from "@/hooks/useCmsContent";
 import { hrefLang, localizedUrl, normalizeSeoPath, SITE_BASE } from "@/lib/seoRoutes";
 
-const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-default.jpg`;
+// New filename on purpose: social platforms cache og:image per URL, so reusing
+// og-default.jpg would keep serving the retired THG artwork to every share.
+const DEFAULT_OG_IMAGE = `${SITE_BASE}/og-th-group.jpg`;
 
 interface Props {
   title: string;
   description: string;
   /** Path of current page (without origin), e.g. "/", "/thg-fulfill", "/blog/foo" */
   path: string;
-  /** Optional override og:image absolute URL. Defaults to /og-default.jpg */
+  /** Optional override og:image absolute URL. Defaults to /og-th-group.jpg */
   ogImage?: string;
   /** Alt text for og:image / twitter:image (accessibility + SEO). */
   ogImageAlt?: string;
