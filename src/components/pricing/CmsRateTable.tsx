@@ -39,7 +39,7 @@ function isMoney(col: RateColumn): boolean {
  *
  *  `approx` prefixes "~". The source rate sheets mark every figure that way and
  *  close with "giá tạm tính": these are indications to quote against, not fixed
- *  prices, and a bare "$155" reads as a commitment THG has not made. */
+ *  prices, and a bare "$155" reads as a commitment TH Group has not made. */
 function formatCell(value: CellValue, col: RateColumn, approx = false): string {
     if (value === null || value === undefined || value === "") return "—";
     if (!isMoney(col)) return String(value);

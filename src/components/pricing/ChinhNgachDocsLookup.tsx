@@ -168,7 +168,7 @@ export function ChinhNgachDocsLookup() {
 
             {results.length === 0 ? (
                 <p className="bg-white border border-[var(--pricing-border)] rounded-xl p-8 text-center text-muted-foreground text-sm italic">
-                    Không tìm thấy mặt hàng phù hợp — liên hệ THG để được tư vấn bộ chứng từ cho lô hàng của bạn.
+                    Không tìm thấy mặt hàng phù hợp — liên hệ TH Group để được tư vấn bộ chứng từ cho lô hàng của bạn.
                 </p>
             ) : (
                 <div className="space-y-2">

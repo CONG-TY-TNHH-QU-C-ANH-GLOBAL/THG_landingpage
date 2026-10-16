@@ -86,7 +86,7 @@ function AvatarGroup({
 
     return (
       <div className="flex h-28 w-28 items-center justify-center rounded-full border-[3px] border-[#f05a0b] bg-slate-100 text-2xl font-bold text-[#173b63]">
-        {initials || "THG"}
+        {initials || "TH Group"}
       </div>
     );
   }

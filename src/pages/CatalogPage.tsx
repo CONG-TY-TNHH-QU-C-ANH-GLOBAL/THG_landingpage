@@ -1017,7 +1017,7 @@ const CatalogPage = () => {
                       {selectedVariant && (
                         <div key={`variant-${selectedVariant.id ?? "none"}`} className="border border-border/40 rounded-lg overflow-hidden">
                           <div className="flex items-center px-4 py-2.5 border-b border-border/40 text-sm gap-2">
-                            <span className="text-muted-foreground font-medium w-[120px] flex-shrink-0">THG SKU</span>
+                            <span className="text-muted-foreground font-medium w-[120px] flex-shrink-0">TH Group SKU</span>
                             <button
                               onClick={() => copySku(selectedVariant.thgSku || selectedVariant.supplierSku || "")}
                               className="font-mono text-[11.5px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded hover:bg-blue-100 transition-colors cursor-pointer truncate text-left"

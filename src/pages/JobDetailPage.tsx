@@ -33,7 +33,7 @@ function buildDescription(job: Job): string {
   const resp = Object.values(job.responsibilities).flat();
   if (resp.length) parts.push("Công việc: " + resp.slice(0, 6).join("; "));
   if (job.requirements.length) parts.push("Yêu cầu: " + job.requirements.slice(0, 6).join("; "));
-  return parts.join(" ").slice(0, 300) || `${job.title} — THG Fulfill`;
+  return parts.join(" ").slice(0, 300) || `${job.title} — TH Group Fulfill`;
 }
 
 const JobDetailPage = () => {
@@ -87,7 +87,7 @@ const JobDetailPage = () => {
     }
     return (
       <div className="min-h-screen bg-background">
-        <SeoHead title="Not found — THG Fulfill" description="" path={`/careers/${slug ?? ""}`} noindex />
+        <SeoHead title="Not found — TH Group Fulfill" description="" path={`/careers/${slug ?? ""}`} noindex />
         <Navbar />
         <div className="pt-28 pb-20 text-center">
           <p className="text-xl text-muted-foreground">{t("careers.job_not_found")}</p>

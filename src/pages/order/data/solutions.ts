@@ -1,4 +1,4 @@
-// 6 value-prop cards rendered after Pain Points to position THG Order against
+// 6 value-prop cards rendered after Pain Points to position TH Group Order against
 // generic forwarders. Each entry has a chip tag, an emoji icon, and i18n keys.
 
 export interface Solution {

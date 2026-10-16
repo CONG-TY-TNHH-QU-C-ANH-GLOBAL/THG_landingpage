@@ -84,7 +84,7 @@ export function JobDetailContent({ job, accent, sourcePage }: Props) {
             <SafeHtml
               as="p"
               className="text-muted-foreground text-sm leading-relaxed mb-3.5"
-              html={t("careers.modal_bonus_desc") || 'Ngoài lương cứng và hoa hồng cơ bản, THG áp dụng <strong class="text-navy">hệ thống thưởng đa tầng</strong> để ghi nhận nỗ lực:'}
+              html={t("careers.modal_bonus_desc") || 'Ngoài lương cứng và hoa hồng cơ bản, TH Group áp dụng <strong class="text-navy">hệ thống thưởng đa tầng</strong> để ghi nhận nỗ lực:'}
             />
             <ul className="space-y-2">
               {job.bonuses.map((b, i) => (

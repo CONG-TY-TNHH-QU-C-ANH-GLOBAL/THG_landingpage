@@ -259,7 +259,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List THG business partners
+         * List TH Group business partners
          * @description Returns live partner rows sorted by `position`. Not localized — rows are company names and URLs. `logo_url` is a fully-resolved absolute URL, or null when no logo is set. Draft partners are never returned.
          */
         get: {
@@ -307,7 +307,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List THG leadership cards
+         * List TH Group leadership cards
          * @description Returns live Leadership cards sorted by position. Each card may carry one portrait or an ordered avatar group; media URLs are resolved server-side.
          */
         get: {
@@ -358,7 +358,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * List live THG events for a locale
+         * List live TH Group events for a locale
          * @description Returns published Event cards ordered by event date, newest first.
          */
         get: {
@@ -432,7 +432,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get one live THG event by slug and locale
+         * Get one live TH Group event by slug and locale
          * @description Returns an event only when its locale row is published.
          */
         get: {
@@ -1578,7 +1578,7 @@ export interface paths {
         };
         /**
          * Get one published community question by slug
-         * @description 404 unless the question status is `published`. Includes the THG expert answer (nullable) and the computed `indexable` flag.
+         * @description 404 unless the question status is `published`. Includes the TH Group expert answer (nullable) and the computed `indexable` flag.
          */
         get: {
             parameters: {

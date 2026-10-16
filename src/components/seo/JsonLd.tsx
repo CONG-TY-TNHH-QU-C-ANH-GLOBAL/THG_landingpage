@@ -24,7 +24,7 @@ interface OrganizationProps {
   logo?: string;
 }
 
-export function JsonLdOrganization({ name = "THG Fulfill", url = SITE_BASE, logo = `${SITE_BASE}/logo.png` }: OrganizationProps = {}) {
+export function JsonLdOrganization({ name = "TH Group Fulfill", url = SITE_BASE, logo = `${SITE_BASE}/logo.png` }: OrganizationProps = {}) {
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -64,7 +64,7 @@ interface ServiceProps {
   provider?: string;
 }
 
-export function JsonLdService({ name, description, url, provider = "THG Fulfill" }: ServiceProps) {
+export function JsonLdService({ name, description, url, provider = "TH Group Fulfill" }: ServiceProps) {
   const data = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -153,7 +153,7 @@ export function JsonLdJobPosting({
     directApply: true,
     hiringOrganization: {
       "@type": "Organization",
-      name: "THG Fulfill",
+      name: "TH Group Fulfill",
       sameAs: SITE_BASE,
       logo: `${SITE_BASE}/logo.png`,
     },
@@ -187,7 +187,7 @@ interface QaPageProps {
   url: string;
   /** Display name of the asker. */
   authorName?: string;
-  /** THG expert answer text — the acceptedAnswer. Required for QA rich results. */
+  /** TH Group expert answer text — the acceptedAnswer. Required for QA rich results. */
   expertAnswer: string;
   /** Unix seconds the question was published (emitted as ISO when present). */
   publishedAt?: number | null;
@@ -218,7 +218,7 @@ export function JsonLdQaPage({
       "@type": "Answer",
       text: expertAnswer,
       url,
-      author: { "@type": "Organization", name: "THG Fulfill", url: SITE_BASE },
+      author: { "@type": "Organization", name: "TH Group Fulfill", url: SITE_BASE },
     },
   };
   if (authorName) mainEntity.author = { "@type": "Person", name: authorName };
@@ -253,7 +253,7 @@ interface ReviewProps {
   publishedAt?: number | null;
 }
 
-/** schema.org/Review of the THG Fulfill service. Only rendered for verified,
+/** schema.org/Review of the TH Group Fulfill service. Only rendered for verified,
  *  indexable reviews that carry a numeric rating, so the emitted markup is
  *  always complete and valid (itemReviewed + reviewRating + author + body).
  *  Reviews without a rating fall back to no markup rather than invalid JSON-LD. */
@@ -267,7 +267,7 @@ export function JsonLdReview({ name, body, url, authorName, rating, publishedAt 
     author: { "@type": "Person", name: authorName },
     itemReviewed: {
       "@type": "Organization",
-      name: "THG Fulfill",
+      name: "TH Group Fulfill",
       url: SITE_BASE,
     },
     reviewRating: {
@@ -323,17 +323,17 @@ interface ArticleProps {
 }
 
 /** schema.org/Article for blog posts — enables article rich results. Publisher
- *  and author default to the THG Fulfill Organization. */
+ *  and author default to the TH Group Fulfill Organization. */
 export function JsonLdArticle({ headline, description, image, datePublished, url }: ArticleProps) {
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    author: { "@type": "Organization", name: "THG Fulfill", url: SITE_BASE },
+    author: { "@type": "Organization", name: "TH Group Fulfill", url: SITE_BASE },
     publisher: {
       "@type": "Organization",
-      name: "THG Fulfill",
+      name: "TH Group Fulfill",
       logo: { "@type": "ImageObject", url: `${SITE_BASE}/logo.png` },
     },
   };

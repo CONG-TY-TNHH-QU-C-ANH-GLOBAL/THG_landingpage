@@ -148,7 +148,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
           <DialogTitle>{t("careers.form_title") || "Ứng tuyển vị trí"}</DialogTitle>
           <DialogDescription className="space-y-1">
             <span className="block font-semibold text-foreground">{jobTitle}</span>
-            <span className="block text-xs">{t("careers.form_desc") || "Để lại thông tin — HR THG sẽ phản hồi trong 3 ngày làm việc."}</span>
+            <span className="block text-xs">{t("careers.form_desc") || "Để lại thông tin — HR TH Group sẽ phản hồi trong 3 ngày làm việc."}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -296,7 +296,7 @@ export function ApplicantFormDialog({ trigger, jobSlug, jobTitle, sourcePage, on
             </Button>
 
             <div className="text-[10px] text-center text-muted-foreground">
-              {t("careers.form_consent") || "Bằng cách submit, bạn đồng ý cho THG xử lý dữ liệu hồ sơ phục vụ tuyển dụng."}
+              {t("careers.form_consent") || "Bằng cách submit, bạn đồng ý cho TH Group xử lý dữ liệu hồ sơ phục vụ tuyển dụng."}
             </div>
           </form>
         )}

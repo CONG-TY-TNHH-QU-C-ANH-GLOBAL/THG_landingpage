@@ -88,7 +88,7 @@ describe("ArticleMarkdown", () => {
   });
 
   it("opens external links in a new tab and keeps in-site links in the app", () => {
-    const html = renderMd("[Slide](https://docs.google.com/x) · [THG Express](/vi/thg-express)");
+    const html = renderMd("[Slide](https://docs.google.com/x) · [TH Group Express](/vi/thg-express)");
     const external = html.querySelector('a[href="https://docs.google.com/x"]');
     expect(external?.getAttribute("target")).toBe("_blank");
     const internal = html.querySelector('a[href="/vi/thg-express"]');

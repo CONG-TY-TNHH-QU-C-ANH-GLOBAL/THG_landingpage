@@ -195,7 +195,7 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, primarySer
                 <option value="fulfill">Fulfillment / POD</option>
                 <option value="express">International Express</option>
                 <option value="warehouse">US 3PL Warehouse</option>
-                <option value="dropship">Dropship / THG Order</option>
+                <option value="dropship">Dropship / TH Group Order</option>
               </select>
             </div>
             <div>

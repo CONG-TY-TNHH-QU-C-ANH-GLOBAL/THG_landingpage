@@ -6,7 +6,7 @@ import App from "@/App";
 const spies = vi.hoisted(() => ({ tracking: vi.fn(), utm: vi.fn() }));
 vi.mock("@/components/analytics/TrackingScripts", () => ({ TrackingScripts: () => { spies.tracking(); return null; } }));
 vi.mock("@/lib/utm", () => ({ captureUtmOnce: spies.utm }));
-vi.mock("@/components/Navbar", () => ({ default: () => <nav>THG</nav> }));
+vi.mock("@/components/Navbar", () => ({ default: () => <nav>TH Group</nav> }));
 vi.mock("@/components/FloatingContact", () => ({ FloatingContact: () => null }));
 vi.mock("@/components/cookie/ConsentBanner", () => ({ ConsentBanner: () => null }));
 vi.mock("@/components/pricing/LarkPricingProvider", () => ({ LarkPricingProvider: ({ children }: { children: ReactNode }) => children }));

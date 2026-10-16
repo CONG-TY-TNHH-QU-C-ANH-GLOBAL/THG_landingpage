@@ -93,7 +93,7 @@ const BlogDetailPage = () => {
         if (!missing) {
             return (
                 <div className="min-h-screen bg-background">
-                    <SeoHead title={`${t("blog.title")} — THG Fulfill`} description="" path={isPreview ? `/blog-preview/${token}` : `/blog/${slug ?? ""}`} noindex={isPreview} noReferrer={isPreview} />
+                    <SeoHead title={`${t("blog.title")} — TH Group Fulfill`} description="" path={isPreview ? `/blog-preview/${token}` : `/blog/${slug ?? ""}`} noindex={isPreview} noReferrer={isPreview} />
                     <Navbar />
                     <div className="pt-28 pb-20 text-center" role="alert">
                         <p className="text-muted-foreground">{t("blog.load_error")}</p>
@@ -106,7 +106,7 @@ const BlogDetailPage = () => {
         }
         return (
             <div className="min-h-screen bg-background">
-                <SeoHead title="Not found — THG Fulfill" description="" path={isPreview ? `/blog-preview/${token}` : `/blog/${slug ?? ""}`} noindex noReferrer={isPreview} />
+                <SeoHead title="Not found — TH Group Fulfill" description="" path={isPreview ? `/blog-preview/${token}` : `/blog/${slug ?? ""}`} noindex noReferrer={isPreview} />
                 <Navbar />
                 <div className="pt-28 pb-20 text-center">
                     <p className="text-xl text-muted-foreground">{t("blog.not_found")}</p>
@@ -119,7 +119,7 @@ const BlogDetailPage = () => {
     }
 
     const title = article.title;
-    const description = article.excerpt || `${title} — THG Fulfill`;
+    const description = article.excerpt || `${title} — TH Group Fulfill`;
     const featuredSrc = article.slides[0]?.src ?? article.thumbnail_url;
     const featuredAlt = article.slides[0]?.alt_text || title;
     const gallerySlides = article.slides.slice(1);
@@ -127,7 +127,7 @@ const BlogDetailPage = () => {
     return (
         <div className="min-h-screen bg-background">
             <SeoHead
-                title={article.seo_title || `${title} — THG Fulfill`}
+                title={article.seo_title || `${title} — TH Group Fulfill`}
                 description={article.seo_description || description}
                 path={isPreview ? `/blog-preview/${token}` : `/blog/${article.slug}`}
                 ogType="article"

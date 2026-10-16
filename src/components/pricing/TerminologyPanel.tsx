@@ -14,10 +14,10 @@ const TerminologyPanel = () => {
             </h3>
             <p className="text-[12px] text-muted-foreground mb-8 -mt-2">
                 {language === 'vi'
-                    ? 'Dành cho khách hàng sử dụng dịch vụ vận chuyển quốc tế THG Fulfill · Cập nhật: Tháng 3/2026'
+                    ? 'Dành cho khách hàng sử dụng dịch vụ vận chuyển quốc tế TH Group Fulfill · Cập nhật: Tháng 3/2026'
                     : language === 'en'
-                        ? 'For customers using THG Fulfill international shipping services · Updated: March 2026'
-                        : '适用于使用THG Fulfill国际运输服务的客户 · 更新：2026年3月'}
+                        ? 'For customers using TH Group Fulfill international shipping services · Updated: March 2026'
+                        : '适用于使用TH Group Fulfill国际运输服务的客户 · 更新：2026年3月'}
             </p>
             {groups.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground text-sm italic">

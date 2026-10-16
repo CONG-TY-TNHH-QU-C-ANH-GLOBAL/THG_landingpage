@@ -10,8 +10,8 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.title": tr("Formal Customs Shipping & Rate Card", "Vận chuyển Chính ngạch và Biểu phí", "正规报关运输与费率表"),
   "chinhngach.subtitle": tr("Sea & air rates from Hai Phong, Ho Chi Minh and Da Nang to US ports — full customs paperwork, no hidden fees.", "Cước Sea & Air từ Hải Phòng, Hồ Chí Minh, Đà Nẵng đến các cảng Mỹ — đầy đủ thủ tục, không phát sinh ẩn phí.", "从海防、胡志明市、岘港至美国港口的海运与空运报价 — 手续齐全，无隐藏费用。"),
   "chinhngach.back_intl": tr("Back to international pricing", "Quay lại bảng giá quốc tế", "返回国际运费"),
-  "chinhngach.scope_notice": tr("Every figure below is indicative (~), not a fixed price, and excludes domestic trucking in Vietnam, customs clearance, and last-mile delivery in the US. Send us your shipment and THG will quote it exactly, all in.", "Toàn bộ mốc giá dưới đây chỉ là giá tạm tính (~), không phải giá chốt, và chưa bao gồm phí trucking nội địa VN, thủ tục hải quan và last-mile delivery tại Mỹ. Gửi thông tin lô hàng để THG báo giá chính xác, trọn gói.", "以下所有价格均为参考价（~），并非最终报价，且不含越南境内拖车、报关及美国末端派送费用。请提供货物信息，THG将给出准确的一站式报价。"),
-  "chinhngach.table_pending": tr("This rate card is being updated — contact THG for the current quote.", "Bảng giá này đang được cập nhật — liên hệ THG để nhận báo giá hiện hành.", "该价目表正在更新中 — 请联系THG获取最新报价。"),
+  "chinhngach.scope_notice": tr("Every figure below is indicative (~), not a fixed price, and excludes domestic trucking in Vietnam, customs clearance, and last-mile delivery in the US. Send us your shipment and TH Group will quote it exactly, all in.", "Toàn bộ mốc giá dưới đây chỉ là giá tạm tính (~), không phải giá chốt, và chưa bao gồm phí trucking nội địa VN, thủ tục hải quan và last-mile delivery tại Mỹ. Gửi thông tin lô hàng để TH Group báo giá chính xác, trọn gói.", "以下所有价格均为参考价（~），并非最终报价，且不含越南境内拖车、报关及美国末端派送费用。请提供货物信息，TH Group将给出准确的一站式报价。"),
+  "chinhngach.table_pending": tr("This rate card is being updated — contact TH Group for the current quote.", "Bảng giá này đang được cập nhật — liên hệ TH Group để nhận báo giá hiện hành.", "该价目表正在更新中 — 请联系TH Group获取最新报价。"),
   "chinhngach.approx_note": tr("~ Indicative only — confirmed per shipment", "~ Giá tạm tính — chốt theo từng lô hàng", "~ 仅为参考价 — 按每批货确认"),
 
   "chinhngach.tabs_label": tr("Formal customs sections", "Các mục chính ngạch", "正规报关栏目"),
@@ -51,7 +51,7 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.meta_validity": tr("Validity", "Hiệu lực giá", "价格有效期"),
 
   "chinhngach.cta_title": tr("Need an all-in quote for your shipment?", "Cần báo giá trọn gói cho lô hàng của bạn?", "需要按您货量的一站式报价？"),
-  "chinhngach.cta_desc": tr("Send us the route, volume and commodity — THG returns a door-to-door figure including trucking, customs and last-mile.", "Gửi tuyến, sản lượng và mặt hàng — THG báo lại con số door-to-door đã gồm trucking, hải quan và last-mile.", "告知航线、货量与品名 — THG将返回含拖车、报关及末端派送的门到门报价。"),
+  "chinhngach.cta_desc": tr("Send us the route, volume and commodity — TH Group returns a door-to-door figure including trucking, customs and last-mile.", "Gửi tuyến, sản lượng và mặt hàng — TH Group báo lại con số door-to-door đã gồm trucking, hải quan và last-mile.", "告知航线、货量与品名 — TH Group将返回含拖车、报关及末端派送的门到门报价。"),
   "chinhngach.cta_btn": tr("Request a quote", "Liên hệ báo giá", "联系报价"),
 
   "chinhngach.rate_view_rates": tr("Rates", "Bảng giá", "价目表"),
@@ -78,7 +78,7 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.guide_fcl_title": tr("FCL · Full container", "FCL · Nguyên container", "FCL · 整柜"),
   "chinhngach.guide_fcl_desc": tr("Pay per container size. Compare the total row, not each component added again.", "Tính theo kích thước container. So sánh dòng Tổng cước, không cộng lại các thành phần.", "按箱型计费。比较总价行，不要再次叠加各费用项。"),
   "chinhngach.guide_rule_label": tr("Quick rule:", "Quy tắc nhanh:", "快速规则："),
-  "chinhngach.guide_rule": tr("Under 10 CBM usually suits LCL; above 12 CBM, ask THG to compare FCL.", "Dưới 10 CBM thường hợp LCL; trên 12 CBM nên nhờ THG so sánh FCL.", "10 CBM以下通常适合LCL；12 CBM以上建议让THG比较FCL。"),
+  "chinhngach.guide_rule": tr("Under 10 CBM usually suits LCL; above 12 CBM, ask TH Group to compare FCL.", "Dưới 10 CBM thường hợp LCL; trên 12 CBM nên nhờ TH Group so sánh FCL.", "10 CBM以下通常适合LCL；12 CBM以上建议让TH Group比较FCL。"),
   "chinhngach.guide_read_title": tr("2 · Read each card in this order", "2 · Đọc mỗi bảng theo thứ tự này", "2 · 按此顺序阅读每张表"),
   "chinhngach.guide_step_1_title": tr("Route & service", "Tuyến & dịch vụ", "路线与服务"),
   "chinhngach.guide_step_1_desc": tr("Confirm origin, destination, carrier and transit time.", "Kiểm tra điểm đi, điểm đến, hãng vận chuyển và transit.", "确认起点、终点、承运商与运输时效。"),
@@ -113,5 +113,5 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.estimate_subtotal_note": tr("Indicative, not an all-in quote", "Tham khảo, chưa phải giá all-in", "仅供参考，并非全包报价"),
   "chinhngach.estimate_unavailable": tr("Enter a valid shipment or wait for the live rate card.", "Nhập thông tin hợp lệ hoặc chờ bảng giá được tải.", "请输入有效货件信息或等待费率加载。"),
   "chinhngach.estimate_note_label": tr("Not yet included:", "Chưa cộng:", "尚未计入："),
-  "chinhngach.estimate_note": tr("Vietnam trucking, US import clearance, duties, destination handling and last-mile. THG confirms these against the actual commodity and delivery address.", "Trucking nội địa VN, hải quan nhập Mỹ, thuế, phí đầu đích và last-mile. THG sẽ chốt theo mặt hàng và địa chỉ giao thực tế.", "越南境内拖车、美国进口清关、税费、目的港操作及末端派送；THG将按实际品名与送货地址确认。"),
+  "chinhngach.estimate_note": tr("Vietnam trucking, US import clearance, duties, destination handling and last-mile. TH Group confirms these against the actual commodity and delivery address.", "Trucking nội địa VN, hải quan nhập Mỹ, thuế, phí đầu đích và last-mile. TH Group sẽ chốt theo mặt hàng và địa chỉ giao thực tế.", "越南境内拖车、美国进口清关、税费、目的港操作及末端派送；TH Group将按实际品名与送货地址确认。"),
 };

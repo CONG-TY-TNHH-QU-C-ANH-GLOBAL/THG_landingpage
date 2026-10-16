@@ -141,7 +141,7 @@ const HeroSection = () => {
                 <source srcSet={globeImageWebp} type="image/webp" />
                 <img
                   src={globeImage}
-                  alt="THG Global Network"
+                  alt="TH Group Global Network"
                   className="globe-real-image"
                   width={1024}
                   height={1024}
