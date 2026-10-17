@@ -1,50 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Ship, Plane, FileCheck, FileSearch, FileText, ArrowLeft, ArrowRight } from "lucide-react";
+import { Ship, FileSearch, FileText, ArrowLeft, ArrowRight } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
-import { CmsRateTable, CmsMetaList } from "@/components/pricing/CmsRateTable";
 import { ChinhNgachDocsLookup } from "@/components/pricing/ChinhNgachDocsLookup";
 import { ChinhNgachTemplates } from "@/components/pricing/ChinhNgachTemplates";
 import { ChinhNgachQuotations } from "@/components/pricing/ChinhNgachQuotations";
 import { ChinhNgachRateGuide } from "@/components/pricing/ChinhNgachRateGuide";
+import { ChinhNgachRateSheet } from "@/components/pricing/ChinhNgachRateSheet";
 import { ChinhNgachRateWorkspace } from "@/components/pricing/ChinhNgachRateWorkspace";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
-
-/** Rate-card slugs seeded by CMS migration 0042. Every one is read through the
- *  same schema-driven renderer, so column changes made in the Rate Card Builder
- *  reach this page without a deploy. */
-const SLUGS = {
-    matsonLcl: "chinhNgachMatsonLcl",
-    matsonSurcharge: "chinhNgachMatsonSurcharge",
-    matsonFcl: "chinhNgachMatsonFcl",
-    seaLcl: "chinhNgachSeaLcl",
-    seaFcl: "chinhNgachSeaFcl",
-    air: "chinhNgachAir",
-    customs: "chinhNgachCustoms",
-    meta: "chinhNgachMeta",
-} as const;
-
-/** `excl_matson` is the pre-0050 blended exclusion note, kept here so the page
- *  still renders one while a database is mid-migration. 0050 blanks it and
- *  CmsMetaList drops blank values, so only the split pair survives afterwards. */
-const MATSON_META = ["matson_etd", "matson_cutoff", "matson_transit_port", "matson_transit_inland", "matson_transit_total", "cfs_haiphong", "cfs_hochiminh", "cfs_us", "excl_matson", "excl_matson_lcl", "excl_matson_fcl"] as const;
-/** The MATSON FCL card is a breakdown: Ocean Freight + FAF + MAF, then Total.
- *  Flat, the summary row is indistinguishable from the components it sums, so a
- *  reader can add it back into them. "Tổng cước" is accepted alongside "Total"
- *  so a later rename of the cell in the Rate Card Builder keeps the emphasis. */
-const FCL_TOTAL_ROW = { code: "charge", values: ["Total", "Tổng cước"] } as const;
-
-const SEA_META = ["sea_thuong_cutoff", "excl_sea_lcl", "excl_sea_fcl"] as const;
-const AIR_META = ["excl_air"] as const;
-const VALIDITY_META = ["validity"] as const;
 
 /** The source sheet (XKCN Hub v6.0) opens on three cards — rates, the export
  *  document lookup, and the paperwork templates. Only the rates were ported
@@ -192,50 +164,7 @@ const ChinhNgachPricingPage = () => {
                                 customs: t("chinhngach.customs_title"),
                                 customsHint: t("chinhngach.rate_lane_customs_hint"),
                             }}
-                            notice={
-                                <div className="rounded-xl border border-primary/30 bg-[#FFF8E7] p-4 sm:p-5">
-                                    <p className="text-[13px] leading-relaxed text-navy">{t("chinhngach.scope_notice")}</p>
-                                </div>
-                            }
-                            rates={{
-                                matson: (
-                                    <div>
-                                        <SectionHeading icon={Ship} title={t("chinhngach.matson_title")} subtitle={t("chinhngach.matson_subtitle")} />
-                                        <div className="space-y-4">
-                                            <CmsMetaList slug={SLUGS.meta} keys={MATSON_META} />
-                                            <CmsRateTable slug={SLUGS.matsonLcl} approx />
-                                            <CmsRateTable slug={SLUGS.matsonSurcharge} approx />
-                                            <CmsRateTable slug={SLUGS.matsonFcl} approx totalRow={FCL_TOTAL_ROW} />
-                                            <CmsMetaList slug={SLUGS.meta} keys={VALIDITY_META} />
-                                        </div>
-                                    </div>
-                                ),
-                                sea: (
-                                    <div>
-                                        <SectionHeading icon={Ship} title={t("chinhngach.sea_title")} subtitle={t("chinhngach.sea_subtitle")} />
-                                        <div className="space-y-4">
-                                            <CmsRateTable slug={SLUGS.seaLcl} approx />
-                                            <CmsRateTable slug={SLUGS.seaFcl} approx />
-                                            <CmsMetaList slug={SLUGS.meta} keys={SEA_META} />
-                                        </div>
-                                    </div>
-                                ),
-                                air: (
-                                    <div>
-                                        <SectionHeading icon={Plane} title={t("chinhngach.air_title")} subtitle={t("chinhngach.air_subtitle")} />
-                                        <div className="space-y-4">
-                                            <CmsRateTable slug={SLUGS.air} approx />
-                                            <CmsMetaList slug={SLUGS.meta} keys={AIR_META} />
-                                        </div>
-                                    </div>
-                                ),
-                                customs: (
-                                    <div>
-                                        <SectionHeading icon={FileCheck} title={t("chinhngach.customs_title")} subtitle={t("chinhngach.customs_subtitle")} />
-                                        <CmsRateTable slug={SLUGS.customs} approx />
-                                    </div>
-                                ),
-                            }}
+                            sheet={<ChinhNgachRateSheet />}
                             guide={(goToEstimate) => <ChinhNgachRateGuide onJumpToQuotation={goToEstimate} />}
                             estimator={<ChinhNgachQuotations />}
                         />
