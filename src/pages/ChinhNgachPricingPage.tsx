@@ -18,11 +18,14 @@ import "@/components/pricing/chinhNgachSheet.css";
  *  three-card picker, and one pane per card. Markup and class names follow the
  *  sheet so its own stylesheet (chinhNgachSheet.css) renders it unchanged.
  *
+ *  The rates card comes first, ahead of the sheet's order: rates are what this
+ *  URL is for, and the pane it opens on with no hash.
+ *
  *  The picked card lives in the URL hash so a pane can be linked to and
- *  survives a reload; no hash is the rates pane, which is what this URL is for. */
+ *  survives a reload. */
 const CARDS = [
-    { id: "tra-cuu", icon: "📋", titleKey: "chinhngach.card_lookup_title", subKey: "chinhngach.card_lookup_sub" },
     { id: "bang-gia", icon: "💰", titleKey: "chinhngach.card_rates_title", subKey: "chinhngach.card_rates_sub" },
+    { id: "tra-cuu", icon: "📋", titleKey: "chinhngach.card_lookup_title", subKey: "chinhngach.card_lookup_sub" },
     { id: "mau-giay-to", icon: "📄", titleKey: "chinhngach.card_templates_title", subKey: "chinhngach.card_templates_sub" },
 ] as const;
 
