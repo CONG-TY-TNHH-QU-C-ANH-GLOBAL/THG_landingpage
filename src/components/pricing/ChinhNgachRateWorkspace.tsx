@@ -41,12 +41,16 @@ export function ChinhNgachRateWorkspace({
   copy: copyOverride,
   rates,
   notice,
+  sheet,
   guide,
   estimator,
 }: Readonly<{
   copy?: Partial<FormalRateWorkspaceCopy>;
   rates?: Partial<Record<FormalRateLane, ReactNode>>;
   notice?: ReactNode;
+  /** The whole rate view in one piece — the source sheet's single scroll with
+   *  its MATSON / Sea / Air strips. When given, it replaces the lane switcher. */
+  sheet?: ReactNode;
   /** A function form receives a callback that switches to the estimate
    *  view, so the guide's cross-reference can be a real control. */
   guide?: ReactNode | ((goToEstimate: () => void) => ReactNode);
@@ -98,6 +102,7 @@ export function ChinhNgachRateWorkspace({
 
       {view === "rates" && (
         <div role="tabpanel" aria-label={copy.rateTab} id="formal-panel-rates" aria-labelledby="formal-tab-rates" className="pt-5">
+          {sheet ?? (<>
           {notice}
           <p className="mb-2 mt-5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground">
             {copy.laneLabel}
@@ -135,6 +140,7 @@ export function ChinhNgachRateWorkspace({
           <div role="region" aria-label={lanes.find((item) => item.id === lane)?.label} className="mt-5">
             {rates?.[lane] ?? <p className="rounded-xl bg-white p-5 text-sm text-muted-foreground">{lanes.find((item) => item.id === lane)?.label}</p>}
           </div>
+          </>)}
         </div>
       )}
 

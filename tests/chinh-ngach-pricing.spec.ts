@@ -87,13 +87,18 @@ test.describe("Formal pricing workspace", () => {
     await page.goto("/vi/chinh-ngach-pricing");
   });
 
-  test("switches compact rate lanes and exposes the guide and worked quotations", async ({ page }) => {
+  test("lays rates out as the source sheet and exposes the guide and worked quotations", async ({ page }) => {
     await expect(page.getByRole("tab", { name: "Hướng dẫn đọc bảng giá" })).toBeVisible();
-    await expect(page.getByRole("region", { name: "MATSON — Line hỏa tốc" })).toBeVisible();
 
-    await page.getByRole("tab", { name: /Sea chính ngạch thường/i }).click();
-    await expect(page.getByRole("region", { name: "Sea chính ngạch thường" })).toContainText("Sea thường — LCL");
-    await expect(page.getByRole("region", { name: "MATSON — Line hỏa tốc" })).toHaveCount(0);
+    // Rates follow the source sheet: one scroll with MATSON, Sea and Air strips,
+    // figures read from the CMS rate cards.
+    const rates = page.locator("#formal-panel-rates");
+    await expect(rates.getByText("🚢 MATSON — Line Hỏa Tốc")).toBeVisible();
+    await expect(rates.getByText("🌊 Line Sea Chính Ngạch Thường")).toBeVisible();
+    await expect(rates.getByText("✈️ Air Chính Ngạch")).toBeVisible();
+    await expect(rates.getByText("~$155", { exact: true })).toBeVisible();
+    await expect(rates.getByRole("row", { name: /Tổng cước/ })).toContainText("~$11,340");
+    await expect(rates.getByText("~$62", { exact: true })).toBeVisible();
 
     // Reading guide follows the source sheet: numbered banners, LCL vs FCL,
     // and a cross-reference that switches to the estimate view in place.
@@ -115,6 +120,10 @@ test.describe("Formal pricing workspace", () => {
 
   test("fits the workspace on a 375px viewport", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
+    // The rate sheet's wide tables must scroll inside their cards on a phone.
+    await expect(page.locator("#formal-panel-rates").getByText("~$155", { exact: true })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+
     await page.getByRole("tab", { name: "Dự toán chi phí" }).click();
     // The cost table is wider than a phone; it must scroll inside its own box,
     // never push the page sideways.
