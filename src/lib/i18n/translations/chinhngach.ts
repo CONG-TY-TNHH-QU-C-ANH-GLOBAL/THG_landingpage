@@ -114,4 +114,24 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.estimate_unavailable": tr("Enter a valid shipment or wait for the live rate card.", "Nhập thông tin hợp lệ hoặc chờ bảng giá được tải.", "请输入有效货件信息或等待费率加载。"),
   "chinhngach.estimate_note_label": tr("Not yet included:", "Chưa cộng:", "尚未计入："),
   "chinhngach.estimate_note": tr("Vietnam trucking, US import clearance, duties, destination handling and last-mile. TH Group confirms these against the actual commodity and delivery address.", "Trucking nội địa VN, hải quan nhập Mỹ, thuế, phí đầu đích và last-mile. TH Group sẽ chốt theo mặt hàng và địa chỉ giao thực tế.", "越南境内拖车、美国进口清关、税费、目的港操作及末端派送；TH Group将按实际品名与送货地址确认。"),
+
+  // Page chrome of the XKCN Hub v6.0 sheet: breadcrumb, cream hero, card picker.
+  // The Vietnamese strings are the sheet's own wording.
+  "chinhngach.bc_services": tr("Services", "Dịch vụ", "服务"),
+  "chinhngach.bc_current": tr("Formal customs export", "Xuất khẩu chính ngạch", "正规报关出口"),
+  "chinhngach.hub_eyebrow": tr("TH Group Knowledge Hub · Import–export", "TH Group Knowledge Hub · Nghiệp vụ XNK", "TH Group 知识中心 · 进出口业务"),
+  "chinhngach.hub_title_lead": tr("Formal customs", "Xuất khẩu", "正规报关"),
+  "chinhngach.hub_title_gold": tr("export", "chính ngạch", "出口"),
+  "chinhngach.hub_subtitle": tr("Document lookup, rates and paperwork templates for Vietnamese businesses exporting to the US.", "Tra cứu chứng từ, bảng giá và mẫu giấy tờ dành cho doanh nghiệp xuất khẩu Việt Nam sang Mỹ.", "为向美国出口的越南企业提供单证查询、价目表与单证模板。"),
+  "chinhngach.step_label": tr("Choose what you need", "Chọn nội dung bạn cần", "选择您需要的内容"),
+  "chinhngach.card_lookup_title": tr("Export document lookup", "Tra cứu giấy tờ xuất khẩu", "出口单证查询"),
+  "chinhngach.card_lookup_sub": tr("30 commodities · 75+ document types by industry", "30 mặt hàng · 75+ loại chứng từ phân theo ngành hàng", "30类商品 · 75+种单证，按行业分类"),
+  "chinhngach.card_rates_title": tr("Rates", "Bảng giá", "价目表"),
+  "chinhngach.card_rates_sub": tr("Formal customs freight VN → US, by route and service", "Cước phí vận chuyển chính ngạch VN → Mỹ, theo từng tuyến và loại dịch vụ", "越南→美国正规报关运费，按航线与服务分类"),
+  "chinhngach.card_templates_title": tr("Paperwork templates", "Mẫu giấy tờ", "单证模板"),
+  "chinhngach.card_templates_sub": tr("Download Commercial Invoice, Packing List and TH Group's standard document templates", "Tải về Commercial Invoice, Packing List và các mẫu chứng từ chuẩn TH Group", "下载商业发票、装箱单及TH Group标准单证模板"),
+  "chinhngach.rate_views_label": tr("Rate views", "Các mục bảng giá", "价目表栏目"),
+  "chinhngach.rate_view_rates_tab": tr("🚢 Rates", "🚢 Bảng giá", "🚢 价目表"),
+  "chinhngach.rate_view_guide_tab": tr("📖 How to read rates", "📖 Hướng dẫn đọc bảng giá", "📖 费率表阅读指南"),
+  "chinhngach.rate_view_estimate_tab": tr("📋 Cost estimate", "📋 Dự toán chi phí", "📋 费用估算"),
 };

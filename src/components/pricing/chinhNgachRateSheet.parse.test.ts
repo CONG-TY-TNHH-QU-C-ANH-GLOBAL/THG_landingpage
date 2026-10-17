@@ -100,4 +100,33 @@ describe("chinh ngach rate sheet parsers", () => {
         expect(clx?.rows[1].total).toBe(true);
         expect(clx?.transit).toBe("25–26 ngày");
     });
+
+    // CMS migration 0060 rewords the meta to the v14 sheet's own copy. These
+    // pin that each reworded value reads back as the exact text the sheet prints.
+    it("reads the sheet-worded meta (CMS 0060) as the sheet prints it", () => {
+        expect(parseTransit("Long Beach → Door (nội địa Mỹ): 6–8 ngày (Rail / Truck nội địa · Bao gồm thời gian chờ)")).toEqual({
+            label: "Long Beach → Door (nội địa Mỹ)", value: "6–8", unit: "ngày", sub: "Rail / Truck nội địa · Bao gồm thời gian chờ" });
+        expect(parseTransit("HCM → Door US (tổng): 25–26 ngày (Sea + vận chuyển nội địa Mỹ kết hợp)")).toEqual({
+            label: "HCM → Door US (tổng)", value: "25–26", unit: "ngày", sub: "Sea + vận chuyển nội địa Mỹ kết hợp" });
+        expect(
+            parseCutoffs("T2 12:00 đặt booking · T2 16:00 nộp CDS (Khai báo HQ) · T3 12:00 nhận hàng tại kho CFS · T3 16:00 AMS & ISF cutoff · T5 ETD (tàu khởi hành)")
+                .map((c) => `${c.when} — ${c.what}`),
+        ).toEqual([
+            "Thứ 2 12:00 — Đặt booking",
+            "Thứ 2 16:00 — Nộp CDS (Khai báo HQ)",
+            "Thứ 3 12:00 — Nhận hàng tại kho CFS",
+            "Thứ 3 16:00 — AMS & ISF cutoff",
+            "Thứ 5 — ETD (tàu khởi hành)",
+        ]);
+        expect(parseCutoffBar("FCL: ETD − 2 ngày · LCL: ETD − 3 ngày · Tàu chạy: 2–3 chuyến/tuần")).toEqual([
+            { label: "FCL:", value: "ETD − 2 ngày" },
+            { label: "LCL:", value: "ETD − 3 ngày" },
+            { label: "Tàu chạy:", value: "2–3 chuyến/tuần" },
+        ]);
+        expect(exclusion("Chưa bao gồm: trucking nội địa VN, thủ tục hải quan VN & US, door delivery tại Mỹ."))
+            .toBe("Chưa bao gồm: trucking nội địa VN, thủ tục hải quan VN & US, door delivery tại Mỹ.");
+        expect(parseAirSurcharges("Chưa bao gồm: Handling (~$0.022/CW, min ~$22/lô), AWB fee (~$5.5/set), AMS (~$11/MAWB cộng ~$11/HAWB), trucking ra sân bay, hải quan nhập Mỹ, door delivery tại Mỹ").rest)
+            .toEqual(["trucking ra sân bay", "hải quan nhập Mỹ", "door delivery tại Mỹ"]);
+        expect(splitTail("ISF Filing Fee (nếu có)")).toEqual({ main: "ISF Filing Fee", tail: "(nếu có)" });
+    });
 });

@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Ship, FileSearch, FileText, ArrowLeft, ArrowRight } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 import ContactSection from "@/components/ContactSection";
-import ScrollReveal from "@/components/ScrollReveal";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdBreadcrumb } from "@/components/seo/JsonLd";
 import { ChinhNgachDocsLookup } from "@/components/pricing/ChinhNgachDocsLookup";
@@ -12,76 +10,69 @@ import { ChinhNgachTemplates } from "@/components/pricing/ChinhNgachTemplates";
 import { ChinhNgachQuotations } from "@/components/pricing/ChinhNgachQuotations";
 import { ChinhNgachRateGuide } from "@/components/pricing/ChinhNgachRateGuide";
 import { ChinhNgachRateSheet } from "@/components/pricing/ChinhNgachRateSheet";
-import { ChinhNgachRateWorkspace } from "@/components/pricing/ChinhNgachRateWorkspace";
-import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
-import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
+import "@/components/pricing/chinhNgachSheet.css";
 
-/** The source sheet (XKCN Hub v6.0) opens on three cards — rates, the export
- *  document lookup, and the paperwork templates. Only the rates were ported
- *  originally; these tabs bring the other two onto the same page rather than
- *  scattering them across three URLs, which is how the sheet reads.
+/** The page is the XKCN Hub v6.0 sheet (thg_xkcn_v14.html): a cream hero, a
+ *  three-card picker, and one pane per card. Markup and class names follow the
+ *  sheet so its own stylesheet (chinhNgachSheet.css) renders it unchanged.
  *
- *  Tab state lives in the URL hash so a tab can be linked to and survives a
- *  reload. A plain useState would send every shared link back to the rates. */
-const TABS = [
-    { id: "bang-gia", icon: Ship, labelKey: "chinhngach.tab_rates" },
-    { id: "tra-cuu", icon: FileSearch, labelKey: "chinhngach.tab_lookup" },
-    { id: "mau-giay-to", icon: FileText, labelKey: "chinhngach.tab_templates" },
+ *  The picked card lives in the URL hash so a pane can be linked to and
+ *  survives a reload; no hash is the rates pane, which is what this URL is for. */
+const CARDS = [
+    { id: "tra-cuu", icon: "📋", titleKey: "chinhngach.card_lookup_title", subKey: "chinhngach.card_lookup_sub" },
+    { id: "bang-gia", icon: "💰", titleKey: "chinhngach.card_rates_title", subKey: "chinhngach.card_rates_sub" },
+    { id: "mau-giay-to", icon: "📄", titleKey: "chinhngach.card_templates_title", subKey: "chinhngach.card_templates_sub" },
 ] as const;
 
-type TabId = (typeof TABS)[number]["id"];
+type PaneId = (typeof CARDS)[number]["id"];
+type RateView = "banggia" | "huongdan" | "quotation";
 
-function isTabId(value: string): value is TabId {
-    return TABS.some((tab) => tab.id === value);
+const RATE_VIEWS: readonly { id: RateView; labelKey: string }[] = [
+    { id: "banggia", labelKey: "chinhngach.rate_view_rates_tab" },
+    { id: "huongdan", labelKey: "chinhngach.rate_view_guide_tab" },
+    { id: "quotation", labelKey: "chinhngach.rate_view_estimate_tab" },
+];
+
+function isPaneId(value: string): value is PaneId {
+    return CARDS.some((card) => card.id === value);
 }
 
-function SectionHeading({ icon: Icon, title, subtitle }: Readonly<{
-    icon: typeof Ship; title: string; subtitle?: string;
-}>) {
-    return (
-        <div className="flex items-start gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
-            </div>
-            <div>
-                <h2 className="text-xl sm:text-2xl font-black text-navy">{title}</h2>
-                {subtitle && <p className="text-[13px] text-muted-foreground mt-0.5">{subtitle}</p>}
-            </div>
-        </div>
-    );
-}
+const paneFromHash = (): PaneId => {
+    const hash = typeof window === "undefined" ? "" : window.location.hash.replace(/^#/, "");
+    return isPaneId(hash) ? hash : "bang-gia";
+};
 
 const ChinhNgachPricingPage = () => {
     const { t, language } = useI18n();
-    const [tab, setTab] = useState<TabId>(() => {
-        const fromHash = typeof window === "undefined" ? "" : window.location.hash.replace(/^#/, "");
-        return isTabId(fromHash) ? fromHash : "bang-gia";
-    });
+    const [pane, setPane] = useState<PaneId>(paneFromHash);
+    const [rateView, setRateView] = useState<RateView>("banggia");
+    const gridRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         trackEvent("view_pricing", { pricing_type: "formal_customs", locale: language });
     }, [language]);
 
-    // Back/forward should move between tabs, since selecting one writes history.
+    // Back/forward move between panes, since picking a card writes history.
     useEffect(() => {
-        const onHash = () => {
-            const next = window.location.hash.replace(/^#/, "");
-            setTab(isTabId(next) ? next : "bang-gia");
-        };
+        const onHash = () => setPane(paneFromHash());
         window.addEventListener("hashchange", onHash);
         return () => window.removeEventListener("hashchange", onHash);
     }, []);
 
-    function selectTab(next: TabId) {
-        setTab(next);
+    function selectCard(next: PaneId) {
+        setPane(next);
+        // The sheet resets the rates pane to its first view whenever you leave it.
+        if (next !== "bang-gia") setRateView("banggia");
         window.history.pushState(null, "", next === "bang-gia" ? window.location.pathname : `#${next}`);
         trackEvent("view_pricing", { pricing_type: "formal_customs", tab: next, locale: language });
+        const grid = gridRef.current;
+        if (grid) window.scrollTo({ top: grid.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
     }
 
     return (
-        <div className="min-h-screen bg-cream">
+        <>
             <SeoHead
                 title={t("seo.chinhngach_pricing_title")}
                 description={t("seo.chinhngach_pricing_desc")}
@@ -95,123 +86,116 @@ const ChinhNgachPricingPage = () => {
             />
             <Navbar variant="darkHero" />
 
-            {/* ══════════ HERO ══════════ */}
-            <section className="pt-28 pb-10 md:pt-36 md:pb-14 bg-gradient-to-b from-navy via-navy/95 to-navy/85 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl" />
-                    <div className="absolute bottom-10 right-10 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-                </div>
-                <div className="container mx-auto px-4 text-center relative z-10">
-                    <ScrollReveal>
-                        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
-                            <Ship className="w-4 h-4 text-primary" aria-hidden="true" />
-                            <span className="text-sm text-white/80">{t("chinhngach.badge")}</span>
-                        </div>
-                        <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
-                            {t("chinhngach.title")}
+            {/* Navbar and footer stay outside .xkcn: the sheet's stylesheet resets
+                every descendant, which would override their Tailwind utilities. */}
+            <div className="xkcn">
+                {/* The site navbar is fixed and transparent at the top; this navy band
+                    sits under it where the sheet has its own navy bar. */}
+                <div className="xkcn-navspace" aria-hidden="true" />
+
+                <nav className="bc" aria-label="Breadcrumb">
+                    <Link to={`/${language}`}>thgfulfill.com</Link><span className="sep">›</span>
+                    <span>{t("chinhngach.bc_services")}</span><span className="sep">›</span>
+                    <span className="bc-current">{t("chinhngach.bc_current")}</span>
+                </nav>
+
+                <div className="page-outer">
+                    <div className="hero">
+                        <div className="hero-eyebrow">{t("chinhngach.hub_eyebrow")}</div>
+                        <h1>
+                            {t("chinhngach.hub_title_lead")} <span className="gold">{t("chinhngach.hub_title_gold")}</span>
                         </h1>
-                        <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                            {t("chinhngach.subtitle")}
-                        </p>
-                    </ScrollReveal>
+                        <p>{t("chinhngach.hub_subtitle")}</p>
+                    </div>
+
+                    <div className="page-inner">
+                        <div className="step-label">{t("chinhngach.step_label")}</div>
+
+                        <div className="card-grid" ref={gridRef} role="tablist" aria-label={t("chinhngach.tabs_label")}>
+                            {CARDS.map((card) => (
+                                <button
+                                    key={card.id}
+                                    type="button"
+                                    role="tab"
+                                    id={`tab-${card.id}`}
+                                    aria-selected={pane === card.id}
+                                    aria-controls={`panel-${card.id}`}
+                                    className={`sel-card${pane === card.id ? " active" : ""}`}
+                                    onClick={() => selectCard(card.id)}
+                                >
+                                    <div className="sel-icon" aria-hidden="true">{card.icon}</div>
+                                    <div className="sel-title">{t(card.titleKey)}</div>
+                                    <div className="sel-sub">{t(card.subKey)}</div>
+                                    <span className="sel-arrow" aria-hidden="true">→</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="content-area">
+                            {pane === "tra-cuu" && (
+                                <div className="sub-pane active" role="tabpanel" id="panel-tra-cuu" aria-labelledby="tab-tra-cuu">
+                                    <ChinhNgachDocsLookup />
+                                </div>
+                            )}
+
+                            {pane === "bang-gia" && (
+                                <div className="sub-pane active" role="tabpanel" id="panel-bang-gia" aria-labelledby="tab-bang-gia">
+                                    <div className="phead">
+                                        <div className="phead-tag">🚢 Ship chính ngạch VN → US</div>
+                                        <h2>Bảng Giá Vận Chuyển Chính Ngạch</h2>
+                                        <p>Cước Sea &amp; Air · Đầy đủ thủ tục · Minh bạch từng khoản phí</p>
+                                    </div>
+
+                                    <div className="tab-row" role="tablist" aria-label={t("chinhngach.rate_views_label")} style={{ marginBottom: 20 }}>
+                                        {RATE_VIEWS.map(({ id, labelKey }) => (
+                                            <button
+                                                key={id}
+                                                type="button"
+                                                role="tab"
+                                                id={`formal-tab-${id}`}
+                                                aria-selected={rateView === id}
+                                                aria-controls={`formal-panel-${id}`}
+                                                className={`ttab${rateView === id ? " on" : ""}`}
+                                                onClick={() => setRateView(id)}
+                                            >
+                                                {t(labelKey)}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {rateView === "banggia" && (
+                                        <div className="fp on" role="tabpanel" id="formal-panel-banggia" aria-labelledby="formal-tab-banggia">
+                                            <ChinhNgachRateSheet />
+                                        </div>
+                                    )}
+                                    {rateView === "huongdan" && (
+                                        <div className="fp on" role="tabpanel" id="formal-panel-huongdan" aria-labelledby="formal-tab-huongdan">
+                                            <ChinhNgachRateGuide
+                                                onShowRates={() => setRateView("banggia")}
+                                                onJumpToQuotation={() => setRateView("quotation")}
+                                            />
+                                        </div>
+                                    )}
+                                    {rateView === "quotation" && (
+                                        <div className="fp on" role="tabpanel" id="formal-panel-quotation" aria-labelledby="formal-tab-quotation">
+                                            <ChinhNgachQuotations />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {pane === "mau-giay-to" && (
+                                <div className="sub-pane active" role="tabpanel" id="panel-mau-giay-to" aria-labelledby="tab-mau-giay-to">
+                                    <ChinhNgachTemplates />
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </section>
-
-            <main className="container mx-auto px-4 py-8 sm:py-10 max-w-5xl">
-                <Link
-                    to="/international-pricing"
-                    className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-primary transition-colors mb-6"
-                >
-                    <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t("chinhngach.back_intl")}
-                </Link>
-
-                <div role="tablist" aria-label={t("chinhngach.tabs_label")} className="flex flex-wrap gap-2 mb-6">
-                    {TABS.map(({ id, icon: Icon, labelKey }) => (
-                        <button
-                            key={id}
-                            type="button"
-                            role="tab"
-                            id={`tab-${id}`}
-                            aria-selected={tab === id}
-                            aria-controls={`panel-${id}`}
-                            onClick={() => selectTab(id)}
-                            className={`inline-flex items-center gap-2 text-[13.5px] font-semibold px-4 py-2.5 rounded-xl border transition-colors ${
-                                tab === id
-                                    ? "bg-navy text-white border-navy"
-                                    : "bg-white text-foreground/70 border-[var(--pricing-border)] hover:bg-[#FFFBF0] hover:text-navy"
-                            }`}
-                        >
-                            <Icon className={`w-4 h-4 ${tab === id ? "text-primary" : "text-muted-foreground"}`} aria-hidden="true" />
-                            {t(labelKey)}
-                        </button>
-                    ))}
-                </div>
-
-                {tab === "bang-gia" && (
-                    <div role="tabpanel" id="panel-bang-gia" aria-labelledby="tab-bang-gia" className="mb-12">
-                        <ChinhNgachRateWorkspace
-                            copy={{
-                                rateTab: t("chinhngach.rate_view_rates"),
-                                guideTab: t("chinhngach.rate_view_guide"),
-                                estimateTab: t("chinhngach.rate_view_estimate"),
-                                laneLabel: t("chinhngach.rate_lane_label"),
-                                matson: t("chinhngach.matson_title"),
-                                matsonHint: t("chinhngach.rate_lane_matson_hint"),
-                                sea: t("chinhngach.sea_title"),
-                                seaHint: t("chinhngach.rate_lane_sea_hint"),
-                                air: t("chinhngach.air_title"),
-                                airHint: t("chinhngach.rate_lane_air_hint"),
-                                customs: t("chinhngach.customs_title"),
-                                customsHint: t("chinhngach.rate_lane_customs_hint"),
-                            }}
-                            sheet={<ChinhNgachRateSheet />}
-                            guide={(goToEstimate) => <ChinhNgachRateGuide onJumpToQuotation={goToEstimate} />}
-                            estimator={<ChinhNgachQuotations />}
-                        />
-                    </div>
-                )}
-
-                {tab === "tra-cuu" && (
-                    <div role="tabpanel" id="panel-tra-cuu" aria-labelledby="tab-tra-cuu" className="mb-12">
-                        <SectionHeading
-                            icon={FileSearch}
-                            title={t("chinhngach.lookup_title")}
-                            subtitle={t("chinhngach.lookup_subtitle")}
-                        />
-                        <ChinhNgachDocsLookup />
-                    </div>
-                )}
-
-                {tab === "mau-giay-to" && (
-                    <div role="tabpanel" id="panel-mau-giay-to" aria-labelledby="tab-mau-giay-to" className="mb-12">
-                        <SectionHeading
-                            icon={FileText}
-                            title={t("chinhngach.templates_title")}
-                            subtitle={t("chinhngach.templates_subtitle")}
-                        />
-                        <ChinhNgachTemplates />
-                    </div>
-                )}
-
-                {/* ══════════ CTA ══════════ */}
-                <ScrollReveal>
-                    <div className="bg-gradient-to-br from-navy to-navy/85 rounded-2xl p-8 text-center">
-                        <h2 className="text-white text-xl sm:text-2xl font-black mb-2">{t("chinhngach.cta_title")}</h2>
-                        <p className="text-white/70 text-[14px] mb-6 max-w-xl mx-auto">{t("chinhngach.cta_desc")}</p>
-                        <LeadFormDialog
-                            sourcePage="/chinh-ngach-pricing#cta"
-                            trigger={
-                                <Button className="bg-primary hover:bg-gold-dark text-white rounded-full px-8 py-6 text-base font-bold shadow-lg transition-transform hover:-translate-y-1">
-                                    {t("chinhngach.cta_btn")} <ArrowRight className="w-4 h-4 ml-1" aria-hidden="true" />
-                                </Button>
-                            }
-                        />
-                    </div>
-                </ScrollReveal>
-            </main>
+            </div>
 
             <ContactSection />
-        </div>
+        </>
     );
 };
 
