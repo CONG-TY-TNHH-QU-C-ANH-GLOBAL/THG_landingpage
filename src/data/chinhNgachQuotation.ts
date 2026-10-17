@@ -61,6 +61,37 @@ export const QUOTATION_HEAD = {tag: "📋 Quotation / Ước tính chi phí", ti
 
 export const LANES = [{kind: "vn", head: "🇻🇳 Từ Việt Nam (HPH)"}, {kind: "cn", head: "🇨🇳 Từ Trung Quốc"}] as const;
 
+/** Shared by several quotations: Custom Entry Fee … Courier & Messenger. */
+const SHARED_ROWS_1: readonly CostRow[] = [
+    {kind: "item", cells: [{txt: "Custom Entry Fee", kind: "text"}, {txt: "$95", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "~$95", kind: "priceS", cr: true}, {txt: "Incl. 3 HTS lines · +$4/add. line · FDA +$30/line", kind: "text"}]},
+    {kind: "item", cells: [{txt: "ISF Filing", kind: "text"}, {txt: "$35", kind: "text", cr: true, mono: true}, {txt: "/ BILL", kind: "text"}, {txt: "~$35", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
+    {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Single Bond", kind: "text"}, {txt: "$6 / $1,000 cargo+duty", kind: "text", cr: true, mono: true}, {txt: "min $150", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu importer chưa có annual bond", kind: "text"}]},
+    {kind: "item", cells: [{txt: "ISF Bond Fee", kind: "text"}, {txt: "$85", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu dùng single bond", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Foreign Tax ID Apply", kind: "text"}, {txt: "$100", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$100", kind: "priceS", cr: true}, {txt: "Nếu shipper chưa có U.S. Tax ID", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Import Handling", kind: "text"}, {txt: "$65", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$65", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Courier & Messenger", kind: "text"}, {txt: "$25", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$25", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
+];
+
+/** Shared by several quotations: Chassis Rental … Exam / Storage / Congestion. */
+const SHARED_ROWS_2: readonly CostRow[] = [
+    {kind: "item", cells: [{txt: "Chassis Rental", kind: "text"}, {txt: "$45", kind: "text", cr: true, mono: true}, {txt: "/ DAY / CONT", kind: "text"}, {txt: "~$90", kind: "priceS", cr: true}, {txt: "Min 2 days", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Pre-pull", kind: "text"}, {txt: "$150", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu cần kéo cont sớm", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Yard Storage", kind: "text"}, {txt: "$50", kind: "text", cr: true, mono: true}, {txt: "/ DAY", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Chassis Split Fee", kind: "text"}, {txt: "$85", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Overweight", kind: "text"}, {txt: "$350", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "20DC: 37,000–44,000 lbs", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Terminal Destination Charge", kind: "text"}, {txt: "AT COST", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if applicable", kind: "text"}]},
+    {kind: "item", cells: [{txt: "Exam / Storage / Congestion", kind: "text"}, {txt: "AT COST", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Theo thực tế", kind: "text", cr: true, dim: true}, {txt: "Base on shipping line's charge", kind: "text"}]},
+];
+
+/** Shared by several quotations: 4 · THUẾ & PHÍ HẢI QUAN … Subtotal — Thuế & hải quan. */
+const SHARED_ROWS_3: readonly CostRow[] = [
+    {kind: "group", cells: [{txt: "4 · THUẾ & PHÍ HẢI QUAN", kind: "text", span: 5}]},
+    {kind: "item", cells: [{txt: "Customs Duty", kind: "text"}, {txt: "AT COST / TBC", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Chưa bao gồm", kind: "text", cr: true, dim: true}, {txt: "MPF 0.3464% (min $33.58/max $651.50) · HMF 0.125% of invoice", kind: "text"}]},
+    {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
+    {kind: "sub", cells: [{txt: "Subtotal — Thuế & hải quan", kind: "text", span: 3}, {txt: "Xem ghi chú", kind: "text", cr: true, dim: true}, {txt: "", kind: "text"}]},
+];
+
 export const QUOTATIONS: readonly Quotation[] = [
     {
         id: "40",
@@ -150,27 +181,11 @@ export const QUOTATIONS: readonly Quotation[] = [
             {kind: "item", cells: [{txt: "SJJ Surcharge", kind: "text"}, {txt: "$305", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "~$305", kind: "priceS", cr: true}, {txt: "Validity 31-Aug-2026", kind: "text"}]},
             {kind: "sub", cells: [{txt: "Subtotal — Cước quốc tế", kind: "text", span: 3}, {txt: "~$7,655", kind: "price", cr: true}, {txt: "", kind: "text"}]},
             {kind: "group", cells: [{txt: "3 · PHÍ ĐẦU NHẬP MỸ (DDP Charges)", kind: "text", span: 5}]},
-            {kind: "item", cells: [{txt: "Custom Entry Fee", kind: "text"}, {txt: "$95", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "~$95", kind: "priceS", cr: true}, {txt: "Incl. 3 HTS lines · +$4/add. line · FDA +$30/line", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ISF Filing", kind: "text"}, {txt: "$35", kind: "text", cr: true, mono: true}, {txt: "/ BILL", kind: "text"}, {txt: "~$35", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Single Bond", kind: "text"}, {txt: "$6 / $1,000 cargo+duty", kind: "text", cr: true, mono: true}, {txt: "min $150", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu importer chưa có annual bond", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ISF Bond Fee", kind: "text"}, {txt: "$85", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu dùng single bond", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Foreign Tax ID Apply", kind: "text"}, {txt: "$100", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$100", kind: "priceS", cr: true}, {txt: "Nếu shipper chưa có U.S. Tax ID", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Import Handling", kind: "text"}, {txt: "$65", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$65", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Courier & Messenger", kind: "text"}, {txt: "$25", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$25", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
+            ...SHARED_ROWS_1,
             {kind: "item", cells: [{txt: "Trucking (Dock-to-dock · LAX → 2425 S Shaver St, Pasadena TX)", kind: "text"}, {txt: "$10,150", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "~$10,150", kind: "priceS", cr: true}, {txt: "Legal weight · non-Haz · 1h free load/unload · $85/h sau · layover >4h: $550/day", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Chassis Rental", kind: "text"}, {txt: "$45", kind: "text", cr: true, mono: true}, {txt: "/ DAY / CONT", kind: "text"}, {txt: "~$90", kind: "priceS", cr: true}, {txt: "Min 2 days", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Pre-pull", kind: "text"}, {txt: "$150", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu cần kéo cont sớm", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Yard Storage", kind: "text"}, {txt: "$50", kind: "text", cr: true, mono: true}, {txt: "/ DAY", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Chassis Split Fee", kind: "text"}, {txt: "$85", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Overweight", kind: "text"}, {txt: "$350", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "20DC: 37,000–44,000 lbs", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Terminal Destination Charge", kind: "text"}, {txt: "AT COST", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if applicable", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Exam / Storage / Congestion", kind: "text"}, {txt: "AT COST", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Theo thực tế", kind: "text", cr: true, dim: true}, {txt: "Base on shipping line's charge", kind: "text"}]},
+            ...SHARED_ROWS_2,
             {kind: "sub", cells: [{txt: "Subtotal — Phí đầu nhập Mỹ", kind: "text", span: 3}, {txt: "~$10,560", kind: "price", cr: true}, {txt: "excl. ADF, bond, if-applicable items", kind: "note"}]},
-            {kind: "group", cells: [{txt: "4 · THUẾ & PHÍ HẢI QUAN", kind: "text", span: 5}]},
-            {kind: "item", cells: [{txt: "Customs Duty", kind: "text"}, {txt: "AT COST / TBC", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Chưa bao gồm", kind: "text", cr: true, dim: true}, {txt: "MPF 0.3464% (min $33.58/max $651.50) · HMF 0.125% of invoice", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
-            {kind: "sub", cells: [{txt: "Subtotal — Thuế & hải quan", kind: "text", span: 3}, {txt: "Xem ghi chú", kind: "text", cr: true, dim: true}, {txt: "", kind: "text"}]},
+            ...SHARED_ROWS_3,
         ],
     },
     {
@@ -199,14 +214,7 @@ export const QUOTATIONS: readonly Quotation[] = [
             {kind: "item", cells: [{txt: "SJJ Surcharge", kind: "text"}, {txt: "$305", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$305", kind: "priceS", cr: true}, {txt: "Validity 31-Aug-2026", kind: "text"}]},
             {kind: "sub", cells: [{txt: "Subtotal — Cước quốc tế", kind: "text", span: 3}, {txt: "~$2,722", kind: "price", cr: true}, {txt: "incl. DDC", kind: "note"}]},
             {kind: "group", cells: [{txt: "3 · PHÍ ĐẦU NHẬP MỸ (DDP Charges)", kind: "text", span: 5}]},
-            {kind: "item", cells: [{txt: "Custom Entry Fee", kind: "text"}, {txt: "$95", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "~$95", kind: "priceS", cr: true}, {txt: "Incl. 3 HTS lines · +$4/add. line · FDA +$30/line", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ISF Filing", kind: "text"}, {txt: "$35", kind: "text", cr: true, mono: true}, {txt: "/ BILL", kind: "text"}, {txt: "~$35", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Single Bond", kind: "text"}, {txt: "$6 / $1,000 cargo+duty", kind: "text", cr: true, mono: true}, {txt: "min $150", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu importer chưa có annual bond", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ISF Bond Fee", kind: "text"}, {txt: "$85", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu dùng single bond", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Foreign Tax ID Apply", kind: "text"}, {txt: "$100", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$100", kind: "priceS", cr: true}, {txt: "Nếu shipper chưa có U.S. Tax ID", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Import Handling", kind: "text"}, {txt: "$65", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$65", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Courier & Messenger", kind: "text"}, {txt: "$25", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$25", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
+            ...SHARED_ROWS_1,
             {kind: "item", cells: [{txt: "Trucking (LAX CFS → 2425 South Shaver St, Pasadena TX 77502)", kind: "text"}, {txt: "$5,445", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$5,445", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
             {kind: "item", cells: [{txt: "Residential Delivery", kind: "text"}, {txt: "$75", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
             {kind: "item", cells: [{txt: "Lift Gate", kind: "text"}, {txt: "$75", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
@@ -224,10 +232,7 @@ export const QUOTATIONS: readonly Quotation[] = [
             {kind: "item", cells: [{txt: "Window Fee", kind: "text"}, {txt: "$125", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$125", kind: "priceS", cr: true}, {txt: "Collected at window", kind: "text"}]},
             {kind: "item", cells: [{txt: "ILTF", kind: "text"}, {txt: "$13/CBM or /800 lbs", kind: "text", cr: true, mono: true}, {txt: "min $13", kind: "text"}, {txt: "~$299", kind: "priceS", cr: true}, {txt: "Collected at window · 23 CBM × $13", kind: "text"}]},
             {kind: "sub", cells: [{txt: "Subtotal — Phí đầu nhập Mỹ", kind: "text", span: 3}, {txt: "~$7,055", kind: "price", cr: true}, {txt: "excl. ADF, bond, if-applicable items", kind: "note"}]},
-            {kind: "group", cells: [{txt: "4 · THUẾ & PHÍ HẢI QUAN", kind: "text", span: 5}]},
-            {kind: "item", cells: [{txt: "Customs Duty", kind: "text"}, {txt: "AT COST / TBC", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Chưa bao gồm", kind: "text", cr: true, dim: true}, {txt: "MPF 0.3464% (min $33.58/max $651.50) · HMF 0.125% of invoice", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
-            {kind: "sub", cells: [{txt: "Subtotal — Thuế & hải quan", kind: "text", span: 3}, {txt: "Xem ghi chú", kind: "text", cr: true, dim: true}, {txt: "", kind: "text"}]},
+            ...SHARED_ROWS_3,
         ],
     },
     {
@@ -261,27 +266,11 @@ export const QUOTATIONS: readonly Quotation[] = [
             {kind: "item", cells: [{txt: "SJJ Surcharge", kind: "text"}, {txt: "$305", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "~$305", kind: "priceS", cr: true}, {txt: "Validity 31-Aug-2026", kind: "text"}]},
             {kind: "sub", cells: [{txt: "Subtotal — Cước quốc tế", kind: "text", span: 3}, {txt: "~$8,185", kind: "price", cr: true}, {txt: "", kind: "text"}]},
             {kind: "group", cells: [{txt: "3 · CHI PHÍ DDP LAX → HOU", kind: "text", span: 5}]},
-            {kind: "item", cells: [{txt: "Custom Entry Fee", kind: "text"}, {txt: "$95", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "~$95", kind: "priceS", cr: true}, {txt: "Incl. 3 HTS lines · +$4/add. line · FDA +$30/line", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ISF Filing", kind: "text"}, {txt: "$35", kind: "text", cr: true, mono: true}, {txt: "/ BILL", kind: "text"}, {txt: "~$35", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Single Bond", kind: "text"}, {txt: "$6 / $1,000 cargo+duty", kind: "text", cr: true, mono: true}, {txt: "min $150", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu importer chưa có annual bond", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ISF Bond Fee", kind: "text"}, {txt: "$85", kind: "text", cr: true, mono: true}, {txt: "/ ENTRY", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu dùng single bond", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Foreign Tax ID Apply", kind: "text"}, {txt: "$100", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$100", kind: "priceS", cr: true}, {txt: "Nếu shipper chưa có U.S. Tax ID", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Import Handling", kind: "text"}, {txt: "$65", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$65", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Courier & Messenger", kind: "text"}, {txt: "$25", kind: "text", cr: true, mono: true}, {txt: "/ SHIPMENT", kind: "text"}, {txt: "~$25", kind: "priceS", cr: true}, {txt: "", kind: "text"}]},
+            ...SHARED_ROWS_1,
             {kind: "item", cells: [{txt: "Trucking (Dock-to-dock · LAX → Houston)", kind: "text"}, {txt: "$10,155", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "~$10,155", kind: "priceS", cr: true}, {txt: "Legal weight · non-Haz · 1h free · $85/h sau · layover >4h: $550/day", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Chassis Rental", kind: "text"}, {txt: "$45", kind: "text", cr: true, mono: true}, {txt: "/ DAY / CONT", kind: "text"}, {txt: "~$90", kind: "priceS", cr: true}, {txt: "Min 2 days", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Pre-pull", kind: "text"}, {txt: "$150", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "Nếu cần kéo cont sớm", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Yard Storage", kind: "text"}, {txt: "$50", kind: "text", cr: true, mono: true}, {txt: "/ DAY", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Chassis Split Fee", kind: "text"}, {txt: "$85", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Overweight", kind: "text"}, {txt: "$350", kind: "text", cr: true, mono: true}, {txt: "/ CONT", kind: "text"}, {txt: "IF APPLICABLE", kind: "ifapp", cr: true}, {txt: "20DC: 37,000–44,000 lbs", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Terminal Destination Charge", kind: "text"}, {txt: "AT COST", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if applicable", kind: "text"}]},
-            {kind: "item", cells: [{txt: "Exam / Storage / Congestion", kind: "text"}, {txt: "AT COST", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Theo thực tế", kind: "text", cr: true, dim: true}, {txt: "Base on shipping line's charge", kind: "text"}]},
+            ...SHARED_ROWS_2,
             {kind: "sub", cells: [{txt: "Subtotal — Chi phí DDP tại Mỹ", kind: "text", span: 3}, {txt: "~$10,565", kind: "price", cr: true}, {txt: "excl. ADF, bond, if-applicable items", kind: "note"}]},
-            {kind: "group", cells: [{txt: "4 · THUẾ & PHÍ HẢI QUAN", kind: "text", span: 5}]},
-            {kind: "item", cells: [{txt: "Customs Duty", kind: "text"}, {txt: "AT COST / TBC", kind: "atcost", cr: true}, {txt: "/ BILL", kind: "text"}, {txt: "Chưa bao gồm", kind: "text", cr: true, dim: true}, {txt: "MPF 0.3464% (min $33.58/max $651.50) · HMF 0.125% of invoice", kind: "text"}]},
-            {kind: "item", cells: [{txt: "ADF (Advance Duty Fee)", kind: "text"}, {txt: "Min $15 or 3% of Duty", kind: "text", cr: true, mono: true}, {txt: "", kind: "text"}, {txt: "Nếu phát sinh", kind: "text", cr: true, dim: true}, {txt: "Only if TH Group layouts duty/tax", kind: "text"}]},
-            {kind: "sub", cells: [{txt: "Subtotal — Thuế & hải quan", kind: "text", span: 3}, {txt: "Xem ghi chú", kind: "text", cr: true, dim: true}, {txt: "", kind: "text"}]},
+            ...SHARED_ROWS_3,
         ],
     },
 ];

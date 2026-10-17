@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { trackEvent } from "@/lib/analytics";
 
@@ -243,6 +243,20 @@ const TEMPLATES: readonly Template[] = [
 export function ChinhNgachTemplates() {
     const [openId, setOpenId] = useState<Template["id"] | null>(null);
     const open = TEMPLATES.find((tpl) => tpl.id === openId);
+    const bodyRef = useRef<HTMLDivElement>(null);
+
+    // One listener for every sample file in the open panel: taking the IOR
+    // contract is an intent signal worth counting.
+    useEffect(() => {
+        const body = bodyRef.current;
+        if (!body || !openId) return;
+        const onClick = (e: MouseEvent) => {
+            const file = (e.target as HTMLElement).closest("a[download]")?.getAttribute("download");
+            if (file) trackEvent("download_template", { template: openId, file });
+        };
+        body.addEventListener("click", onClick);
+        return () => body.removeEventListener("click", onClick);
+    }, [openId]);
 
     function show(id: Template["id"]) {
         setOpenId(id);
@@ -254,50 +268,42 @@ export function ChinhNgachTemplates() {
         <>
             <div className="mgt-intro">Bấm vào từng mục để xem hướng dẫn chi tiết và tải file mẫu.</div>
             <div className="mgt-grid">
-                    {TEMPLATES.map((tpl) => (
-                            <button
-                                    key={tpl.id}
-                                    type="button"
-                                    id={`mgt-${tpl.id}`}
-                                    className={`mgt-card${openId === tpl.id ? " active" : ""}`}
-                                    aria-expanded={openId === tpl.id}
-                                    aria-controls="mgtDetailPanel"
-                                    onClick={() => show(tpl.id)}
-                            >
-                                    <div className="mgt-card-head">
-                                            <div className="mgt-icon" aria-hidden="true">{tpl.icon}</div>
-                                            <div>
-                                                    <div className="mgt-title">{tpl.title}</div>
-                                                    <div className="mgt-sub">{tpl.sub}</div>
-                                            </div>
-                                            <span className="mgt-badge">Xem →</span>
-                                    </div>
-                            </button>
-                    ))}
+                {TEMPLATES.map((tpl) => (
+                    <button
+                        key={tpl.id}
+                        type="button"
+                        id={`mgt-${tpl.id}`}
+                        className={`mgt-card${openId === tpl.id ? " active" : ""}`}
+                        aria-expanded={openId === tpl.id}
+                        aria-controls="mgtDetailPanel"
+                        onClick={() => show(tpl.id)}
+                    >
+                        <div className="mgt-card-head">
+                            <div className="mgt-icon" aria-hidden="true">{tpl.icon}</div>
+                            <div>
+                                <div className="mgt-title">{tpl.title}</div>
+                                <div className="mgt-sub">{tpl.sub}</div>
+                            </div>
+                            <span className="mgt-badge">Xem →</span>
+                        </div>
+                    </button>
+                ))}
             </div>
 
             {open && (
-                    <div className="mgt-detail-panel active" id="mgtDetailPanel" role="region" aria-label={open.title}>
-                            <div className="mgt-detail-panel-header">
-                                    <span className="ph-icon" aria-hidden="true">{open.icon}</span>
-                                    <div>
-                                            <div className="ph-title">{open.title}</div>
-                                            <div className="ph-sub">{open.panelSub}</div>
-                                    </div>
-                                    <button type="button" className="ph-close" aria-label="Đóng" onClick={() => setOpenId(null)}>✕</button>
-                            </div>
-                            {/* One listener for every sample file in the body: taking the IOR
-                                    contract is an intent signal worth counting. */}
-                            <div
-                                    className="mgt-detail-panel-body"
-                                    onClick={(e) => {
-                                            const file = (e.target as HTMLElement).closest("a[download]")?.getAttribute("download");
-                                            if (file) trackEvent("download_template", { template: open.id, file });
-                                    }}
-                            >
-                                    <open.Body />
-                            </div>
+                <div className="mgt-detail-panel active" id="mgtDetailPanel" role="region" aria-label={open.title}>
+                    <div className="mgt-detail-panel-header">
+                        <span className="ph-icon" aria-hidden="true">{open.icon}</span>
+                        <div>
+                            <div className="ph-title">{open.title}</div>
+                            <div className="ph-sub">{open.panelSub}</div>
+                        </div>
+                        <button type="button" className="ph-close" aria-label="Đóng" onClick={() => setOpenId(null)}>✕</button>
                     </div>
+                    <div className="mgt-detail-panel-body" ref={bodyRef}>
+                        <open.Body />
+                    </div>
+                </div>
             )}
         </>
     );

@@ -105,7 +105,7 @@ test.describe("Formal pricing workspace", () => {
     await page.getByRole("tab", { name: "Hướng dẫn đọc bảng giá" }).click();
     await expect(page.getByText("Vận chuyển chính ngạch là gì?")).toBeVisible();
     await expect(page.getByText("LCL — Hàng lẻ")).toBeVisible();
-    await page.getByRole("button", { name: "Xem tab Dự toán chi phí →" }).click();
+    await page.getByRole("link", { name: "Xem tab Dự toán chi phí →" }).click();
 
     // Cost estimate is the sheet's four worked quotations, grouped by origin.
     const estimate = page.locator("#formal-panel-quotation");

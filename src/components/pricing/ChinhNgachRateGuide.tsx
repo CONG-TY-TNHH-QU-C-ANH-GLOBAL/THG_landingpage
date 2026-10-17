@@ -10,13 +10,13 @@ import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
 const LINK = { color: "var(--blue)", fontWeight: 600 } as const;
 
-/** The sheet's in-page link: an underlined anchor that switches views instead
- *  of navigating, so it never touches the URL hash the page keys its panes on. */
+/** The sheet's in-page link: an underlined anchor that switches views in place.
+ *  Its href is the rates pane it lives in, so it stays a real link without JS;
+ *  with JS the click is handled here and the URL is left alone. */
 function SheetLink({ style, onClick, children }: Readonly<{ style: CSSProperties; onClick?: () => void; children: ReactNode }>) {
     return (
         <a
-            href="#"
-            role="button"
+            href="#bang-gia"
             className="xkcn-link"
             style={style}
             onClick={(e) => {
