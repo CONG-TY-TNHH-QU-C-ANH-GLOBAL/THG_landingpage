@@ -1,5 +1,7 @@
 import { Component, type ReactNode, type ErrorInfo } from "react";
 
+import { reportError } from "@/lib/monitoring";
+
 interface Props {
     children: ReactNode;
     fallback?: ReactNode;
@@ -35,6 +37,7 @@ class ErrorBoundary extends Component<Props, State> {
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         // Log but do NOT render an error page
         console.warn("[ErrorBoundary] caught →", error.message, errorInfo.componentStack?.slice(0, 200));
+        reportError(error, errorInfo.componentStack ?? undefined);
 
         this.retryCount++;
 
