@@ -9,6 +9,7 @@ import { useCmsEvents } from "@/hooks/useCmsContent";
 import { formatEventDates } from "@/lib/eventDates";
 import { useI18n } from "@/lib/i18n";
 import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
+import "@/lib/i18n/translations/blog";
 
 export default function EventsPage() {
   const client = useQueryClient();

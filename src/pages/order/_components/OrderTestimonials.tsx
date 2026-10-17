@@ -2,6 +2,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 
 import { testimonials } from "../data/testimonials";
+import "@/lib/i18n/translations/order";
 
 /** Horizontal-scroll testimonial cards — custom snap layout because the
  *  homepage's centred grid doesn't fit this page's gold-gradient design. */

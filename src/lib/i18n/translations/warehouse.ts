@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const warehouseTranslations: TranslationDict = {
@@ -87,3 +88,6 @@ export const warehouseTranslations: TranslationDict = {
   "wh_faq.q13": tr("What is the payment settlement procedure?", "Quy trình xử lý công nợ?", "结算流程是什么？"),
   "wh_faq.a13": tr("TH Group notifies balances periodically via OMS and email. Sellers pay by bank transfer or agreed methods. Please contact customer support for details on payment policies.", "TH Group thông báo công nợ định kỳ qua hệ thống OMS và email. Seller thanh toán theo hình thức chuyển khoản hoặc các phương thức được thỏa thuận. Vui lòng liên hệ team CSKH để biết chi tiết về chính sách thanh toán.", "TH Group通过OMS系统和邮件定期通知账户余额。卖家通过银行转账或约定方式付款。请联系客服团队了解付款政策详情。"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(warehouseTranslations);

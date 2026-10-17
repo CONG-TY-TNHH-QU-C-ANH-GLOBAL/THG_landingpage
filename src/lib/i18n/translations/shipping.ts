@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const shippingTranslations: TranslationDict = {
@@ -77,3 +78,6 @@ export const shippingTranslations: TranslationDict = {
   "spolicy.notes": tr("Notes", "Lưu ý", "注意事项"),
   "spolicy.no_detail": tr("This route has no detailed content yet.", "Tuyến này chưa có nội dung chi tiết.", "该路线暂无详细内容。"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(shippingTranslations);

@@ -24,6 +24,7 @@ import { useCmsShippingRoute } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { Sec, Warn, Note, Danger, SubTitle } from "./PolicyUI";
 import { SafeHtml } from "@/lib/sanitizeHtml";
+import "@/lib/i18n/translations/shipping";
 
 interface Props {
   slug: string;

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/pricing";
 
 export interface RateLeaf {
   desc: string;
@@ -68,9 +69,10 @@ function NoteRow({ note }: Readonly<{ note: string }>) {
 function LeafRow({ leaf, indented }: Readonly<{ leaf: RateLeaf; indented: boolean }>) {
   // The accent bar is 3px of the row's left padding, so a highlighted row stays
   // flush with the plain ones above and below it.
+  const indent = indented ? "pl-9" : "";
   const rowClass = leaf.highlight
     ? "border-l-4 border-l-primary bg-primary/[0.13] pl-4 pr-5"
-    : `bg-card px-5 ${indented ? "pl-9" : ""}`;
+    : `bg-card px-5 ${indent}`;
 
   return (
     <div className={`flex items-start justify-between gap-6 border-b border-border/40 py-3.5 ${rowClass}`}>

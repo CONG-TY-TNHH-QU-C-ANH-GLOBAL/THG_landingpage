@@ -1,5 +1,6 @@
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/pricing";
 
 const HeroSection = () => {
     const { t } = useI18n();

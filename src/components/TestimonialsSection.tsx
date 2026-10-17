@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsTestimonials } from "@/hooks/useCmsContent";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
+import "@/lib/i18n/translations/homepage";
 
 /**
  * Static fallback. The CMS has owned this content since the testimonials table

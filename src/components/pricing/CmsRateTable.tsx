@@ -1,5 +1,6 @@
 import { useCmsPricingTable } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/chinhngach";
 
 /** One column of a `weight_grid` rate card, as authored in the CMS Rate Card
  *  Builder. `semantic`/`currency` are optional: CMS infers them from the label

@@ -2,6 +2,7 @@ import { Award, ShieldCheck, Star } from "lucide-react";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/homepage";
 
 const badges = [
   { icon: Star, nameKey: "trust_badges.badge1_name", valueKey: "trust_badges.badge1_value" },

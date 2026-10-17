@@ -1,6 +1,7 @@
 import { useI18n } from "@/lib/i18n";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import CnUsRateCard from "@/components/pricing/CnUsRateCard";
+import "@/lib/i18n/translations/express";
 
 interface ExpressCnUsPanelProps {
     route: string;

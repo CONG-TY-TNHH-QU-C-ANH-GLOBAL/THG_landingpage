@@ -19,6 +19,7 @@ import {
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import "@/lib/i18n/translations/fulfill";
 
 const INTRO_CLASS = "text-muted-foreground leading-relaxed mb-4";
 const NAV_ACTIVE_CLASS = "bg-primary/10 text-primary font-semibold";

@@ -20,6 +20,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsMarqueeImages, useCmsFaqs } from "@/hooks/useCmsContent";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdOrganization, JsonLdFaqPage } from "@/components/seo/JsonLd";
+import "@/lib/i18n/translations/express";
 
 
 const Index = () => {

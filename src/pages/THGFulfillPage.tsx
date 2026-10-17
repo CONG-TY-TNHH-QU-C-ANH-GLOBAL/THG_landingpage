@@ -17,6 +17,7 @@ import { FulfillHubSystemGuide } from "@/components/service-pages/FulfillHubSyst
 import { ServiceProcessSteps } from "@/components/service-pages/ServiceProcessSteps";
 import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
+import "@/lib/i18n/translations/fulfill";
 
 const painPoints = [
   { num: "01", titleKey: "fulfill_page.pain1_title", descKey: "fulfill_page.pain1_desc" },

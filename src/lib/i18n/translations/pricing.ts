@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const pricingTranslations: TranslationDict = {
@@ -162,3 +163,6 @@ export const pricingTranslations: TranslationDict = {
   "pricing.step2_service": tr("Step 2 — Choose Service Type", "Bước 2 — Chọn Loại Dịch Vụ", "第 2 步 — 选择服务类型"),
   "pricing.step4_cargo": tr("Step 4 — Choose Cargo Type", "Bước 4 — Chọn Loại Hàng", "第 4 步 — 选择货物类型"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(pricingTranslations);

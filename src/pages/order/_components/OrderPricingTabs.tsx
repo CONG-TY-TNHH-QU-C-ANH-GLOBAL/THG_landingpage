@@ -5,6 +5,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 
 import { bulkRows, epacketRows } from "../data/pricing";
+import "@/lib/i18n/translations/order";
 
 /** Interactive ePacket vs Bulk pricing tabs. Owns its own `activeTab` state
  *  (no need to lift — nothing outside this section reads which tab is open). */

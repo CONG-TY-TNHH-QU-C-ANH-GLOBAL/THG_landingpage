@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const catalogTranslations: TranslationDict = {
@@ -39,3 +40,6 @@ export const catalogTranslations: TranslationDict = {
     "{color} 暂无专属照片 — 显示当前图片",
   ),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(catalogTranslations);

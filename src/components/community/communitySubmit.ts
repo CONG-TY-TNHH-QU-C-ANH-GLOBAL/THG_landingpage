@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { useTurnstile } from "@/lib/useTurnstile";
 import { DELAYS } from "@/lib/constants";
+import "@/lib/i18n/translations/community";
 
 type Captcha = ReturnType<typeof useTurnstile>;
 type SubmitFields = { name: string; email: string; title: string; body: string };

@@ -25,6 +25,7 @@ import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { manualImagesBySeries } from "@/pages/catalog/variantImageMap";
 import { DELAYS, LIMITS } from "@/lib/constants";
 import { catalogPath } from "@/lib/catalogRoutes";
+import "@/lib/i18n/translations/catalog";
 
 const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
 
@@ -294,7 +295,9 @@ const CatalogPage = () => {
   // An empty campaign is thin content: keep it out of the index. Only once the
   // Hub has actually answered, so a slow or failed request never sets noindex.
   const emptyCollection = !!activeCollection && !loading && !loadError && pagination.total === 0;
-  const catalogState = loading ? "loading" : loadError ? "error" : "ready";
+  let catalogState = "ready";
+  if (loading) catalogState = "loading";
+  else if (loadError) catalogState = "error";
 
   // Unknown slug (renamed or removed in the Hub) → back to the full catalog.
   if (activeCollection && collections.length > 0 && !collections.some((c) => c.slug === activeCollection)) {

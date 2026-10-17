@@ -10,9 +10,7 @@ import {
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
-import * as Sentry from "@sentry/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider, Language, useI18n } from "@/lib/i18n";
 import { LarkPricingProvider } from "@/components/pricing/LarkPricingProvider";
@@ -183,35 +181,26 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <Sentry.ErrorBoundary
-    fallback={
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-8 h-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-      </div>
-    }
-  >
-    <ErrorBoundary>
-      <HelmetProvider>
-        <QueryClientProvider client={queryClient}>
-          <I18nProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <LarkPricingProvider>
-                  <PrerenderSignal />
-                  <PublicTracking />
-                  <AppRoutes />
-                  <FloatingContact />
-                  <ConsentBanner />
-                </LarkPricingProvider>
-              </BrowserRouter>
-            </TooltipProvider>
-          </I18nProvider>
-        </QueryClientProvider>
-      </HelmetProvider>
-    </ErrorBoundary>
-  </Sentry.ErrorBoundary>
+  <ErrorBoundary>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <I18nProvider>
+          <TooltipProvider>
+            <Sonner />
+            <BrowserRouter>
+              <LarkPricingProvider>
+                <PrerenderSignal />
+                <PublicTracking />
+                <AppRoutes />
+                <FloatingContact />
+                <ConsentBanner />
+              </LarkPricingProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </I18nProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  </ErrorBoundary>
 );
 
 export default App;

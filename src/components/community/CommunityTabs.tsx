@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { MessageCircleQuestion, Star } from "lucide-react";
 
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/community";
 
 type Tab = "qa" | "reviews";
 

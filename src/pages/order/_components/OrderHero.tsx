@@ -6,6 +6,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 
 import { stats } from "../data/stats";
+import "@/lib/i18n/translations/order";
 
 /** Hero section for /thg-order. Gold-themed gradient with badge + headline +
  *  dual CTAs + a stats card. Distinct from the other Service pages so the
