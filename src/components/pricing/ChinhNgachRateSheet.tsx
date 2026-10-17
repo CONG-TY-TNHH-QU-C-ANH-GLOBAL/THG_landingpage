@@ -76,6 +76,12 @@ function Pending() {
 }
 
 /** The sheet's MATSON service toggle names CLX as the faster sailing. */
+/** Column order of the FCL breakdown, matching groupFcl's value columns. */
+const FCL_SIZES = ["20GP", "40GP", "40HC", "45HC"] as const;
+
+/** "SGN → NRT → LAX" printed as the sheet does, without spaces. */
+const routing = (v: Cell) => (v == null ? "" : String(v)).split("→").map((leg) => leg.trim()).join("→");
+
 const serviceLabel = (svc: string) => (svc === "CLX" ? "CLX Service (nhanh hơn)" : `${svc} Service`);
 
 const LANE = { xanh: "🟢", vang: "🟡", do: "🔴" } as const;
@@ -181,7 +187,7 @@ export function ChinhNgachRateSheet() {
                 {mLcl.rows.length ? (
                     <Table head={[["Tuyến xuất phát", ""], ["Light Cargo (/CBM)", "r"], ["Dense Cargo (/MT)", "r"], ["Cảng đến", "c"], ["Transit", "r"]]}>
                         {mLcl.rows.map((r, i) => (
-                            <tr key={i} className={i === 0 ? "hl" : undefined}>
+                            <tr key={String(r.origin)} className={i === 0 ? "hl" : undefined}>
                                 <td><Named text={String(r.origin ?? "")} /></td>
                                 <td className="r"><Price v={r.light_cbm} /></td>
                                 <td className="r"><PriceS v={r.dense_mt} /></td>
@@ -195,8 +201,8 @@ export function ChinhNgachRateSheet() {
                     <>
                         <div style={{ marginTop: 14, ...LABEL, marginBottom: 8 }}>Phụ phí tại cảng (Accessorial Charges)</div>
                         <Table head={[["Loại phí", ""], ["Đơn giá", "r"], ["Đơn vị", ""]]}>
-                            {mSur.rows.map((r, i) => (
-                                <tr key={i}>
+                            {mSur.rows.map((r) => (
+                                <tr key={String(r.fee)}>
                                     <td><Named text={String(r.fee ?? "")} strong={false} /></td>
                                     <td className="r"><PriceS v={r.amount} /></td>
                                     <td>{[r.unit, r.min ? `Min ${r.min}` : ""].filter(Boolean).join(" · ")}</td>
@@ -239,12 +245,12 @@ export function ChinhNgachRateSheet() {
                                         r.total ? (
                                             <tr key={r.charge} className="hl" style={{ borderTop: "2px solid var(--bd)" }}>
                                                 <td><strong>{r.charge}</strong></td>
-                                                {r.values.map((v, j) => <td key={j} className="r"><Price v={v} /></td>)}
+                                                {FCL_SIZES.map((size, j) => <td key={size} className="r"><Price v={r.values[j]} /></td>)}
                                             </tr>
                                         ) : (
                                             <tr key={r.charge}>
                                                 <td className="dim">{r.charge}</td>
-                                                {r.values.map((v, j) => <td key={j} className="r">{money(v)}</td>)}
+                                                {FCL_SIZES.map((size, j) => <td key={size} className="r">{money(r.values[j])}</td>)}
                                             </tr>
                                         ),
                                     )}
@@ -282,7 +288,7 @@ export function ChinhNgachRateSheet() {
                 {sLcl.rows.length ? (
                     <Table head={[["Tuyến", ""], ["Cước biển /WM", "r"], ["Transit", "r"]]}>
                         {sLcl.rows.map((r, i) => (
-                            <tr key={i} className={i === 0 ? "hl" : undefined}>
+                            <tr key={String(r.route)} className={i === 0 ? "hl" : undefined}>
                                 <td><Named text={String(r.route ?? "")} /></td>
                                 <td className="r"><Price v={r.price_wm} /></td>
                                 <td className="r">{r.transit}</td>
@@ -298,7 +304,7 @@ export function ChinhNgachRateSheet() {
                 {sFcl.rows.length ? (
                     <Table head={[["Tuyến", ""], ["20GP", "r"], ["40HC", "r"], ["Transit", "r"]]}>
                         {sFcl.rows.map((r, i) => (
-                            <tr key={i} className={i === 0 ? "hl" : undefined}>
+                            <tr key={String(r.route)} className={i === 0 ? "hl" : undefined}>
                                 <td><Named text={String(r.route ?? "")} /></td>
                                 <td className="r"><Price v={r.gp20} /></td>
                                 <td className="r"><Price v={r.hc40} /></td>
@@ -329,20 +335,20 @@ export function ChinhNgachRateSheet() {
                                 {rows.map((r, i) =>
                                     // The sheet stars and highlights the cheapest carrier per destination.
                                     i === 0 ? (
-                                        <tr key={i} className="hl">
+                                        <tr key={String(r.carrier)} className="hl">
                                             <td><span className="hl-txt">{r.carrier} ⭐</span></td>
                                             <td className="r"><Price v={r.price_500kg} /></td>
                                             <td className="r"><Price v={r.price_1000kg} /></td>
                                             <td>{r.cutoff}</td>
-                                            <td>{String(r.routing ?? "").replace(/\s*→\s*/g, "→")}</td>
+                                            <td>{routing(r.routing)}</td>
                                         </tr>
                                     ) : (
-                                        <tr key={i}>
+                                        <tr key={String(r.carrier)}>
                                             <td>{r.carrier}</td>
                                             <td className="r">{money(r.price_500kg)}</td>
                                             <td className="r">{money(r.price_1000kg)}</td>
                                             <td>{r.cutoff}</td>
-                                            <td>{String(r.routing ?? "").replace(/\s*→\s*/g, "→")}</td>
+                                            <td>{routing(r.routing)}</td>
                                         </tr>
                                     ),
                                 )}

@@ -480,16 +480,6 @@
     transform: none;
   }
 
-  /* backdrop-filter re-blurs everything behind each card on every scroll
-     frame, which phone GPUs cannot keep up with on long lists (51 blurred
-     cards on /blog dropped a third of scroll frames). The cards sit on a flat
-     background, so a near-opaque fill looks the same. */
-  .glass-card {
-    background-color: hsl(var(--card) / 0.96);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
   .glass-card:hover {
     transform: translateY(-2px);
   }
@@ -933,4 +923,18 @@
    <noscript> stylesheet when the show-more button cannot run. */
 .rate-page [data-table-collapsed="true"] tr[data-overflow-row="true"] {
   display: none;
+}
+
+/* ─── Touch devices: no backdrop blur on cards ───
+   backdrop-filter re-blurs everything behind each card on every scroll
+   frame, which phone GPUs cannot keep up with on long lists (51 blurred
+   cards on /blog dropped a third of scroll frames). The cards sit on a flat
+   background, so a near-opaque fill looks the same. Kept at the end of the
+   file on purpose: it must override .glass-card above. */
+@media (pointer: coarse) {
+  .glass-card {
+    background-color: hsl(var(--card) / 0.96);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
