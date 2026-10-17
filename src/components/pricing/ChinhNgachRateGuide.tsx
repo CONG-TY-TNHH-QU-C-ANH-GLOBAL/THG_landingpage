@@ -1,152 +1,102 @@
-import { GUIDE_BLOCKS, type GuideBlock, type GuideTone } from "@/data/chinhNgachGuide";
-import { RichText } from "@/components/pricing/RichText";
+import type { CSSProperties, ReactNode } from "react";
 
-/** The sheet's own palette, kept rather than mapped onto the site's generic
- *  tones: green means "this is the right choice", amber means "only in these
- *  cases", blue means "cross-reference". Re-colouring would flatten that. */
-const BOX: Record<GuideTone, string> = {
-    green: "bg-[#E3F4EA] border-[#A9D8BC]",
-    amber: "bg-[#fffbeb] border-[#fde68a]",
-    blue: "bg-[#eff6ff] border-[#bfdbfe]",
-    gray: "bg-[#f7fafd] border-[#DDD8CE]",
-};
+import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 
-const NOTE: Record<GuideTone, string> = {
-    green: "bg-[#E3F4EA] border-[#A9D8BC] text-[#1A8754]",
-    amber: "bg-[#fffbeb] border-[#fde68a] text-[#92400e]",
-    blue: "bg-[#eff6ff] border-[#bfdbfe] text-[#1E5BC6]",
-    gray: "bg-[#f7fafd] border-[#DDD8CE] text-muted-foreground",
-};
+// "Hướng dẫn đọc bảng giá" (bgp-huongdan), transcribed from the XKCN Hub v6.0
+// sheet as markup: its numbered navy/gold banners, the use-this-vs-that pairs,
+// the comparison table and the glossary. Static reference copy, so it lives
+// here rather than in the CMS. The sheet's two "#" links switch views, so they
+// are buttons; its mailto CTA opens the lead form.
 
-/** Navy block, gold serif numeral, navy2 body — the sheet's section marker.
- *  The numeral is a label ("?", "1", "📖"), not an ordinal, so it is rendered
- *  as given instead of being counted. */
+const LINK = { color: "var(--blue)", fontWeight: 600 } as const;
+
+/** The sheet's in-page link: an underlined anchor that switches views instead
+ *  of navigating, so it never touches the URL hash the page keys its panes on. */
+function SheetLink({ style, onClick, children }: Readonly<{ style: CSSProperties; onClick?: () => void; children: ReactNode }>) {
+    return (
+        <a
+            href="#"
+            role="button"
+            className="xkcn-link"
+            style={style}
+            onClick={(e) => {
+                e.preventDefault();
+                onClick?.();
+            }}
+        >
+            {children}
+        </a>
+    );
+}
+
 function Banner({ num, title, sub }: Readonly<{ num: string; title: string; sub: string }>) {
     return (
-        <div className="flex items-stretch overflow-hidden rounded-[10px]">
-            <div className="flex w-12 flex-shrink-0 items-center justify-center bg-navy font-serif text-xl font-extrabold text-primary">
-                {num}
-            </div>
-            <div className="flex-1 bg-[#1B2A4A] px-[18px] py-[13px]">
-                <p className="text-base font-extrabold text-white">{title}</p>
-                {sub && <p className="text-[12px] text-[#8aa0c4]">{sub}</p>}
-            </div>
+        <div className="g-banner">
+            <div className="g-num">{num}</div>
+            <div className="g-content"><div className="g-title">{title}</div><div className="g-sub">{sub}</div></div>
         </div>
     );
 }
 
-function Block({ block, onJump }: Readonly<{ block: GuideBlock; onJump?: () => void }>) {
-    switch (block.kind) {
-        case "divider":
-            return <hr className="my-6 border-0 border-t border-[#DDD8CE]" />;
-
-        case "banner":
-            return <Banner num={block.num} title={block.title} sub={block.sub} />;
-
-        case "para":
-            return (
-                <p className="text-[13px] leading-relaxed text-foreground/80">
-                    <RichText html={block.html} />
-                </p>
-            );
-
-        case "cols":
-            return (
-                <div className="grid gap-3 sm:grid-cols-2">
-                    {block.boxes.map((box) => (
-                        <div key={box.heading} className={`rounded-[9px] border px-4 py-3.5 ${BOX[box.tone] ?? BOX.gray}`}>
-                            <p className="mb-1.5 text-[13px] font-bold text-navy">{box.heading}</p>
-                            {box.text && <p className="text-[12.5px] leading-relaxed text-foreground/80">{box.text}</p>}
-                            {box.items.length > 0 && (
-                                <ul className="space-y-1">
-                                    {box.items.map((it) => (
-                                        <li key={it} className="relative pl-3 text-[12.5px] leading-snug text-foreground/80">
-                                            <span className="absolute left-0 top-[0.55em] h-1 w-1 rounded-full bg-muted-foreground" aria-hidden="true" />
-                                            {it}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            );
-
-        case "note":
-            return (
-                <p className={`rounded-lg border px-3.5 py-2.5 text-[12.5px] leading-relaxed ${NOTE[block.tone] ?? NOTE.gray}`}>
-                    <RichText html={block.html} />
-                    {block.link && onJump && (
-                        <>
-                            {" "}
-                            <button type="button" onClick={onJump} className="font-bold underline underline-offset-2">
-                                {block.link}
-                            </button>
-                        </>
-                    )}
-                </p>
-            );
-
-        case "table":
-            return (
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse text-[13px]">
-                        <thead>
-                            <tr>
-                                {block.head.map((h, i) => (
-                                    <th
-                                        key={h}
-                                        className={`bg-navy px-3 py-2.5 text-left text-[11px] font-bold text-white ${i === 0 ? "rounded-l-md" : ""} ${i === block.head.length - 1 ? "rounded-r-md" : ""}`}
-                                    >
-                                        {h}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {block.rows.map((r, i) => (
-                                <tr
-                                    key={i}
-                                    className={r.hl ? "bg-[#fdf8ec] font-semibold text-navy" : i % 2 === 1 ? "bg-[#f9f8f5]" : ""}
-                                >
-                                    {r.cells.map((c, j) => (
-                                        <td
-                                            key={j}
-                                            className={`border-b border-[#eef1f7] px-[11px] py-2 ${c.pr ? "font-mono text-[14px] font-extrabold text-[#0d6e3f]" : ""}`}
-                                        >
-                                            {c.txt}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-
-        case "gloss":
-            return (
-                <dl className="grid gap-2 sm:grid-cols-2">
-                    {block.items.map((g) => (
-                        <div key={g.term} className="rounded-lg border border-[#DDD8CE] bg-white px-[13px] py-2.5">
-                            <dt className="text-[12.5px] font-bold text-navy">{g.term}</dt>
-                            <dd className="text-[12px] text-muted-foreground">{g.def}</dd>
-                        </div>
-                    ))}
-                </dl>
-            );
-
-        default:
-            return null;
-    }
-}
-
-export function ChinhNgachRateGuide({ onJumpToQuotation }: Readonly<{ onJumpToQuotation?: () => void }>) {
+export function ChinhNgachRateGuide({ onShowRates, onJumpToQuotation }: Readonly<{
+    onShowRates?: () => void;
+    onJumpToQuotation?: () => void;
+}>) {
     return (
-        <div className="space-y-4">
-            {GUIDE_BLOCKS.map((block, i) => (
-                <Block key={i} block={block} onJump={onJumpToQuotation} />
-            ))}
+        <div className="wrap">
+            <div className="phead">
+                <div className="phead-tag">📖 Hướng dẫn đọc bảng giá</div>
+                <h2>Hướng Dẫn Đọc Bảng Giá Chính Ngạch</h2>
+                <p>Dành cho người mới — giải thích từng phần từ đầu · <SheetLink style={LINK} onClick={onShowRates}>Xem bảng giá →</SheetLink></p>
+            </div>
+            <Banner num="?" title="Vận chuyển chính ngạch là gì?" sub="Đọc phần này trước" />
+            <p style={{ fontSize: 14, marginBottom: 14 }}><strong>Chính ngạch</strong> là vận chuyển hàng hóa thương mại <strong>hợp pháp, đầy đủ giấy tờ, khai báo hải quan đúng quy định</strong> tại cả Việt Nam lẫn Mỹ.</p>
+            <div className="two-col">
+                <div className="info-box green"><h4>✅ Nên dùng chính ngạch khi</h4><ul><li>Hàng từ 50 kg trở lên</li><li>Nhập kho FBA Amazon</li><li>Cần hóa đơn xuất nhập khẩu hợp lệ</li><li>Muốn giá rẻ hơn DHL/FedEx</li><li>Hàng giá trị cao, cần bảo hiểm</li></ul></div>
+                <div className="info-box amber"><h4>⚡ Dùng Air Express (DHL) khi</h4><ul><li>Hàng nhỏ, dưới 50 kg</li><li>Cần giao trong 3–5 ngày</li><li>POD đơn lẻ (từng đơn hàng)</li><li>Hàng mẫu, thử nghiệm</li></ul></div>
+            </div>
+            <div className="divider" />
+            <Banner num="1" title="Ba hình thức vận chuyển trong bảng giá" sub="Sea Matson · Sea thường · Air" />
+            <div className="xkcn-scroll">
+                <table className="g-table">
+                    <thead><tr><th>Hình thức</th><th>Thời gian</th><th>Phù hợp với</th><th>Giá tương đối</th></tr></thead>
+                    <tbody>
+                        <tr className="ghl"><td>🚢 MATSON (Line Hỏa Tốc)</td><td>17–18 ngày</td><td>Cần nhanh, lịch cố định Thứ 5</td><td>Cao hơn Sea thường</td></tr>
+                        <tr><td>🌊 Sea thường</td><td>18–40 ngày</td><td>Không gấp, muốn giá rẻ</td><td>Rẻ nhất</td></tr>
+                        <tr><td>✈️ Air (Hàng không)</td><td>7–8 ngày port-to-port</td><td>Hàng gấp, giá trị cao</td><td>Đắt nhất</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div className="divider" />
+            <Banner num="2" title="LCL vs FCL — Hàng lẻ hay nguyên container?" sub="Khái niệm cần hiểu trước khi xem giá Sea" />
+            <div className="two-col">
+                <div className="info-box green"><h4>📦 LCL — Hàng lẻ</h4><p style={{ fontSize: "12.5px", color: "var(--muted)", marginBottom: 8 }}>Nhiều khách gom chung 1 container. Tính theo CBM hoặc MT, lấy số nào lớn hơn.</p><ul><li>Phù hợp dưới ~12 CBM</li><li>Mới bắt đầu, chưa đủ hàng</li></ul></div>
+                <div className="info-box blue"><h4>🚢 FCL — Nguyên container</h4><p style={{ fontSize: "12.5px", color: "var(--muted)", marginBottom: 8 }}>Thuê riêng 1 container. Giá mỗi CBM rẻ hơn LCL đáng kể khi hàng đủ nhiều.</p><ul><li>Phù hợp từ ~12 CBM trở lên</li><li>20GP: ~25 CBM · 40HC: ~68 CBM</li></ul></div>
+            </div>
+            <div className="note green">💡 <strong>Quy tắc:</strong> Dưới 10 CBM → LCL. Trên 12 CBM → FCL. Từ 10–12 CBM → hỏi TH Group.</div>
+            <div className="divider" />
+            <Banner num="3" title="MATSON · Sea thường · Air — Chi tiết giá và phụ phí" sub="Xem tab Bảng giá để tra cứu đầy đủ" />
+            <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 16 }}>Tất cả giá cước, phụ phí, địa chỉ CFS, lịch cut-off và bảng hải quan luồng xanh/vàng/đỏ được hiển thị đầy đủ trong tab <strong>Bảng giá</strong>.</p>
+            <div className="note blue">📋 Muốn xem dự toán chi phí trọn gói cho 1 lô hàng cụ thể (HPH → HOU, 1×40HC)? <SheetLink style={{ color: "var(--blue)", fontWeight: 700 }} onClick={onJumpToQuotation}>Xem tab Dự toán chi phí →</SheetLink></div>
+            <div className="divider" />
+            <Banner num="📖" title="Bảng giải thích thuật ngữ" sub="Tra cứu khi gặp từ lạ" />
+            <div className="glossgrid">
+                <div className="glossitem"><div className="term">LCL / FCL</div><div className="def">Hàng lẻ gom chung / Nguyên container thuê riêng</div></div>
+                <div className="glossitem"><div className="term">CBM / MT / W/M</div><div className="def">Mét khối / Tấn (1.000 kg) / Lấy số lớn hơn giữa CBM và MT</div></div>
+                <div className="glossitem"><div className="term">CFS</div><div className="def">Kho tập kết hàng LCL trước khi lên container</div></div>
+                <div className="glossitem"><div className="term">ETD / ETA / Cut-off</div><div className="def">Ngày tàu khởi hành / Đến nơi / Deadline nộp hàng</div></div>
+                <div className="glossitem"><div className="term">HBL / AMS / ISF</div><div className="def">Vận đơn nhà / Khai báo điện tử / An ninh nhập khẩu Mỹ</div></div>
+                <div className="glossitem"><div className="term">FAF / MAF</div><div className="def">Phụ phí nhiên liệu &amp; cảng biển — đã gộp vào giá Matson FCL</div></div>
+                <div className="glossitem"><div className="term">FBA / All-in / DDP</div><div className="def">Kho Amazon / Báo giá trọn gói / Delivered Duty Paid</div></div>
+                <div className="glossitem"><div className="term">Luồng xanh/vàng/đỏ</div><div className="def">Phân loại kiểm tra HQ: xanh=thông ngay · vàng=kiểm chứng từ · đỏ=kiểm hàng</div></div>
+            </div>
+            <div className="cta" style={{ marginTop: 28 }}>
+                <LeadFormDialog
+                    sourcePage="/chinh-ngach-pricing#huong-dan"
+                    defaultMessage="Liên hệ báo giá All-in trọn gói"
+                    trigger={<button type="button" className="cta-link">📞 Liên hệ báo giá All-in trọn gói</button>}
+                />
+            </div>
         </div>
     );
 }

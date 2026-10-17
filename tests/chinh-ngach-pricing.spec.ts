@@ -92,7 +92,7 @@ test.describe("Formal pricing workspace", () => {
 
     // Rates follow the source sheet: one scroll with MATSON, Sea and Air strips,
     // figures read from the CMS rate cards.
-    const rates = page.locator("#formal-panel-rates");
+    const rates = page.locator("#formal-panel-banggia");
     await expect(rates.getByText("🚢 MATSON — Line Hỏa Tốc")).toBeVisible();
     await expect(rates.getByText("🌊 Line Sea Chính Ngạch Thường")).toBeVisible();
     await expect(rates.getByText("✈️ Air Chính Ngạch")).toBeVisible();
@@ -108,26 +108,54 @@ test.describe("Formal pricing workspace", () => {
     await page.getByRole("button", { name: "Xem tab Dự toán chi phí →" }).click();
 
     // Cost estimate is the sheet's four worked quotations, grouped by origin.
-    const estimate = page.locator("#formal-panel-estimate");
+    const estimate = page.locator("#formal-panel-quotation");
     await expect(estimate.getByText("MATSON CLX · DDP · HPH → HOU")).toBeVisible();
     await expect(estimate.getByText("~6,584")).toBeVisible();
-    await estimate.getByRole("tab", { name: /20DC\s*ZIM · HPH/ }).click();
+    await estimate.getByRole("tab", { name: /20DC\s*ZIM · HPH→LAX→HOU · 17 days/ }).click();
     await expect(estimate.getByText("ZIM · DDP · HPH → LAX → HOU", { exact: true })).toBeVisible();
     await expect(estimate.getByText("~18,572")).toBeVisible();
 
     await page.screenshot({ path: "test-results/chinh-ngach-desktop.png", fullPage: false });
   });
 
+  test("opens on the sheet's three-card picker and links each pane by hash", async ({ page }) => {
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xuất khẩu chính ngạch");
+    await expect(page.locator("#tab-bang-gia")).toHaveAttribute("aria-selected", "true");
+
+    // Lookup: search spans categories, so results are grouped and the name is highlighted.
+    await page.locator("#tab-tra-cuu").click();
+    await expect(page).toHaveURL(/#tra-cuu$/);
+    await page.getByPlaceholder("Tìm mặt hàng… (vd: cà phê, gỗ, pin)").fill("pin");
+    await expect(page.locator(".tc-group-label").first()).toBeVisible();
+    await expect(page.locator("mark.sh").first()).toHaveText(/pin/i);
+    await page.locator("#tc-20 .tc-card-header").click();
+    await expect(page.locator("#tc-20")).toContainText("UN38.3 Test Report");
+
+    // Templates: a 2x2 grid, and one detail panel under it for the picked card.
+    await page.locator("#tab-mau-giay-to").click();
+    await expect(page).toHaveURL(/#mau-giay-to$/);
+    await expect(page.locator("#mgtDetailPanel")).toHaveCount(0);
+    await page.locator("#mgt-ci").click();
+    const panel = page.locator("#mgtDetailPanel");
+    await expect(panel.locator(".ph-title")).toHaveText("Commercial Invoice");
+    await expect(panel.locator("a.img-download-card")).toHaveCount(4);
+    await expect(panel.locator("a.img-download-card").first()).toHaveAttribute("href", "/chinh-ngach-docs/CI_Mau_1.jpg");
+    await page.locator("#mgt-ior").click();
+    await expect(panel.getByRole("link", { name: /Tải hợp đồng IOR mẫu/ })).toHaveAttribute("href", "/chinh-ngach-docs/THG_IOR_Agreement_Mau.docx");
+    await panel.getByRole("button", { name: "Đóng" }).click();
+    await expect(page.locator("#mgtDetailPanel")).toHaveCount(0);
+  });
+
   test("fits the workspace on a 375px viewport", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     // The rate sheet's wide tables must scroll inside their cards on a phone.
-    await expect(page.locator("#formal-panel-rates").getByText("~$155", { exact: true })).toBeVisible();
+    await expect(page.locator("#formal-panel-banggia").getByText("~$155", { exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 
     await page.getByRole("tab", { name: "Dự toán chi phí" }).click();
     // The cost table is wider than a phone; it must scroll inside its own box,
     // never push the page sideways.
-    await expect(page.locator("#formal-panel-estimate").getByText("MATSON CLX · DDP · HPH → HOU")).toBeVisible();
+    await expect(page.locator("#formal-panel-quotation").getByText("MATSON CLX · DDP · HPH → HOU")).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
     await page.screenshot({ path: "test-results/chinh-ngach-mobile.png", fullPage: false });
