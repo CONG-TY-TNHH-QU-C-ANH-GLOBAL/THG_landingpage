@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/express";
 
 interface ExpressVnUsPanelProps {
     larkOverlay: Record<string, any>;

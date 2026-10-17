@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const communityTranslations: TranslationDict = {
@@ -79,3 +80,6 @@ export const communityTranslations: TranslationDict = {
   "reviews.form_success_desc": tr("It's now pending review. Once verified by TH Group, it will appear in the Verified Reviews hub.", "Đánh giá đang chờ kiểm duyệt. Sau khi được TH Group xác thực, nó sẽ xuất hiện trong mục Đánh giá đã xác thực.", "评价正在等待审核。经TH Group核实后将显示在已认证评价专区。"),
   "reviews.form_submit": tr("Submit review", "Gửi đánh giá", "提交评价"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(communityTranslations);

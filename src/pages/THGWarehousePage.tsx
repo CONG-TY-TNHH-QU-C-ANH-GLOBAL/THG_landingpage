@@ -15,6 +15,7 @@ import { ServiceFeatureCard } from "@/components/service-pages/ServiceFeatureCar
 import { ServiceProcessSteps } from "@/components/service-pages/ServiceProcessSteps";
 import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
 import { WAREHOUSE_PACKAGING_URL } from "@/config/cmsAssets";
+import "@/lib/i18n/translations/warehouse";
 
 const sliderImages = [
   "https://w.ladicdn.com/s1400x1000/67e69e24e8a7ba001127c80a/kho-my-1-20250729095528-wnjai.jpg",

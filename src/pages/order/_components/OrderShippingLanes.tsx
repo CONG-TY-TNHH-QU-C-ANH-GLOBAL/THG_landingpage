@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsServiceBlocks } from "@/hooks/useCmsContent";
 
 import { shippingLanes as staticShippingLanes } from "../data/shippingLanes";
+import "@/lib/i18n/translations/order";
 
 interface RenderLane {
   emoji: string;

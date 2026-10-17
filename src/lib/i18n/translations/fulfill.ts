@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const fulfillTranslations: TranslationDict = {
@@ -149,3 +150,6 @@ export const fulfillTranslations: TranslationDict = {
   "hub.s6_account_desc": tr("Update security details and personal profile.", "Cập nhật thông tin bảo mật và hồ sơ cá nhân.", "更新安全信息与个人资料。"),
   "hub.s6_team_desc": tr("Permission controls let you add multiple members to co-manage the account — ideal for professional team-based businesses.", "Tính năng phân quyền cho phép thêm nhiều thành viên cùng quản lý tài khoản, phù hợp với mô hình kinh doanh theo đội nhóm chuyên nghiệp.", "权限功能允许添加多名成员共同管理账户，适合专业的团队化经营模式。"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(fulfillTranslations);

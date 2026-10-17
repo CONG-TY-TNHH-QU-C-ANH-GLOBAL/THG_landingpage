@@ -3,6 +3,7 @@ import { Calculator } from "lucide-react";
 
 import { THREE_PL_PACKAGING, THREE_PL_PACK_TIERS, THREE_PL_USPS_RATES } from "@/data/threePlPricing";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/pricing";
 
 const money = (value: number) => `$${value.toFixed(2)}`;
 

@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsServiceBlocks } from "@/hooks/useCmsContent";
 
 import { policies as staticPolicies } from "../data/policies";
+import "@/lib/i18n/translations/order";
 
 interface RenderPolicy {
   icon: string;

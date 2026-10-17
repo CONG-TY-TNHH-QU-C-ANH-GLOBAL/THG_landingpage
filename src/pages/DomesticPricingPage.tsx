@@ -30,6 +30,9 @@ import {
 } from "@/components/pricing/PackagingArt";
 import { THREE_PL_USPS_RATES } from "@/data/threePlPricing";
 import { trackEvent } from "@/lib/analytics";
+import "@/lib/i18n/translations/fulfill";
+import "@/lib/i18n/translations/pricing";
+import "@/lib/i18n/translations/warehouse";
 
 interface DomesticPricingRow {
     STT: string;

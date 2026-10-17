@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsSiteSettings } from "@/hooks/useCmsContent";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import "@/lib/i18n/translations/shipping";
 
 type LookupState =
   | { status: "idle" }

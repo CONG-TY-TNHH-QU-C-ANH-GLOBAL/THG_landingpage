@@ -25,6 +25,7 @@ import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { manualImagesBySeries } from "@/pages/catalog/variantImageMap";
 import { DELAYS, LIMITS } from "@/lib/constants";
 import { catalogPath } from "@/lib/catalogRoutes";
+import "@/lib/i18n/translations/catalog";
 
 const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
 

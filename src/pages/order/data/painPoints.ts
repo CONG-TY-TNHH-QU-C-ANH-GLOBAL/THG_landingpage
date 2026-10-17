@@ -1,3 +1,5 @@
+import "@/lib/i18n/translations/order";
+
 // "Why this matters" — 6 pain points shown above the Solutions section.
 // Each entry is an emoji-icon + i18n keys for title/description.
 

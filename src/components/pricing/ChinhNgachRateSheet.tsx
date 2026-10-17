@@ -18,6 +18,7 @@ import {
 } from "@/components/pricing/chinhNgachRateSheet.parse";
 import { useCmsPricingTable } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/chinhngach";
 
 // "Bảng giá" (bgp-banggia) in the sheet's markup: the MATSON / Sea thường / Air
 // strips with their cards, in the sheet's order. Figures come from the CMS rate

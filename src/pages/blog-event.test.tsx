@@ -187,6 +187,10 @@ for (const kind of ["blog", "events"] as const) {
     mount(`/${kind}`, client);
     await act(async () => { await vi.advanceTimersByTimeAsync(1); });
     const lastCard = screen.getByRole("link", { name: kind === "blog" ? /Article 49/ : /Event 49/ });
-    expect(lastCard.parentElement).toHaveStyle({ opacity: "1" });
+    // The reveal wrapper is the card's own on /events and the whole grid's on
+    // /blog; either way the deepest card must end up visible.
+    const reveal = lastCard.closest<HTMLElement>('[style*="opacity"]');
+    expect(reveal).not.toBeNull();
+    expect(reveal).toHaveStyle({ opacity: "1" });
   });
 }

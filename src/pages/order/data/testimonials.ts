@@ -2,6 +2,7 @@
 // Avatars are CMS-hosted (R2 bucket) — see src/config/cmsAssets.ts.
 
 import { TESTIMONIAL_AVATARS } from "@/config/cmsAssets";
+import "@/lib/i18n/translations/order";
 
 export interface Testimonial {
   nameKey: string;

@@ -1,3 +1,5 @@
+import "@/lib/i18n/translations/order";
+
 // 4 policy cards (refund / restrictions / process / disclosures). Each card
 // has a tag chip, icon, title, and a bullet list of i18n keys.
 

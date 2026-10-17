@@ -10,6 +10,7 @@ import globeImageAvif from "@/assets/globe-3d.avif";
 import globeImageWebp from "@/assets/globe-3d.webp";
 import { useHomepageBlock } from "@/hooks/useCmsContent";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
+import "@/lib/i18n/translations/homepage";
 
 // Parse `**word**` markers into gold-highlighted spans. Odd-indexed chunks
 // of split() are the matches; even-indexed are the surrounding plain text.

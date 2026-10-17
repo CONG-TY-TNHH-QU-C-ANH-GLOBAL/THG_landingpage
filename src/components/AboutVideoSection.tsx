@@ -2,6 +2,7 @@ import { Package, Truck, Globe, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useCmsSiteSettings, useHomepageBlock } from "@/hooks/useCmsContent";
+import "@/lib/i18n/translations/homepage";
 
 const FALLBACK_VIDEO_ID = "AzlW2irPANQ";
 

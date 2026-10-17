@@ -2,6 +2,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useCmsLeadership } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import type { CmsLeadershipAvatar, CmsLeadershipMember } from "@/lib/cmsSchemas";
+import "@/lib/i18n/translations/homepage";
 
 const MAX_VISIBLE_AVATARS = 4;
 

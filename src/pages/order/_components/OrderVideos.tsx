@@ -4,6 +4,7 @@ import { ExternalLink, Play } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
 import { useCmsServices } from "@/hooks/useCmsContent";
+import "@/lib/i18n/translations/order";
 
 /** CMS-driven video grid on the navy band of /thg-order. Lazy-mounts the
  *  YouTube iframe on first click — keeps initial paint cheap and avoids

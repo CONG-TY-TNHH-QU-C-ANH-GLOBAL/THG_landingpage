@@ -4,6 +4,7 @@ import { Plane, Warehouse, Printer, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
+import "@/lib/i18n/translations/homepage";
 
 /**
  * EcosystemJourneySection — "land & expand" roadmap (audit Gap 3).

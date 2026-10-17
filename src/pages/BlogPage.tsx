@@ -10,6 +10,7 @@ import { useCmsBlogCategories, useCmsBlogList } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { useMemo, useState } from "react";
+import "@/lib/i18n/translations/blog";
 
 interface DisplayPost {
   id: string;

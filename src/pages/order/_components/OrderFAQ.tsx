@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsFaqs } from "@/hooks/useCmsContent";
 
 import { faqItems as staticFaqItems } from "../data/faq";
+import "@/lib/i18n/translations/order";
 
 /** Static fallback emoji icons — paired by position with the CMS rows. CMS
  *  FAQs don't carry an icon column today, so we cycle through this set. */

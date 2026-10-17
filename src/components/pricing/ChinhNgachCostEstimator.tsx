@@ -8,6 +8,7 @@ import {
   type EstimateSurcharge,
   type FormalEstimateMode,
 } from "@/components/pricing/chinhNgachEstimator";
+import "@/lib/i18n/translations/chinhngach";
 
 type Cell = string | number | null | undefined;
 type Row = Record<string, Cell>;

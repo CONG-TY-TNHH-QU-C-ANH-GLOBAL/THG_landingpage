@@ -26,6 +26,7 @@ import ExpressVnUsPanel from "@/components/pricing/ExpressVnUsPanel";
 import ExpressCnUsPanel from "@/components/pricing/ExpressCnUsPanel";
 import { PricingSearchProvider, usePricingSearch } from "@/components/pricing/PricingSearchContext";
 import { trackEvent } from "@/lib/analytics";
+import "@/lib/i18n/translations/pricing";
 
 /* ═══════════════════════════════════════════════
    MAIN PAGE

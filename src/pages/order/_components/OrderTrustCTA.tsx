@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/order";
 
 const CHIP_KEYS = ["op.chip1", "op.chip2", "op.chip3", "op.chip4", "op.chip5", "op.chip6"];
 

@@ -22,6 +22,7 @@ import { rememberOwnerToken, reviewOwnerKey } from "@/lib/communityOwner";
 import { useCommunityCategories } from "@/hooks/useCmsContent";
 import { useFormFields } from "@/hooks/useFormFields";
 import { getUtmPayload } from "@/lib/utm";
+import "@/lib/i18n/translations/community";
 
 // Mirror of the server-side zod bounds (community reviews endpoint).
 const TITLE_MIN = 8;
