@@ -30,6 +30,9 @@ import {
 } from "@/components/pricing/PackagingArt";
 import { THREE_PL_USPS_RATES } from "@/data/threePlPricing";
 import { trackEvent } from "@/lib/analytics";
+import "@/lib/i18n/translations/fulfill";
+import "@/lib/i18n/translations/pricing";
+import "@/lib/i18n/translations/warehouse";
 
 interface DomesticPricingRow {
     STT: string;
@@ -52,6 +55,38 @@ const NO_SCRIPT_CSS = `
 function formatWeight(weight: string): string {
     if (!weight) return "";
     return weight.includes("oz") ? weight : `${weight} oz`;
+}
+
+/** Carton sizes as a price list, a free option as a pill, anything else as
+ *  a price with its unit. */
+function PackagingPrice({ card }: Readonly<{
+    card: { value?: string; unit?: string; free?: boolean; sizes?: readonly { label: string; price: string }[] };
+}>) {
+    if (card.sizes) {
+        return (
+            <div className="flex flex-col gap-1">
+                {card.sizes.map((size) => (
+                    <div key={size.label} className="pk-size text-[14.5px] text-white/80">
+                        <span>{size.label}</span>
+                        <span className="whitespace-nowrap font-extrabold text-primary">{size.price}</span>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+    if (card.free) {
+        return (
+            <span className="pk-free inline-block rounded-full border-2 border-primary/55 px-4 py-0.5 text-[20px] font-black uppercase tracking-wide text-primary">
+                {card.value}
+            </span>
+        );
+    }
+    return (
+        <span>
+            <span className="text-[30px] font-black tracking-tight text-primary">{card.value}</span>
+            <span className="text-[14px] font-semibold text-white/60"> {card.unit}</span>
+        </span>
+    );
 }
 
 const DomesticPricingContent = () => {
@@ -341,25 +376,7 @@ const DomesticPricingContent = () => {
                                     <div className="pk-artwrap">{card.art}</div>
                                     <h3 className="mb-2 mt-1.5 text-[18px] font-extrabold text-white">{card.title}</h3>
                                     <div className="mb-2.5">
-                                        {card.sizes ? (
-                                            <div className="flex flex-col gap-1">
-                                                {card.sizes.map((size) => (
-                                                    <div key={size.label} className="pk-size text-[14.5px] text-white/80">
-                                                        <span>{size.label}</span>
-                                                        <span className="whitespace-nowrap font-extrabold text-primary">{size.price}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : card.free ? (
-                                            <span className="pk-free inline-block rounded-full border-2 border-primary/55 px-4 py-0.5 text-[20px] font-black uppercase tracking-wide text-primary">
-                                                {card.value}
-                                            </span>
-                                        ) : (
-                                            <span>
-                                                <span className="text-[30px] font-black tracking-tight text-primary">{card.value}</span>
-                                                <span className="text-[14px] font-semibold text-white/60"> {card.unit}</span>
-                                            </span>
-                                        )}
+                                        <PackagingPrice card={card} />
                                     </div>
                                     <p className="text-[14.5px] leading-relaxed text-white/70">{card.desc}</p>
                                 </li>

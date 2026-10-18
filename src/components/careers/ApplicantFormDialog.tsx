@@ -18,6 +18,7 @@ import { cmsClient } from "@/lib/cmsClient";
 import { useTurnstile } from "@/lib/useTurnstile";
 import { getUtmPayload } from "@/lib/utm";
 import { DELAYS, LIMITS } from "@/lib/constants";
+import "@/lib/i18n/translations/careers";
 
 interface Props {
   trigger: ReactNode;

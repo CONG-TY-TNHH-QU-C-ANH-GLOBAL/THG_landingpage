@@ -1,3 +1,5 @@
+import "@/lib/i18n/translations/order";
+
 // 3-lane shipping compare (Air / Express / Sea). Each lane lists 5 features
 // (translated via i18n keys) and a footnote.
 

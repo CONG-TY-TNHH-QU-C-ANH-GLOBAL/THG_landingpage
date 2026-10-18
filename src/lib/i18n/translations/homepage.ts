@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const homepageTranslations: TranslationDict = {
@@ -155,3 +156,6 @@ export const homepageTranslations: TranslationDict = {
   "ecosystem.step3_cta": tr("Explore Fulfill", "Xem TH Group Fulfill", "了解 Fulfill"),
   "faq.ask_community": tr("Have a new question? Ask the TH Group community", "Có câu hỏi mới? Hỏi cộng đồng TH Group", "有新问题？向TH Group社区提问"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(homepageTranslations);

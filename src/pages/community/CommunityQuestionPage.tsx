@@ -20,6 +20,7 @@ import { useCommunityQuestion } from "@/hooks/useCmsContent";
 import { cmsClient } from "@/lib/cmsClient";
 import { useI18n } from "@/lib/i18n";
 import { SafeHtml } from "@/lib/sanitizeHtml";
+import "@/lib/i18n/translations/community";
 
 // Share Loop campaign constants (identify community shares in analytics —
 // not environment-specific, so they live here rather than in .env).

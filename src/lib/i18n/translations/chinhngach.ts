@@ -3,6 +3,7 @@
 // only the page chrome and the meta-row labels are translated here.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const chinhNgachTranslations: TranslationDict = {
@@ -135,3 +136,6 @@ export const chinhNgachTranslations: TranslationDict = {
   "chinhngach.rate_view_guide_tab": tr("📖 How to read rates", "📖 Hướng dẫn đọc bảng giá", "📖 费率表阅读指南"),
   "chinhngach.rate_view_estimate_tab": tr("📋 Cost estimate", "📋 Dự toán chi phí", "📋 费用估算"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(chinhNgachTranslations);

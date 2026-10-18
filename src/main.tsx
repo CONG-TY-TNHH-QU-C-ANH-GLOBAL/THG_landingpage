@@ -1,13 +1,10 @@
 import { createRoot } from "react-dom/client";
-import * as Sentry from "@sentry/react";
 import App from "./App.tsx";
+import { initMonitoring } from "./lib/monitoring";
 import "./index.css";
+import "./styles/touch.css";
 
-Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    enabled: Boolean(import.meta.env.VITE_SENTRY_DSN),
-    tracesSampleRate: 0.1,
-});
+initMonitoring();
 
 /* ═══════════════════════════════════════════════════════════
    Global error handlers — suppress GTranslate DOM-mutation crashes

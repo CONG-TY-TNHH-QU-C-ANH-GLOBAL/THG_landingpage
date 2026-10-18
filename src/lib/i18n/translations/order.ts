@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const orderTranslations: TranslationDict = {
@@ -196,3 +197,6 @@ export const orderTranslations: TranslationDict = {
   "op.chip5": tr("🇨🇳 Mandarin Negotiation", "🇨🇳 Đàm phán tiếng Trung", "🇨🇳 中文谈判"),
   "op.chip6": tr("🏠 3 Warehouses", "🏠 3 Kho hàng", "🏠 3个仓库"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(orderTranslations);

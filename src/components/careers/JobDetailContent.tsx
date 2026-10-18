@@ -7,6 +7,7 @@ import { isPastDeadline } from "@/lib/deadline";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 import { ApplicantFormDialog } from "@/components/careers/ApplicantFormDialog";
 import type { Job } from "@/lib/careers";
+import "@/lib/i18n/translations/careers";
 
 interface Props {
   job: Job;

@@ -7,6 +7,7 @@ import ContactSection from "@/components/ContactSection";
 import { RouteRenderer } from "@/components/shipping-policy/RouteRenderer";
 import { useCmsShippingRoutes } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/shipping";
 
 const ShippingPolicyPage = () => {
   const { t, language } = useI18n();

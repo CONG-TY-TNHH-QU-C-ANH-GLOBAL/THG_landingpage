@@ -13,6 +13,7 @@ import { ChinhNgachRateSheet } from "@/components/pricing/ChinhNgachRateSheet";
 import { useI18n } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
 import "@/components/pricing/chinhNgachSheet.css";
+import "@/lib/i18n/translations/chinhngach";
 
 /** The page is the XKCN Hub v6.0 sheet (thg_xkcn_v14.html): a cream hero, a
  *  three-card picker, and one pane per card. Markup and class names follow the

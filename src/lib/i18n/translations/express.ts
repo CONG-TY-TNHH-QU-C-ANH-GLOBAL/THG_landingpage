@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const expressTranslations: TranslationDict = {
@@ -97,3 +98,6 @@ export const expressTranslations: TranslationDict = {
   "ecn.bulk_quote": tr("Quote per bulk", "Báo giá theo lô", "按批报价"),
   "ecn.contact_btn": tr("📞 Contact for CN–US quote", "📞 Liên hệ báo giá CN–US", "📞 联系获取CN-US报价"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(expressTranslations);

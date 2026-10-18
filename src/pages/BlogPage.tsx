@@ -10,6 +10,7 @@ import { useCmsBlogCategories, useCmsBlogList } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { useMemo, useState } from "react";
+import "@/lib/i18n/translations/blog";
 
 interface DisplayPost {
   id: string;
@@ -149,10 +150,12 @@ const BlogPage = () => {
             </ScrollReveal>
           )}
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rest.map((post) => (
-              <ScrollReveal key={post.slug}>
-                <Link to={`/${language}/blog/${post.slug}`} onPointerDown={() => prepareArticle(client, "blog", post.slug, language)} onMouseEnter={() => prepareArticle(client, "blog", post.slug, language)} onFocus={() => prepareArticle(client, "blog", post.slug, language)} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
+          {/* One reveal for the grid, not one per card: dozens of cards each
+              animating in as they scroll past made the list stutter on phones. */}
+          <ScrollReveal>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {rest.map((post) => (
+                <Link key={post.slug} to={`/${language}/blog/${post.slug}`} onPointerDown={() => prepareArticle(client, "blog", post.slug, language)} onMouseEnter={() => prepareArticle(client, "blog", post.slug, language)} onFocus={() => prepareArticle(client, "blog", post.slug, language)} className="glass-card rounded-2xl overflow-hidden group cursor-pointer hover-lift h-full flex flex-col">
                   <div className="relative bg-secondary/10 h-56 overflow-hidden">
                     <PostCover post={post} className="object-top group-hover:scale-105 transition-transform duration-500" />
                   </div>
@@ -167,9 +170,9 @@ const BlogPage = () => {
                     <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary mt-auto">{t("news.read_more")} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
                   </div>
                 </Link>
-              </ScrollReveal>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </div>
 

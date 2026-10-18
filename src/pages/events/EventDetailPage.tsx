@@ -11,6 +11,7 @@ import { CmsHttpError } from "@/lib/cmsClient";
 import { useI18n } from "@/lib/i18n";
 import { formatEventDates } from "@/lib/eventDates";
 import { parseYouTubeId, youtubeThumb } from "@/lib/youtube";
+import "@/lib/i18n/translations/blog";
 
 export default function EventDetailPage() {
   const { slug = "" } = useParams();

@@ -1,6 +1,7 @@
 import { useI18n } from "@/lib/i18n";
 import { countryNames, CARGO_LABELS, type CargoType, type EstimatedPrice } from "@/components/pricing/types";
 import { usePricingSearch } from "@/components/pricing/PricingSearchContext";
+import "@/lib/i18n/translations/pricing";
 
 interface SearchWidgetProps {
     /** Country options derived from the lark overlay — parent computes from

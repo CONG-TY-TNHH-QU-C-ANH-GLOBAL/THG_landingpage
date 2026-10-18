@@ -25,8 +25,22 @@ import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { manualImagesBySeries } from "@/pages/catalog/variantImageMap";
 import { DELAYS, LIMITS } from "@/lib/constants";
 import { catalogPath } from "@/lib/catalogRoutes";
+import "@/lib/i18n/translations/catalog";
 
 const PAGE_LIMIT = LIMITS.CATALOG_PAGE_LIMIT;
+
+/** Published on [data-catalog-state], which the prerender script waits on. */
+function catalogStateOf(loading: boolean, failed: boolean): "loading" | "error" | "ready" {
+  if (loading) return "loading";
+  return failed ? "error" : "ready";
+}
+
+/** "Christmas — 42 products. <site description>", or the plain description
+ *  outside a collection. The count is left out until the Hub has answered. */
+function collectionDescription(name: string | null | undefined, count: string, base: string): string {
+  if (!name) return base;
+  return count ? `${name} — ${count}. ${base}` : `${name}. ${base}`;
+}
 
 const CatalogPage = () => {
   const { t, language } = useI18n();
@@ -294,7 +308,7 @@ const CatalogPage = () => {
   // An empty campaign is thin content: keep it out of the index. Only once the
   // Hub has actually answered, so a slow or failed request never sets noindex.
   const emptyCollection = !!activeCollection && !loading && !loadError && pagination.total === 0;
-  const catalogState = loading ? "loading" : loadError ? "error" : "ready";
+  const catalogState = catalogStateOf(loading, Boolean(loadError));
 
   // Unknown slug (renamed or removed in the Hub) → back to the full catalog.
   if (activeCollection && collections.length > 0 && !collections.some((c) => c.slug === activeCollection)) {
@@ -309,11 +323,11 @@ const CatalogPage = () => {
     >
       <SeoHead
         title={activeCollectionName ? `${activeCollectionName} — ${t("seo.catalog_title")}` : t("seo.catalog_title")}
-        description={
-          activeCollectionName
-            ? `${activeCollectionName}${catalogState === "ready" ? ` — ${pagination.total} ${t("catalog.products_count")}` : ""}. ${t("seo.catalog_desc")}`
-            : t("seo.catalog_desc")
-        }
+        description={collectionDescription(
+          activeCollectionName,
+          catalogState === "ready" ? `${pagination.total} ${t("catalog.products_count")}` : "",
+          t("seo.catalog_desc"),
+        )}
         path={activeCollection ? `/catalog/${encodeURIComponent(activeCollection)}` : "/catalog"}
         noindex={emptyCollection}
       />

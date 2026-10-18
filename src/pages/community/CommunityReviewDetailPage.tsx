@@ -22,6 +22,7 @@ import { cmsClient } from "@/lib/cmsClient";
 import { reviewOwnerKey } from "@/lib/communityOwner";
 import { useI18n } from "@/lib/i18n";
 import { SafeHtml } from "@/lib/sanitizeHtml";
+import "@/lib/i18n/translations/community";
 
 const DATE_LOCALES: Record<string, string> = { vi: "vi-VN", en: "en-US", zh: "zh-CN" };
 

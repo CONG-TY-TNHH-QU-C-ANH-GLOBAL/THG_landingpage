@@ -1,6 +1,7 @@
 import { useId, useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, FileSpreadsheet } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/pricing";
 
 // xlsx + jspdf weigh ~290KB combined; lazy-load only when user actually exports.
 async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfig) {

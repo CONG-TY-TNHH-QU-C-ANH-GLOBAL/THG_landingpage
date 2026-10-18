@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const blogTranslations: TranslationDict = {
@@ -28,3 +29,6 @@ export const blogTranslations: TranslationDict = {
   "event.back": tr("Back to events", "Quay lại sự kiện", "返回活动列表"),
   "event.empty": tr("No events published in this language yet.", "Chưa có sự kiện được xuất bản cho ngôn ngữ này.", "此语言暂无已发布活动。"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(blogTranslations);

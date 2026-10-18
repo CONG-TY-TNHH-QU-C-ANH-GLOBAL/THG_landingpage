@@ -11,6 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import { isPastDeadline } from "@/lib/deadline";
 import { SafeHtml } from "@/lib/sanitizeHtml";
 import { ACCENT, DEFAULT_ACCENT, jobFromCmsListItem, type Job } from "@/lib/careers";
+import "@/lib/i18n/translations/careers";
 
 const FILTERS = [
     { key: "all", label: "Tất cả", count: 7 },

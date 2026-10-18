@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
 import type { CmsPartner } from "@/lib/cmsSchemas";
+import "@/lib/i18n/translations/homepage";
 
 /**
  * Business partners, distinct from the integrations strip below it. Integrations

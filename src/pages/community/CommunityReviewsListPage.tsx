@@ -21,6 +21,7 @@ import { SeoHead } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { useCommunityCategories, useCommunityReviews } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/community";
 
 const CommunityReviewsListPage = () => {
   const { t, language } = useI18n();

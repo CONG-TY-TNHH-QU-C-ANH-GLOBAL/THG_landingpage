@@ -5,6 +5,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
 import { useCmsServices } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/homepage";
 
 /** Illustration block per service id. Add new entries here when CMS gets new services. */
 const ILLUSTRATIONS: Record<string, () => JSX.Element> = {

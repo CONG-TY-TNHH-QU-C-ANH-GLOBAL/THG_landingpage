@@ -1,3 +1,5 @@
+import "@/lib/i18n/translations/order";
+
 // Hero section social-proof stats (count of orders / on-time / fees / rating).
 // `val` is the rendered number; `labelKey` resolves through i18n at the call site.
 // When migrating to CMS, this maps 1:1 to a `stats` collection rows.

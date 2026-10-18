@@ -3,6 +3,7 @@ import { Info } from "lucide-react";
 import PriceTable from "./PriceTable";
 import { useI18n } from "@/lib/i18n";
 import { useLarkPricingContext } from "@/components/pricing/LarkPricingProvider";
+import "@/lib/i18n/translations/shipping";
 
 const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: any[] } | null }) => {
     const [tab, setTab] = useState<"regular" | "special">("regular");

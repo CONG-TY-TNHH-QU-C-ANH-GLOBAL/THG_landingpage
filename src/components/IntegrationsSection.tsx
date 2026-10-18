@@ -3,6 +3,7 @@ import { useCmsIntegrations } from "@/hooks/useCmsContent";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
 import thGroupEmblem from "@/assets/th-group-emblem.webp";
+import "@/lib/i18n/translations/homepage";
 
 const TikTokSVG = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9 text-black" aria-hidden="true">

@@ -2,6 +2,7 @@ import { Shield, Clock, DollarSign, Headphones, Globe, Zap } from "lucide-react"
 import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
+import "@/lib/i18n/translations/homepage";
 
 const AdvantagesSection = () => {
   const { tVi } = useI18n();

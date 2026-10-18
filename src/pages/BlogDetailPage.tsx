@@ -9,6 +9,7 @@ import { useCmsBlogPost, useCmsBlogPreview } from "@/hooks/useCmsContent";
 import { CmsHttpError } from "@/lib/cmsClient";
 import { useI18n } from "@/lib/i18n";
 import { ArrowLeft, ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react";
+import "@/lib/i18n/translations/blog";
 
 interface DisplayArticle {
     slug: string;

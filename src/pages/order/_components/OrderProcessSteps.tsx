@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsServiceBlocks } from "@/hooks/useCmsContent";
 
 import { processSteps as staticProcessSteps } from "../data/processSteps";
+import "@/lib/i18n/translations/order";
 
 interface RenderItem {
   num: number;

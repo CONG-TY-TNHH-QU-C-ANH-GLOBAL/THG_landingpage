@@ -2,6 +2,7 @@ import { useI18n } from "@/lib/i18n";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
 import { useHomepageBlock } from "@/hooks/useCmsContent";
+import "@/lib/i18n/translations/homepage";
 
 const ProcessSection = () => {
   const { tVi, language } = useI18n();
