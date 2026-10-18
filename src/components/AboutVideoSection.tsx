@@ -73,7 +73,7 @@ const AboutVideoSection = () => {
               <iframe
                 className="w-full h-full absolute inset-0"
                 src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`}
-                title="TH Group Fulfill Introduction"
+                title="TH Group Introduction"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />

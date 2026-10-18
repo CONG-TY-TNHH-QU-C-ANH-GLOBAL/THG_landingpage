@@ -24,11 +24,14 @@ interface OrganizationProps {
   logo?: string;
 }
 
-export function JsonLdOrganization({ name = "TH Group Fulfill", url = SITE_BASE, logo = `${SITE_BASE}/logo.png` }: OrganizationProps = {}) {
+export function JsonLdOrganization({ name = "TH Group", url = SITE_BASE, logo = `${SITE_BASE}/logo.png` }: OrganizationProps = {}) {
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name,
+    // The brand was "TH Group Fulfill" (and "THG Fulfill" before that); naming both
+    // keeps search engines tying the old listings to this organisation.
+    alternateName: ["TH Group Fulfill", "THG Fulfill"],
     url,
     logo,
     sameAs: [
@@ -64,7 +67,7 @@ interface ServiceProps {
   provider?: string;
 }
 
-export function JsonLdService({ name, description, url, provider = "TH Group Fulfill" }: ServiceProps) {
+export function JsonLdService({ name, description, url, provider = "TH Group" }: ServiceProps) {
   const data = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -153,7 +156,7 @@ export function JsonLdJobPosting({
     directApply: true,
     hiringOrganization: {
       "@type": "Organization",
-      name: "TH Group Fulfill",
+      name: "TH Group",
       sameAs: SITE_BASE,
       logo: `${SITE_BASE}/logo.png`,
     },
@@ -218,7 +221,7 @@ export function JsonLdQaPage({
       "@type": "Answer",
       text: expertAnswer,
       url,
-      author: { "@type": "Organization", name: "TH Group Fulfill", url: SITE_BASE },
+      author: { "@type": "Organization", name: "TH Group", url: SITE_BASE },
     },
   };
   if (authorName) mainEntity.author = { "@type": "Person", name: authorName };
@@ -253,7 +256,7 @@ interface ReviewProps {
   publishedAt?: number | null;
 }
 
-/** schema.org/Review of the TH Group Fulfill service. Only rendered for verified,
+/** schema.org/Review of the TH Group service. Only rendered for verified,
  *  indexable reviews that carry a numeric rating, so the emitted markup is
  *  always complete and valid (itemReviewed + reviewRating + author + body).
  *  Reviews without a rating fall back to no markup rather than invalid JSON-LD. */
@@ -267,7 +270,7 @@ export function JsonLdReview({ name, body, url, authorName, rating, publishedAt 
     author: { "@type": "Person", name: authorName },
     itemReviewed: {
       "@type": "Organization",
-      name: "TH Group Fulfill",
+      name: "TH Group",
       url: SITE_BASE,
     },
     reviewRating: {
@@ -323,17 +326,17 @@ interface ArticleProps {
 }
 
 /** schema.org/Article for blog posts — enables article rich results. Publisher
- *  and author default to the TH Group Fulfill Organization. */
+ *  and author default to the TH Group Organization. */
 export function JsonLdArticle({ headline, description, image, datePublished, url }: ArticleProps) {
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    author: { "@type": "Organization", name: "TH Group Fulfill", url: SITE_BASE },
+    author: { "@type": "Organization", name: "TH Group", url: SITE_BASE },
     publisher: {
       "@type": "Organization",
-      name: "TH Group Fulfill",
+      name: "TH Group",
       logo: { "@type": "ImageObject", url: `${SITE_BASE}/logo.png` },
     },
   };

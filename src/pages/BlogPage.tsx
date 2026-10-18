@@ -78,7 +78,7 @@ const BlogPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={`${t("blog.title")} — TH Group Fulfill`}
+        title={`${t("blog.title")} — TH Group`}
         description={t("blog.subtitle")}
         path="/blog"
       />

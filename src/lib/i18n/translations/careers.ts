@@ -5,7 +5,7 @@ import { tr } from "../helpers";
 import type { TranslationDict } from "../types";
 
 export const careersTranslations: TranslationDict = {
-  "careers.hero_subtitle": tr("At TH Group Fulfill, we don't just look for employees, we look for partners who share the same vision to conquer global eCommerce.", "Tại TH Group Fulfill, chúng tôi không chỉ tìm người làm việc, mà tìm những đối tác đồng hành chia sẻ tầm nhìn chinh phục eCommerce toàn cầu.", "在 TH Group Fulfill，我们不只是寻找员工，更寻找志同道合、共同征服全球电子商务的合作伙伴。"),
+  "careers.hero_subtitle": tr("At TH Group, we don't just look for employees, we look for partners who share the same vision to conquer global eCommerce.", "Tại TH Group, chúng tôi không chỉ tìm người làm việc, mà tìm những đối tác đồng hành chia sẻ tầm nhìn chinh phục eCommerce toàn cầu.", "在 TH Group，我们不只是寻找员工，更寻找志同道合、共同征服全球电子商务的合作伙伴。"),
   "careers.why1_title": tr("International Environment", "Môi trường quốc tế", "国际化环境"),
   "careers.why1_desc": tr("Work closely with customers, suppliers and partners across VN, China, US, and EU every day.", "Làm việc với khách hàng, supplier và đối tác tại VN, TQ, Mỹ và Châu Âu mỗi ngày.", "每天与越南、中国、美国和欧洲的客户、供应商及合作伙伴密切合作。"),
   "careers.why2_title": tr("Grow with the Company", "Tăng trưởng cùng công ty", "与公司共成长"),
@@ -95,7 +95,7 @@ export const careersTranslations: TranslationDict = {
   "careers.hero_title_2": tr("Transport Happiness", "Transport Happiness", "Transport Happiness"),
   "careers.hero_title_3": tr("Together with TH Group reach the", "Cùng TH Group vươn ra", "与 TH Group 一起走向"),
   "careers.hero_title_4": tr("world", "thế giới", "世界"),
-  "careers.hero_desc": tr("TH Group Fulfill — cross-border E-commerce fulfillment ecosystem Vietnam · China · US. We are looking for passionate, proactive talents who share our mission of bringing local products to the global stage.", "TH Group Fulfill — hệ sinh thái fulfillment E-commerce xuyên biên giới Việt Nam · Trung Quốc · Hoa Kỳ. Chúng tôi đang tìm kiếm những con người nhiệt huyết, chủ động và khát khao phát triển cùng sứ mệnh đưa sản phẩm Việt ra toàn cầu.", "TH Group Fulfill — 跨境电子商务履约生态系统：越南·中国·美国。我们正在寻找充满热情、主动且渴望与我们共同成长的人才，帮助本土产品走向全球。"),
+  "careers.hero_desc": tr("TH Group — cross-border E-commerce fulfillment ecosystem Vietnam · China · US. We are looking for passionate, proactive talents who share our mission of bringing local products to the global stage.", "TH Group — hệ sinh thái fulfillment E-commerce xuyên biên giới Việt Nam · Trung Quốc · Hoa Kỳ. Chúng tôi đang tìm kiếm những con người nhiệt huyết, chủ động và khát khao phát triển cùng sứ mệnh đưa sản phẩm Việt ra toàn cầu.", "TH Group — 跨境电子商务履约生态系统：越南·中国·美国。我们正在寻找充满热情、主动且渴望与我们共同成长的人才，帮助本土产品走向全球。"),
   "careers.stat1_label": tr("Open Positions", "Vị trí đang tuyển", "热招职位"),
   "careers.stat2_label": tr("Operating Countries", "Quốc gia vận hành", "运营国家"),
   "careers.stat3_label": tr("Service Sectors", "Mảng dịch vụ", "服务领域"),
@@ -105,5 +105,5 @@ export const careersTranslations: TranslationDict = {
   "careers.list_empty": tr("No open positions right now. Please check back later.", "Hiện chưa có vị trí tuyển dụng nào. Vui lòng quay lại sau.", "目前暂无职位空缺，请稍后再来。"),
   "careers.job_not_found": tr("This position no longer exists or has been closed.", "Vị trí này không còn tồn tại hoặc đã đóng.", "该职位已不存在或已关闭。"),
   "careers.all_positions": tr("All positions", "Tất cả vị trí", "全部职位"),
-  "careers.seo_title_suffix": tr("Careers at TH Group Fulfill", "Tuyển dụng TH Group Fulfill", "TH Group Fulfill 招聘"),
+  "careers.seo_title_suffix": tr("Careers at TH Group", "Tuyển dụng TH Group", "TH Group 招聘"),
 };
