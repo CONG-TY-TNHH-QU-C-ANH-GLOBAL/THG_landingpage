@@ -19,7 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { Link, useLocation } from "react-router-dom";
-import thGroupLogo from "@/assets/th-group-logo.svg";
+import thGroupLogo from "@/assets/th-group-logo.webp";
+import thGroupLogoOnDark from "@/assets/th-group-logo-on-dark.webp";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { DELAYS, SCROLL } from "@/lib/constants";
 
@@ -127,9 +128,9 @@ interface NavbarProps {
 interface NavbarTone {
   navItem: string;
   mutedLink: string;
-  brandText: string;
-  brandSub: string;
-  logoBox: string;
+  /** The full logo; its stencil "TH GROUP" is dark brown, so dark heroes get
+   *  the cream-lettered version. */
+  logo: string;
   toggleBg: string;
   toggleIcon: string;
 }
@@ -137,9 +138,7 @@ interface NavbarTone {
 const DEFAULT_TONE: NavbarTone = {
   navItem: "text-foreground/80 hover:text-foreground hover:bg-secondary/50",
   mutedLink: "text-muted-foreground hover:text-foreground",
-  brandText: "text-navy",
-  brandSub: "text-muted-foreground",
-  logoBox: "bg-navy",
+  logo: thGroupLogo,
   toggleBg: "bg-secondary/30 hover:bg-secondary/60",
   toggleIcon: "text-navy",
 };
@@ -147,9 +146,7 @@ const DEFAULT_TONE: NavbarTone = {
 const DARK_HERO_TONE: NavbarTone = {
   navItem: "text-white/85 hover:text-white hover:bg-white/10",
   mutedLink: "text-white/70 hover:text-white",
-  brandText: "text-white",
-  brandSub: "text-white/60",
-  logoBox: "bg-white/15 backdrop-blur-sm",
+  logo: thGroupLogoOnDark,
   toggleBg: "bg-white/10 hover:bg-white/20",
   toggleIcon: "text-white",
 };
@@ -219,26 +216,14 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
-        <Link to={`/${language}`} className="flex items-center gap-3 group">
-          <div
-            className={`w-16 h-10 rounded-xl flex items-center justify-center group-hover:scale-105 group-hover:shadow-lg transition-all duration-300 overflow-hidden p-1.5 ${tone.logoBox}`}
-          >
-            <img
-              src={thGroupLogo}
-              alt="TH Group"
-              className="w-full h-full object-contain brightness-0 invert"
-            />
-          </div>
-          <div>
-            <span
-              className={`text-base font-bold leading-tight tracking-tight block ${tone.brandText}`}
-            >
-              TH Group Fulfill
-            </span>
-            <span className={`text-[9px] tracking-[0.15em] uppercase block ${tone.brandSub}`}>
-              Transport Happiness Group
-            </span>
-          </div>
+        <Link to={`/${language}`} className="flex items-center group" aria-label="TH Group — Transport Happiness Group">
+          <img
+            src={tone.logo}
+            alt="TH Group"
+            width={480}
+            height={114}
+            className="h-9 lg:h-11 w-auto transition-transform duration-300 group-hover:scale-[1.03]"
+          />
         </Link>
 
         {/* Desktop Nav */}

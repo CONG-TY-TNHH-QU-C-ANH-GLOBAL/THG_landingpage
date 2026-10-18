@@ -59,7 +59,7 @@ const THGFulfillPage = () => {
         ogImage={thGroupHeroImage}
       />
       <JsonLdService
-        name="TH Group Fulfill â€” POD & Dropship Fulfillment"
+        name="TH Group Fulfill — POD & Dropship Fulfillment"
         description="End-to-end Print-on-Demand and Dropship fulfillment from Vietnam, China and USA warehouses. Optimized basecost, multi-route shipping, transparent pricing."
         url="https://thgfulfill.com/thg-fulfill"
       />
@@ -214,7 +214,7 @@ const THGFulfillPage = () => {
           <ScrollReveal>
             <SectionHeader
               eyebrow={t("fulfill_page.solution_subtitle")}
-              title="TH Group Fulfill â€“"
+              title="TH Group Fulfill –"
               titleHighlight={t("fulfill_page.solution_highlight")}
               description={t("fulfill_page.solution_desc")}
             />
@@ -330,7 +330,7 @@ const THGFulfillPage = () => {
         </div>
       </section>
 
-      {/* Ecount Guide - I: Video hÆ°á»›ng dáº«n */}
+      {/* Ecount Guide - I: Video hướng dẫn */}
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4 max-w-5xl">
           <ScrollReveal>
@@ -346,7 +346,7 @@ const THGFulfillPage = () => {
           <ScrollReveal delay={100}>
             <ServiceVideoCard
               videoId="AzlW2irPANQ"
-              title="TH Group - HÆ°á»›ng dáº«n cÃ¡ch lÃªn Ä‘Æ¡n trÃªn Ecount ERP"
+              title="TH Group - Hướng dẫn cách lên đơn trên Ecount ERP"
               className="max-w-3xl mx-auto"
             />
           </ScrollReveal>

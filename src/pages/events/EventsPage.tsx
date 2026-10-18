@@ -18,8 +18,8 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title="Event — TH Group Fulfill"
-        description="Sự kiện, webinar và tài liệu từ TH Group Fulfill cùng các đối tác."
+        title="Event — TH Group"
+        description="Sự kiện, webinar và tài liệu từ TH Group cùng các đối tác."
         path="/events"
         noindex={language !== "vi"}
       />
@@ -28,11 +28,11 @@ export default function EventsPage() {
         <ScrollReveal>
           <header className="mx-auto max-w-3xl text-center mb-12">
             <p className="text-sm font-semibold uppercase tracking-[.22em] text-primary">
-              TH Group Fulfill
+              TH Group
             </p>
             <h1 className="mt-4 text-4xl md:text-5xl font-bold text-navy">Event</h1>
             <p className="mt-4 text-muted-foreground">
-              Sự kiện, webinar, tài liệu và recording được TH Group Fulfill tổ chức cùng các đối tác.
+              Sự kiện, webinar, tài liệu và recording được TH Group tổ chức cùng các đối tác.
             </p>
           </header>
         </ScrollReveal>

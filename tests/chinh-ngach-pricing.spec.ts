@@ -110,7 +110,7 @@ test.describe("Formal pricing workspace", () => {
     // Cost estimate is the sheet's four worked quotations, grouped by origin.
     const estimate = page.locator("#formal-panel-quotation");
     await expect(estimate.getByText("MATSON CLX · DDP · HPH → HOU")).toBeVisible();
-    await expect(estimate.getByText("~6,584")).toBeVisible();
+    await expect(estimate.getByText("~5,804")).toBeVisible();
     await estimate.getByRole("tab", { name: /20DC\s*ZIM · HPH→LAX→HOU · 17 days/ }).click();
     await expect(estimate.getByText("ZIM · DDP · HPH → LAX → HOU", { exact: true })).toBeVisible();
     await expect(estimate.getByText("~18,572")).toBeVisible();

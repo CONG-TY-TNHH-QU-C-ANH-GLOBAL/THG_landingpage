@@ -2,7 +2,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsIntegrations } from "@/hooks/useCmsContent";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
-import thGroupLogo from "@/assets/th-group-logo.svg";
+import thGroupEmblem from "@/assets/th-group-emblem.webp";
 import "@/lib/i18n/translations/homepage";
 
 const TikTokSVG = () => (
@@ -94,11 +94,11 @@ const IntegrationsSection = () => {
                 ))}
               </div>
               <div className="glass-card rounded-2xl px-8 py-4 flex items-center gap-3 glow-pulse">
-                <div className="w-16 h-10 rounded-xl bg-navy flex items-center justify-center overflow-hidden p-1.5">
-                  <img src={thGroupLogo} alt="TH Group" className="w-full h-full object-contain brightness-0 invert" />
+                <div className="w-12 h-12 rounded-xl bg-white border border-border/60 flex items-center justify-center overflow-hidden p-1">
+                  <img src={thGroupEmblem} alt="TH Group" width={160} height={160} className="w-full h-full object-contain" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-navy" >TH Group Fulfill OMS</p>
+                  <p className="text-sm font-bold text-navy" >TH Group OMS</p>
                   <p className="text-[10px] text-muted-foreground" >{tVi("integrations.hub_desc")}</p>
                 </div>
               </div>

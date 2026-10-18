@@ -1,13 +1,13 @@
 {
-  "name": "TH Group Fulfill — Transport Happiness Group",
-  "short_name": "TH Group Fulfill",
+  "name": "TH Group — Transport Happiness Group",
+  "short_name": "TH Group",
   "description": "POD & Dropship Fulfillment, Express International Shipping and US Warehousing for global eCommerce sellers.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0c1e3e",
   "icons": [
-    { "src": "/thg-brand-icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
-    { "src": "/thg-brand-icon.png", "type": "image/png", "sizes": "256x256", "purpose": "any" }
+    { "src": "/th-group-icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "/th-group-icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" }
   ]
 }

@@ -34,15 +34,15 @@ const Index = () => {
   // Per-locale SEO copy (audit P0.3, P0.4, P1.1)
   const seo = {
     en: {
-      title: "TH Group Fulfill — Global fulfillment for eCommerce sellers",
+      title: "TH Group — Global fulfillment for eCommerce sellers",
       description: "Comprehensive fulfillment ecosystem connecting Vietnam – China – to US warehouses. POD printing, dropship support, US domestic fulfillment from $1.2.",
     },
     vi: {
-      title: "TH Group Fulfill — Giải pháp fulfillment toàn cầu cho seller TMĐT",
+      title: "TH Group — Giải pháp fulfillment toàn cầu cho seller TMĐT",
       description: "Hệ sinh thái fulfillment kết nối Việt Nam – Trung Quốc – đến kho Mỹ. POD printing, hỗ trợ dropship, fulfill nội địa Mỹ từ $1.2.",
     },
     zh: {
-      title: "TH Group Fulfill — 面向电商卖家的全球履约方案",
+      title: "TH Group — 面向电商卖家的全球履约方案",
       description: "全面的履约生态系统，无缝连接越南-中国-美国仓库。POD印刷、代发支持、美国国内履约低至1.2美元。",
     },
   }[language];

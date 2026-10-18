@@ -99,7 +99,7 @@ const CommunityQuestionPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead
-        title={q ? `${q.title} — TH Group Fulfill` : `${t("community.title")} — TH Group Fulfill`}
+        title={q ? `${q.title} — TH Group` : `${t("community.title")} — TH Group`}
         description={q ? q.body.replace(/\s+/g, " ").slice(0, 160) : t("community.subtitle")}
         path={`/community/${slug}`}
         // Index governance: thin/unverified/unanswered content stays out of
