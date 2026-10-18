@@ -41,6 +41,12 @@ function isMoney(col: RateColumn): boolean {
  *  `approx` prefixes "~". The source rate sheets mark every figure that way and
  *  close with "giá tạm tính": these are indications to quote against, not fixed
  *  prices, and a bare "$155" reads as a commitment TH Group has not made. */
+/** Totals are heaviest; money cells are bold and kept out of page translation. */
+function cellTone(total: boolean, money: boolean): string {
+    if (total) return "font-black text-navy";
+    return money ? "font-bold text-navy notranslate" : "text-foreground/80";
+}
+
 function formatCell(value: CellValue, col: RateColumn, approx = false): string {
     if (value === null || value === undefined || value === "") return "—";
     if (!isMoney(col)) return String(value);
@@ -151,7 +157,7 @@ export function CmsRateTable({ slug, approx = false, totalRow }: Readonly<{
                                         return (
                                             <td
                                                 key={col.code}
-                                                className={`px-5 py-3 ${total ? "font-black text-navy" : money ? "font-bold text-navy notranslate" : "text-foreground/80"} ${total && money ? "notranslate" : ""}`}
+                                                className={`px-5 py-3 ${cellTone(total, money)} ${total && money ? "notranslate" : ""}`}
                                                 translate={money ? "no" : undefined}
                                             >
                                                 {formatCell(row[col.code], col, approx)}

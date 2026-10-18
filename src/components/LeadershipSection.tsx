@@ -100,11 +100,7 @@ function AvatarGroup({
   const remaining = avatars.length - visible.length;
 
   return (
-    <div
-      className="flex min-h-28 items-center justify-center pl-5"
-      role="group"
-      aria-label={fallbackName}
-    >
+    <figure className="flex min-h-28 items-center justify-center pl-5" aria-label={fallbackName}>
       {visible.map((avatar, index) => (
         <Avatar key={`${avatar.url}-${index}`} avatar={avatar} className="-ml-5 h-16 w-16" />
       ))}
@@ -113,7 +109,7 @@ function AvatarGroup({
           +{remaining}
         </div>
       )}
-    </div>
+    </figure>
   );
 }
 

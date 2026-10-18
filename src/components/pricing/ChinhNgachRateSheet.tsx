@@ -29,7 +29,7 @@ import "@/lib/i18n/translations/chinhngach";
 function useTable(slug: string) {
     const { data } = useCmsPricingTable(slug);
     const t = data?.table;
-    const raw = t && t.status === "live" ? t.data : null;
+    const raw = t?.status === "live" ? t.data : null;
     return {
         rows: Array.isArray(raw) ? (raw as Row[]) : [],
         meta: raw && !Array.isArray(raw) && typeof raw === "object" ? (raw as Record<string, string>) : {},
@@ -85,7 +85,11 @@ const routing = (v: Cell) => (v == null ? "" : String(v)).split("→").map((leg)
 const serviceLabel = (svc: string) => (svc === "CLX" ? "CLX Service (nhanh hơn)" : `${svc} Service`);
 
 const LANE = { xanh: "🟢", vang: "🟡", do: "🔴" } as const;
-const laneTone = (name: string): keyof typeof LANE => (/đỏ/i.test(name) ? "do" : /vàng/i.test(name) ? "vang" : "xanh");
+function laneTone(name: string): keyof typeof LANE {
+    if (/đỏ/i.test(name)) return "do";
+    if (/vàng/i.test(name)) return "vang";
+    return "xanh";
+}
 
 /** "Thứ 2 12:00" bolded, then " — what". */
 function Cutoff({ when, what }: Readonly<{ when: string; what: string }>) {
