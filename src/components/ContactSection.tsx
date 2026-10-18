@@ -3,7 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsContactLocations } from "@/hooks/useCmsContent";
 import ScrollReveal from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/sections/SectionHeader";
-import thGroupLogo from "@/assets/th-group-logo.svg";
+import thGroupEmblem from "@/assets/th-group-emblem.webp";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { Button } from "@/components/ui/button";
 
@@ -44,7 +44,7 @@ const ContactSection = () => {
 
         {/* Footer bar — existing brand info and links only, no invented legal copy. */}
         <div className="mt-20 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} TH Group Fulfill · Transport Happiness Group</p>
+          <p>© {new Date().getFullYear()} TH Group · Transport Happiness Group</p>
           <a
             href="https://hub.thgfulfill.com"
             target="_blank"
@@ -129,8 +129,8 @@ function ContactCtaCard() {
   const { t } = useI18n();
   return (
     <>
-      <div className="w-24 h-16 rounded-2xl bg-navy mx-auto mb-6 flex items-center justify-center p-3 glow-pulse">
-        <img src={thGroupLogo} alt="TH Group" className="w-full h-full object-contain brightness-0 invert" />
+      <div className="w-20 h-20 rounded-2xl bg-white border border-border/60 mx-auto mb-6 flex items-center justify-center p-2 glow-pulse">
+        <img src={thGroupEmblem} alt="TH Group" width={160} height={160} className="w-full h-full object-contain" />
       </div>
       <h3 className="text-2xl font-bold text-navy mb-3">{t("contact.cta_title")}</h3>
       <p className="text-muted-foreground mb-8 leading-relaxed">{t("contact.cta_desc")}</p>

@@ -6,12 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Per-route SEO metadata is emitted by SeoHead during prerender. -->
-    <meta name="author" content="TH Group Fulfill" />
+    <meta name="author" content="TH Group" />
 
-    <!-- Favicon — aligned with homepage brand icon. New filenames bust old favicon cache. -->
-    <link rel="icon" type="image/svg+xml" href="/thg-brand-icon.svg" />
-    <link rel="alternate icon" type="image/png" href="/thg-brand-icon.png" />
-    <link rel="apple-touch-icon" href="/thg-brand-icon.png" />
+    <!-- Favicon: the TH Group pegasus. Google Search reads a square icon of at
+         least 48px from <link rel="icon">; /favicon.ico covers browsers that
+         request it directly. New filenames bust old favicon caches. -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/th-group-icon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/th-group-icon-96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/th-group-icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0c1e3e" />
 
