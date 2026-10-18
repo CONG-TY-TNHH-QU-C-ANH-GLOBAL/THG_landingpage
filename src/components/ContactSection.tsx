@@ -164,7 +164,7 @@ function ContactCtaCard() {
             className="flex items-center gap-3 w-full px-5 py-3.5 rounded-full font-semibold text-sm text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
             style={{ background: s.background }}
           >
-            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               {s.icon}
             </svg>
             <span>{t(s.labelKey)}</span>

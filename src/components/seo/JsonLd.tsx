@@ -67,7 +67,7 @@ interface ServiceProps {
   provider?: string;
 }
 
-export function JsonLdService({ name, description, url, provider = "TH Group" }: ServiceProps) {
+export function JsonLdService({ name, description, url, provider = "TH Group" }: Readonly<ServiceProps>) {
   const data = {
     "@context": "https://schema.org",
     "@type": "Service",
