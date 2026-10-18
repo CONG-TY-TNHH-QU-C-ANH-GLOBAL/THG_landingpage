@@ -8,6 +8,7 @@ import {
   type EstimateSurcharge,
   type FormalEstimateMode,
 } from "@/components/pricing/chinhNgachEstimator";
+import "@/lib/i18n/translations/chinhngach";
 
 type Cell = string | number | null | undefined;
 type Row = Record<string, Cell>;
@@ -51,18 +52,18 @@ export function ChinhNgachCostEstimator() {
   const airRows = liveRows(airQuery);
   const surchargeRows = liveRows(surchargeQuery);
   const customsRows = liveRows(customsQuery);
-  const routeRows = mode === "matson-lcl" ? matsonRows : mode === "sea-lcl" ? seaRows : airRows;
+  const rowsByMode: Record<FormalEstimateMode, Row[]> = { "matson-lcl": matsonRows, "sea-lcl": seaRows, air: airRows };
+  const routeRows = rowsByMode[mode];
   const selectedRoute = routeRows[Math.min(routeIndex, Math.max(routeRows.length - 1, 0))];
   const selectedCustoms = customsIndex >= 0 ? customsRows[customsIndex] : undefined;
 
   const estimate = useMemo(() => {
     if (!selectedRoute || (weightKg <= 0 && volumeCbm <= 0)) return null;
     const dense = mode === "matson-lcl" && volumeCbm > 0 && weightKg / volumeCbm > 1_000;
-    const freightRate = mode === "matson-lcl"
-      ? numberCell(selectedRoute, dense ? "dense_mt" : "light_cbm")
-      : mode === "sea-lcl"
-        ? numberCell(selectedRoute, "price_wm")
-        : numberCell(selectedRoute, weightKg >= 1_000 ? "price_1000kg" : "price_500kg");
+    let rateColumn = weightKg >= 1_000 ? "price_1000kg" : "price_500kg";
+    if (mode === "matson-lcl") rateColumn = dense ? "dense_mt" : "light_cbm";
+    else if (mode === "sea-lcl") rateColumn = "price_wm";
+    const freightRate = numberCell(selectedRoute, rateColumn);
     if (freightRate <= 0) return null;
 
     const surcharges: EstimateSurcharge[] = mode === "matson-lcl"

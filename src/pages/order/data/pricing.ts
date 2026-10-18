@@ -1,3 +1,5 @@
+import "@/lib/i18n/translations/order";
+
 // Two pricing tables shown under the "Bảng giá vận chuyển" tabs.
 // Both are operator-edited tables; eventual CMS migration would back them
 // by a pricing collection (rows + columns metadata).

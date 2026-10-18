@@ -10,6 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import "@/lib/i18n/translations/homepage";
 
 const FAQSection = () => {
   const { tVi, language } = useI18n();

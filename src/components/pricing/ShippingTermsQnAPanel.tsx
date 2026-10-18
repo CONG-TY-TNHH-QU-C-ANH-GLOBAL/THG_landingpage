@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/shipping";
 
 /* ─── Shipping Terms Q&A Panel ─── */
 const FAQ_COUNT = 14;

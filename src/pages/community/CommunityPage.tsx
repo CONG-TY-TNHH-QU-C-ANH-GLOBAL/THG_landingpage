@@ -20,6 +20,7 @@ import { SeoHead } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { useCommunityCategories, useCommunityQuestions } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/community";
 
 const CommunityPage = () => {
   const { t, language } = useI18n();

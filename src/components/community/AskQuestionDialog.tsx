@@ -20,6 +20,7 @@ import { rememberOwnerToken } from "@/lib/communityOwner";
 import { useCommunityCategories } from "@/hooks/useCmsContent";
 import { useFormFields } from "@/hooks/useFormFields";
 import { getUtmPayload } from "@/lib/utm";
+import "@/lib/i18n/translations/community";
 
 // Mirror of the server-side zod bounds (community questions endpoint).
 const TITLE_MIN = 8;

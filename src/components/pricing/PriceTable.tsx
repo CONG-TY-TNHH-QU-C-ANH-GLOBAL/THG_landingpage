@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, ClipboardList, FileSpreadsheet, FileText, Chevr
 import { useI18n } from "@/lib/i18n";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import type { PricingRow } from "@/components/pricing/types";
+import "@/lib/i18n/translations/pricing";
 
 // xlsx + jspdf + html2canvas weigh ~600KB combined; lazy-load only on export.
 async function lazyExportToExcel(config: import("@/lib/exportUtils").ExportConfig) {

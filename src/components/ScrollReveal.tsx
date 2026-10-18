@@ -49,7 +49,9 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
           observer.unobserve(el);
         }
       },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+      // threshold 0, not a ratio: a block taller than ten screens (the blog
+      // grid) can never show 10% of itself at once and would stay hidden.
+      { threshold: 0, rootMargin: "0px 0px -50px 0px" }
     );
 
     observer.observe(el);
@@ -57,7 +59,9 @@ const ScrollReveal = ({ children, className = "", delay = 0, direction = "up" }:
   }, [delay]);
 
   const initialTransform = {
-    up: "translateY(40px) perspective(1200px) rotateX(2deg)",
+    // 2D only: a perspective tilt gives every revealed block its own 3D layer,
+    // which costs more than it shows on a phone.
+    up: "translateY(40px)",
     left: "translateX(-40px)",
     right: "translateX(40px)",
     scale: "scale(0.92)",

@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/lib/i18n";
 import type { useTurnstile } from "@/lib/useTurnstile";
+import "@/lib/i18n/translations/community";
 
 // Label + input in one call — collapses the repeated `<div><Label/><Input/></div>`
 // markup. All extra input attributes (type, required, minLength, placeholder,

@@ -9,6 +9,8 @@ import CompactAccordionTable from "@/components/pricing/CompactAccordionTable";
 import ShipByLabelPanel from "@/components/pricing/ShipByLabelPanel";
 import ShippingTermsQnAPanel from "@/components/pricing/ShippingTermsQnAPanel";
 import { useCmsSiteSettings } from "@/hooks/useCmsContent";
+import "@/lib/i18n/translations/pricing";
+import "@/lib/i18n/translations/shipping";
 
 interface EpacketPanelProps {
     route: EpacketRoute;

@@ -1,3 +1,5 @@
+import "@/lib/i18n/translations/order";
+
 // 5-step "How it works" timeline rendered as numbered cards.
 
 export interface ProcessStep {

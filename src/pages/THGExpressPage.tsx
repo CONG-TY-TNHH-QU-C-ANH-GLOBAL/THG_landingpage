@@ -22,6 +22,7 @@ import {
 import { Link } from "react-router-dom";
 import Autoplay from "embla-carousel-autoplay";
 import { EXPRESS_HERO_URL } from "@/config/cmsAssets";
+import "@/lib/i18n/translations/express";
 
 /* ─── Data ─── */
 const features = [

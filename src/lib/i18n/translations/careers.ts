@@ -2,6 +2,7 @@
 // Values are moved verbatim from the original src/lib/i18n.tsx dictionary.
 
 import { tr } from "../helpers";
+import { registerTranslations } from "../registry";
 import type { TranslationDict } from "../types";
 
 export const careersTranslations: TranslationDict = {
@@ -107,3 +108,6 @@ export const careersTranslations: TranslationDict = {
   "careers.all_positions": tr("All positions", "Tất cả vị trí", "全部职位"),
   "careers.seo_title_suffix": tr("Careers at TH Group Fulfill", "Tuyển dụng TH Group Fulfill", "TH Group Fulfill 招聘"),
 };
+
+// Imported for this side effect by every module that uses these keys.
+registerTranslations(careersTranslations);

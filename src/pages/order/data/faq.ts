@@ -1,3 +1,5 @@
+import "@/lib/i18n/translations/order";
+
 // 7 FAQ items rendered in a custom accordion (the FAQAccordion component
 // styling didn't match this page's design language).
 

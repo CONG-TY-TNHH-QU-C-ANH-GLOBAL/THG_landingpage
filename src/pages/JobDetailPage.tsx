@@ -11,6 +11,7 @@ import { useCmsJob } from "@/hooks/useCmsContent";
 import { useI18n } from "@/lib/i18n";
 import { accentFor, jobFromCmsListItem, withCmsDetail, type Job } from "@/lib/careers";
 import { parseDeadline } from "@/lib/deadline";
+import "@/lib/i18n/translations/careers";
 
 /** Google for Jobs wants validThrough as an ISO date (YYYY-MM-DD). CMS stores
  *  operator-entered DD/MM/YYYY, so convert via parseDeadline. Format from the

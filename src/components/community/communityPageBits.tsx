@@ -10,6 +10,7 @@ import { BadgeCheck, Star, Tag, Trash2 } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import "@/lib/i18n/translations/community";
 
 type CategoryRef = { slug: string; name: string };
 

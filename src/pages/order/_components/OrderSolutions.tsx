@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsServiceBlocks } from "@/hooks/useCmsContent";
 
 import { solutions as staticSolutions } from "../data/solutions";
+import "@/lib/i18n/translations/order";
 
 interface RenderItem {
   icon: string;
