@@ -138,3 +138,25 @@ export function resolveSwatch(name?: string | null): VariantSwatch | null {
  *  slide xem màu vào bộ ảnh hay không. */
 export const hasAnySwatch = (names: (string | null | undefined)[]): boolean =>
   names.some((n) => resolveSwatch(n) !== null);
+
+/**
+ * Thứ tự hiện chip Series: màu thật trước → thứ không phải màu → "không có
+ * series" cuối cùng.
+ *
+ * `series` bên Hub là ô chữ tự do, nên thỉnh thoảng lọt vào đó thứ không phải
+ * màu: tuyến vận chuyển ("CN to EU"), mã gói, ghi chú. Giữ đúng thứ tự API trả
+ * về thì một mục như vậy nằm chen giữa Blue và Green, và khách đang quét hàng
+ * chip để tìm MÀU bị khựng ở đó.
+ *
+ * Phân loại bằng `resolveSwatch` chứ không chặn đích danh một chuỗi: lần sau ô
+ * đó lọt chữ khác thì vẫn tự xuống cuối, không phải sửa code lần nữa.
+ *
+ * TRẢ VỀ MẢNG MỚI, không sửa mảng gọi vào — thứ tự gốc còn được dùng ở đường
+ * ghép ảnh theo series.
+ *
+ * `sort` của JS ổn định, nên trong từng nhóm thứ tự ban đầu giữ nguyên.
+ */
+export function orderSeriesForDisplay(keys: string[], noSeriesKey: string): string[] {
+  const rank = (key: string) => (key === noSeriesKey ? 2 : (resolveSwatch(key) ? 0 : 1));
+  return [...keys].sort((a, b) => rank(a) - rank(b));
+}
