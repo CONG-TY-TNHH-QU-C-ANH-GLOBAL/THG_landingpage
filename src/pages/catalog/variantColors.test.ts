@@ -1,5 +1,45 @@
 import { describe, expect, it } from "vitest";
-import { resolveSwatch } from "./variantColors";
+import { orderSeriesForDisplay, resolveSwatch } from "./variantColors";
+
+describe("orderSeriesForDisplay", () => {
+  const NONE = "__none__";
+
+  it("đẩy thứ không phải màu xuống cuối — ca thật: 'CN to EU' lọt vào ô series", () => {
+    // Đúng sản phẩm Notebook Set trên catalog: một tuyến vận chuyển bị nhập
+    // vào ô màu, nằm chen giữa Brown và Green.
+    expect(orderSeriesForDisplay(["Blue", "Brown", "CN to EU", "Green"], NONE))
+      .toEqual(["Blue", "Brown", "Green", "CN to EU"]);
+  });
+
+  it("giữ nguyên thứ tự API trong từng nhóm, không sắp lại theo bảng chữ cái", () => {
+    // Thứ tự màu là do bên vận hành xếp, không phải để máy sắp lại.
+    expect(orderSeriesForDisplay(["Red", "Blue", "Black"], NONE))
+      .toEqual(["Red", "Blue", "Black"]);
+    expect(orderSeriesForDisplay(["Zebra pack", "Alpha pack", "Red"], NONE))
+      .toEqual(["Red", "Zebra pack", "Alpha pack"]);
+  });
+
+  it("mục 'không có series' xuống dưới cả thứ không phải màu", () => {
+    expect(orderSeriesForDisplay([NONE, "CN to EU", "Blue"], NONE))
+      .toEqual(["Blue", "CN to EU", NONE]);
+  });
+
+  it("toàn màu thật thì không đổi gì", () => {
+    const keys = ["Black", "Navy", "Light Brown"];
+    expect(orderSeriesForDisplay(keys, NONE)).toEqual(keys);
+  });
+
+  it("KHÔNG sửa mảng gọi vào — thứ tự gốc còn dùng cho đường ghép ảnh", () => {
+    const keys = ["Blue", "CN to EU", "Green"];
+    orderSeriesForDisplay(keys, NONE);
+    expect(keys).toEqual(["Blue", "CN to EU", "Green"]);
+  });
+
+  it("mảng rỗng và một phần tử vẫn chạy", () => {
+    expect(orderSeriesForDisplay([], NONE)).toEqual([]);
+    expect(orderSeriesForDisplay(["CN to EU"], NONE)).toEqual(["CN to EU"]);
+  });
+});
 
 describe("resolveSwatch", () => {
   // Mười tên series có thật trong catalog, soát ngày 28/09/2026 trên 40 sản

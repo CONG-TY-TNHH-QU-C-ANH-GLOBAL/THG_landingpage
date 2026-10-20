@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 import { CATEGORIES, NO_SERIES_KEY, categoryIcons } from "@/pages/catalog/data";
-import { resolveSwatch } from "@/pages/catalog/variantColors";
+import { orderSeriesForDisplay, resolveSwatch } from "@/pages/catalog/variantColors";
 import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { manualImagesBySeries } from "@/pages/catalog/variantImageMap";
 import { DELAYS, LIMITS } from "@/lib/constants";
@@ -701,6 +701,12 @@ const CatalogPage = () => {
             }
             const seriesKeys = Array.from(seriesGroups.keys());
             const hasRealSeries = seriesKeys.some((k) => k !== NO_SERIES_KEY);
+
+            /* Chip Series hiện theo thứ tự màu-trước. `seriesKeys` gốc giữ
+               nguyên thứ tự API vì nó còn đi vào đường ghép ảnh theo series.
+               Lý do và cách xếp hạng: `orderSeriesForDisplay`. */
+            const seriesKeysForDisplay = orderSeriesForDisplay(seriesKeys, NO_SERIES_KEY);
+
             // Show the Series row only when: there's at least one real series
             // AND there's more than one group to choose between. Single-group
             // products fall back to the flat list to avoid a lone "tab".
@@ -1003,8 +1009,16 @@ const CatalogPage = () => {
                                 <span className="text-sm text-muted-foreground">{fmt(minP)} – {fmt(maxP)}</span>
                               )}
                             </div>
+                            {/* Con số này là TIỀN HÀNG, chưa có cước. Ghi "incl.
+                                shipping" như trước là nói sai về giá ngay dưới
+                                chính con số đó — khách cộng nhầm rồi mới phát
+                                hiện khi báo giá cước.
+                                Nhãn vế sau theo `hasRealSeries`: sản phẩm có
+                                Series thì chip là MODEL chứ không phải size,
+                                nên ghi "Size: CN to EU" là sai lần thứ hai
+                                trong cùng một dòng. */}
                             <p className="text-xs text-muted-foreground">
-                              Selling price (incl. shipping) · Size: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong>
+                              Selling price (not including shipping cost) · {hasRealSeries ? "Model" : "Size"}: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong>
                             </p>
                           </>
                         ) : hasAnyPrices ? (
@@ -1062,7 +1076,7 @@ const CatalogPage = () => {
                         <div>
                           <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Series</p>
                           <div className="flex flex-wrap gap-1.5">
-                            {seriesKeys.map((key) => {
+                            {seriesKeysForDisplay.map((key) => {
                               const isActive = key === activeSeriesKey;
                               const label = key === NO_SERIES_KEY ? "Other" : key;
                               // Tra được mã màu thì hiện ô màu thật; không tra
