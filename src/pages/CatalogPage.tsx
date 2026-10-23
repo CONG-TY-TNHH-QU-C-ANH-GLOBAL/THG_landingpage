@@ -21,6 +21,7 @@ import {
 
 import { CATEGORIES, NO_SERIES_KEY, categoryIcons } from "@/pages/catalog/data";
 import { orderSeriesForDisplay, resolveSwatch } from "@/pages/catalog/variantColors";
+import { sellingPriceLabel } from "@/pages/catalog/priceLabel";
 import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { manualImagesBySeries } from "@/pages/catalog/variantImageMap";
 import { DELAYS, LIMITS } from "@/lib/constants";
@@ -1018,7 +1019,7 @@ const CatalogPage = () => {
                                 nên ghi "Size: CN to EU" là sai lần thứ hai
                                 trong cùng một dòng. */}
                             <p className="text-xs text-muted-foreground">
-                              Selling price (not including shipping cost) · {hasRealSeries ? "Model" : "Size"}: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong>
+                              {sellingPriceLabel(selectedVariant?.thgSku)} · {hasRealSeries ? "Model" : "Size"}: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong>
                             </p>
                           </>
                         ) : hasAnyPrices ? (
