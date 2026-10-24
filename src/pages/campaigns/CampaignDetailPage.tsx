@@ -118,9 +118,11 @@ export default function CampaignDetailPage() {
             </CampaignLink>
           ) : null}
         </header>
-        <div className="mt-8 aspect-[16/7] overflow-hidden rounded-3xl">
-          <CampaignCover src={campaign.cover_url} alt={campaign.title} eager />
-        </div>
+        {campaign.cover_url ? (
+          <div className="mt-8 aspect-[16/7] overflow-hidden rounded-3xl">
+            <CampaignCover src={campaign.cover_url} alt={campaign.title} eager />
+          </div>
+        ) : null}
         {campaign.menu_items.length > 0 ? (
           <CampaignMenuItems items={campaign.menu_items} className="mt-8 grid gap-2 space-y-0 sm:grid-cols-2" />
         ) : null}
