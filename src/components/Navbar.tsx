@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -14,6 +14,7 @@ import {
   Ship,
   Tag,
   CalendarDays,
+  Gift,
   HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,10 @@ import thGroupLogo from "@/assets/th-group-logo.webp";
 import thGroupLogoOnDark from "@/assets/th-group-logo-on-dark.webp";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { DELAYS, SCROLL } from "@/lib/constants";
+import { useCmsCampaigns } from "@/hooks/useCmsContent";
+import { pickNavFeatured } from "@/lib/campaigns";
+import { CampaignNavItem } from "@/components/campaigns/CampaignNavItem";
+import { CampaignMobileGroup } from "@/components/campaigns/CampaignMobileGroup";
 
 interface NavMenuItem {
   icon: LucideIcon;
@@ -67,7 +72,10 @@ const pricingItems: NavMenuItem[] = [
 
 const eventItems: NavMenuItem[] = [
   { icon: CalendarDays, titleKey: "nav.event", descKey: "nav.event_desc", href: "/events" },
+  { icon: Gift, titleKey: "nav.campaigns", descKey: "nav.campaigns_desc", href: "/campaigns" },
 ];
+
+type MenuKey = "services" | "pricing" | "community" | "campaign";
 
 /** Rich dropdown row (icon box + title + description) used by both desktop dropdown panels. */
 function DesktopDropdownItem({
@@ -163,7 +171,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
   const lp = (path: string) => `/${language}${path}`;
   const [isOpen, setIsOpen] = useState(false);
   // One open dropdown at a time (hover-driven), shared close timeout.
-  const [openMenu, setOpenMenu] = useState<"services" | "pricing" | "community" | null>(null);
+  const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const menuTimeoutRef = useRef<NodeJS.Timeout>();
@@ -179,13 +187,19 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
     setIsOpen(false);
   }, [location.pathname]);
 
-  const menuEnter = (menu: "services" | "pricing" | "community") => {
+  const menuEnter = (menu: MenuKey) => {
     if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current);
     setOpenMenu(menu);
   };
   const menuLeave = () => {
     menuTimeoutRef.current = setTimeout(() => setOpenMenu(null), DELAYS.NAVBAR_DROPDOWN_CLOSE_MS);
   };
+  const closeMenu = useCallback(() => setOpenMenu(null), []);
+
+  // Featured campaign (CMS toggle). Nothing renders until the data arrives and
+  // a failed/missing endpoint renders nothing, so the bar never shifts.
+  const { data: campaignData } = useCmsCampaigns(language);
+  const featured = pickNavFeatured(campaignData?.campaigns);
 
   // The static FAQ lives on the homepage as an anchor section; smooth-scroll
   // when already there, otherwise navigate to the homepage hash.
@@ -357,6 +371,16 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
               <span translate="no">{item.label}</span>
             </Link>
           ))}
+
+          {featured && (
+            <CampaignNavItem
+              campaign={featured}
+              open={openMenu === "campaign"}
+              onEnter={() => menuEnter("campaign")}
+              onLeave={menuLeave}
+              onClose={closeMenu}
+            />
+          )}
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
@@ -402,6 +426,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
           <div className="flex justify-center mb-6 pb-4 border-b border-border/50">
             <LanguageSwitcher />
           </div>
+          {featured && <CampaignMobileGroup campaign={featured} onNavigate={() => setIsOpen(false)} />}
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-2">
             <span translate="no">{t("nav.services")}</span>
           </p>

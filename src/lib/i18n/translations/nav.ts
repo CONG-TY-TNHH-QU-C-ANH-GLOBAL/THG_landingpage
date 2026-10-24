@@ -35,6 +35,14 @@ export const navTranslations: TranslationDict = {
     "Webinar, recording và sự kiện cùng đối tác",
     "网络研讨会、录像和合作伙伴活动",
   ),
+  "nav.campaigns": tr("Programs", "Chương trình", "活动专题"),
+  "nav.campaigns_desc": tr(
+    "Seasonal collections and limited-time offers",
+    "Chương trình ưu đãi và bộ sưu tập theo mùa",
+    "季节系列与限时优惠",
+  ),
+  "nav.campaign_cta": tr("View program", "Xem chương trình", "查看活动"),
+  "nav.campaign_menu": tr("Program menu", "Danh mục chương trình", "活动菜单"),
   "nav.community_qa": tr("Community Q&A", "Câu hỏi cộng đồng", "社区问答"),
   "nav.community_qa_desc": tr(
     "Ask questions, get answers from TH Group experts",
