@@ -175,8 +175,13 @@ describe("christmas consult buttons", () => {
     it("the general consult button opens the lead form with the collection prefix only, no mailto", async () => {
         mountPage("vi");
         expect(document.querySelector('a[href^="mailto:"]')).toBeNull();
+        // The site navbar already has "Tư vấn ngay"; the page sub-nav must not repeat it.
         const subnav = screen.getByRole("navigation", { name: "Trên trang này" });
-        const message = await openAndReachMessage(within(subnav).getByRole("button", { name: "Tư vấn ngay" }), /Nhu cầu/);
+        expect(within(subnav).queryByRole("button")).toBeNull();
+        const message = await openAndReachMessage(
+            screen.getByRole("button", { name: "Tư vấn ngay – phản hồi trong 24h" }),
+            /Nhu cầu/,
+        );
         expect(message.value.trim()).toBe("Bộ sưu tập Christmas 2026:");
     });
 
