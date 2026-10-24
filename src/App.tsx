@@ -57,6 +57,7 @@ const CommunityReviewsListPage = lazy(() => import("./pages/community/CommunityR
 const CommunityReviewDetailPage = lazy(() => import("./pages/community/CommunityReviewDetailPage"));
 const EventsPage = lazy(() => import("./pages/events/EventsPage"));
 const EventDetailPage = lazy(loadEventDetail);
+const ChristmasPage = lazy(() => import("./pages/christmas/ChristmasPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
@@ -161,6 +162,7 @@ const AppRoutes = () => {
               {/* One route with an optional segment so switching collections keeps the
                   same CatalogPage instance (no remount, no refetch of the rail). */}
               <Route path="catalog/:collection?" element={<CatalogPage />} />
+              <Route path="christmas" element={<ChristmasPage />} />
               <Route path="tracking" element={<TrackingPage />} />
               <Route path="careers" element={<CareersPage />} />
               <Route path="careers/:slug" element={<JobDetailPage />} />
