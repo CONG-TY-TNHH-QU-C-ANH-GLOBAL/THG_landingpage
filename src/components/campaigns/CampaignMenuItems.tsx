@@ -34,13 +34,13 @@ export function CampaignMenuItems({
 
   if (variant === "cards") {
     return (
-      <ul className={cn("flex gap-3 overflow-x-auto pb-1 snap-x", className)}>
+      <ul className={cn("flex gap-3 overflow-x-auto pb-1 snap-x md:grid md:grid-cols-4 md:overflow-visible", className)}>
         {links.map(({ item, target, key }) => (
           <li key={key} className="snap-start shrink-0">
             <CampaignLink
               target={target}
               onClick={onNavigate}
-              className="flex w-44 items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+              className="flex w-44 md:w-auto items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             >
               <span className="text-xl leading-none" aria-hidden="true">
                 {item.icon}

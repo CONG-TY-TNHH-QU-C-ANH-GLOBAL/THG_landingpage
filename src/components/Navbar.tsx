@@ -230,7 +230,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between h-16 lg:h-20 px-4">
-        <Link to={`/${language}`} className="flex items-center group" aria-label="TH Group — Transport Happiness Group">
+        <Link to={`/${language}`} className="flex shrink-0 items-center group" aria-label="TH Group — Transport Happiness Group">
           <img
             src={tone.logo}
             alt="TH Group"
@@ -249,7 +249,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
             onMouseLeave={menuLeave}
           >
             <button
-              className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}
+              className={`flex items-center gap-1 px-3 xl:px-4 xl:whitespace-nowrap py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}
             >
               <span translate="no">{t("nav.services")}</span>
               <ChevronDown
@@ -284,7 +284,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
             onMouseLeave={menuLeave}
           >
             <button
-              className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}
+              className={`flex items-center gap-1 px-3 xl:px-4 xl:whitespace-nowrap py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}
             >
               <span translate="no">{t("nav.pricing")}</span>
               <ChevronDown
@@ -320,7 +320,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
             onMouseLeave={menuLeave}
           >
             <button
-              className={`flex items-center gap-1 px-4 py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}
+              className={`flex items-center gap-1 px-3 xl:px-4 xl:whitespace-nowrap py-2 text-sm font-medium transition-colors rounded-lg ${tone.navItem}`}
             >
               <span translate="no">{t("nav.event")}</span>
               <ChevronDown
@@ -364,7 +364,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
             <Link
               key={item.label}
               to={lp(item.href)}
-              className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
+              className={`px-3 xl:px-4 xl:whitespace-nowrap py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
                 location.pathname === lp(item.href) ? "text-primary" : tone.navItem
               }`}
             >

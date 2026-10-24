@@ -69,7 +69,7 @@ export function CampaignNavItem({ campaign, open, onEnter, onLeave, onClose }: R
   };
 
   return (
-    <div className="relative" onMouseEnter={onEnter} onMouseLeave={onLeave} onFocus={handleFocus} onBlur={handleBlur}>
+    <div className="relative hidden xl:block" onMouseEnter={onEnter} onMouseLeave={onLeave} onFocus={handleFocus} onBlur={handleBlur}>
       <CampaignLink
         ref={triggerRef}
         target={landing}
