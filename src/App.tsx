@@ -57,6 +57,9 @@ const CommunityReviewsListPage = lazy(() => import("./pages/community/CommunityR
 const CommunityReviewDetailPage = lazy(() => import("./pages/community/CommunityReviewDetailPage"));
 const EventsPage = lazy(() => import("./pages/events/EventsPage"));
 const EventDetailPage = lazy(loadEventDetail);
+const CampaignsPage = lazy(() => import("./pages/campaigns/CampaignsPage"));
+const CampaignDetailPage = lazy(() => import("./pages/campaigns/CampaignDetailPage"));
+const ChristmasPage = lazy(() => import("./pages/christmas/ChristmasPage"));
 
 /**
  * ScrollToTop — resets scroll on every route change.
@@ -161,11 +164,14 @@ const AppRoutes = () => {
               {/* One route with an optional segment so switching collections keeps the
                   same CatalogPage instance (no remount, no refetch of the rail). */}
               <Route path="catalog/:collection?" element={<CatalogPage />} />
+              <Route path="christmas" element={<ChristmasPage />} />
               <Route path="tracking" element={<TrackingPage />} />
               <Route path="careers" element={<CareersPage />} />
               <Route path="careers/:slug" element={<JobDetailPage />} />
               <Route path="events" element={<EventsPage />} />
               <Route path="events/:slug" element={<EventDetailPage />} />
+              <Route path="campaigns" element={<CampaignsPage />} />
+              <Route path="campaigns/:slug" element={<CampaignDetailPage />} />
               <Route path="community" element={<CommunityPage />} />
               {/* Static "reviews" segment outranks the dynamic :slug in v6. */}
               <Route path="community/reviews" element={<CommunityReviewsListPage />} />

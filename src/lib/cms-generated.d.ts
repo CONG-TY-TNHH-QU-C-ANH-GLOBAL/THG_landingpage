@@ -516,6 +516,177 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List live campaigns (Chương trình) for a locale
+         * @description Returns live campaigns ordered by position, then start_date descending. nav_featured and home_featured are effective flags: toggle on, live, and today (Asia/Ho_Chi_Minh) not after end_date.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live campaign list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            locale: "en" | "vi" | "zh";
+                            campaigns: {
+                                slug: string;
+                                title: string;
+                                summary: string | null;
+                                cover_url: string | null;
+                                og_image_url: string | null;
+                                start_date: string | null;
+                                end_date: string | null;
+                                position: number;
+                                landing_path: string | null;
+                                cta_label: string | null;
+                                nav_featured: boolean;
+                                nav_label: string | null;
+                                nav_badge: string | null;
+                                home_featured: boolean;
+                                menu_items: {
+                                    icon: string;
+                                    title: string;
+                                    subtitle: string | null;
+                                    href: string;
+                                }[];
+                                updated_at: number;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/campaigns/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one live campaign by slug and locale
+         * @description Returns a campaign only while it is live; en/zh fall back to the VI copy.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    lang?: "en" | "vi" | "zh";
+                };
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live campaign detail */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            campaign: {
+                                slug: string;
+                                title: string;
+                                summary: string | null;
+                                cover_url: string | null;
+                                og_image_url: string | null;
+                                start_date: string | null;
+                                end_date: string | null;
+                                position: number;
+                                landing_path: string | null;
+                                cta_label: string | null;
+                                nav_featured: boolean;
+                                nav_label: string | null;
+                                nav_badge: string | null;
+                                home_featured: boolean;
+                                menu_items: {
+                                    icon: string;
+                                    title: string;
+                                    subtitle: string | null;
+                                    href: string;
+                                }[];
+                                updated_at: number;
+                                body_md: string | null;
+                                seo_title: string | null;
+                                seo_description: string | null;
+                            };
+                            available_locales: ("en" | "vi" | "zh")[];
+                        };
+                    };
+                };
+                /** @description Invalid `lang` query parameter */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+                /** @description Campaign not found or not live */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/translations": {
         parameters: {
             query?: never;
