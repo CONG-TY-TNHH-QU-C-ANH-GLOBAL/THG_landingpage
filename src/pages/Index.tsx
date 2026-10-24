@@ -20,6 +20,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCmsMarqueeImages, useCmsFaqs } from "@/hooks/useCmsContent";
 import { SeoHead } from "@/components/seo/SeoHead";
 import { JsonLdOrganization, JsonLdFaqPage } from "@/components/seo/JsonLd";
+import { CampaignHomeBanner } from "@/components/campaigns/CampaignHomeBanner";
 import "@/lib/i18n/translations/express";
 
 
@@ -54,6 +55,7 @@ const Index = () => {
       {faqsData?.faqs && faqsData.faqs.length > 0 && <JsonLdFaqPage faqs={faqsData.faqs} />}
       <Navbar />
       <HeroSection />
+      <CampaignHomeBanner />
       <ServicesSection />
       <AboutVideoSection />
       <SellerTypesSection />

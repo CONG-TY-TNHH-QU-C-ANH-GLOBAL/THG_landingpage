@@ -22,6 +22,7 @@ import { catalogTranslations } from "./catalog";
 import { chinhNgachTranslations } from "./chinhngach";
 import { seoTranslations } from "./seo";
 import { commonTranslations } from "./common";
+import { campaignTranslations } from "./campaigns";
 
 export const translations: TranslationDict = {
   ...navTranslations,
@@ -40,4 +41,5 @@ export const translations: TranslationDict = {
   ...chinhNgachTranslations,
   ...seoTranslations,
   ...commonTranslations,
+  ...campaignTranslations,
 };
