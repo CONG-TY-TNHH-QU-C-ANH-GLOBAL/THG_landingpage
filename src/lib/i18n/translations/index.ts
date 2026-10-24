@@ -20,6 +20,7 @@ import { shippingTranslations } from "./shipping";
 import { blogTranslations } from "./blog";
 import { catalogTranslations } from "./catalog";
 import { chinhNgachTranslations } from "./chinhngach";
+import { christmasTranslations } from "./christmas";
 import { seoTranslations } from "./seo";
 import { commonTranslations } from "./common";
 import { campaignTranslations } from "./campaigns";
@@ -39,6 +40,7 @@ export const translations: TranslationDict = {
   ...blogTranslations,
   ...catalogTranslations,
   ...chinhNgachTranslations,
+  ...christmasTranslations,
   ...seoTranslations,
   ...commonTranslations,
   ...campaignTranslations,

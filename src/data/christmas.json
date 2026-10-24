@@ -1,0 +1,40 @@
+{
+  "countdownTarget": "2026-12-25T00:00:00+07:00",
+  "heroImage": "/christmas/hero-christmas-market-navy.jpg",
+  "defaultCollection": "christmas",
+  "categories": ["gift", "home", "kitchen", "wear"],
+  "hotPicks": ["advent-pet", "ornament", "placemat", "pillow", "blanket"],
+  "spotlight": [
+    { "img": "/christmas/products/advent-3d.jpg", "alt": "advent_3d" },
+    { "img": "/christmas/products/advent-pet.jpg", "alt": "advent_pet" },
+    { "img": "/christmas/products/advent-detail.jpg", "alt": "advent_detail" }
+  ],
+  "ornaments": [
+    { "key": "santa", "name": "Santa Stocking", "material": "copper", "img": "/christmas/products/ornament-santa.jpg", "catalogId": "cmvdsysri0pgo01p5v3ss5o1g" },
+    { "key": "bell", "name": "Christmas Bell", "material": "steel", "img": "/christmas/products/ornament-bell.jpg" },
+    { "key": "snowflake", "name": "Golden Snowflake", "material": "steel", "img": "/christmas/products/ornament-snowflake.jpg", "catalogId": "cmvdsysrt0pgp01p5rqcdurfm" },
+    { "key": "tree", "name": "Christmas Tree", "material": "steel", "img": "/christmas/products/ornament-tree.jpg", "catalogId": "cmvdsyss00pgq01p5s9e4hgyu" }
+  ],
+  "products": [
+    { "id": "advent-pet", "cat": "gift", "hot": true, "img": "/christmas/products/advent-pet.jpg", "name": "Pet Advent Calendar", "origin": "vn", "label": null, "merchant": null, "meta": [["prod", "1–2"], ["ship", "6–8"]], "catalogId": "cmvf23jio1czy01p5eij8geom" },
+    { "id": "advent-3d", "cat": "gift", "hot": true, "img": "/christmas/products/advent-3d.jpg", "name": "Advent Calendar 3D Charm", "origin": "vn", "label": null, "merchant": null, "meta": [["box", "26×18×5 cm"], ["charms", "24"]], "catalogId": "cmvf2ulb41dbw01p554zv4k6b" },
+    { "id": "ornament", "cat": "gift", "hot": true, "img": "/christmas/products/ornament-snowflake.jpg", "name": "Projection Pendant Ornament", "origin": "cn", "label": null, "merchant": null, "meta": [["spec", "Copper / Stainless steel"]], "collection": "christmas" },
+    { "id": "suncatcher", "cat": "gift", "img": "/christmas/products/suncatcher.jpg", "name": "Projection Suncatcher", "origin": "cn", "label": null, "merchant": null, "meta": [["spec", "Stainless steel"], ["laser"]], "catalogId": "cmvdsysqw0pgl01p5lmic4p7d", "collection": "christmas" },
+    { "id": "magnet", "cat": "gift", "img": "/christmas/products/magnet.jpg", "name": "Acrylic Fridge Magnet Music", "origin": "us", "label": null, "merchant": null, "meta": [["prod", "1–2"], ["ship", "3–7"]], "collection": "magnet" },
+    { "id": "stone", "cat": "gift", "img": "/christmas/products/stone.jpg", "name": "Memorial Stone", "origin": "us", "label": "$7.00 – $7.50", "merchant": "$15.00 – $16.00", "meta": [["prod", "2–3"], ["ship", "3–7"]], "catalogId": "cmu3t2p5nck8701nswt7r4o60", "collection": "new-arrivals" },
+    { "id": "notebook", "cat": "gift", "img": "/christmas/products/notebook.jpg", "name": "Notebook Set", "origin": "us", "label": "$9.00", "merchant": "$16.00", "meta": [["prod", "1–2"], ["ship", "3–7"]], "catalogId": "cmvaoi0av0a4201sciqgwlhpa" },
+    { "id": "pillow", "cat": "home", "hot": true, "img": "/christmas/products/pillow.jpg", "name": "Personalized Pillows", "origin": "us", "label": "$11.58 – $17.55", "merchant": "$19.29 – $26.67", "meta": [["spec", "10–24 inch"], ["prod", "2–3"]], "catalogId": "cmte3t4xn0exx01pnrws09vtl", "collection": "new-arrivals" },
+    { "id": "linen-pillow", "cat": "home", "img": "/christmas/products/linen-pillow.jpg", "name": "Linen Pillow Case", "origin": "us", "label": "$7.00 – $8.00", "merchant": "$11.88 – $13.50", "meta": [["prod", "2–3"], ["ship", "3–7"]], "catalogId": "cmte3t4yg0ey101pn6807d9pl", "collection": "new-arrivals" },
+    { "id": "blanket", "cat": "home", "hot": true, "img": "/christmas/products/blanket.jpg", "name": "Lambswool Composite Blanket", "origin": "us", "label": "$12.70 – $50.50", "merchant": "$19.80 – $64.50", "meta": [["prod", "2–3"], ["ship", "3–7"]], "catalogId": "cmte3t4ym0ey201pny1pg2p8w", "collection": "new-arrivals" },
+    { "id": "floor-mat", "cat": "home", "img": "/christmas/products/floor-mat.jpg", "name": "Flannel Diatom Mud Floor Mat", "origin": "us", "label": "$8.50 – $12.00", "merchant": "$16.50 – $22.00", "meta": [["spec", "1100 gsm"], ["prod", "2–3"]], "catalogId": "cmte3t4z30ey501pn6jpdlbv8", "collection": "new-arrivals" },
+    { "id": "rug", "cat": "home", "img": "/christmas/products/rug.jpg", "name": "Rug Round", "origin": "cn", "label": null, "merchant": "$14.27 – $44.16", "meta": [["spec", "91–230 cm"], ["ship", "6–12"]], "catalogId": "cmu5dhq1x151j01lms6qe46jp" },
+    { "id": "plate", "cat": "kitchen", "img": "/christmas/products/plate.jpg", "name": "Personalized Ceramic Plate", "origin": "us", "label": "$6.00 – $6.75", "merchant": "$12.00 – $14.50", "meta": [["spec", "7 | 8 | 9 inch"], ["prod", "2–3"]], "catalogId": "cmte3t4xx0exy01pnh1rdwwbc", "collection": "new-arrivals" },
+    { "id": "placemat", "cat": "kitchen", "hot": true, "img": "/christmas/products/placemat.jpg", "name": "Placemat", "origin": "us", "label": "$4.50 – $20.00", "merchant": "$11.00 – $30.00", "meta": [["spec", "Faux linen 300 gsm"], ["prod", "2–3"]], "catalogId": "cmte3t4zn0ey801pnwxrtb6rt", "collection": "new-arrivals" },
+    { "id": "tablecloth", "cat": "kitchen", "img": "/christmas/products/tablecloth.jpg", "name": "Peachskin Velvet Table Cloth", "origin": "us", "label": "$6.88 – $19.95", "merchant": "$12.53 – $30.79", "meta": [["waterproof"], ["prod", "2–3"]], "catalogId": "cmte3t4zc0ey601pnvt9nu06i", "collection": "new-arrivals" },
+    { "id": "kitchen-towel", "cat": "kitchen", "img": "/christmas/products/kitchen-towel.jpg", "name": "Kitchen Towels", "origin": "us", "label": "$5.50 – $42.00", "merchant": "$9.50 – $60.00", "meta": [["prod", "2–3"], ["ship", "3–7"]], "catalogId": "cmte3t4yy0ey401pn9s8atlfm", "collection": "new-arrivals" },
+    { "id": "polo", "cat": "wear", "img": "/christmas/products/polo.jpg", "name": "3D Full-Print Polo Shirt", "origin": "us", "label": null, "merchant": null, "meta": [["spec", "XL → 5XL"], ["ship", "3–5"]], "catalogId": "cmvfeo82p1glf01p55q90dgv1", "collection": "3d-made-in-usa" },
+    { "id": "tee", "cat": "wear", "img": "/christmas/products/tee-printed.webp", "name": "3D Full-Print T-Shirt", "origin": "us", "label": null, "merchant": null, "meta": [["spec", "S → 5XL"], ["ship", "3–5"]], "catalogId": "cmvfesyas1gmv01p598r0f83c", "collection": "3d-made-in-usa" },
+    { "id": "microfiber-towel", "cat": "wear", "img": "/christmas/products/microfiber-towel.jpg", "name": "Personalized Microfiber Towel", "origin": "us", "label": "$7.40 – $12.20", "merchant": "$13.00 – $19.44", "meta": [["spec", "250 GSM"], ["prod", "2–3"]], "catalogId": "cmte3t4ys0ey301pnsph9dib7", "collection": "new-arrivals" },
+    { "id": "golf-towel", "cat": "wear", "img": "/christmas/products/golf-towel.jpg", "name": "Golf Towel", "origin": "us", "label": "$4.50 – $5.00", "merchant": "$9.00 – $10.00", "meta": [["print", "19×25 cm"], ["prod", "2–3"]], "catalogId": "cmte3t4zh0ey701pnn6t08v9a", "collection": "new-arrivals" }
+  ]
+}
