@@ -52,6 +52,7 @@ import {
   testimonialsResponseSchema,
   translationsResponseSchema,
 } from "@/lib/cmsSchemas";
+import { campaignResponseSchema, campaignsResponseSchema } from "@/lib/campaigns";
 
 // Re-export every consumer-facing type so existing imports
 // (`import type { CmsService } from "@/lib/cmsClient"`) keep working.
@@ -180,6 +181,15 @@ export const cmsClient = {
 
   getEvent(slug: string, locale: Locale) {
     return fetchJson(`/events/${encodeURIComponent(slug)}?lang=${locale}`, eventResponseSchema);
+  },
+
+  /** Live campaigns only (CMS filters server-side), ordered by position. */
+  getCampaigns(locale: Locale) {
+    return fetchJson(`/campaigns?lang=${locale}`, campaignsResponseSchema);
+  },
+
+  getCampaign(slug: string, locale: Locale) {
+    return fetchJson(`/campaigns/${encodeURIComponent(slug)}?lang=${locale}`, campaignResponseSchema);
   },
 
   getSeoPages() {

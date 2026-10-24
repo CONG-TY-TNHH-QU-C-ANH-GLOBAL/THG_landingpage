@@ -135,6 +135,30 @@ export function useCmsEvent(slug: string, locale: Locale) {
   });
 }
 
+/** Live campaigns for a locale. Shared by the navbar item, the home banner and
+ *  the list page (one request). No retry: while the CMS endpoint is missing or
+ *  down, the navbar and banner simply render nothing. */
+export function useCmsCampaigns(locale: Locale) {
+  return useQuery({
+    queryKey: ["cms", "campaigns", locale],
+    queryFn: () => cmsClient.getCampaigns(locale),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+    retry: false,
+  });
+}
+
+export function useCmsCampaign(slug: string, locale: Locale) {
+  return useQuery({
+    queryKey: ["cms", "campaign", slug, locale],
+    queryFn: () => cmsClient.getCampaign(slug, locale),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+    enabled: !!slug,
+    retry: false,
+  });
+}
+
 export function useCmsIntegrations() {
   return useQuery({
     queryKey: ["cms", "integrations"],
