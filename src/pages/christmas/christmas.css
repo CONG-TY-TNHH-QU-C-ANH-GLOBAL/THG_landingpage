@@ -73,7 +73,8 @@
 .xmas .btn-gold-line:hover { background: rgba(255, 217, 138, .1); }
 
 /* ---------- Under the site navbar ---------- */
-.xmas .xm-navspace { height: var(--nav-h); background: var(--navy); }
+/* Same light strip as every other page, so the site navbar looks identical here. */
+.xmas .xm-navspace { height: var(--nav-h); background: hsl(var(--background)); }
 .xmas .topbar { background: var(--red-950); color: var(--gold-soft); font-size: 13px; font-weight: 600; text-align: center; padding: 8px 16px; letter-spacing: .02em; }
 .xmas .topbar b { color: var(--snow); }
 .xmas .subnav { position: sticky; top: var(--nav-h); z-index: 30; background: var(--red-800); border-bottom: 4px solid transparent; border-image: var(--candy) 1; }
@@ -82,7 +83,6 @@
 .xmas .subnav-links::-webkit-scrollbar { display: none; }
 .xmas .subnav-links a { flex-shrink: 0; color: rgba(255, 255, 255, .88); font-weight: 600; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
 .xmas .subnav-links a:hover { color: var(--snow); border-color: var(--gold); }
-.xmas .subnav .btn { padding: 10px 18px; font-size: 14px; flex-shrink: 0; }
 
 /* ---------- Hero ---------- */
 .xmas .hero { position: relative; background: var(--navy); color: var(--snow); overflow: hidden; isolation: isolate; }
@@ -268,7 +268,6 @@
   .xmas { --subnav-h: 48px; }
   .xmas .subnav-links { gap: 18px; }
   .xmas .subnav-links a { font-size: 14px; }
-  .xmas .subnav .btn { display: none; }
   .xmas .hero-content { padding-top: 30px; }
   .xmas .hero-eyebrow { font-size: 10px; letter-spacing: .2em; }
   .xmas .hero h1 { font-size: 52px; }
