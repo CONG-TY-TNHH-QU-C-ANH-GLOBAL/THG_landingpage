@@ -15,9 +15,12 @@ export function ConsultButton({
     ariaLabel,
     children,
 }: Readonly<{ className: string; product?: string; ariaLabel?: string; children: ReactNode }>) {
-    const { t } = useI18n();
+    const { t, language } = useI18n();
     return (
+        // LeadFormDialog copies defaultMessage into state once; remount on a
+        // language switch so the prefill follows the page language.
         <LeadFormDialog
+            key={language}
             primaryService="fulfill"
             defaultMessage={`${t("christmas.lead_message")}${product ?? ""}`}
             trigger={

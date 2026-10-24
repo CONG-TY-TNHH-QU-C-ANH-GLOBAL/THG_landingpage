@@ -10,6 +10,7 @@ import { I18nProvider, useI18n, type Language } from "@/lib/i18n";
 import { christmasTranslations } from "@/lib/i18n/translations/christmas";
 import ChristmasPage from "./ChristmasPage";
 import { Countdown } from "./Countdown";
+import { ConsultButton } from "./parts";
 import { useCountdown } from "./useCountdown";
 
 vi.mock("@/components/Navbar", () => ({ default: () => <nav>TH Group</nav> }));
@@ -177,6 +178,30 @@ describe("christmas consult buttons", () => {
         const subnav = screen.getByRole("navigation", { name: "Trên trang này" });
         const message = await openAndReachMessage(within(subnav).getByRole("button", { name: "Tư vấn ngay" }), /Nhu cầu/);
         expect(message.value.trim()).toBe("Bộ sưu tập Christmas 2026:");
+    });
+
+    it("prefills in the current language after switching language on the page", async () => {
+        function SwitchToEnglish() {
+            const { setLanguage } = useI18n();
+            return (
+                <button type="button" onClick={() => setLanguage("en")}>
+                    switch-en
+                </button>
+            );
+        }
+        render(
+            <Providers path="/vi/christmas">
+                <>
+                    <SwitchToEnglish />
+                    <ConsultButton className="c" product="Placemat" ariaLabel="consult-placemat">
+                        go
+                    </ConsultButton>
+                </>
+            </Providers>,
+        );
+        fireEvent.click(screen.getByRole("button", { name: "switch-en" }));
+        const message = await openAndReachMessage(screen.getByRole("button", { name: "consult-placemat" }), /Your needs/);
+        expect(message.value).toBe("Christmas 2026 collection: Placemat");
     });
 });
 
