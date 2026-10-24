@@ -40,7 +40,7 @@ const ADVENT = PRODUCTS.find((p) => p.id === "advent-pet") ?? {};
 
 /** A market-at-night silhouette, shown while the hero photo is missing. */
 const HeroScenery = () => (
-    <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
         <path d="M0 230 Q300 200 600 225 T1200 215 V300 H0Z" fill="#fff" opacity=".92" />
         {[90, 250, 960, 1110].map((x, i) => (
             <g key={x} transform={`translate(${x} ${i % 2 ? 60 : 40}) scale(${i % 2 ? 0.85 : 1})`}>

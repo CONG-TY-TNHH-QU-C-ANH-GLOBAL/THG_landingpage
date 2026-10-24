@@ -289,6 +289,8 @@
   .xmas .picks .pick:nth-child(5) { display: none; }
   .xmas .xm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .xmas .card-body { padding: 12px; }
+  .xmas .origin { top: 8px; left: 8px; font-size: 10px; letter-spacing: .02em; padding: 4px 7px; }
+  .xmas .hot { top: auto; bottom: 8px; right: 8px; }
   .xmas .card-body h3 { font-size: 15px; }
   .xmas .card-body .vn { font-size: 13px; }
   .xmas .price .val { font-size: 17px; }
