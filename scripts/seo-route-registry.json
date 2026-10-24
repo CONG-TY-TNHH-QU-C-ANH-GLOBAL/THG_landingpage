@@ -17,7 +17,8 @@
     "/shipping-policy",
     "/international-pricing",
     "/chinh-ngach-pricing",
-    "/domestic-pricing"
+    "/domestic-pricing",
+    "/christmas"
   ],
   "commercialRoutes": [
     "/",

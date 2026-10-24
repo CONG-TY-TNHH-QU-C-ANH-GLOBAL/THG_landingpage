@@ -150,6 +150,55 @@ async function fetchEventRoutes() {
   }
 }
 
+/** Fetch live campaigns ("Chương trình") → "/:lang/campaigns" + each
+ *  "/:lang/campaigns/:slug". Like events, routes come from the API rather than
+ *  registry.staticRoutes, so a locale is prerendered only when it has content.
+ *  A detail page is prerendered only in its reviewed locales
+ *  (available_locales); the VI-fallback copy under other locales is noindex.
+ *
+ *  A 404 on the LIST endpoint means the CMS has not shipped /campaigns yet
+ *  (the two repos deploy independently) — warn and skip instead of recording
+ *  a discovery failure, which would fail STRICT/CI builds in that window.
+ *  Any other error is recorded like jobs/blog/events. */
+async function fetchCampaignRoutes() {
+  try {
+    const routes = [];
+    const slugs = new Set();
+    for (const lang of LANGS) {
+      const res = await fetch(`${CMS_API}/campaigns?lang=${lang}`);
+      if (res.status === 404) {
+        console.warn(`⚠ campaigns endpoint not deployed on CMS (404) — skipping campaign prerender`);
+        return [];
+      }
+      if (!res.ok) {
+        recordDiscoveryFailure(`campaigns:${lang}`, `CMS returned ${res.status}`);
+        continue;
+      }
+      const data = await res.json();
+      const list = (data.campaigns ?? []).map((c) => c.slug).filter(Boolean);
+      if (list.length === 0) continue;
+      routes.push(`/${lang}/campaigns`);
+      for (const slug of list) slugs.add(slug);
+    }
+    for (const slug of slugs) {
+      const res = await fetch(`${CMS_API}/campaigns/${encodeURIComponent(slug)}?lang=vi`);
+      if (!res.ok) {
+        recordDiscoveryFailure(`campaign:${slug}`, `CMS returned ${res.status}`);
+        continue;
+      }
+      const data = await res.json();
+      const locales = (data.available_locales?.length ? data.available_locales : ["vi"]).filter((l) => LANGS.includes(l));
+      for (const lang of locales) routes.push(`/${lang}/campaigns/${encodeURIComponent(slug)}`);
+    }
+    console.log(`✓ ${routes.length} localized campaign routes → /campaigns + /campaigns/:slug prerender`);
+    return [...new Set(routes)];
+  } catch (err) {
+    recordDiscoveryFailure("campaigns", err instanceof Error ? err.message : String(err));
+    console.warn(`⚠ campaigns fetch failed (${err.message}) — skipping campaign prerender`);
+    return [];
+  }
+}
+
 /** Fetch indexable community-question slugs so each /community/:slug gets a
  *  prerendered shell with QAPage JSON-LD + real meta. ONLY indexable questions
  *  (published + verified + non-empty expert answer) — everything else is
@@ -259,6 +308,7 @@ const ROUTES = [
   ...(await fetchJobRoutes()),
   ...(await fetchBlogRoutes()),
   ...(await fetchEventRoutes()),
+  ...(await fetchCampaignRoutes()),
   ...catalogCollectionRoutes,
   ...(await fetchCommunityRoutes()),
   ...(await fetchCommunityReviewRoutes()),

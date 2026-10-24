@@ -171,6 +171,56 @@ async function fetchEventEntries(today: string): Promise<SitemapEntry[]> {
   return entries;
 }
 
+// 2c. Campaigns ("Chương trình") from CMS (best-effort), mirroring
+//     fetchCampaignRoutes() in scripts/prerender.mjs: the list page per locale
+//     that has campaigns, each detail page only in its reviewed locales. A 404
+//     on the list means the CMS has not shipped the endpoint yet — warn only,
+//     so STRICT builds are not blocked in the cross-deploy window.
+async function fetchCampaignEntries(today: string): Promise<SitemapEntry[]> {
+  const entries: SitemapEntry[] = [];
+  try {
+    const listLocales: Locale[] = [];
+    const slugs = new Map<string, string>();
+    for (const locale of LANGS) {
+      const res = await fetch(`${CMS_API}/campaigns?lang=${locale}`);
+      if (res.status === 404) {
+        console.warn("⚠ CMS campaigns endpoint not deployed (404) — skipping campaign routes");
+        return entries;
+      }
+      if (!res.ok) {
+        dynamicSourceFailure(`CMS campaigns endpoint (${locale}) returned ${res.status}`);
+        continue;
+      }
+      const data = (await res.json()) as { campaigns?: Array<{ slug: string; updated_at?: number }> };
+      const campaigns = (data.campaigns ?? []).filter((c) => c.slug);
+      if (campaigns.length === 0) continue;
+      listLocales.push(locale);
+      for (const c of campaigns) {
+        slugs.set(c.slug, c.updated_at ? new Date(c.updated_at * 1000).toISOString().slice(0, 10) : today);
+      }
+    }
+    if (listLocales.length > 0) {
+      entries.push(...langEntries("/campaigns", today, "weekly", 0.7, listLocales));
+    }
+    for (const [slug, lastmod] of slugs) {
+      const res = await fetch(`${CMS_API}/campaigns/${encodeURIComponent(slug)}?lang=vi`);
+      if (!res.ok) {
+        dynamicSourceFailure(`CMS campaign ${slug} returned ${res.status}`);
+        continue;
+      }
+      const data = (await res.json()) as { available_locales?: Locale[] };
+      const locales = (data.available_locales?.length ? data.available_locales : ["vi" as Locale]).filter((l) =>
+        LANGS.includes(l),
+      );
+      entries.push(...langEntries(`/campaigns/${encodeURIComponent(slug)}`, lastmod, "weekly", 0.7, locales));
+    }
+    console.log(`✓ Added ${slugs.size} campaigns from CMS`);
+  } catch (err) {
+    dynamicSourceFailure(`Cannot reach CMS campaigns API: ${(err as Error).message}`);
+  }
+  return entries;
+}
+
 // 3. Open job postings from CMS (best-effort). Each JD has its own URL so HR
 //    can distribute it + Google for Jobs can index it.
 async function fetchJobEntries(today: string): Promise<SitemapEntry[]> {
@@ -270,6 +320,7 @@ async function main() {
   entries.push(
     ...(await fetchBlogEntries()),
     ...(await fetchEventEntries(today)),
+    ...(await fetchCampaignEntries(today)),
     ...(await fetchJobEntries(today)),
     ...(await fetchCommunityEntries(today)),
     ...(await fetchCommunityReviewEntries(today)),
