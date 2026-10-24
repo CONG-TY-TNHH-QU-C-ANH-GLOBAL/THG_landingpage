@@ -6,7 +6,8 @@ import type React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import fixture from "@/lib/campaigns.fixture.json";
-import { I18nProvider } from "@/lib/i18n";
+import { I18nProvider, useI18n } from "@/lib/i18n";
+import { useEffect } from "react";
 import CampaignsPage from "./CampaignsPage";
 import CampaignDetailPage from "./CampaignDetailPage";
 
@@ -16,20 +17,29 @@ vi.mock("@/components/ScrollReveal", () => ({ default: ({ children }: { children
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 
-function mount(path: string) {
+/** Switches the provider's language before the page reads it. */
+function Lang({ lang, children }: { lang: "vi" | "en" | "zh"; children: React.ReactNode }) {
+  const { language, setLanguage } = useI18n();
+  useEffect(() => setLanguage(lang), [lang, setLanguage]);
+  return language === lang ? <>{children}</> : null;
+}
+
+function mount(path: string, lang: "vi" | "en" | "zh" = "vi") {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  client.setQueryData(["cms", "translations", "vi"], { translations: {} });
+  for (const l of ["vi", "en", "zh"]) client.setQueryData(["cms", "translations", l], { translations: {} });
   client.setQueryData(["cms", "seo-pages"], { pages: [] });
   return render(
     <QueryClientProvider client={client}>
       <HelmetProvider>
         <I18nProvider>
-          <MemoryRouter initialEntries={[path]}>
-            <Routes>
-              <Route path="/campaigns" element={<CampaignsPage />} />
-              <Route path="/campaigns/:slug" element={<CampaignDetailPage />} />
-            </Routes>
-          </MemoryRouter>
+          <Lang lang={lang}>
+            <MemoryRouter initialEntries={[path]}>
+              <Routes>
+                <Route path="/campaigns" element={<CampaignsPage />} />
+                <Route path="/campaigns/:slug" element={<CampaignDetailPage />} />
+              </Routes>
+            </MemoryRouter>
+          </Lang>
         </I18nProvider>
       </HelmetProvider>
     </QueryClientProvider>,
@@ -68,5 +78,78 @@ describe("campaign pages", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(json({ error: "Not found" }, 404));
     mount("/campaigns/old");
     expect(await screen.findByText("Chương trình đã kết thúc hoặc không tồn tại.")).toBeInTheDocument();
+  });
+});
+
+const robots = () => document.querySelector('meta[name="robots"]')?.getAttribute("content");
+const detail = (overrides: Record<string, unknown> = {}) => ({
+  ...fixture.campaigns[0],
+  body_md: null,
+  seo_title: null,
+  seo_description: null,
+  ...overrides,
+});
+
+describe("campaign detail: available_locales noindex rule", () => {
+  it.each([
+    ["en", ["vi"], "noindex,nofollow"],
+    ["zh", ["vi", "en"], "noindex,nofollow"],
+    ["en", ["vi", "en"], "index,follow"],
+    ["vi", ["vi"], "index,follow"],
+  ] as const)("lang %s with available_locales %j → %s", async (lang, available, expected) => {
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(json({ campaign: detail(), available_locales: available }));
+    mount("/campaigns/christmas-2026", lang);
+    await screen.findByRole("heading", { level: 1, name: "Christmas 2026 Collection" });
+    await waitFor(() => expect(robots()).toBe(expected));
+    expect(String(fetchSpy.mock.calls[0][0])).toContain(`/campaigns/christmas-2026?lang=${lang}`);
+  });
+});
+
+describe("campaign detail: links", () => {
+  it("renders no CTA for an unsafe landing_path and drops unsafe menu items", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      json({
+        campaign: detail({
+          landing_path: "javascript:alert(1)",
+          menu_items: [
+            { icon: "x", title: "Evil", subtitle: null, href: "//evil.example" },
+            { icon: "🎁", title: "Gifts", subtitle: null, href: "/catalog/christmas" },
+          ],
+        }),
+        available_locales: ["vi"],
+      }),
+    );
+    mount("/campaigns/christmas-2026");
+    await screen.findByRole("heading", { level: 1, name: "Christmas 2026 Collection" });
+    expect(screen.queryByRole("link", { name: /Khám phá bộ sưu tập/ })).toBeNull();
+    expect(screen.queryByText("Evil")).toBeNull();
+    expect(screen.getByRole("link", { name: /Gifts/ })).toHaveAttribute("href", "/vi/catalog/christmas");
+    for (const a of screen.getAllByRole("link")) expect(a.getAttribute("href")).toMatch(/^\/vi(\/|$)/);
+  });
+
+  it("shows a retryable error (not not-found) and noindex on a 500", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(json({ error: "boom" }, 500));
+    mount("/campaigns/christmas-2026");
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.getByRole("button")).toBeInTheDocument();
+    expect(screen.queryByText("Chương trình đã kết thúc hoặc không tồn tại.")).toBeNull();
+    await waitFor(() => expect(robots()).toBe("noindex,nofollow"));
+  });
+});
+
+describe("campaign list", () => {
+  it("is noindex when there are no live campaigns", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(json({ locale: "vi", campaigns: [] }));
+    mount("/campaigns");
+    await waitFor(() => expect(robots()).toBe("noindex,nofollow"));
+  });
+
+  it("is indexable when campaigns are live", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(json(fixture));
+    mount("/campaigns");
+    await screen.findByRole("link", { name: /Christmas 2026 Collection/ });
+    await waitFor(() => expect(robots()).toBe("index,follow"));
   });
 });
