@@ -1,7 +1,14 @@
 import type { ReactNode } from "react";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import App from "@/App";
+import { loadBlogDetail } from "@/lib/articleNavigation";
+
+// Warm the lazy route chunks so findBy* timeouts measure rendering, not the
+// first-time module transform, which can exceed 1s when test files run in parallel.
+beforeAll(async () => {
+  await Promise.all([loadBlogDetail(), import("@/pages/BlogPage")]);
+});
 
 const spies = vi.hoisted(() => ({ tracking: vi.fn(), utm: vi.fn() }));
 vi.mock("@/components/analytics/TrackingScripts", () => ({ TrackingScripts: () => { spies.tracking(); return null; } }));
