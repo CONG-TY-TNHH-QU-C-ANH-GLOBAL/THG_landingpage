@@ -138,7 +138,7 @@ const ChristmasPage = () => {
                     { name: t("christmas.breadcrumb"), url: `${SITE_BASE}/${language}${PATH}` },
                 ]}
             />
-            <Navbar variant="darkHero" />
+            <Navbar />
 
             {/* Navbar and footer stay outside .xmas: its reset would override their Tailwind. */}
             <main className="xmas">
@@ -158,7 +158,6 @@ const ChristmasPage = () => {
                                 </a>
                             ))}
                         </div>
-                        <ConsultButton className="btn btn-hot">{consult}</ConsultButton>
                     </div>
                 </nav>
 
