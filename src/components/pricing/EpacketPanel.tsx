@@ -2,9 +2,10 @@ import React, { useMemo, useState } from "react";
 import { BatteryCharging, Info } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Link } from "react-router-dom";
-import { EpacketRoute, CargoType, ROUTES, CARGO_LABELS, CARGO_ICONS, OriginCountry, type PricingRow } from "@/components/pricing/types";
+import { EpacketRoute, CargoType, ROUTES, DATA_KEY_MAP, CARGO_LABELS, CARGO_ICONS, OriginCountry, type PricingRow } from "@/components/pricing/types";
 import Accordion from "@/components/pricing/Accordion";
 import PriceTable from "@/components/pricing/PriceTable";
+import { useLarkPricingContext } from "@/components/pricing/LarkPricingProvider";
 import CompactAccordionTable from "@/components/pricing/CompactAccordionTable";
 import ShipByLabelPanel from "@/components/pricing/ShipByLabelPanel";
 import ShippingTermsQnAPanel from "@/components/pricing/ShippingTermsQnAPanel";
@@ -43,6 +44,7 @@ const EpacketPanel = ({
 }: EpacketPanelProps) => {
     const { t, effectiveLanguage: lang } = useI18n();
     const { data: settings } = useCmsSiteSettings();
+    const { fxRates } = useLarkPricingContext();
     const remoteAreaLinks = settings?.remote_area_links ?? [];
     const [reshipSearch, setReshipSearch] = useState("");
 
@@ -251,6 +253,7 @@ const EpacketPanel = ({
                                 data={larkOverlay["uspsCn"] ?? []}
                                 columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
                                 currencySymbol="₫"
+                                fxVndPerUsd={fxRates["uspsCn"]}
                             />
                         ) : route === "pri-cn-us" ? (
                             <PriceTable
@@ -258,6 +261,7 @@ const EpacketPanel = ({
                                 badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
                                 data={larkOverlay["uspsCnUs"] ?? []}
                                 columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
+                                fxVndPerUsd={fxRates["uspsCnUs"]}
                             />
                         ) : (
                             <PriceTable
@@ -266,6 +270,7 @@ const EpacketPanel = ({
                                 data={currentData}
                                 columns={tableColumns.map(c => ({ ...c, label: c.label }))}
                                 currencySymbol={route.startsWith("std-vn") ? "₫" : "$"}
+                                fxVndPerUsd={fxRates[DATA_KEY_MAP[`${route}_${cargo}`]]}
                                 sla={(currentData as any)?.meta || (() => {
                                     const keyMap: Record<string, string> = { "std-vn-ww_standard": "vnThuongMeta", "std-vn-ww_cosmetics": "vnMyphamMeta", "std-cn-ww_standard": "cnThuongMeta", "std-cn-ww_cosmetics": "cnMyphamMeta", "std-cn-ww_battery": "cnPinMeta" };
                                     return larkOverlay[keyMap[`${route}_${cargo}`]];

@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { cmsClient, type Locale } from "@/lib/cmsClient";
+import { readFxRate } from "@/components/pricing/fxDisplay";
 import { blogPostQueryOptions, eventQueryOptions } from "@/lib/articleNavigation";
 
 const STALE_MS = 5 * 60 * 1000; // 5 minutes — matches CMS edge cache TTL
@@ -382,6 +383,8 @@ export function useCommunityReview(slug: string) {
  */
 export function useCmsPricingOverlay(): {
   overlay: Record<string, unknown>;
+  /** Slug → VND-per-USD rate set in the CMS; absent when the table has none. */
+  fxRates: Record<string, number>;
   isLoading: boolean;
   isLive: boolean;
   lastUpdated: number | null;
@@ -408,15 +411,19 @@ export function useCmsPricingOverlay(): {
     // expressVnUs has { hcm: { saver, expedited }, hn: {...} }). Pass through
     // whatever the table holds, as long as the row was loaded.
     const overlay: Record<string, unknown> = {};
+    const fxRates: Record<string, number> = {};
     let allLoaded = true;
     for (const q of tableQueries) {
       if (q.isLoading) allLoaded = false;
       const t = q.data?.table;
       if (!t || t.data == null) continue;
       overlay[t.slug] = t.data;
+      const fx = readFxRate(t.schema);
+      if (fx != null) fxRates[t.slug] = fx;
     }
     return {
       overlay,
+      fxRates,
       isLoading: list.isLoading || (slugs.length > 0 && !allLoaded),
       isLive: slugs.length > 0 && Object.keys(overlay).length > 0,
       lastUpdated: Date.now(),
