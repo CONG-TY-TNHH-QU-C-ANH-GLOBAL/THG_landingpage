@@ -44,6 +44,21 @@ const banner = (page: Page) => page.getByRole("region", { name: "Christmas 2026 
 const overflowX = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 
+async function expectCampaignSectionVisible(page: Page, id: string) {
+  const heading = page.locator(`#${id} h2`).first();
+  await expect(heading).toBeVisible();
+  await expect.poll(() => heading.evaluate((el) => {
+    const bounds = el.getBoundingClientRect();
+    const navbar = document.querySelector("nav");
+    const subnav = document.querySelector(".xmas .subnav");
+    if (!navbar || !subnav) throw new Error("Expected the site navbar and Christmas subnav");
+    return {
+      insideViewport: bounds.top >= 0 && bounds.bottom <= innerHeight && bounds.left >= 0 && bounds.right <= innerWidth,
+      belowNavigation: bounds.top >= Math.max(navbar.getBoundingClientRect().bottom, subnav.getBoundingClientRect().bottom),
+    };
+  })).toEqual({ insideViewport: true, belowNavigation: true });
+}
+
 test.describe("desktop (1280px)", () => {
   test.use({ viewport: { width: 1280, height: 800 } });
 
@@ -136,7 +151,7 @@ test.describe("phone (375px)", () => {
       await expect(page.getByRole("heading", { level: 1 })).toContainText("Christmas");
       await expect(page.getByRole("button", { name: "Open menu", exact: true })).toBeVisible();
       if (fragment === "%68ot") {
-        await expect.poll(() => page.locator("#hot").evaluate((el) => Math.round(el.getBoundingClientRect().top))).toBe(120);
+        await expectCampaignSectionVisible(page, "hot");
       }
     });
   }
@@ -151,7 +166,7 @@ test.describe("phone (375px)", () => {
       await page.getByRole("region", { name: "Christmas", exact: true }).getByRole("link", { name: label }).click();
       await expect(page).toHaveURL(new RegExp(`/vi/christmas#${id}$`));
       await expect(page.getByRole("button", { name: "Open menu", exact: true })).toBeVisible();
-      await expect.poll(() => page.locator(`#${id}`).evaluate((el) => Math.round(el.getBoundingClientRect().top))).toBe(120);
+      await expectCampaignSectionVisible(page, id);
     };
 
     await selectSection(/Special Offers/, "hot");
