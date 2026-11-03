@@ -122,6 +122,44 @@ test.describe("desktop (1280px)", () => {
 test.describe("phone (375px)", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
+  for (const fragment of ["%68ot", "%E0%A4%A"]) {
+    test(`${fragment}: encoded campaign fragments scroll correctly and malformed fragments do not crash`, async ({ page }) => {
+      await stubCms(page);
+      const body = structuredClone(golden.list.vi);
+      body.campaigns[0].menu_items.find((item: { title: string }) => item.title === "Special Offers").href = `/christmas#${fragment}`;
+      await page.route("**/api/v1/campaigns**", (route) => route.fulfill({ json: body }));
+      await page.goto("/vi");
+      await expect(banner(page)).toBeVisible();
+      await page.getByRole("button", { name: "Open menu", exact: true }).click();
+      await page.getByRole("region", { name: "Christmas", exact: true }).getByRole("link", { name: /Special Offers/ }).click();
+      await expect(page).toHaveURL(new RegExp(`/vi/christmas#${fragment}$`));
+      await expect(page.getByRole("heading", { level: 1 })).toContainText("Christmas");
+      await expect(page.getByRole("button", { name: "Open menu", exact: true })).toBeVisible();
+      if (fragment === "%68ot") {
+        await expect.poll(() => page.locator("#hot").evaluate((el) => Math.round(el.getBoundingClientRect().top))).toBe(120);
+      }
+    });
+  }
+
+  test("campaign section links scroll after lazy navigation, within the page and on repeated selection", async ({ page }) => {
+    await stubCms(page);
+    await page.goto("/vi");
+    await expect(banner(page)).toBeVisible();
+
+    const selectSection = async (label: RegExp, id: string) => {
+      await page.getByRole("button", { name: "Open menu", exact: true }).click();
+      await page.getByRole("region", { name: "Christmas", exact: true }).getByRole("link", { name: label }).click();
+      await expect(page).toHaveURL(new RegExp(`/vi/christmas#${id}$`));
+      await expect(page.getByRole("button", { name: "Open menu", exact: true })).toBeVisible();
+      await expect.poll(() => page.locator(`#${id}`).evaluate((el) => Math.round(el.getBoundingClientRect().top))).toBe(120);
+    };
+
+    await selectSection(/Special Offers/, "hot");
+    await selectSection(/Fulfill tại Mỹ/, "san-pham");
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await selectSection(/Fulfill tại Mỹ/, "san-pham");
+  });
+
   test("the menu shows the campaign group with prefixed links and no horizontal scroll", async ({ page }) => {
     await stubCms(page);
     await page.goto("/vi");
@@ -134,4 +172,27 @@ test.describe("phone (375px)", () => {
     await group.getByRole("link", { name: /Christmas\s*NEW/ }).click();
     await expect(page).toHaveURL(/\/vi\/christmas$/);
   });
+});
+
+test.describe("mobile menu scrolling", () => {
+  for (const viewport of [{ width: 320, height: 568 }, { width: 812, height: 375 }, { width: 1023, height: 768 }]) {
+    test(`${viewport.width}x${viewport.height}: campaign menu scrolls to the consultation button without moving the page`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await stubCms(page);
+      await page.addInitScript(() => localStorage.setItem("thg-consent-v1", "rejected"));
+      await page.goto("/vi/christmas");
+      await page.getByRole("button", { name: "Open menu", exact: true }).click();
+      const group = page.getByRole("region", { name: "Christmas", exact: true });
+      await expect(group).toBeVisible();
+      const sheet = group.locator("..");
+      await sheet.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+      await expect.poll(() => sheet.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+      const consult = page.locator("nav").first().getByRole("button", { name: "Tư vấn ngay", exact: true });
+      await expect(consult).toBeInViewport();
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+      expect(await sheet.evaluate((el) => el.scrollWidth - el.clientWidth)).toBe(0);
+      await consult.click();
+      await expect(page.getByRole("dialog")).toBeVisible();
+    });
+  }
 });

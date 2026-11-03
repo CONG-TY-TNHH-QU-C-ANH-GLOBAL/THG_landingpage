@@ -61,16 +61,24 @@ const CampaignsPage = lazy(() => import("./pages/campaigns/CampaignsPage"));
 const CampaignDetailPage = lazy(() => import("./pages/campaigns/CampaignDetailPage"));
 const ChristmasPage = lazy(() => import("./pages/christmas/ChristmasPage"));
 
-/**
- * ScrollToTop — resets scroll on every route change.
- */
+/** Scroll after lazy routes mount; collection switches keep their position. */
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  // Collection switches inside the catalog keep their scroll position.
+  const { pathname, hash, key } = useLocation();
   const identity = routeIdentity(pathname);
+  const hashNavigation = hash ? key : null;
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [identity]);
+    if (hash) {
+      let id: string;
+      try {
+        id = decodeURIComponent(hash.slice(1));
+      } catch {
+        id = hash.slice(1);
+      }
+      document.getElementById(id)?.scrollIntoView();
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [identity, hash, hashNavigation]);
   return null;
 };
 
@@ -134,7 +142,6 @@ const AppRoutes = () => {
   const location = useLocation();
   return (
     <>
-      <ScrollToTop />
       <Suspense
         fallback={
           <div className="h-screen w-full flex items-center justify-center">
@@ -142,6 +149,7 @@ const AppRoutes = () => {
           </div>
         }
       >
+        <ScrollToTop />
         <ErrorBoundary key={routeIdentity(location.pathname)}>
           <Routes>
             {/* Root redirect — send bare / to default locale */}
