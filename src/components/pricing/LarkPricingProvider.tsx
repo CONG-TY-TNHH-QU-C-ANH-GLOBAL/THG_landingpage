@@ -16,6 +16,8 @@ interface PricingContextType {
    * `expressVnUs` = `{ hcm: { saver, expedited }, hn: {...} }`).
    */
   cmsOverlay: Record<string, unknown>;
+  /** Slug → VND-per-USD rate set in the CMS (only tables that have one). */
+  fxRates: Record<string, number>;
   loading: boolean;
   lastUpdated: string | null;
   isLive: boolean;
@@ -24,6 +26,7 @@ interface PricingContextType {
 
 const PricingContext = createContext<PricingContextType>({
   cmsOverlay: {},
+  fxRates: {},
   loading: false,
   lastUpdated: null,
   isLive: false,
@@ -31,7 +34,7 @@ const PricingContext = createContext<PricingContextType>({
 });
 
 export function LarkPricingProvider({ children }: { children: ReactNode }) {
-  const { overlay, isLoading, isLive, lastUpdated } = useCmsPricingOverlay();
+  const { overlay, fxRates, isLoading, isLive, lastUpdated } = useCmsPricingOverlay();
   const qc = useQueryClient();
   const refetch = useCallback(() => {
     // Invalidate the list + every individual pricing-table query so a fresh
@@ -44,6 +47,7 @@ export function LarkPricingProvider({ children }: { children: ReactNode }) {
     <PricingContext.Provider
       value={{
         cmsOverlay: overlay,
+        fxRates,
         loading: isLoading,
         lastUpdated: lastUpdated ? new Date(lastUpdated).toISOString() : null,
         isLive,

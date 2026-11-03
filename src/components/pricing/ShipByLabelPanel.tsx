@@ -8,7 +8,7 @@ import "@/lib/i18n/translations/shipping";
 const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: any[] } | null }) => {
     const [tab, setTab] = useState<"regular" | "special">("regular");
     const { t } = useI18n();
-    const { cmsOverlay } = useLarkPricingContext();
+    const { cmsOverlay, fxRates } = useLarkPricingContext();
 
     const tabs = [
         { id: "regular" as const, label: t("sbl.tab_regular"), cmsSlug: "tiktokCnUsNormal" },
@@ -69,6 +69,7 @@ const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: 
                 badge="Ship by Label"
                 data={data}
                 columns={[{ key: "rate", label: "Shipping fee ($)" }]}
+                fxVndPerUsd={fxRates[activeTab.cmsSlug]}
             />
         </div>
     );
