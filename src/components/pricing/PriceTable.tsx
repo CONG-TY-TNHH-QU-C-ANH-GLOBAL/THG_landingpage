@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, ClipboardList, FileSpreadsheet, FileText, Chevr
 import { useI18n } from "@/lib/i18n";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import type { PricingRow } from "@/components/pricing/types";
+import { baseCurrencyOf, fxDisplay, type PriceCurrency } from "@/components/pricing/fxDisplay";
 import "@/lib/i18n/translations/pricing";
 
 // xlsx + jspdf + html2canvas weigh ~600KB combined; lazy-load only on export.
@@ -16,17 +17,25 @@ async function lazyExportToPdf(element: HTMLElement, filename: string) {
     await exportElementToPdf({ element, filename });
 }
 
-const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbol = "$", sla }: {
+const PriceTable = ({ title, badge, note, data, columns, rate: baseRate = 1, currencySymbol: baseSymbol = "$", sla, fxVndPerUsd }: {
     title: string; badge?: React.ReactNode; note?: React.ReactNode;
     data: PricingRow[]; columns: { key: string; label: string }[];
     rate?: number; currencySymbol?: string;
     sla?: Record<string, string>;
+    /** VNĐ per 1 USD from the CMS. Present → show a VNĐ/USD switch on the card. */
+    fxVndPerUsd?: number | null;
 }) => {
     const { t, tVi } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
     // useId — stable across SSR/prerender + client hydration. Previously used
     // Math.random which produced different IDs on server vs client and tripped
     // React hydration warnings once we started prerendering.
+    const baseCurrency = baseCurrencyOf(baseSymbol);
+    const [shown, setShown] = useState<PriceCurrency>(baseCurrency);
+    const fx = fxDisplay(baseCurrency, shown, fxVndPerUsd);
+    const rate = baseRate * fx.factor;
+    const currencySymbol = fx.symbol;
+    const canSwitch = !!fxVndPerUsd;
     const tableId = `table-price-${useId()}`;
     const tableRef = useRef<HTMLTableElement>(null);
     const [pdfBusy, setPdfBusy] = useState(false);
@@ -104,6 +113,21 @@ const PriceTable = ({ title, badge, note, data, columns, rate = 1, currencySymbo
                 </div>
                 <div className="flex items-center gap-2 ml-auto">
                     {note && <span className="text-[#9CA3AF] text-[12px] mr-2">{note}</span>}
+                    {canSwitch && (
+                        <div className="inline-flex rounded-md overflow-hidden border border-white/20 notranslate" translate="no" role="group" aria-label="Currency">
+                            {(["VND", "USD"] as const).map((c) => (
+                                <button
+                                    key={c}
+                                    type="button"
+                                    onClick={() => setShown(c)}
+                                    aria-pressed={shown === c}
+                                    className={`px-2 py-1 text-[11px] font-bold transition-colors ${shown === c ? "bg-white text-navy" : "bg-white/10 text-white hover:bg-white/20"}`}
+                                >
+                                    {c === "VND" ? "₫ VNĐ" : "$ USD"}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                     <button onClick={() => lazyExportToExcel(exportConfig)} className="p-1.5 bg-white/10 hover:bg-white/20 rounded-md text-white transition-colors" title={t("pt.export_excel")} aria-label={t("pt.export_excel")}>
                         <FileSpreadsheet size={14} />
                     </button>
