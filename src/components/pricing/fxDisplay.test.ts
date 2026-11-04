@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { baseCurrencyOf, fxDisplay, readFxRate } from "./fxDisplay";
+import { baseCurrencyOf, fxDisplay, readFxRate, readTableCurrency, symbolFor } from "./fxDisplay";
 
 describe("readFxRate", () => {
     it("đọc tỉ giá hợp lệ, bỏ qua thiếu/ngoài khoảng/không phải số", () => {
@@ -25,6 +25,18 @@ describe("fxDisplay", () => {
     it("cùng tiền tệ hoặc thiếu tỉ giá thì giữ nguyên", () => {
         expect(fxDisplay("VND", "VND", 25000)).toEqual({ factor: 1, symbol: "₫" });
         expect(fxDisplay("VND", "USD", null)).toEqual({ factor: 1, symbol: "₫" });
+    });
+});
+
+describe("readTableCurrency / symbolFor", () => {
+    it("bảng VN đã đổi sang USD trên CMS thì hiện $, không đoán theo tuyến", () => {
+        expect(symbolFor(readTableCurrency({ currency: "USD" }), "₫")).toBe("$");
+        expect(symbolFor(readTableCurrency({ currency: "vnd" }), "$")).toBe("₫");
+    });
+    it("không ghi hoặc ghi lạ thì dùng mặc định của panel", () => {
+        expect(readTableCurrency({})).toBeNull();
+        expect(readTableCurrency({ currency: "EUR" })).toBeNull();
+        expect(symbolFor(null, "₫")).toBe("₫");
     });
 });
 

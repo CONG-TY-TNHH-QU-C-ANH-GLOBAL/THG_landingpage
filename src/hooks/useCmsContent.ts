@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { useQueries, useQuery } from "@tanstack/react-query";
 
 import { cmsClient, type Locale } from "@/lib/cmsClient";
-import { readFxRate } from "@/components/pricing/fxDisplay";
+import { readFxRate, readTableCurrency, type PriceCurrency } from "@/components/pricing/fxDisplay";
 import { blogPostQueryOptions, eventQueryOptions } from "@/lib/articleNavigation";
 
 const STALE_MS = 5 * 60 * 1000; // 5 minutes — matches CMS edge cache TTL
@@ -385,6 +385,8 @@ export function useCmsPricingOverlay(): {
   overlay: Record<string, unknown>;
   /** Slug → VND-per-USD rate set in the CMS; absent when the table has none. */
   fxRates: Record<string, number>;
+  /** Slug → the currency the CMS table is priced in, when it says so. */
+  currencies: Record<string, PriceCurrency>;
   isLoading: boolean;
   isLive: boolean;
   lastUpdated: number | null;
@@ -412,6 +414,7 @@ export function useCmsPricingOverlay(): {
     // whatever the table holds, as long as the row was loaded.
     const overlay: Record<string, unknown> = {};
     const fxRates: Record<string, number> = {};
+    const currencies: Record<string, PriceCurrency> = {};
     let allLoaded = true;
     for (const q of tableQueries) {
       if (q.isLoading) allLoaded = false;
@@ -420,10 +423,13 @@ export function useCmsPricingOverlay(): {
       overlay[t.slug] = t.data;
       const fx = readFxRate(t.schema);
       if (fx != null) fxRates[t.slug] = fx;
+      const cur = readTableCurrency(t.schema);
+      if (cur != null) currencies[t.slug] = cur;
     }
     return {
       overlay,
       fxRates,
+      currencies,
       isLoading: list.isLoading || (slugs.length > 0 && !allLoaded),
       isLive: slugs.length > 0 && Object.keys(overlay).length > 0,
       lastUpdated: Date.now(),

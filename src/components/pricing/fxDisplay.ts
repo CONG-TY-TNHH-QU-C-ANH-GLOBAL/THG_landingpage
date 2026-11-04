@@ -12,6 +12,21 @@ export function readFxRate(schema: unknown): number | null {
     return typeof v === "number" && Number.isFinite(v) && v >= MIN_FX && v <= MAX_FX ? v : null;
 }
 
+/** Tiền tệ CMS ghi cho bảng (schema.currency). Bảng VN có thể đã được đổi cả
+ *  bảng sang USD trên CMS, nên không được đoán theo tuyến. null = không ghi. */
+export function readTableCurrency(schema: unknown): PriceCurrency | null {
+    if (!schema || typeof schema !== "object" || Array.isArray(schema)) return null;
+    const c = String((schema as Record<string, unknown>).currency ?? "").toUpperCase();
+    return c === "VND" || c === "USD" ? c : null;
+}
+
+/** Ký hiệu cho PriceTable: theo tiền tệ CMS ghi, không có thì theo mặc định của panel. */
+export function symbolFor(currency: PriceCurrency | null | undefined, fallback: "₫" | "$"): "₫" | "$" {
+    if (currency === "VND") return "₫";
+    if (currency === "USD") return "$";
+    return fallback;
+}
+
 /** Tiền tệ gốc của bảng suy ra từ ký hiệu mà panel truyền vào PriceTable. */
 export function baseCurrencyOf(currencySymbol: string): PriceCurrency {
     return currencySymbol === "₫" ? "VND" : "USD";

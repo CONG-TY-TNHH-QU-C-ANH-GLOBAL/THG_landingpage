@@ -3,12 +3,13 @@ import { Info } from "lucide-react";
 import PriceTable from "./PriceTable";
 import { useI18n } from "@/lib/i18n";
 import { useLarkPricingContext } from "@/components/pricing/LarkPricingProvider";
+import { symbolFor } from "@/components/pricing/fxDisplay";
 import "@/lib/i18n/translations/shipping";
 
 const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: any[] } | null }) => {
     const [tab, setTab] = useState<"regular" | "special">("regular");
     const { t } = useI18n();
-    const { cmsOverlay, fxRates } = useLarkPricingContext();
+    const { cmsOverlay, fxRates, currencies } = useLarkPricingContext();
 
     const tabs = [
         { id: "regular" as const, label: t("sbl.tab_regular"), cmsSlug: "tiktokCnUsNormal" },
@@ -68,7 +69,8 @@ const ShipByLabelPanel = ({ larkData }: { larkData?: { regular: any[]; special: 
                 title={`CN → US · ${tab === "regular" ? t("sbl.title_regular") : t("sbl.title_special")}`}
                 badge="Ship by Label"
                 data={data}
-                columns={[{ key: "rate", label: "Shipping fee ($)" }]}
+                columns={[{ key: "rate", label: "Shipping fee" }]}
+                currencySymbol={symbolFor(currencies[activeTab.cmsSlug], "$")}
                 fxVndPerUsd={fxRates[activeTab.cmsSlug]}
             />
         </div>

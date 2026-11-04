@@ -6,6 +6,7 @@ import { EpacketRoute, CargoType, ROUTES, DATA_KEY_MAP, CARGO_LABELS, CARGO_ICON
 import Accordion from "@/components/pricing/Accordion";
 import PriceTable from "@/components/pricing/PriceTable";
 import { useLarkPricingContext } from "@/components/pricing/LarkPricingProvider";
+import { symbolFor } from "@/components/pricing/fxDisplay";
 import CompactAccordionTable from "@/components/pricing/CompactAccordionTable";
 import ShipByLabelPanel from "@/components/pricing/ShipByLabelPanel";
 import ShippingTermsQnAPanel from "@/components/pricing/ShippingTermsQnAPanel";
@@ -44,7 +45,8 @@ const EpacketPanel = ({
 }: EpacketPanelProps) => {
     const { t, effectiveLanguage: lang } = useI18n();
     const { data: settings } = useCmsSiteSettings();
-    const { fxRates } = useLarkPricingContext();
+    const { fxRates, currencies } = useLarkPricingContext();
+    const mainSlug = DATA_KEY_MAP[`${route}_${cargo}`];
     const remoteAreaLinks = settings?.remote_area_links ?? [];
     const [reshipSearch, setReshipSearch] = useState("");
 
@@ -249,18 +251,19 @@ const EpacketPanel = ({
                         {route === "pri-vn-us" ? (
                             <PriceTable
                                 title={t("ep.detail_table_vn_us")}
-                                badge={<span className="notranslate font-bold" translate='no'>VN-US (VND) · Priority Service (7-9 bsd)</span>}
+                                badge={<span className="notranslate font-bold" translate='no'>VN-US · Priority Service (7-9 bsd)</span>}
                                 data={larkOverlay["uspsCn"] ?? []}
-                                columns={[{ key: "rate", label: "VN-US · Priority Service (VNĐ)" }]}
-                                currencySymbol="₫"
+                                columns={[{ key: "rate", label: "VN-US · Priority Service" }]}
+                                currencySymbol={symbolFor(currencies["uspsCn"], "₫")}
                                 fxVndPerUsd={fxRates["uspsCn"]}
                             />
                         ) : route === "pri-cn-us" ? (
                             <PriceTable
                                 title={t("ep.detail_table_cn_us")}
-                                badge={<span className="notranslate font-bold" translate='no'>CN-US (USD) · Priority Service (5-10 bsd)</span>}
+                                badge={<span className="notranslate font-bold" translate='no'>CN-US · Priority Service (5-10 bsd)</span>}
                                 data={larkOverlay["uspsCnUs"] ?? []}
-                                columns={[{ key: "rate", label: "CN-US · Priority Service ($)" }]}
+                                columns={[{ key: "rate", label: "CN-US · Priority Service" }]}
+                                currencySymbol={symbolFor(currencies["uspsCnUs"], "$")}
                                 fxVndPerUsd={fxRates["uspsCnUs"]}
                             />
                         ) : (
@@ -269,8 +272,8 @@ const EpacketPanel = ({
                                 badge={<div className="flex items-center gap-1">{getRouteName(routeConfig)} <span className="opacity-50">·</span> <span>{getCargoLabel(cargo)}</span></div>}
                                 data={currentData}
                                 columns={tableColumns.map(c => ({ ...c, label: c.label }))}
-                                currencySymbol={route.startsWith("std-vn") ? "₫" : "$"}
-                                fxVndPerUsd={fxRates[DATA_KEY_MAP[`${route}_${cargo}`]]}
+                                currencySymbol={symbolFor(currencies[mainSlug], route.startsWith("std-vn") ? "₫" : "$")}
+                                fxVndPerUsd={fxRates[mainSlug]}
                                 sla={(currentData as any)?.meta || (() => {
                                     const keyMap: Record<string, string> = { "std-vn-ww_standard": "vnThuongMeta", "std-vn-ww_cosmetics": "vnMyphamMeta", "std-cn-ww_standard": "cnThuongMeta", "std-cn-ww_cosmetics": "cnMyphamMeta", "std-cn-ww_battery": "cnPinMeta" };
                                     return larkOverlay[keyMap[`${route}_${cargo}`]];
