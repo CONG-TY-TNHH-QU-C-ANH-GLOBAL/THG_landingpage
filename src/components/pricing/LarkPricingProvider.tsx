@@ -8,6 +8,7 @@ import { createContext, useContext, ReactNode, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useCmsPricingOverlay } from "@/hooks/useCmsContent";
+import type { PriceCurrency } from "@/components/pricing/fxDisplay";
 
 interface PricingContextType {
   /**
@@ -18,6 +19,8 @@ interface PricingContextType {
   cmsOverlay: Record<string, unknown>;
   /** Slug → VND-per-USD rate set in the CMS (only tables that have one). */
   fxRates: Record<string, number>;
+  /** Slug → currency the CMS table is priced in (a VN table may be in USD). */
+  currencies: Record<string, PriceCurrency>;
   loading: boolean;
   lastUpdated: string | null;
   isLive: boolean;
@@ -27,6 +30,7 @@ interface PricingContextType {
 const PricingContext = createContext<PricingContextType>({
   cmsOverlay: {},
   fxRates: {},
+  currencies: {},
   loading: false,
   lastUpdated: null,
   isLive: false,
@@ -34,7 +38,7 @@ const PricingContext = createContext<PricingContextType>({
 });
 
 export function LarkPricingProvider({ children }: { children: ReactNode }) {
-  const { overlay, fxRates, isLoading, isLive, lastUpdated } = useCmsPricingOverlay();
+  const { overlay, fxRates, currencies, isLoading, isLive, lastUpdated } = useCmsPricingOverlay();
   const qc = useQueryClient();
   const refetch = useCallback(() => {
     // Invalidate the list + every individual pricing-table query so a fresh
@@ -48,6 +52,7 @@ export function LarkPricingProvider({ children }: { children: ReactNode }) {
       value={{
         cmsOverlay: overlay,
         fxRates,
+        currencies,
         loading: isLoading,
         lastUpdated: lastUpdated ? new Date(lastUpdated).toISOString() : null,
         isLive,

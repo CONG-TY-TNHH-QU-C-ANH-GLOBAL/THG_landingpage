@@ -31,7 +31,13 @@ const PriceTable = ({ title, badge, note, data, columns, rate: baseRate = 1, cur
     // Math.random which produced different IDs on server vs client and tripped
     // React hydration warnings once we started prerendering.
     const baseCurrency = baseCurrencyOf(baseSymbol);
-    const [shown, setShown] = useState<PriceCurrency>(baseCurrency);
+    // Remember "converted or not", not a currency: the table's own currency can
+    // arrive after mount (CMS says a VN table is now in USD), and a stored
+    // currency would then silently convert the figures the wrong way.
+    const [converted, setConverted] = useState(false);
+    const otherCurrency: PriceCurrency = baseCurrency === "VND" ? "USD" : "VND";
+    const shown: PriceCurrency = converted ? otherCurrency : baseCurrency;
+    const setShown = (c: PriceCurrency) => setConverted(c !== baseCurrency);
     const fx = fxDisplay(baseCurrency, shown, fxVndPerUsd);
     const rate = baseRate * fx.factor;
     const currencySymbol = fx.symbol;
