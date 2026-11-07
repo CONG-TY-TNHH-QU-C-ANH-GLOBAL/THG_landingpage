@@ -34,6 +34,7 @@ import {
   leadershipResponseSchema,
   eventResponseSchema,
   eventsResponseSchema,
+  monthlySourcingResponseSchema,
   partnersResponseSchema,
   jobResponseSchema,
   jobsResponseSchema,
@@ -69,6 +70,8 @@ export type {
   CmsLeadershipMember,
   CmsLeadInput,
   CmsMarqueeImage,
+  CmsMonthlySourcing,
+  CmsMonthlySourcingMonth,
   CmsPolicyTextBlock,
   CmsRemoteAreaLink,
   CmsService,
@@ -181,6 +184,11 @@ export const cmsClient = {
 
   getEvent(slug: string, locale: Locale) {
     return fetchJson(`/events/${encodeURIComponent(slug)}?lang=${locale}`, eventResponseSchema);
+  },
+
+  /** The active year and its published PDF-backed monthly resources. */
+  getMonthlySourcing() {
+    return fetchJson("/monthly-sourcing", monthlySourcingResponseSchema);
   },
 
   /** Live campaigns only (CMS filters server-side), ordered by position. */
