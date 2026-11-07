@@ -14,6 +14,7 @@ import {
   Ship,
   Tag,
   CalendarDays,
+  FileText,
   Gift,
   HelpCircle,
 } from "lucide-react";
@@ -24,8 +25,9 @@ import thGroupLogo from "@/assets/th-group-logo.webp";
 import thGroupLogoOnDark from "@/assets/th-group-logo-on-dark.webp";
 import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { DELAYS, SCROLL } from "@/lib/constants";
-import { useCmsCampaigns } from "@/hooks/useCmsContent";
+import { useCmsCampaigns, useCmsMonthlySourcing } from "@/hooks/useCmsContent";
 import { pickNavFeatured } from "@/lib/campaigns";
+import { monthlySourcingHref } from "@/lib/monthlySourcing";
 import { CampaignNavItem } from "@/components/campaigns/CampaignNavItem";
 import { CampaignMobileGroup } from "@/components/campaigns/CampaignMobileGroup";
 
@@ -200,6 +202,15 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
   // a failed/missing endpoint renders nothing, so the bar never shifts.
   const { data: campaignData } = useCmsCampaigns(language);
   const featured = pickNavFeatured(campaignData?.campaigns);
+  const { data: monthlySourcing } = useCmsMonthlySourcing();
+  const monthlySourcingYear = monthlySourcing?.year;
+  const monthlySourcingItems =
+    monthlySourcingYear === null || monthlySourcingYear === undefined
+      ? []
+      : (monthlySourcing?.months ?? []).map(({ month }) => ({
+          month,
+          href: monthlySourcingHref({ year: monthlySourcingYear, month }),
+        }));
 
   // The static FAQ lives on the homepage as an anchor section; smooth-scroll
   // when already there, otherwise navigate to the homepage hash.
@@ -344,6 +355,27 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
                     onClick={() => setOpenMenu(null)}
                   />
                 ))}
+                {monthlySourcingItems.length > 0 && (
+                  <>
+                    <p className="mt-1 border-t border-border/40 px-3 pt-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Top sản phẩm &amp; nguồn hàng
+                    </p>
+                    <div className="grid grid-cols-2 gap-1 px-1">
+                      {monthlySourcingItems.map((item) => (
+                        <a
+                          key={item.month}
+                          href={item.href}
+                          aria-label={`Tháng ${item.month}`}
+                          className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
+                          onClick={() => setOpenMenu(null)}
+                        >
+                          <FileText className="h-4 w-4 shrink-0 text-primary" />
+                          <span>Tháng {item.month}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <button
                   onClick={goToFaq}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 border-t border-border/40 mt-1 pt-3 text-left"
@@ -447,6 +479,25 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
           {eventItems.map((item) => (
             <MobileNavItem key={item.titleKey} item={item} onClick={() => setIsOpen(false)} />
           ))}
+          {monthlySourcingItems.length > 0 && (
+            <>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pt-3 pb-2">
+                Top sản phẩm &amp; nguồn hàng
+              </p>
+              {monthlySourcingItems.map((item) => (
+                <a
+                  key={item.month}
+                  href={item.href}
+                  aria-label={`Tháng ${item.month}`}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Tháng {item.month}</span>
+                </a>
+              ))}
+            </>
+          )}
           <button
             onClick={() => {
               setIsOpen(false);
