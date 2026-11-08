@@ -136,6 +136,17 @@ export function useCmsEvent(slug: string, locale: Locale) {
   });
 }
 
+/** Current active year's published PDF-backed monthly sourcing resources. */
+export function useCmsMonthlySourcing() {
+  return useQuery({
+    queryKey: ["cms", "monthly-sourcing"],
+    queryFn: () => cmsClient.getMonthlySourcing(),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+    retry: false,
+  });
+}
+
 /** Live campaigns for a locale. Shared by the navbar item, the home banner and
  *  the list page (one request). No retry: while the CMS endpoint is missing or
  *  down, the navbar and banner simply render nothing. */

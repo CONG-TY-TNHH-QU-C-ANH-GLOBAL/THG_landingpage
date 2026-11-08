@@ -222,6 +222,41 @@ export const eventResponseSchema = z.object({
   available_locales: z.array(localeSchema).optional().default([]),
 });
 
+/* ---------- Monthly product sourcing ---------- */
+
+const cmsMonthlySourcingMonthSchema = z.object({
+  month: z.number().int().min(1).max(12),
+  title: z.string().min(1),
+  slug: z.string().regex(/^thang-(?:[1-9]|1[0-2])-\d{4}$/),
+});
+export type CmsMonthlySourcingMonth = z.infer<typeof cmsMonthlySourcingMonthSchema>;
+
+/** The CMS exposes only one active year's published, PDF-backed months. */
+export const monthlySourcingResponseSchema = z
+  .object({
+    year: z.number().int().min(2020).max(2100).nullable(),
+    months: z.array(cmsMonthlySourcingMonthSchema),
+  })
+  .superRefine(({ year, months }, ctx) => {
+    if (year === null && months.length > 0) {
+      ctx.addIssue({ code: "custom", message: "Months require an active year", path: ["months"] });
+      return;
+    }
+    if (year !== null) {
+      const monthsSeen = new Set<number>();
+      months.forEach(({ month, slug }, index) => {
+        if (monthsSeen.has(month)) {
+          ctx.addIssue({ code: "custom", message: "Monthly month is duplicated", path: ["months", index, "month"] });
+        }
+        monthsSeen.add(month);
+        if (slug !== `thang-${month}-${year}`) {
+          ctx.addIssue({ code: "custom", message: "Monthly slug does not match its period", path: ["months", index, "slug"] });
+        }
+      });
+    }
+  });
+export type CmsMonthlySourcing = z.infer<typeof monthlySourcingResponseSchema>;
+
 /* ---------- Integrations ---------- */
 
 export const cmsIntegrationSchema = z.object({
