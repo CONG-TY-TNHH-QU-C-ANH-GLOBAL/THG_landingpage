@@ -687,6 +687,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/monthly-sourcing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the active monthly product sourcing year
+         * @description Returns the one live navigation year and its live PDF-backed months. Returns `{ year: null, months: [] }` until an operator activates a year.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Active year and available monthly product sourcing PDFs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            year: number | null;
+                            months: {
+                                month: number;
+                                title: string;
+                                slug: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/translations": {
         parameters: {
             query?: never;
