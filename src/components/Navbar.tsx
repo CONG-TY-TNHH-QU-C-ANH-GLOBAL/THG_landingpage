@@ -436,7 +436,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
                       aria-haspopup="true"
                       aria-expanded={isMonthlySourcingOpen}
                       aria-controls="monthly-sourcing-desktop"
-                      onClick={() => setIsMonthlySourcingOpen((open) => !open)}
+                      onClick={() => setIsMonthlySourcingOpen(true)}
                       className={ROW_CLASS}
                     >
                       <DropdownRowBody
