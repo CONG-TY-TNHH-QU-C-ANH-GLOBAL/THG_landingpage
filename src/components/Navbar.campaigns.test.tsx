@@ -63,15 +63,15 @@ describe("Navbar Event dropdown", () => {
     const disclosures = screen.getAllByRole("button", {
       name: "Top sản phẩm & nguồn hàng năm 2026",
     });
-    expect(disclosures).toHaveLength(2);
+    expect(disclosures).toHaveLength(1);
     expect(disclosures.every((button) => button.getAttribute("aria-expanded") === "false")).toBe(true);
     expect(screen.queryByRole("link", { name: "Tháng 1" })).toBeNull();
 
     fireEvent.click(disclosures[0]);
     const januaryLinks = screen.getAllByRole("link", { name: "Tháng 1" });
-    expect(januaryLinks).toHaveLength(2);
+    expect(januaryLinks).toHaveLength(1);
     expect(januaryLinks.every((link) => link.getAttribute("href") === "https://lp.thgfulfill.com/thang-1-2026")).toBe(true);
-    expect(screen.getAllByRole("link", { name: "Tháng 10" })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: "Tháng 10" })).toHaveLength(1);
     expect(screen.queryByRole("link", { name: "Tháng 2" })).toBeNull();
     expect(disclosures.every((button) => button.getAttribute("aria-expanded") === "true")).toBe(true);
   });

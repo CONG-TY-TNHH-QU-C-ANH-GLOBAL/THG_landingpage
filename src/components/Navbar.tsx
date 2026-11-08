@@ -172,6 +172,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
   /** Prefix any absolute path with the current language. */
   const lp = (path: string) => `/${language}${path}`;
   const [isOpen, setIsOpen] = useState(false);
+  const [isMonthlySourcingOpen, setIsMonthlySourcingOpen] = useState(false);
   // One open dropdown at a time (hover-driven), shared close timeout.
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -357,23 +358,35 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
                 ))}
                 {monthlySourcingItems.length > 0 && (
                   <>
-                    <p className="mt-1 border-t border-border/40 px-3 pt-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Top sản phẩm &amp; nguồn hàng
-                    </p>
-                    <div className="grid grid-cols-2 gap-1 px-1">
-                      {monthlySourcingItems.map((item) => (
-                        <a
-                          key={item.month}
-                          href={item.href}
-                          aria-label={`Tháng ${item.month}`}
-                          className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
-                          onClick={() => setOpenMenu(null)}
-                        >
-                          <FileText className="h-4 w-4 shrink-0 text-primary" />
-                          <span>Tháng {item.month}</span>
-                        </a>
-                      ))}
-                    </div>
+                    <button
+                      type="button"
+                      aria-expanded={isMonthlySourcingOpen}
+                      aria-controls="monthly-sourcing-desktop"
+                      onClick={() => setIsMonthlySourcingOpen((open) => !open)}
+                      className="mt-1 flex w-full items-center justify-between gap-3 border-t border-border/40 px-3 pt-3 text-left text-sm font-semibold text-foreground"
+                    >
+                      <span>Top sản phẩm &amp; nguồn hàng năm {monthlySourcingYear}</span>
+                      <ChevronDown
+                        className={`h-4 w-4 shrink-0 text-primary transition-transform duration-200 ${isMonthlySourcingOpen ? "rotate-180" : ""}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                    {isMonthlySourcingOpen && (
+                      <div id="monthly-sourcing-desktop" className="grid grid-cols-2 gap-1 px-1">
+                        {monthlySourcingItems.map((item) => (
+                          <a
+                            key={item.month}
+                            href={item.href}
+                            aria-label={`Tháng ${item.month}`}
+                            className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
+                            onClick={() => setOpenMenu(null)}
+                          >
+                            <FileText className="h-4 w-4 shrink-0 text-primary" />
+                            <span>Tháng {item.month}</span>
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </>
                 )}
                 <button
@@ -481,21 +494,35 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
           ))}
           {monthlySourcingItems.length > 0 && (
             <>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pt-3 pb-2">
-                Top sản phẩm &amp; nguồn hàng
-              </p>
-              {monthlySourcingItems.map((item) => (
-                <a
-                  key={item.month}
-                  href={item.href}
-                  aria-label={`Tháng ${item.month}`}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <FileText className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Tháng {item.month}</span>
-                </a>
-              ))}
+              <button
+                type="button"
+                aria-expanded={isMonthlySourcingOpen}
+                aria-controls="monthly-sourcing-mobile"
+                onClick={() => setIsMonthlySourcingOpen((open) => !open)}
+                className="flex w-full items-center justify-between gap-3 px-3 pt-3 pb-2 text-left text-sm font-semibold text-foreground"
+              >
+                <span>Top sản phẩm &amp; nguồn hàng năm {monthlySourcingYear}</span>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-primary transition-transform duration-200 ${isMonthlySourcingOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
+              </button>
+              {isMonthlySourcingOpen && (
+                <div id="monthly-sourcing-mobile">
+                  {monthlySourcingItems.map((item) => (
+                    <a
+                      key={item.month}
+                      href={item.href}
+                      aria-label={`Tháng ${item.month}`}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <FileText className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium">Tháng {item.month}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
             </>
           )}
           <button
