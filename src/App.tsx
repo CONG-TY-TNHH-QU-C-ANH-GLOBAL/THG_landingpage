@@ -41,6 +41,7 @@ const THGFulfillPage = lazy(() => import("./pages/THGFulfillPage"));
 const THGExpressPage = lazy(() => import("./pages/THGExpressPage"));
 const THGWarehousePage = lazy(() => import("./pages/THGWarehousePage"));
 const THGOrderPage = lazy(() => import("./pages/order/THGOrderPage"));
+const THGLabelPage = lazy(() => import("./pages/label/THGLabelPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const InternationalPricingPage = lazy(() => import("./pages/InternationalPricingPage"));
 const DomesticPricingPage = lazy(() => import("./pages/DomesticPricingPage"));
@@ -169,6 +170,7 @@ const AppRoutes = () => {
               <Route path="thg-express" element={<THGExpressPage />} />
               <Route path="thg-warehouse" element={<THGWarehousePage />} />
               <Route path="thg-order" element={<THGOrderPage />} />
+              <Route path="thg-label" element={<THGLabelPage />} />
               {/* One route with an optional segment so switching collections keeps the
                   same CatalogPage instance (no remount, no refetch of the rail). */}
               <Route path="catalog/:collection?" element={<CatalogPage />} />

@@ -60,6 +60,30 @@ export const navTranslations: TranslationDict = {
   "nav.thg_express": tr("TH Group Express", "TH Group Express", "TH Group Express"),
   "nav.thg_warehouse": tr("TH Group Warehouse", "TH Group Warehouse", "TH Group Warehouse"),
   "nav.thg_order": tr("TH Group Dropship", "TH Group Dropship", "TH Group代发"),
+  "nav.thg_label": tr("TH Group Label", "TH Group Label", "TH Group Label"),
+  "nav.label_desc": tr(
+    "USPS, UPS, FedEx, DHL labels below retail",
+    "Label USPS, UPS, FedEx, DHL giá thấp hơn bán lẻ",
+    "低于零售价的 USPS、UPS、FedEx、DHL 面单",
+  ),
+  "nav.label_pricing": tr("Label Pricing", "Bảng giá Label", "Label 价格"),
+  "nav.label_pricing_desc": tr(
+    "1–5% below retail, tiered by monthly volume",
+    "Giảm 1–5% so với giá bán lẻ, theo sản lượng tháng",
+    "按月量分档，低于零售价 1–5%",
+  ),
+  "nav.badge_new": tr("NEW", "MỚI", "新"),
+  "nav.monthly_sourcing": tr(
+    "Top products & sourcing {year}",
+    "Top sản phẩm & nguồn hàng năm {year}",
+    "{year} 年热销产品与货源",
+  ),
+  "nav.monthly_sourcing_desc": tr(
+    "Monthly trending products and supplier picks",
+    "Báo cáo sản phẩm và nguồn hàng nổi bật theo tháng",
+    "每月热销产品与优质货源汇总",
+  ),
+  "nav.month_n": tr("Month {month}", "Tháng {month}", "{month} 月"),
   "nav.careers": tr("Careers", "Tuyển dụng", "招骋"),
   "nav.fulfill_desc": tr(
     "POD & Dropship with competitive base pricing",
