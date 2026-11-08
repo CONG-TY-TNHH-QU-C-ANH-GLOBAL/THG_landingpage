@@ -2528,15 +2528,15 @@ export interface paths {
                             [key: string]: string;
                         } | null;
                         /** @enum {string|null} */
-                        primary_service?: "fulfill" | "express" | "warehouse" | "dropship" | null;
-                        service_interests?: ("fulfill" | "express" | "warehouse" | "dropship")[] | null;
+                        primary_service?: "fulfill" | "express" | "warehouse" | "dropship" | "label" | null;
+                        service_interests?: ("fulfill" | "express" | "warehouse" | "dropship" | "label")[] | null;
                         service_details?: {
                             [key: string]: {
                                 [key: string]: unknown;
                             };
                         } | null;
                         /** @enum {string|null} */
-                        surface?: "global-services-dialog" | "fulfill-inline" | "express-inline" | "warehouse-inline" | "dropship-inline" | "home-conversion-inline" | null;
+                        surface?: "global-services-dialog" | "fulfill-inline" | "express-inline" | "warehouse-inline" | "dropship-inline" | "label-inline" | "home-conversion-inline" | null;
                         turnstile_token: string;
                     };
                 };

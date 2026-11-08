@@ -152,6 +152,36 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-order" />
   </url>
   <url>
+    <loc>https://thgfulfill.com/vi/thg-label</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-label" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-label" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-label" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-label" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/en/thg-label</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-label" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-label" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-label" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-label" />
+  </url>
+  <url>
+    <loc>https://thgfulfill.com/zh/thg-label</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="vi" href="https://thgfulfill.com/vi/thg-label" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://thgfulfill.com/en/thg-label" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://thgfulfill.com/zh/thg-label" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://thgfulfill.com/vi/thg-label" />
+  </url>
+  <url>
     <loc>https://thgfulfill.com/vi/catalog</loc>
     <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>

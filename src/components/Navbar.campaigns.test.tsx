@@ -61,7 +61,7 @@ describe("Navbar Event dropdown", () => {
     mount(null, monthlySourcing);
 
     const disclosures = screen.getAllByRole("button", {
-      name: "Top sản phẩm & nguồn hàng năm 2026",
+      name: /Top sản phẩm & nguồn hàng năm 2026/,
     });
     expect(disclosures).toHaveLength(1);
     expect(disclosures.every((button) => button.getAttribute("aria-expanded") === "false")).toBe(true);

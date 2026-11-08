@@ -13,6 +13,16 @@ export const seoTranslations: TranslationDict = {
   "seo.warehouse_desc": tr("US-based 3PL warehousing in Pennsylvania & North Carolina. 2–5 day domestic delivery, transparent storage & pick-pack fees, real-time inventory.", "Kho 3PL tại Mỹ ở Pennsylvania và North Carolina. Giao nội địa 2–5 ngày, phí lưu kho & pick-pack minh bạch, tồn kho theo thời gian thực.", "位于宾州和北卡的美国3PL仓储。本土2–5天交付，仓储与拣货打包费用透明，实时库存。"),
   "seo.order_title": tr("Taobao & 1688 Dropshipping to the USA | TH Group Dropship", "Đặt hàng Taobao & 1688 giao thẳng Mỹ | TH Group Dropship", "淘宝与1688代发直邮美国 | TH Group Dropship"),
   "seo.order_desc": tr("Source and dropship products from Taobao & 1688 straight to your US customers. One partner for purchasing, QC, consolidation and shipping.", "Mua và dropship sản phẩm từ Taobao & 1688 giao thẳng tới khách Mỹ. Một đối tác lo mua hàng, kiểm hàng, gom và vận chuyển.", "从淘宝和1688采购并代发产品直达美国客户。采购、质检、集运与运输一站式合作伙伴。"),
+  "seo.label_title": tr(
+    "USPS, UPS, FedEx & DHL Labels Below Retail | TH Group Label",
+    "Label USPS, UPS, FedEx, DHL giá thấp hơn bán lẻ | TH Group Label",
+    "低于零售价的 USPS、UPS、FedEx、DHL 面单 | TH Group Label",
+  ),
+  "seo.label_desc": tr(
+    "Buy genuine USPS, UPS, FedEx and DHL shipping labels 1–5% below retail. Seller Portal, bulk import and API, one Label wallet, charged at exactly the quoted price.",
+    "Mua label USPS, UPS, FedEx, DHL chính thống thấp hơn giá bán lẻ 1–5%. Seller Portal, import hàng loạt và API, một ví Label, trừ đúng giá đã báo.",
+    "以低于零售价 1–5% 的价格购买正规 USPS、UPS、FedEx、DHL 面单。卖家后台、批量导入和 API，一个面单钱包，按报价精确扣款。",
+  ),
   "seo.catalog_title": tr("POD Product Catalog — Apparel & Accessories | TH Group", "Catalog Sản Phẩm POD — Áo & Phụ Kiện | TH Group", "POD产品目录——服装与配件 | TH Group"),
   "seo.catalog_desc": tr("Browse TH Group's print-on-demand catalog: t-shirts, hoodies, apparel and accessories ready for custom printing and global fulfillment.", "Khám phá catalog POD của TH Group: áo thun, hoodie, trang phục và phụ kiện sẵn sàng in theo yêu cầu và fulfill toàn cầu.", "浏览TH Group的按需印刷目录：T恤、卫衣、服装与配件，可定制印刷并全球履约。"),
   "seo.careers_title": tr("Careers at TH Group — Join Our Team", "Tuyển dụng tại TH Group — Gia nhập đội ngũ", "TH Group 招聘——加入我们"),

@@ -8,6 +8,7 @@
     "/thg-express",
     "/thg-warehouse",
     "/thg-order",
+    "/thg-label",
     "/catalog",
     "/careers",
     "/community",
@@ -26,6 +27,7 @@
     "/thg-express",
     "/thg-warehouse",
     "/thg-order",
+    "/thg-label",
     "/international-pricing",
     "/chinh-ngach-pricing",
     "/domestic-pricing"

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -17,6 +17,10 @@ import {
   FileText,
   Gift,
   HelpCircle,
+  Barcode,
+  Receipt,
+  ChevronRight,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -36,6 +40,8 @@ interface NavMenuItem {
   titleKey: string;
   descKey: string;
   href: string;
+  /** Optional i18n key for a small highlight pill next to the title. */
+  badgeKey?: string;
 }
 
 const serviceItems: NavMenuItem[] = [
@@ -48,6 +54,13 @@ const serviceItems: NavMenuItem[] = [
     href: "/thg-warehouse",
   },
   { icon: ShoppingCart, titleKey: "nav.thg_order", descKey: "nav.order_desc", href: "/thg-order" },
+  {
+    icon: Barcode,
+    titleKey: "nav.thg_label",
+    descKey: "nav.label_desc",
+    href: "/thg-label",
+    badgeKey: "nav.badge_new",
+  },
 ];
 
 const pricingItems: NavMenuItem[] = [
@@ -70,6 +83,12 @@ const pricingItems: NavMenuItem[] = [
     href: "/chinh-ngach-pricing",
   },
   { icon: Tag, titleKey: "nav.catalog", descKey: "nav.catalog_desc", href: "/catalog" },
+  {
+    icon: Receipt,
+    titleKey: "nav.label_pricing",
+    descKey: "nav.label_pricing_desc",
+    href: "/thg-label#pricing",
+  },
 ];
 
 const eventItems: NavMenuItem[] = [
@@ -79,29 +98,62 @@ const eventItems: NavMenuItem[] = [
 
 type MenuKey = "services" | "pricing" | "community" | "campaign";
 
-/** Rich dropdown row (icon box + title + description) used by both desktop dropdown panels. */
+const ROW_CLASS =
+  "flex w-full gap-3 p-3 rounded-xl text-left hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm";
+
+/** Icon box + title + description shared by every desktop dropdown row, so
+ *  links, the FAQ shortcut and the sourcing flyout trigger all look alike. */
+function DropdownRowBody({
+  icon: Icon,
+  title,
+  desc,
+  badge,
+  trailing,
+  notranslate = false,
+}: Readonly<{
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+  badge?: string;
+  trailing?: ReactNode;
+  notranslate?: boolean;
+}>) {
+  return (
+    <>
+      <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
+        <Icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className={`flex items-center gap-2 text-sm font-semibold text-foreground ${notranslate ? "notranslate" : ""}`}>
+          {title}
+          {badge && (
+            <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none tracking-wide text-primary-foreground">
+              {badge}
+            </span>
+          )}
+        </p>
+        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
+      </div>
+      {trailing}
+    </>
+  );
+}
+
+/** Rich dropdown row (icon box + title + description) used by the desktop dropdown panels. */
 function DesktopDropdownItem({
   item,
   onClick,
 }: Readonly<{ item: NavMenuItem; onClick: () => void }>) {
   const { t, language } = useI18n();
   return (
-    <Link
-      to={`/${language}${item.href}`}
-      className="flex gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 group/item hover:shadow-sm"
-      onClick={onClick}
-    >
-      <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 group-hover/item:bg-primary group-hover/item:text-primary-foreground group-hover/item:scale-110 group-hover/item:shadow-lg transition-all duration-300">
-        <item.icon className="w-5 h-5 text-primary group-hover/item:text-primary-foreground transition-colors" />
-      </div>
-      <div>
-        <p
-          className={`text-sm font-semibold text-foreground ${item.titleKey.includes("thg_") ? "notranslate" : ""}`}
-        >
-          {t(item.titleKey)}
-        </p>
-        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{t(item.descKey)}</p>
-      </div>
+    <Link to={`/${language}${item.href}`} className={ROW_CLASS} onClick={onClick}>
+      <DropdownRowBody
+        icon={item.icon}
+        title={t(item.titleKey)}
+        desc={t(item.descKey)}
+        badge={item.badgeKey ? t(item.badgeKey) : undefined}
+        notranslate={item.titleKey.includes("thg_")}
+      />
     </Link>
   );
 }
@@ -119,6 +171,11 @@ function MobileNavItem({ item, onClick }: Readonly<{ item: NavMenuItem; onClick:
       <span className="text-sm font-medium" translate="no">
         {t(item.titleKey)}
       </span>
+      {item.badgeKey && (
+        <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold leading-none text-primary-foreground">
+          {t(item.badgeKey)}
+        </span>
+      )}
     </Link>
   );
 }
@@ -190,6 +247,12 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
     setIsOpen(false);
   }, [location.pathname]);
 
+  // The sourcing flyout belongs to the Events dropdown: collapse it whenever
+  // that dropdown closes so it never reappears half-open on the next hover.
+  useEffect(() => {
+    if (openMenu !== "community") setIsMonthlySourcingOpen(false);
+  }, [openMenu]);
+
   const menuEnter = (menu: MenuKey) => {
     if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current);
     setOpenMenu(menu);
@@ -212,6 +275,9 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
           month,
           href: monthlySourcingHref({ year: monthlySourcingYear, month }),
         }));
+
+  const sourcingTitle = t("nav.monthly_sourcing").replace("{year}", String(monthlySourcingYear ?? ""));
+  const monthLabel = (month: number) => t("nav.month_n").replace("{month}", String(month));
 
   // The static FAQ lives on the homepage as an anchor section; smooth-scroll
   // when already there, otherwise navigate to the homepage hash.
@@ -357,49 +423,62 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
                   />
                 ))}
                 {monthlySourcingItems.length > 0 && (
-                  <>
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setIsMonthlySourcingOpen(true)}
+                    onMouseLeave={() => setIsMonthlySourcingOpen(false)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") setIsMonthlySourcingOpen(false);
+                    }}
+                  >
                     <button
                       type="button"
+                      aria-haspopup="true"
                       aria-expanded={isMonthlySourcingOpen}
                       aria-controls="monthly-sourcing-desktop"
                       onClick={() => setIsMonthlySourcingOpen((open) => !open)}
-                      className="mt-1 flex w-full items-center justify-between gap-3 border-t border-border/40 px-3 pt-3 text-left text-sm font-semibold text-foreground"
+                      className={ROW_CLASS}
                     >
-                      <span>Top sản phẩm &amp; nguồn hàng năm {monthlySourcingYear}</span>
-                      <ChevronDown
-                        className={`h-4 w-4 shrink-0 text-primary transition-transform duration-200 ${isMonthlySourcingOpen ? "rotate-180" : ""}`}
-                        aria-hidden="true"
+                      <DropdownRowBody
+                        icon={TrendingUp}
+                        title={sourcingTitle}
+                        desc={t("nav.monthly_sourcing_desc")}
+                        trailing={
+                          <ChevronRight
+                            className={`mt-1 h-4 w-4 shrink-0 text-primary transition-transform duration-200 ${isMonthlySourcingOpen ? "translate-x-0.5" : ""}`}
+                            aria-hidden="true"
+                          />
+                        }
                       />
                     </button>
+                    {/* Side flyout: opens horizontally next to the row instead of
+                        pushing the whole dropdown taller. Opens left below xl, where
+                        there is no room to its right. */}
                     {isMonthlySourcingOpen && (
-                      <div id="monthly-sourcing-desktop" className="grid grid-cols-2 gap-1 px-1">
-                        {monthlySourcingItems.map((item) => (
-                          <a
-                            key={item.month}
-                            href={item.href}
-                            aria-label={`Tháng ${item.month}`}
-                            className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
-                            onClick={() => setOpenMenu(null)}
-                          >
-                            <FileText className="h-4 w-4 shrink-0 text-primary" />
-                            <span>Tháng {item.month}</span>
-                          </a>
-                        ))}
+                      <div
+                        id="monthly-sourcing-desktop"
+                        className="absolute top-0 right-full pr-2 xl:right-auto xl:left-full xl:pl-2 xl:pr-0 animate-fade-in"
+                      >
+                        <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-3 w-[280px] grid grid-cols-2 gap-1">
+                          {monthlySourcingItems.map((item) => (
+                            <a
+                              key={item.month}
+                              href={item.href}
+                              aria-label={monthLabel(item.month)}
+                              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
+                              onClick={() => setOpenMenu(null)}
+                            >
+                              <FileText className="h-4 w-4 shrink-0 text-primary" />
+                              <span>{monthLabel(item.month)}</span>
+                            </a>
+                          ))}
+                        </div>
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
-                <button
-                  onClick={goToFaq}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-300 border-t border-border/40 mt-1 pt-3 text-left"
-                >
-                  <HelpCircle className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
-                  <span>
-                    <span className="text-sm font-semibold text-foreground block">
-                      {t("nav.faq")}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{t("nav.faq_desc")}</span>
-                  </span>
+                <button type="button" onClick={goToFaq} className={ROW_CLASS}>
+                  <DropdownRowBody icon={HelpCircle} title={t("nav.faq")} desc={t("nav.faq_desc")} />
                 </button>
               </div>
             </div>
@@ -499,26 +578,27 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
                 aria-expanded={isMonthlySourcingOpen}
                 aria-controls="monthly-sourcing-mobile"
                 onClick={() => setIsMonthlySourcingOpen((open) => !open)}
-                className="flex w-full items-center justify-between gap-3 px-3 pt-3 pb-2 text-left text-sm font-semibold text-foreground"
+                className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors text-left"
               >
-                <span>Top sản phẩm &amp; nguồn hàng năm {monthlySourcingYear}</span>
+                <TrendingUp className="w-4 h-4 text-primary" aria-hidden="true" />
+                <span className="flex-1 text-sm font-medium">{sourcingTitle}</span>
                 <ChevronDown
                   className={`h-4 w-4 shrink-0 text-primary transition-transform duration-200 ${isMonthlySourcingOpen ? "rotate-180" : ""}`}
                   aria-hidden="true"
                 />
               </button>
               {isMonthlySourcingOpen && (
-                <div id="monthly-sourcing-mobile">
+                <div id="monthly-sourcing-mobile" className="ml-4 border-l border-border/50 pl-2">
                   {monthlySourcingItems.map((item) => (
                     <a
                       key={item.month}
                       href={item.href}
-                      aria-label={`Tháng ${item.month}`}
+                      aria-label={monthLabel(item.month)}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       <FileText className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-medium">Tháng {item.month}</span>
+                      <span className="text-sm font-medium">{monthLabel(item.month)}</span>
                     </a>
                   ))}
                 </div>

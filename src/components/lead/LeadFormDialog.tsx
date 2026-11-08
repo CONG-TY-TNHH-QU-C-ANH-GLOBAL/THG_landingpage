@@ -19,7 +19,7 @@ import { getUtmPayload } from "@/lib/utm";
 import { DELAYS } from "@/lib/constants";
 import { trackEvent } from "@/lib/analytics";
 
-type ServiceKey = "fulfill" | "express" | "warehouse" | "dropship";
+type ServiceKey = "fulfill" | "express" | "warehouse" | "dropship" | "label";
 type Market = "US" | "EU_UK" | "OTHER";
 
 interface Props {
@@ -29,7 +29,7 @@ interface Props {
   /** Pre-fills the message textarea (e.g. a pricing quote context). */
   defaultMessage?: string;
   primaryService?: ServiceKey;
-  surface?: "global-services-dialog" | "fulfill-inline" | "express-inline" | "warehouse-inline" | "dropship-inline" | "home-conversion-inline";
+  surface?: "global-services-dialog" | "fulfill-inline" | "express-inline" | "warehouse-inline" | "dropship-inline" | "label-inline" | "home-conversion-inline";
 }
 
 export function LeadFormDialog({ trigger, sourcePage, defaultMessage, primaryService, surface }: Props) {
@@ -196,6 +196,7 @@ export function LeadFormDialog({ trigger, sourcePage, defaultMessage, primarySer
                 <option value="express">International Express</option>
                 <option value="warehouse">US 3PL Warehouse</option>
                 <option value="dropship">Dropship / TH Group Order</option>
+                <option value="label">Shipping Labels / TH Group Label</option>
               </select>
             </div>
             <div>

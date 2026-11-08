@@ -97,6 +97,21 @@ const ILLUSTRATIONS: Record<string, () => JSX.Element> = {
       </div>
     </div>
   ),
+  "thg-label": () => (
+    <div className="relative w-full h-full flex items-center justify-center">
+      <div className="flex items-center gap-3">
+        <div className="w-20 rotate-[-3deg] rounded-md border-2 border-navy bg-white p-2 font-mono text-[7px] leading-tight text-navy shadow-md">
+          <div className="border-b border-navy pb-1 font-bold">USPS · 4x6</div>
+          <div className="py-1">SHIP TO: JANE SAMPLE</div>
+          <div className="h-6 w-full bg-[repeating-linear-gradient(90deg,hsl(220_25%_12%)_0_2px,transparent_2px_4px)]" />
+        </div>
+        <div className="flex flex-col items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+          <span>UPS · FedEx · DHL</span>
+          <span className="rounded-full bg-primary px-2 py-0.5 text-primary-foreground">-1–5%</span>
+        </div>
+      </div>
+    </div>
+  ),
 };
 
 function defaultIllustration(icon: string | null) {

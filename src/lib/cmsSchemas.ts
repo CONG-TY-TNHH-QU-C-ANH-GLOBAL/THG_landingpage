@@ -682,8 +682,8 @@ export const cmsLeadInputSchema = z.object({
   source_page: z.string(),
   locale: localeSchema,
   utm: z.record(z.string(), z.string()).optional(),
-  primary_service: z.enum(["fulfill", "express", "warehouse", "dropship"]).optional(),
-  service_interests: z.array(z.enum(["fulfill", "express", "warehouse", "dropship"])).optional(),
+  primary_service: z.enum(["fulfill", "express", "warehouse", "dropship", "label"]).optional(),
+  service_interests: z.array(z.enum(["fulfill", "express", "warehouse", "dropship", "label"])).optional(),
   surface: z
     .enum([
       "global-services-dialog",
@@ -691,6 +691,7 @@ export const cmsLeadInputSchema = z.object({
       "express-inline",
       "warehouse-inline",
       "dropship-inline",
+      "label-inline",
       "home-conversion-inline",
     ])
     .optional(),
