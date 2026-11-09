@@ -14,6 +14,7 @@ import { fulfillTranslations } from "./fulfill";
 import { warehouseTranslations } from "./warehouse";
 import { orderTranslations } from "./order";
 import { labelTranslations } from "./label";
+import { sourcingTranslations } from "./sourcing";
 import { careersTranslations } from "./careers";
 import { communityTranslations } from "./community";
 import { pricingTranslations } from "./pricing";
@@ -35,6 +36,7 @@ export const translations: TranslationDict = {
   ...warehouseTranslations,
   ...orderTranslations,
   ...labelTranslations,
+  ...sourcingTranslations,
   ...careersTranslations,
   ...communityTranslations,
   ...pricingTranslations,

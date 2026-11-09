@@ -231,6 +231,23 @@ const cmsMonthlySourcingMonthSchema = z.object({
 });
 export type CmsMonthlySourcingMonth = z.infer<typeof cmsMonthlySourcingMonthSchema>;
 
+/** One live month for /top-nguon-hang/:slug: the PDF plus its pre-rendered page images. */
+export const monthlySourcingDetailSchema = z.object({
+  year: z.number().int().min(2020).max(2100),
+  month: z.number().int().min(1).max(12),
+  slug: z.string().regex(/^thang-(?:[1-9]|1[0-2])-\d{4}$/),
+  title: z.string().min(1),
+  pdf_url: z.string().url(),
+  pages: z.array(
+    z.object({
+      url: z.string().url(),
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+    }),
+  ),
+});
+export type CmsMonthlySourcingDetail = z.infer<typeof monthlySourcingDetailSchema>;
+
 /** The CMS exposes only one active year's published, PDF-backed months. */
 export const monthlySourcingResponseSchema = z
   .object({

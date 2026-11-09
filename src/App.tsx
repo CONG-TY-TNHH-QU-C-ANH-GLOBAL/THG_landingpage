@@ -60,6 +60,7 @@ const EventsPage = lazy(() => import("./pages/events/EventsPage"));
 const EventDetailPage = lazy(loadEventDetail);
 const CampaignsPage = lazy(() => import("./pages/campaigns/CampaignsPage"));
 const CampaignDetailPage = lazy(() => import("./pages/campaigns/CampaignDetailPage"));
+const MonthlySourcingPage = lazy(() => import("./pages/monthly-sourcing/MonthlySourcingPage"));
 const ChristmasPage = lazy(() => import("./pages/christmas/ChristmasPage"));
 
 /** Scroll after lazy routes mount; collection switches keep their position. */
@@ -182,6 +183,7 @@ const AppRoutes = () => {
               <Route path="events/:slug" element={<EventDetailPage />} />
               <Route path="campaigns" element={<CampaignsPage />} />
               <Route path="campaigns/:slug" element={<CampaignDetailPage />} />
+              <Route path="top-nguon-hang/:slug" element={<MonthlySourcingPage />} />
               <Route path="community" element={<CommunityPage />} />
               {/* Static "reviews" segment outranks the dynamic :slug in v6. */}
               <Route path="community/reviews" element={<CommunityReviewsListPage />} />

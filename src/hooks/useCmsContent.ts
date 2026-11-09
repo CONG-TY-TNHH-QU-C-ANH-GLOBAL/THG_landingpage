@@ -136,6 +136,18 @@ export function useCmsEvent(slug: string, locale: Locale) {
   });
 }
 
+/** One published month for the main-site page. A 404 means "not live", so no retry. */
+export function useCmsMonthlySourcingMonth(slug: string) {
+  return useQuery({
+    queryKey: ["cms", "monthly-sourcing", slug],
+    queryFn: () => cmsClient.getMonthlySourcingMonth(slug),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+    enabled: !!slug,
+    retry: false,
+  });
+}
+
 /** Current active year's published PDF-backed monthly sourcing resources. */
 export function useCmsMonthlySourcing() {
   return useQuery({

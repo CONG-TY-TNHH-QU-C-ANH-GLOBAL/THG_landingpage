@@ -14,16 +14,13 @@ const response = {
 afterEach(() => vi.restoreAllMocks());
 
 describe("monthly product sourcing links", () => {
-  it("opens the fixed LP template, not an in-app route", () => {
-    expect(monthlySourcingHref({ year: 2026, month: 1 })).toBe(
-      "https://lp.thgfulfill.com/thang-1-2026",
-    );
+  it("opens the in-app page on the main domain, per language", () => {
+    expect(monthlySourcingHref({ year: 2026, month: 1 }, "vi")).toBe("/vi/top-nguon-hang/thang-1-2026");
+    expect(monthlySourcingHref({ year: 2026, month: 1 }, "en")).toBe("/en/top-nguon-hang/thang-1-2026");
   });
 
   it("keeps the year in the canonical destination for December", () => {
-    expect(monthlySourcingHref({ year: 2027, month: 12 })).toBe(
-      "https://lp.thgfulfill.com/thang-12-2027",
-    );
+    expect(monthlySourcingHref({ year: 2027, month: 12 }, "vi")).toBe("/vi/top-nguon-hang/thang-12-2027");
   });
 
   it("accepts only a canonical, non-duplicated month that belongs to the active year", () => {
