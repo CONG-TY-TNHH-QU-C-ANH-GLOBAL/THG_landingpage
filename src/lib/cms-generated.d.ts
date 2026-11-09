@@ -733,6 +733,71 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/monthly-sourcing/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get one live monthly product sourcing page
+         * @description Returns the month title, the original PDF URL and its pre-rendered page images (empty until an operator generates them). 404 unless the month and its year are live and its PDF is ready.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live monthly sourcing page */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            year: number;
+                            month: number;
+                            slug: string;
+                            title: string;
+                            /** Format: uri */
+                            pdf_url: string;
+                            pages: {
+                                /** Format: uri */
+                                url: string;
+                                width: number;
+                                height: number;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Month not found or not live */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/translations": {
         parameters: {
             query?: never;
