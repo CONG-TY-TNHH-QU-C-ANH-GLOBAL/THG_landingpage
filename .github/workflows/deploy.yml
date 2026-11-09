@@ -184,10 +184,6 @@ jobs:
                 default "";
                 ~^/(?:en|vi|zh)/campaigns/(?<campaign_rest>.+)$ /$campaign_rest;
             }
-            map $request_uri $campaign_lang {
-                default vi;
-                ~^/(?<campaign_lang_code>en|vi|zh)/ $campaign_lang_code;
-            }
 
             server {
                 listen 80;
@@ -221,7 +217,7 @@ jobs:
                 # trailing slash (relative asset URLs), which the "/(lang)/(.*)/" rule would strip.
                 # The Worker answers 404 for a campaign without a published landing (and 5xx if it is down):
                 # fall back to the prerendered campaign page so those campaigns keep working.
-                location ~ ^/(en|vi|zh)/campaigns/[a-z0-9]+(-[a-z0-9]+)*(/.*)?$ {
+                location ~ ^/(?<lp_lang>en|vi|zh)/campaigns/[a-z0-9]+(-[a-z0-9]+)*(/.*)?$ {
                     proxy_pass https://thg_landing_worker$campaign_lp_uri;
                     proxy_http_version 1.1;
                     proxy_set_header Connection "";
@@ -235,7 +231,9 @@ jobs:
                     proxy_intercept_errors on;
                     error_page 404 502 503 504 = @campaign_app;
                     # The Worker redirects "/<slug>" to "/<slug>/" with a root-relative Location: keep it on this site.
-                    proxy_redirect ~^/(.+)$ /$campaign_lang/campaigns/$1;
+                    # Named captures only: evaluating a variable backed by a regex map would reset "$1"
+                    # (it produced /vi/campaigns/vi on the first deploy).
+                    proxy_redirect ~^/(?<lp_target>.+)$ /$lp_lang/campaigns/$lp_target;
                 }
                 # The shared consult-form script every uploaded landing loads from the site root.
                 location = /_thg/thg-lead.js {
@@ -360,6 +358,12 @@ jobs:
             # back to the app (404), never surface the proxy's 502/504.
             status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/campaigns/seo-smoke-unknown-campaign")"
             [ "$status" = 404 ] || { echo "unknown campaign: expected 404, got $status" >&2; failed=1; }
+            # A published landing requested without the trailing slash must redirect to its own slash form.
+            # Skipped when no landing is published (404): only an actual redirect is checked.
+            redirect="$(curl --silent --output /dev/null --write-out '%{http_code} %{redirect_url}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/campaigns/christmas-2026")"
+            case "$redirect" in
+              301*|302*) [ "${redirect#* }" = "$base/vi/campaigns/christmas-2026/" ] || { echo "campaign slash redirect: got $redirect" >&2; failed=1; } ;;
+            esac
             # HTTP reaches HTTPS in two hops: resolve both ports locally so the
             # check never accidentally follows the public DNS record mid-cutover.
             redirect="$(curl --silent --show-error --location --resolve "thgfulfill.com:80:$origin" --resolve "thgfulfill.com:443:$origin" -k -o /dev/null -w '%{url_effective}' http://thgfulfill.com/)"
