@@ -298,6 +298,31 @@ async function verifySeoControlPlane() {
 
 await verifySeoControlPlane();
 
+/** Live monthly "Top sản phẩm & nguồn hàng" pages → "/vi/top-nguon-hang/:slug" (Vietnamese only: the
+ *  report is in Vietnamese, so other locales are noindex duplicates and are not prerendered).
+ *  The list returns the active year's published months; a 404 means the CMS has not shipped it yet. */
+async function fetchMonthlySourcingRoutes() {
+  try {
+    const res = await fetch(`${CMS_API}/monthly-sourcing`);
+    if (res.status === 404) {
+      console.warn("⚠ monthly-sourcing endpoint not deployed on CMS (404) — skipping prerender");
+      return [];
+    }
+    if (!res.ok) {
+      recordDiscoveryFailure("monthly-sourcing", `CMS returned ${res.status}`);
+      return [];
+    }
+    const data = await res.json();
+    const routes = (data.months ?? []).filter((m) => m.slug).map((m) => `/vi/top-nguon-hang/${encodeURIComponent(m.slug)}`);
+    console.log(`✓ ${routes.length} monthly sourcing routes → /top-nguon-hang/:slug prerender`);
+    return routes;
+  } catch (err) {
+    recordDiscoveryFailure("monthly-sourcing", err instanceof Error ? err.message : String(err));
+    console.warn(`⚠ monthly-sourcing fetch failed (${err.message}) — skipping prerender`);
+    return [];
+  }
+}
+
 const catalogCollectionRoutes = await fetchCatalogCollectionRoutes();
 // Routes whose render may fail without failing the build — they are skipped
 // (no file written) and served by an nginx fallback instead.
@@ -309,6 +334,7 @@ const ROUTES = [
   ...(await fetchBlogRoutes()),
   ...(await fetchEventRoutes()),
   ...(await fetchCampaignRoutes()),
+  ...(await fetchMonthlySourcingRoutes()),
   ...catalogCollectionRoutes,
   ...(await fetchCommunityRoutes()),
   ...(await fetchCommunityReviewRoutes()),

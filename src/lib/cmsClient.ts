@@ -34,6 +34,7 @@ import {
   leadershipResponseSchema,
   eventResponseSchema,
   eventsResponseSchema,
+  monthlySourcingDetailSchema,
   monthlySourcingResponseSchema,
   partnersResponseSchema,
   jobResponseSchema,
@@ -189,6 +190,11 @@ export const cmsClient = {
   /** The active year and its published PDF-backed monthly resources. */
   getMonthlySourcing() {
     return fetchJson("/monthly-sourcing", monthlySourcingResponseSchema);
+  },
+
+  /** One live month (title, PDF, page images) for /top-nguon-hang/:slug. */
+  getMonthlySourcingMonth(slug: string) {
+    return fetchJson(`/monthly-sourcing/${encodeURIComponent(slug)}`, monthlySourcingDetailSchema);
   },
 
   /** Live campaigns only (CMS filters server-side), ordered by position. */

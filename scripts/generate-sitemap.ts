@@ -221,6 +221,31 @@ async function fetchCampaignEntries(today: string): Promise<SitemapEntry[]> {
   return entries;
 }
 
+// 2d. Monthly "Top sản phẩm & nguồn hàng" pages (Vietnamese only, mirrors fetchMonthlySourcingRoutes
+//     in scripts/prerender.mjs). A 404 means the CMS has not shipped the endpoint yet.
+async function fetchMonthlySourcingEntries(today: string): Promise<SitemapEntry[]> {
+  const entries: SitemapEntry[] = [];
+  try {
+    const res = await fetch(`${CMS_API}/monthly-sourcing`);
+    if (res.status === 404) {
+      console.warn("⚠ CMS monthly-sourcing endpoint not deployed (404) — skipping");
+      return entries;
+    }
+    if (!res.ok) {
+      dynamicSourceFailure(`CMS monthly-sourcing endpoint returned ${res.status}`);
+      return entries;
+    }
+    const data = (await res.json()) as { months?: Array<{ slug: string }> };
+    for (const m of (data.months ?? []).filter((x) => x.slug)) {
+      entries.push(...langEntries(`/top-nguon-hang/${encodeURIComponent(m.slug)}`, today, "monthly", 0.6, ["vi"]));
+    }
+    console.log(`✓ Added ${entries.length} monthly sourcing pages from CMS`);
+  } catch (err) {
+    dynamicSourceFailure(`Cannot reach CMS monthly-sourcing API: ${(err as Error).message}`);
+  }
+  return entries;
+}
+
 // 3. Open job postings from CMS (best-effort). Each JD has its own URL so HR
 //    can distribute it + Google for Jobs can index it.
 async function fetchJobEntries(today: string): Promise<SitemapEntry[]> {
@@ -321,6 +346,7 @@ async function main() {
     ...(await fetchBlogEntries()),
     ...(await fetchEventEntries(today)),
     ...(await fetchCampaignEntries(today)),
+    ...(await fetchMonthlySourcingEntries(today)),
     ...(await fetchJobEntries(today)),
     ...(await fetchCommunityEntries(today)),
     ...(await fetchCommunityReviewEntries(today)),

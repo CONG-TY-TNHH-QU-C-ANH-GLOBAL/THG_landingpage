@@ -273,7 +273,7 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
       ? []
       : (monthlySourcing?.months ?? []).map(({ month }) => ({
           month,
-          href: monthlySourcingHref({ year: monthlySourcingYear, month }),
+          href: monthlySourcingHref({ year: monthlySourcingYear, month }, language),
         }));
 
   const sourcingTitle = t("nav.monthly_sourcing").replace("{year}", String(monthlySourcingYear ?? ""));
@@ -461,16 +461,16 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
                       >
                         <div className="bg-card/95 backdrop-blur-2xl rounded-2xl border border-border/40 shadow-[0_20px_60px_-15px_hsl(36_45%_42%/0.15)] p-3 w-[280px] grid grid-cols-2 gap-1">
                           {monthlySourcingItems.map((item) => (
-                            <a
+                            <Link
                               key={item.month}
-                              href={item.href}
+                              to={item.href}
                               aria-label={monthLabel(item.month)}
                               className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary/60 hover:text-primary"
                               onClick={() => setOpenMenu(null)}
                             >
                               <FileText className="h-4 w-4 shrink-0 text-primary" />
                               <span>{monthLabel(item.month)}</span>
-                            </a>
+                            </Link>
                           ))}
                         </div>
                       </div>
@@ -590,16 +590,16 @@ const Navbar = ({ variant = "default" }: NavbarProps) => {
               {isMonthlySourcingOpen && (
                 <div id="monthly-sourcing-mobile" className="ml-4 border-l border-border/50 pl-2">
                   {monthlySourcingItems.map((item) => (
-                    <a
+                    <Link
                       key={item.month}
-                      href={item.href}
+                      to={item.href}
                       aria-label={monthLabel(item.month)}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/50 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       <FileText className="w-4 h-4 text-primary" />
                       <span className="text-sm font-medium">{monthLabel(item.month)}</span>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               )}
