@@ -1,7 +1,7 @@
-import { useEffect, useRef, type FocusEvent } from "react";
+import { useEffect, useRef, useState, type FocusEvent } from "react";
 import { ArrowRight } from "lucide-react";
 
-import { campaignLandingHref, type Campaign } from "@/lib/campaigns";
+import { campaignLandingHref, resolveCampaignHref, type Campaign } from "@/lib/campaigns";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { CampaignCover } from "./CampaignCover";
@@ -44,7 +44,24 @@ export function CampaignNavItem({ campaign, open, onEnter, onLeave, onClose }: R
   // Escape returns focus to the trigger; that focus must not reopen the panel.
   const suppressFocusOpen = useRef(false);
   const landing = campaignLandingHref(campaign, language);
-  const cta = campaign.cta_label ?? t("nav.campaign_cta");
+  // The hovered row decides which promo card shows on the right; with none
+  // hovered (or a row without a card) the campaign's own card stays.
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const activeItem = activeIndex === null ? null : (campaign.menu_items[activeIndex] ?? null);
+  const card = activeItem?.card ?? null;
+  const promo = {
+    image: card?.image_url ?? campaign.cover_url,
+    title: card?.title ?? campaign.title,
+    text: card?.text ?? campaign.summary,
+    cta: card?.cta_label ?? campaign.cta_label ?? t("nav.campaign_cta"),
+    // A row's own card leads to that row; the default card to the campaign landing.
+    target: (card && resolveCampaignHref(activeItem?.href, language)) || landing,
+  };
+
+  // Each time the panel closes it reopens on the default card.
+  useEffect(() => {
+    if (!open) setActiveIndex(null);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -92,25 +109,33 @@ export function CampaignNavItem({ campaign, open, onEnter, onLeave, onClose }: R
       >
         <div className="grid w-[720px] grid-cols-[1fr_300px] gap-4 rounded-2xl border border-border/40 bg-card/95 p-4 shadow-[0_20px_60px_-15px_hsl(0_70%_35%/0.25)] backdrop-blur-2xl">
           <nav aria-label={t("nav.campaign_menu")}>
-            <CampaignMenuItems items={campaign.menu_items} highlightFirst onNavigate={onClose} />
+            <CampaignMenuItems
+              items={campaign.menu_items}
+              highlightFirst
+              activeIndex={activeIndex}
+              onActivate={setActiveIndex}
+              onNavigate={onClose}
+            />
           </nav>
           <aside className="flex flex-col overflow-hidden rounded-xl bg-red-950 text-white">
-            <div className="h-36 shrink-0">
-              <CampaignCover src={campaign.cover_url} alt={campaign.title} />
-            </div>
-            <div className="flex flex-1 flex-col p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-red-200">TH GROUP</p>
-              <p className="mt-2 font-serif text-2xl font-bold leading-tight">{campaign.title}</p>
-              {campaign.summary ? (
-                <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-white/80">{campaign.summary}</p>
-              ) : null}
-              <CampaignLink
-                target={landing}
-                onClick={onClose}
-                className="mt-auto inline-flex items-center justify-center gap-2 self-start rounded-full bg-white px-4 py-2 text-sm font-bold text-red-700 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
-              >
-                {cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </CampaignLink>
+            <div key={activeIndex ?? "default"} className="flex flex-1 flex-col animate-in fade-in duration-200">
+              <div className="h-36 shrink-0">
+                <CampaignCover src={promo.image} alt={promo.title} />
+              </div>
+              <div className="flex flex-1 flex-col p-5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-red-200">TH GROUP</p>
+                <p className="mt-2 font-serif text-2xl font-bold leading-tight">{promo.title}</p>
+                {promo.text ? (
+                  <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-white/80">{promo.text}</p>
+                ) : null}
+                <CampaignLink
+                  target={promo.target}
+                  onClick={onClose}
+                  className="mt-auto inline-flex items-center justify-center gap-2 self-start rounded-full bg-white px-4 py-2 text-sm font-bold text-red-700 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                >
+                  {promo.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </CampaignLink>
+              </div>
             </div>
           </aside>
         </div>

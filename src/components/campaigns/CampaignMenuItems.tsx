@@ -12,6 +12,12 @@ interface Props {
   variant?: "rows" | "cards";
   /** Highlight the first row (mega-menu). */
   highlightFirst?: boolean;
+  /** Mega-menu: index (in `items`) of the hovered/focused row. It is the
+   *  highlighted row once set, and drives the promo card beside the list. */
+  activeIndex?: number | null;
+  /** Called with a row's index in `items` when the pointer or keyboard
+   *  reaches it. */
+  onActivate?: (index: number) => void;
   onNavigate?: () => void;
   className?: string;
 }
@@ -22,15 +28,18 @@ export function CampaignMenuItems({
   items,
   variant = "rows",
   highlightFirst = false,
+  activeIndex = null,
+  onActivate,
   onNavigate,
   className,
 }: Readonly<Props>) {
   const { language } = useI18n();
   const links = items.flatMap((item, index) => {
     const target = resolveCampaignHref(item.href, language);
-    return target ? [{ item, target, key: `${index}-${item.title}` }] : [];
+    return target ? [{ item, target, index, key: `${index}-${item.title}` }] : [];
   });
   if (links.length === 0) return null;
+  const highlighted = activeIndex ?? (highlightFirst ? links[0].index : null);
 
   if (variant === "cards") {
     return (
@@ -55,14 +64,16 @@ export function CampaignMenuItems({
 
   return (
     <ul className={cn("space-y-1", className)}>
-      {links.map(({ item, target, key }, index) => (
+      {links.map(({ item, target, index, key }) => (
         <li key={key}>
           <CampaignLink
             target={target}
             onClick={onNavigate}
+            onMouseEnter={onActivate ? () => onActivate(index) : undefined}
+            onFocus={onActivate ? () => onActivate(index) : undefined}
             className={cn(
               "group/row flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-red-50 focus-visible:bg-red-50 focus-visible:outline-none",
-              highlightFirst && index === 0 && "bg-red-50 ring-1 ring-red-200",
+              highlighted === index && "bg-red-50 ring-1 ring-red-200",
             )}
           >
             <span

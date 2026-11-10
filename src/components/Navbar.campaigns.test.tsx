@@ -110,6 +110,66 @@ describe("Navbar featured campaign", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
+  it("swaps the promo card to the hovered row's own card and back to the default", () => {
+    const withCards = {
+      ...base[0],
+      cover_url: "https://cms.example/cover.jpg",
+      menu_items: [
+        { icon: "🎁", title: "POD", subtitle: null, href: "/catalog/christmas" },
+        {
+          icon: "🚚",
+          title: "Dropship",
+          subtitle: null,
+          href: "/campaigns/christmas-dropship-2026",
+          card: { image_url: "https://cms.example/dropship.jpg", title: "Christmas Dropship 2026", text: "Top 20 mẫu hot", cta_label: "Xem bộ sưu tập" },
+        },
+        {
+          icon: "🔥",
+          title: "Partial",
+          subtitle: null,
+          href: "/catalog/best-seller",
+          card: { image_url: null, title: "Best sellers", text: null, cta_label: null },
+        },
+      ],
+    };
+    mount([withCards]);
+    const trigger = screen.getByRole("link", { name: /Christmas\s*NEW/ });
+    fireEvent.focus(trigger);
+    const panel = document.getElementById("campaign-mega-menu") as HTMLElement;
+    const menu = within(panel).getByRole("navigation", { name: "Danh mục chương trình" });
+    const promo = () => panel.querySelector("aside") as HTMLElement;
+
+    // Default card: the campaign's own cover and title.
+    expect(within(promo()).getByText(withCards.title)).toBeInTheDocument();
+    expect(promo().querySelector("img")).toHaveAttribute("src", "https://cms.example/cover.jpg");
+
+    // Hovering a row with a card swaps image, copy and CTA; the CTA leads to that row.
+    fireEvent.mouseEnter(within(menu).getByRole("link", { name: /Dropship/ }));
+    expect(within(promo()).getByText("Christmas Dropship 2026")).toBeInTheDocument();
+    expect(within(promo()).getByText("Top 20 mẫu hot")).toBeInTheDocument();
+    expect(promo().querySelector("img")).toHaveAttribute("src", "https://cms.example/dropship.jpg");
+    expect(within(promo()).getByRole("link", { name: /Xem bộ sưu tập/ })).toHaveAttribute(
+      "href",
+      "/vi/campaigns/christmas-dropship-2026",
+    );
+
+    // A card with null parts falls back per part: its title, the campaign's cover.
+    fireEvent.mouseEnter(within(menu).getByRole("link", { name: /Partial/ }));
+    expect(within(promo()).getByText("Best sellers")).toBeInTheDocument();
+    expect(promo().querySelector("img")).toHaveAttribute("src", "https://cms.example/cover.jpg");
+
+    // A row without a card shows the default card with the campaign landing as CTA.
+    fireEvent.mouseEnter(within(menu).getByRole("link", { name: /POD/ }));
+    expect(within(promo()).getByText(withCards.title)).toBeInTheDocument();
+    expect(within(promo()).getByRole("link")).toHaveAttribute("href", "/vi/christmas");
+
+    // Closing and reopening starts on the default card again.
+    fireEvent.mouseEnter(within(menu).getByRole("link", { name: /Dropship/ }));
+    fireEvent.keyDown(document, { key: "Escape" });
+    fireEvent.focus(trigger);
+    expect(within(promo()).getByText(withCards.title)).toBeInTheDocument();
+  });
+
   it("keeps absolute https hrefs as plain links and falls back to the detail page", () => {
     const external = {
       ...base[1],

@@ -14,11 +14,23 @@ import { z } from "zod";
 
 import { localeSchema } from "@/lib/cmsSchemas";
 
+/** Promo card shown beside the mega-menu while the item is hovered. Each null
+ *  part falls back to the campaign's own cover/title/summary/CTA. */
+export const campaignMenuCardSchema = z.object({
+  image_url: z.string().nullable(),
+  title: z.string().nullable(),
+  text: z.string().nullable(),
+  cta_label: z.string().nullable(),
+});
+export type CampaignMenuCard = z.infer<typeof campaignMenuCardSchema>;
+
 export const campaignMenuItemSchema = z.object({
   icon: z.string(),
   title: z.string(),
   subtitle: z.string().nullable(),
   href: z.string(),
+  /** Absent on older CMS deploys and on items without a card of their own. */
+  card: campaignMenuCardSchema.nullish(),
 });
 export type CampaignMenuItem = z.infer<typeof campaignMenuItemSchema>;
 
