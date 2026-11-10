@@ -299,6 +299,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/catalog-overrides": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List per-product catalog settings
+         * @description Returns operator settings for Hub catalog products, keyed by Hub product id: a design-template link (replaces the Hub templateUrl when set) and whether the catalog price already includes shipping. Not localized.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Catalog product settings */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            overrides: {
+                                product_id: string;
+                                template_url: string | null;
+                                price_includes_shipping: boolean;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/leadership": {
         parameters: {
             query?: never;

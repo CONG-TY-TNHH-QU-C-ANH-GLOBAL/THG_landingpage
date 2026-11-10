@@ -37,6 +37,7 @@ import {
   monthlySourcingDetailSchema,
   monthlySourcingResponseSchema,
   partnersResponseSchema,
+  catalogOverridesResponseSchema,
   jobResponseSchema,
   jobsResponseSchema,
   marqueeImagesResponseSchema,
@@ -173,6 +174,10 @@ export const cmsClient = {
 
   getPartners() {
     return fetchJson("/partners", partnersResponseSchema);
+  },
+
+  getCatalogOverrides() {
+    return fetchJson("/catalog-overrides", catalogOverridesResponseSchema);
   },
 
   getLeadership() {

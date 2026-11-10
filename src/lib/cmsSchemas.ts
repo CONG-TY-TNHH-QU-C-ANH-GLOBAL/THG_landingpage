@@ -150,6 +150,21 @@ export const partnersResponseSchema = z.object({
   partners: z.array(cmsPartnerSchema),
 });
 
+/* ---------- Catalog overrides ---------- */
+
+/** Per-product catalog settings the operator sets in the CMS, keyed by Hub
+ *  product id. The products themselves come from the Hub (catalogApi.ts). */
+export const cmsCatalogOverrideSchema = z.object({
+  product_id: z.string(),
+  template_url: z.string().nullable(),
+  price_includes_shipping: z.boolean(),
+});
+export type CmsCatalogOverride = z.infer<typeof cmsCatalogOverrideSchema>;
+
+export const catalogOverridesResponseSchema = z.object({
+  overrides: z.array(cmsCatalogOverrideSchema),
+});
+
 /* ---------- Leadership ---------- */
 
 export const cmsLeadershipAvatarSchema = z.object({
