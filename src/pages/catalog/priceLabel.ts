@@ -1,16 +1,28 @@
-/* Giá bán của một số sản phẩm đã gồm cước vận chuyển (khác mặc định: giá là
-   tiền hàng, chưa có cước). Nhận diện theo tiền tố THG SKU của sản phẩm — ổn
-   định hơn tên, vì tên do Sale sửa được trên CMS. Chỉ thêm vào đây khi đã xác
-   nhận giá sản phẩm đó thật sự gồm cước. */
-const SHIPPING_INCLUDED_SKU_PREFIXES = ["THG-018-"]; // Hoodie Washed
+/* Cài đặt từng sản phẩm do người vận hành đặt trên CMS (Sales › Catalog):
+   link template design và cờ "giá đã gồm cước". Sản phẩm không có dòng nào
+   trên CMS giữ mặc định: template lấy từ Hub, giá ghi chưa gồm cước. */
+import type { CmsCatalogOverride } from "@/lib/cmsSchemas";
 
-export function priceIncludesShipping(thgSku: string | null | undefined): boolean {
-  const sku = (thgSku ?? "").trim().toUpperCase();
-  return SHIPPING_INCLUDED_SKU_PREFIXES.some((p) => sku.startsWith(p));
+export interface CatalogExtras {
+  templateUrl: string | null;
+  priceIncludesShipping: boolean;
 }
 
-export function sellingPriceLabel(thgSku: string | null | undefined): string {
-  return priceIncludesShipping(thgSku)
+export function resolveCatalogExtras(
+  productId: string,
+  hubTemplateUrl: string | null | undefined,
+  overrides: readonly CmsCatalogOverride[] | undefined,
+): CatalogExtras {
+  const o = overrides?.find((x) => x.product_id === productId);
+  return {
+    // Link trên CMS thắng link Hub; CMS để trống thì vẫn dùng link Hub.
+    templateUrl: o?.template_url?.trim() || hubTemplateUrl?.trim() || null,
+    priceIncludesShipping: o?.price_includes_shipping ?? false,
+  };
+}
+
+export function sellingPriceLabel(includesShipping: boolean): string {
+  return includesShipping
     ? "Selling price (including shipping cost)"
     : "Selling price (not including shipping cost)";
 }

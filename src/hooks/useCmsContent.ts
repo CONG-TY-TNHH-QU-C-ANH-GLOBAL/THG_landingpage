@@ -101,6 +101,17 @@ export function useCmsContactLocations(locale: Locale) {
   });
 }
 
+/** Template link + "price includes shipping" per catalog product. A failed
+ *  fetch leaves the catalog on its defaults, so it never blocks the page. */
+export function useCmsCatalogOverrides() {
+  return useQuery({
+    queryKey: ["cms", "catalog-overrides"],
+    queryFn: () => cmsClient.getCatalogOverrides(),
+    staleTime: STALE_MS,
+    gcTime: GC_MS,
+  });
+}
+
 export function useCmsPartners() {
   return useQuery({
     queryKey: ["cms", "partners"],

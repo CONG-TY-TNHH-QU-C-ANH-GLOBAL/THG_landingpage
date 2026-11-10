@@ -21,7 +21,8 @@ import {
 
 import { CATEGORIES, NO_SERIES_KEY, categoryIcons } from "@/pages/catalog/data";
 import { orderSeriesForDisplay, resolveSwatch } from "@/pages/catalog/variantColors";
-import { sellingPriceLabel } from "@/pages/catalog/priceLabel";
+import { resolveCatalogExtras, sellingPriceLabel } from "@/pages/catalog/priceLabel";
+import { useCmsCatalogOverrides } from "@/hooks/useCmsContent";
 import { matchImagesToSeries } from "@/pages/catalog/variantImages";
 import { manualImagesBySeries } from "@/pages/catalog/variantImageMap";
 import { DELAYS, LIMITS } from "@/lib/constants";
@@ -74,6 +75,8 @@ const CatalogPage = () => {
   const [page, setPage] = useState(1);
 
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
+  // Template link + "price includes shipping", set per product in the CMS.
+  const { data: catalogOverrides } = useCmsCatalogOverrides();
   const [activeImage, setActiveImage] = useState(0);
   const [videoPlaying, setVideoPlaying] = useState(false); // THG-CAT-006
   const [shareCopied, setShareCopied] = useState(false);
@@ -685,7 +688,12 @@ const CatalogPage = () => {
               shipTime: desc?.shipTime?.trim() || "",
               moq: typeof desc?.moq === "number" && desc.moq > 0 ? desc.moq : 1,
             };
-            const templateUrl = selectedProduct.templateUrl;
+            const extras = resolveCatalogExtras(
+              selectedProduct.id,
+              selectedProduct.templateUrl,
+              catalogOverrides?.overrides,
+            );
+            const templateUrl = extras.templateUrl;
             const subcategory = desc?.subcategory;
 
             // ── v4 helpers — pricing model ──
@@ -1010,16 +1018,16 @@ const CatalogPage = () => {
                                 <span className="text-sm text-muted-foreground">{fmt(minP)} – {fmt(maxP)}</span>
                               )}
                             </div>
-                            {/* Con số này là TIỀN HÀNG, chưa có cước. Ghi "incl.
-                                shipping" như trước là nói sai về giá ngay dưới
-                                chính con số đó — khách cộng nhầm rồi mới phát
-                                hiện khi báo giá cước.
+                            {/* Mặc định con số này là TIỀN HÀNG, chưa có cước —
+                                ghi nhầm "incl. shipping" làm khách cộng sai.
+                                Sản phẩm nào giá đã gồm cước thì người vận hành
+                                tick trên CMS (Sales › Catalog), không sửa code.
                                 Nhãn vế sau theo `hasRealSeries`: sản phẩm có
                                 Series thì chip là MODEL chứ không phải size,
                                 nên ghi "Size: CN to EU" là sai lần thứ hai
                                 trong cùng một dòng. */}
                             <p className="text-xs text-muted-foreground">
-                              {sellingPriceLabel(selectedVariant?.thgSku)} · {hasRealSeries ? "Model" : "Size"}: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong>
+                              {sellingPriceLabel(extras.priceIncludesShipping)} · {hasRealSeries ? "Model" : "Size"}: <strong className="text-foreground">{selectedVariant?.variant || "—"}</strong>
                             </p>
                           </>
                         ) : hasAnyPrices ? (
