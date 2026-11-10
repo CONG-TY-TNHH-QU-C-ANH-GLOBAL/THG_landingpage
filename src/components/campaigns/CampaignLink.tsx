@@ -8,6 +8,8 @@ interface Props {
   className?: string;
   children: ReactNode;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onFocus?: () => void;
   "aria-expanded"?: boolean;
   "aria-controls"?: string;
   "aria-haspopup"?: "true";
