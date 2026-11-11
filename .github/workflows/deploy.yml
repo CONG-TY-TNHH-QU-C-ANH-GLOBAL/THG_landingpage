@@ -311,13 +311,41 @@ jobs:
             # serving the previous host name unchanged instead of failing.
             NEW_CERT="/etc/ssl/cloudflare/thgroupfulfill-origin.pem"
             NEW_CERT_KEY="/etc/ssl/cloudflare/thgroupfulfill-origin.key"
+            NEW_SITE=0
             if sudo test -s "$NEW_CERT" && sudo test -s "$NEW_CERT_KEY" && sudo openssl x509 -in "$NEW_CERT" -noout -ext subjectAltName | grep -q 'DNS:thgroupfulfill.com'; then
               render_server thgroupfulfill.com "$NEW_CERT" "$NEW_CERT_KEY" >> "$TMP_CONF"
+              NEW_SITE=1
               echo "thgroupfulfill.com virtual host enabled."
             else
               echo "::warning::Origin certificate for thgroupfulfill.com not found at $NEW_CERT - virtual host skipped."
             fi
-            render_server thgfulfill.com "$CERT" "$CERT_KEY" >> "$TMP_CONF"
+            if [ "$NEW_SITE" = 1 ]; then
+              # thgfulfill.com is no longer a public site: permanent redirect to the same path and query on the
+              # new domain. Only the apex and www; cms., lp., hub., crm. and the other sub-domains have their own
+              # virtual hosts and are not affected.
+              cat >> "$TMP_CONF" << 'REDIR'
+
+            server {
+                listen 80;
+                listen [::]:80;
+                server_name thgfulfill.com www.thgfulfill.com;
+                return 301 https://thgroupfulfill.com$request_uri;
+            }
+
+            server {
+                listen 443 ssl http2;
+                listen [::]:443 ssl http2;
+                server_name thgfulfill.com www.thgfulfill.com;
+                ssl_certificate     /etc/ssl/cloudflare/thgfulfill-origin.pem;
+                ssl_certificate_key /etc/ssl/cloudflare/thgfulfill-origin.key;
+                ssl_protocols TLSv1.2 TLSv1.3;
+                server_tokens off;
+                return 301 https://thgroupfulfill.com$request_uri;
+            }
+            REDIR
+            else
+              render_server thgfulfill.com "$CERT" "$CERT_KEY" >> "$TMP_CONF"
+            fi
             sudo cp "$TMP_CONF" "$NGINX_CONF"
             rm -f "$TMP_CONF" "$SERVER_TMPL"
             sudo ln -sfn "$NGINX_CONF" "$NGINX_LINK"
@@ -392,6 +420,10 @@ jobs:
             [ "$redirect" = "$base/vi" ] || { echo "root redirect: got $redirect" >&2; failed=1; }
             redirect="$(curl --silent --show-error --resolve "www.$host:443:$origin" -k -D - -o /dev/null https://www.$host/en/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
             [ "$redirect" = "$base/en/" ] || { echo "www redirect: got $redirect" >&2; failed=1; }
+            if [ "$host" = 'thgroupfulfill.com' ]; then
+              redirect="$(curl --silent --show-error --resolve "thgfulfill.com:443:$origin" -k -D - -o /dev/null 'https://thgfulfill.com/vi/thg-express?x=1' | awk 'tolower($1) == "location:" { print $2 }' | tr -d '')"
+              [ "$redirect" = 'https://thgroupfulfill.com/vi/thg-express?x=1' ] || { echo "legacy domain redirect: got $redirect" >&2; failed=1; }
+            fi
             [ "$failed" -eq 0 ]
 
       # Cloudflare caches public HTML at the edge (Cache Rule "Cache Public HTML
