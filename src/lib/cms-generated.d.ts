@@ -612,6 +612,12 @@ export interface paths {
                                     title: string;
                                     subtitle: string | null;
                                     href: string;
+                                    card?: {
+                                        image_url: string | null;
+                                        title: string | null;
+                                        text: string | null;
+                                        cta_label: string | null;
+                                    };
                                 }[];
                                 updated_at: number;
                             }[];
@@ -690,6 +696,12 @@ export interface paths {
                                     title: string;
                                     subtitle: string | null;
                                     href: string;
+                                    card?: {
+                                        image_url: string | null;
+                                        title: string | null;
+                                        text: string | null;
+                                        cta_label: string | null;
+                                    };
                                 }[];
                                 updated_at: number;
                                 body_md: string | null;
