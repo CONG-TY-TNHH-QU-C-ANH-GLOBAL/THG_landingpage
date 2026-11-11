@@ -39,8 +39,8 @@ const CommunityPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: t("community.title"), url: "https://thgfulfill.com/community" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: t("community.title"), url: "https://thgroupfulfill.com/community" },
         ]}
       />
       <Navbar />

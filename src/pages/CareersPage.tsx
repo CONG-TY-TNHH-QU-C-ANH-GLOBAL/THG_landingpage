@@ -69,8 +69,8 @@ const CareersPage = () => {
             />
             <JsonLdBreadcrumb
                 items={[
-                    { name: "Home", url: "https://thgfulfill.com/" },
-                    { name: "Careers", url: "https://thgfulfill.com/careers" },
+                    { name: "Home", url: "https://thgroupfulfill.com/" },
+                    { name: "Careers", url: "https://thgroupfulfill.com/careers" },
                 ]}
             />
             <Navbar />

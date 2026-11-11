@@ -277,8 +277,8 @@ const InternationalPricingContent = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "International Pricing", url: "https://thgfulfill.com/international-pricing" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: "International Pricing", url: "https://thgroupfulfill.com/international-pricing" },
         ]}
       />
       <Navbar />

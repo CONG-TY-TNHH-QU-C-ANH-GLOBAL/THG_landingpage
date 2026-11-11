@@ -84,8 +84,8 @@ const ChinhNgachPricingPage = () => {
             />
             <JsonLdBreadcrumb
                 items={[
-                    { name: "Home", url: `https://thgfulfill.com/${language}` },
-                    { name: "Chinh Ngach Pricing", url: `https://thgfulfill.com/${language}/chinh-ngach-pricing` },
+                    { name: "Home", url: `https://thgroupfulfill.com/${language}` },
+                    { name: "Chinh Ngach Pricing", url: `https://thgroupfulfill.com/${language}/chinh-ngach-pricing` },
                 ]}
             />
             <Navbar variant="darkHero" />
@@ -98,7 +98,7 @@ const ChinhNgachPricingPage = () => {
                 <div className="xkcn-navspace" aria-hidden="true" />
 
                 <nav className="bc" aria-label="Breadcrumb">
-                    <Link to={`/${language}`}>thgfulfill.com</Link><span className="sep">›</span>
+                    <Link to={`/${language}`}>thgroupfulfill.com</Link><span className="sep">›</span>
                     <span>{t("chinhngach.bc_services")}</span><span className="sep">›</span>
                     <span className="bc-current">{t("chinhngach.bc_current")}</span>
                 </nav>

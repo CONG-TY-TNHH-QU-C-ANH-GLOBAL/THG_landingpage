@@ -1,6 +1,6 @@
 import type { Language } from "@/lib/i18n/types";
 
-export const SITE_BASE = "https://thgfulfill.com";
+export const SITE_BASE = "https://thgroupfulfill.com";
 
 export function normalizeSeoPath(path: string): string {
   const withLeadingSlash = path.startsWith("/") ? path : `/${path}`;

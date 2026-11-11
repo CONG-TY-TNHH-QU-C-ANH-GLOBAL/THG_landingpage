@@ -337,10 +337,10 @@ const CatalogPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: t("catalog_page.title"), url: "https://thgfulfill.com/catalog" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: t("catalog_page.title"), url: "https://thgroupfulfill.com/catalog" },
           ...(activeCollection && activeCollectionName
-            ? [{ name: activeCollectionName, url: `https://thgfulfill.com${catalogPath(language, activeCollection)}` }]
+            ? [{ name: activeCollectionName, url: `https://thgroupfulfill.com${catalogPath(language, activeCollection)}` }]
             : []),
         ]}
       />

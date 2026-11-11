@@ -70,7 +70,7 @@ describe("campaign pages", () => {
     expect(ld.some((t) => t.includes("BreadcrumbList") && t.includes("/vi/campaigns/christmas-2026"))).toBe(true);
     expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      "https://thgfulfill.com/vi/campaigns/christmas-2026",
+      "https://thgroupfulfill.com/vi/campaigns/christmas-2026",
     );
   });
 

@@ -4,8 +4,8 @@ import { hrefLang, localizedUrl, normalizeSeoPath } from "./seoRoutes";
 
 describe("SEO URL builder", () => {
   it("uses the canonical non-www host and removes trailing slashes", () => {
-    expect(localizedUrl("vi", "/")).toBe("https://thgfulfill.com/vi");
-    expect(localizedUrl("en", "/thg-express/")).toBe("https://thgfulfill.com/en/thg-express");
+    expect(localizedUrl("vi", "/")).toBe("https://thgroupfulfill.com/vi");
+    expect(localizedUrl("en", "/thg-express/")).toBe("https://thgroupfulfill.com/en/thg-express");
     expect(normalizeSeoPath("blog/example/")).toBe("/blog/example");
   });
 

@@ -23,7 +23,7 @@ function deadlineToIso(deadline: string | null | undefined): string | undefined 
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-const SITE = "https://thgfulfill.com";
+const SITE = "https://thgroupfulfill.com";
 
 /** Build a plain-text description for meta + JobPosting schema from the job's
  *  lead + responsibilities + requirements (Google wants a substantive desc). */

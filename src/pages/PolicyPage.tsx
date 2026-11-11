@@ -59,8 +59,8 @@ const PolicyPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: t("policy.title"), url: "https://thgfulfill.com/policy" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: t("policy.title"), url: "https://thgroupfulfill.com/policy" },
         ]}
       />
       <Navbar />

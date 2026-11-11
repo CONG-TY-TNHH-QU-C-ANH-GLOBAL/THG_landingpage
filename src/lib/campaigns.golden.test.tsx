@@ -165,7 +165,7 @@ describe("golden: campaign list and detail pages", () => {
     await waitFor(() => expect(document.title).toBe("Christmas 2026 Collection | TH Group"));
     expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      "https://thgfulfill.com/vi/campaigns/christmas-2026",
+      "https://thgroupfulfill.com/vi/campaigns/christmas-2026",
     );
   });
 
