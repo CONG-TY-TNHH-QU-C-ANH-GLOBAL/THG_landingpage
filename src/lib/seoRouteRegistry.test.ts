@@ -4,7 +4,7 @@ import registry from "../../scripts/seo-route-registry.json";
 
 describe("SEO route registry", () => {
   it("has unique normalized routes and supported locales", () => {
-    expect(registry.siteBase).toBe("https://thgfulfill.com");
+    expect(registry.siteBase).toBe("https://thgroupfulfill.com");
     expect(registry.locales).toEqual(["vi", "en", "zh"]);
     expect(new Set(registry.staticRoutes).size).toBe(registry.staticRoutes.length);
     expect(registry.staticRoutes.every((route) => route.startsWith("/") && (route === "/" || !route.endsWith("/")))).toBe(true);

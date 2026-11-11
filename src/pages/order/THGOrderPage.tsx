@@ -39,12 +39,12 @@ const THGOrderPage = () => {
       <JsonLdService
         name="TH Group Order — Taobao & 1688 Sourcing to USA"
         description="Sourcing service for Vietnamese Americans buying from Taobao and 1688. Safe purchase, no language barrier, direct delivery from China to USA."
-        url="https://thgfulfill.com/thg-order"
+        url="https://thgroupfulfill.com/thg-order"
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "TH Group Order", url: "https://thgfulfill.com/thg-order" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: "TH Group Order", url: "https://thgroupfulfill.com/thg-order" },
         ]}
       />
       <Navbar />

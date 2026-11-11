@@ -41,7 +41,7 @@ import "@/lib/i18n/translations/label";
 import { LabelSavingsCalculator } from "./_components/LabelSavingsCalculator";
 
 const LABEL_VIDEO_ID = "ZrgtgB30vPQ";
-const OG_IMAGE = "https://thgfulfill.com/label/seller-portal-labels.jpg";
+const OG_IMAGE = "https://thgroupfulfill.com/label/seller-portal-labels.jpg";
 
 const CARRIERS = [
   { id: "usps", name: "USPS", descKey: "label_page.car_usps" },
@@ -452,13 +452,13 @@ const THGLabelPage = () => {
       <JsonLdService
         name="TH Group Label — USPS, UPS, FedEx, DHL Shipping Labels"
         description={t("seo.label_desc")}
-        url="https://thgfulfill.com/thg-label"
+        url="https://thgroupfulfill.com/thg-label"
       />
       <JsonLdFaqPage faqs={faqs} />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "TH Group Label", url: "https://thgfulfill.com/thg-label" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: "TH Group Label", url: "https://thgroupfulfill.com/thg-label" },
         ]}
       />
       <Navbar />

@@ -76,12 +76,12 @@ const THGExpressPage = () => {
       <JsonLdService
         name="TH Group Express — International Shipping"
         description="Multi-route international shipping from Vietnam and China to USA: Sea 20-25 days, Air 3-5 days, Express 6-10 days. TikTok Shop supported."
-        url="https://thgfulfill.com/thg-express"
+        url="https://thgroupfulfill.com/thg-express"
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "TH Group Express", url: "https://thgfulfill.com/thg-express" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: "TH Group Express", url: "https://thgroupfulfill.com/thg-express" },
         ]}
       />
       <Navbar />

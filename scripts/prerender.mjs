@@ -404,7 +404,7 @@ try {
     // Force English so the prerendered shell has a single canonical locale
     // (matches the default we declare in index.html's <html lang="vi">).
     // Locale switching is client-side after hydration.
-    userAgent: "Mozilla/5.0 (compatible; THGPrerender/1.0; +https://thgfulfill.com)",
+    userAgent: "Mozilla/5.0 (compatible; THGPrerender/1.0; +https://thgroupfulfill.com)",
     // Block third-party tracking + Turnstile widget heartbeat so they don't
     // keep network busy past our wait conditions (CI Chromium can stall on
     // Cloudflare bot-detection from GH Actions IPs).

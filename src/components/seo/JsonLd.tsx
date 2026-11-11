@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 
 import { useI18n } from "@/lib/i18n";
 
-const SITE_BASE = "https://thgfulfill.com";
+const SITE_BASE = "https://thgroupfulfill.com";
 
 // Rewrite an absolute thgfulfill URL to include the active language segment so
 // breadcrumb items match the lang-prefixed canonical/hreflang URLs. Idempotent:

@@ -110,9 +110,9 @@ const CommunityQuestionPage = () => {
       {q && (
         <JsonLdBreadcrumb
           items={[
-            { name: "Home", url: "https://thgfulfill.com/" },
-            { name: t("community.title"), url: "https://thgfulfill.com/community" },
-            { name: q.title, url: `https://thgfulfill.com/community/${q.slug}` },
+            { name: "Home", url: "https://thgroupfulfill.com/" },
+            { name: t("community.title"), url: "https://thgroupfulfill.com/community" },
+            { name: q.title, url: `https://thgroupfulfill.com/community/${q.slug}` },
           ]}
         />
       )}

@@ -85,8 +85,8 @@ const BlogPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: t("blog.title"), url: "https://thgfulfill.com/blog" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: t("blog.title"), url: "https://thgroupfulfill.com/blog" },
         ]}
       />
       <Navbar />

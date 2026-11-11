@@ -98,12 +98,12 @@ const THGWarehousePage = () => {
       <JsonLdService
         name="TH Group Warehouse US — Last-Mile Fulfillment"
         description="US-based warehousing in Pennsylvania (Milford, PA) and North Carolina (Winston-Salem, NC). 2-5 day domestic delivery, transparent storage and pick-pack fees."
-        url="https://thgfulfill.com/thg-warehouse"
+        url="https://thgroupfulfill.com/thg-warehouse"
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "TH Group Warehouse", url: "https://thgfulfill.com/thg-warehouse" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: "TH Group Warehouse", url: "https://thgroupfulfill.com/thg-warehouse" },
         ]}
       />
       <Navbar />

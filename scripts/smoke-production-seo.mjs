@@ -1,4 +1,4 @@
-const site = (process.env.SITE_BASE ?? "https://thgfulfill.com").replace(/\/$/, "");
+const site = (process.env.SITE_BASE ?? "https://thgroupfulfill.com").replace(/\/$/, "");
 const routes = ["/vi", "/en/thg-express", "/vi/domestic-pricing"];
 const failures = [];
 
@@ -20,8 +20,8 @@ for (const route of routes) {
 }
 
 for (const [url, expected] of [
-  ["http://thgfulfill.com/", `${site}/vi`],
-  ["https://www.thgfulfill.com/en/", `${site}/en`],
+  ["http://thgroupfulfill.com/", `${site}/vi`],
+  ["https://www.thgroupfulfill.com/en/", `${site}/en`],
 ]) {
   const response = await fetch(url, { redirect: "follow" });
   if (response.url.replace(/\/$/, "") !== expected) failures.push(`${url}: resolved to ${response.url}, expected ${expected}`);

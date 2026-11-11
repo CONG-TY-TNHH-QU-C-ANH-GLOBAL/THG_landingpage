@@ -85,7 +85,7 @@ describe("formatCampaignDates", () => {
 // real URL parser, either to the site's own origin under the /:lang prefix or
 // to an https: URL. Anything that would run script or leave the https scheme
 // must be dropped (null).
-const SITE = "https://thgfulfill.com";
+const SITE = "https://thgroupfulfill.com";
 
 describe("resolveCampaignHref against hostile input", () => {
   it.each([

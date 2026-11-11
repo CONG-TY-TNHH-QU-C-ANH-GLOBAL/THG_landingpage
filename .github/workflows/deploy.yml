@@ -172,7 +172,9 @@ jobs:
             if sudo test -f "$NGINX_CONF"; then
               sudo cp "$NGINX_CONF" "$NGINX_BACKUP"
             fi
-            sudo tee $NGINX_CONF > /dev/null << 'EOF'
+            TMP_CONF="$(mktemp)"
+            SERVER_TMPL="$(mktemp)"
+            cat > "$TMP_CONF" << 'EOF'
             # Campaign landing pages (uploaded in the CMS) are served by the isolated landing Worker but
             # are reachable under the main domain: /{vi,en,zh}/campaigns/<slug>/ so traffic is counted here.
             upstream thg_landing_worker {
@@ -185,31 +187,34 @@ jobs:
                 ~^/(?:en|vi|zh)/campaigns/(?<campaign_rest>.+)$ /$campaign_rest;
             }
 
+            EOF
+            # One server group per public host name, rendered from a single template so the two never drift.
+            cat > "$SERVER_TMPL" << 'EOF'
             server {
                 listen 80;
                 listen [::]:80;
-                server_name thgfulfill.com www.thgfulfill.com;
-                return 308 https://thgfulfill.com$request_uri;
+                server_name @DOMAIN@ www.@DOMAIN@;
+                return 308 https://@DOMAIN@$request_uri;
             }
 
             server {
                 listen 443 ssl http2;
                 listen [::]:443 ssl http2;
-                server_name www.thgfulfill.com;
-                ssl_certificate     /etc/ssl/cloudflare/thgfulfill-origin.pem;
-                ssl_certificate_key /etc/ssl/cloudflare/thgfulfill-origin.key;
-                return 308 https://thgfulfill.com$request_uri;
+                server_name www.@DOMAIN@;
+                ssl_certificate     @CERT@;
+                ssl_certificate_key @CERT_KEY@;
+                return 308 https://@DOMAIN@$request_uri;
             }
 
             server {
                 listen 443 ssl http2;
                 listen [::]:443 ssl http2;
-                server_name thgfulfill.com;
+                server_name @DOMAIN@;
 
                 root /var/www/thgfulfill;
                 index index.html;
-                ssl_certificate     /etc/ssl/cloudflare/thgfulfill-origin.pem;
-                ssl_certificate_key /etc/ssl/cloudflare/thgfulfill-origin.key;
+                ssl_certificate     @CERT@;
+                ssl_certificate_key @CERT_KEY@;
                 ssl_protocols TLSv1.2 TLSv1.3;
                 server_tokens off;
 
@@ -252,16 +257,16 @@ jobs:
                     add_header Pragma "no-cache" always;
                     add_header Expires "0" always;
                     # Keep the app's canonical form (no trailing slash) for campaigns without a landing.
-                    if ($uri ~ ^(/(?:en|vi|zh)/campaigns/[^/]+)/$) { return 308 https://thgfulfill.com$1; }
+                    if ($uri ~ ^(/(?:en|vi|zh)/campaigns/[^/]+)/$) { return 308 https://@DOMAIN@$1; }
                     try_files $uri $uri/index.html =404;
                 }
 
                 # Canonical URL and legacy route handling.
-                location = / { return 308 https://thgfulfill.com/vi; }
-                location ~ ^/(en|vi|zh)/$ { return 308 https://thgfulfill.com/$1; }
-                location ~ ^/(en|vi|zh)/(.*)/$ { return 308 https://thgfulfill.com/$1/$2; }
+                location = / { return 308 https://@DOMAIN@/vi; }
+                location ~ ^/(en|vi|zh)/$ { return 308 https://@DOMAIN@/$1; }
+                location ~ ^/(en|vi|zh)/(.*)/$ { return 308 https://@DOMAIN@/$1/$2; }
                 location ~ ^/(policy|shipping-policy|blog|international-pricing|domestic-pricing|chinh-ngach-pricing|thg-fulfill|thg-express|thg-warehouse|thg-order|catalog|tracking|careers|community)(/.*)?$ {
-                    return 308 https://thgfulfill.com/vi$request_uri;
+                    return 308 https://@DOMAIN@/vi$request_uri;
                 }
 
                 # Prerendered files only: unknown paths receive an actual 404,
@@ -300,6 +305,21 @@ jobs:
                 location ~ /\. { deny all; }
             }
             EOF
+            render_server() { sed -e "s#@DOMAIN@#$1#g" -e "s#@CERT@#$2#g" -e "s#@CERT_KEY@#$3#g" "$SERVER_TMPL"; }
+            # Public site moved to thgroupfulfill.com. Its vhost is only rendered once its own Cloudflare Origin
+            # certificate (covering thgroupfulfill.com) is installed on the server; until then the deploy keeps
+            # serving the previous host name unchanged instead of failing.
+            NEW_CERT="/etc/ssl/cloudflare/thgroupfulfill-origin.pem"
+            NEW_CERT_KEY="/etc/ssl/cloudflare/thgroupfulfill-origin.key"
+            if sudo test -s "$NEW_CERT" && sudo test -s "$NEW_CERT_KEY" && sudo openssl x509 -in "$NEW_CERT" -noout -ext subjectAltName | grep -q 'DNS:thgroupfulfill.com'; then
+              render_server thgroupfulfill.com "$NEW_CERT" "$NEW_CERT_KEY" >> "$TMP_CONF"
+              echo "thgroupfulfill.com virtual host enabled."
+            else
+              echo "::warning::Origin certificate for thgroupfulfill.com not found at $NEW_CERT - virtual host skipped."
+            fi
+            render_server thgfulfill.com "$CERT" "$CERT_KEY" >> "$TMP_CONF"
+            sudo cp "$TMP_CONF" "$NGINX_CONF"
+            rm -f "$TMP_CONF" "$SERVER_TMPL"
             sudo ln -sfn "$NGINX_CONF" "$NGINX_LINK"
             if sudo nginx -t; then
               sudo systemctl reload nginx
@@ -325,7 +345,9 @@ jobs:
           script: |
             set -eu
             origin='127.0.0.1'
-            base='https://thgfulfill.com'
+            host='thgfulfill.com'
+            if sudo test -s /etc/ssl/cloudflare/thgroupfulfill-origin.pem; then host='thgroupfulfill.com'; fi
+            base="https://$host"
             failed=0
             exact_one() {
               name="$1"
@@ -338,7 +360,7 @@ jobs:
               fi
             }
             for route in /vi /en/thg-express /vi/domestic-pricing; do
-              html="$(curl --fail --silent --show-error --resolve "thgfulfill.com:443:$origin" -k "$base$route")" || { failed=1; continue; }
+              html="$(curl --fail --silent --show-error --resolve "$host:443:$origin" -k "$base$route")" || { failed=1; continue; }
               [ "$(printf '%s' "$html" | wc -c)" -ge 10000 ] || { echo "$route: response resembles SPA shell" >&2; failed=1; }
               exact_one title '<title([^>]*)?>' "$html"
               # Match the primary SEO fields exactly; do not count Twitter's
@@ -350,26 +372,26 @@ jobs:
             done
             # A collection the build did not prerender must fall back to the
             # catalog shell (200), never 404.
-            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/catalog/seo-smoke-unknown-collection")"
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "$host:443:$origin" -k "$base/vi/catalog/seo-smoke-unknown-collection")"
             [ "$status" = 200 ] || { echo "catalog collection fallback: expected 200, got $status" >&2; failed=1; }
-            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/seo-smoke-route-that-must-not-exist")"
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "$host:443:$origin" -k "$base/vi/seo-smoke-route-that-must-not-exist")"
             [ "$status" = 404 ] || { echo "unknown route: expected 404, got $status" >&2; failed=1; }
             # Campaign landings are proxied to the landing Worker; one that does not exist must fall
             # back to the app (404), never surface the proxy's 502/504.
-            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/campaigns/seo-smoke-unknown-campaign")"
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve "$host:443:$origin" -k "$base/vi/campaigns/seo-smoke-unknown-campaign")"
             [ "$status" = 404 ] || { echo "unknown campaign: expected 404, got $status" >&2; failed=1; }
             # A published landing requested without the trailing slash must redirect to its own slash form.
             # Skipped when no landing is published (404): only an actual redirect is checked.
-            redirect="$(curl --silent --output /dev/null --write-out '%{http_code} %{redirect_url}' --resolve "thgfulfill.com:443:$origin" -k "$base/vi/campaigns/christmas-2026")"
+            redirect="$(curl --silent --output /dev/null --write-out '%{http_code} %{redirect_url}' --resolve "$host:443:$origin" -k "$base/vi/campaigns/christmas-2026")"
             case "$redirect" in
               301*|302*) [ "${redirect#* }" = "$base/vi/campaigns/christmas-2026/" ] || { echo "campaign slash redirect: got $redirect" >&2; failed=1; } ;;
             esac
             # HTTP reaches HTTPS in two hops: resolve both ports locally so the
             # check never accidentally follows the public DNS record mid-cutover.
-            redirect="$(curl --silent --show-error --location --resolve "thgfulfill.com:80:$origin" --resolve "thgfulfill.com:443:$origin" -k -o /dev/null -w '%{url_effective}' http://thgfulfill.com/)"
-            [ "$redirect" = 'https://thgfulfill.com/vi' ] || { echo "root redirect: got $redirect" >&2; failed=1; }
-            redirect="$(curl --silent --show-error --resolve "www.thgfulfill.com:443:$origin" -k -D - -o /dev/null https://www.thgfulfill.com/en/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
-            [ "$redirect" = 'https://thgfulfill.com/en/' ] || { echo "www redirect: got $redirect" >&2; failed=1; }
+            redirect="$(curl --silent --show-error --location --resolve "$host:80:$origin" --resolve "$host:443:$origin" -k -o /dev/null -w '%{url_effective}' http://$host/)"
+            [ "$redirect" = "$base/vi" ] || { echo "root redirect: got $redirect" >&2; failed=1; }
+            redirect="$(curl --silent --show-error --resolve "www.$host:443:$origin" -k -D - -o /dev/null https://www.$host/en/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
+            [ "$redirect" = "$base/en/" ] || { echo "www redirect: got $redirect" >&2; failed=1; }
             [ "$failed" -eq 0 ]
 
       # Cloudflare caches public HTML at the edge (Cache Rule "Cache Public HTML
@@ -382,29 +404,41 @@ jobs:
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+          # Zone of the public site's new domain (thgroupfulfill.com). Optional: skipped when unset.
+          CF_ZONE_ID_GROUP: ${{ secrets.CF_ZONE_ID_GROUP }}
         run: |
           set -euo pipefail
-          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ZONE_ID:-}" ]; then
-            echo "::warning::CF_API_TOKEN / CF_ZONE_ID not set — skipping edge purge"
+          if [ -z "${CF_API_TOKEN:-}" ] || { [ -z "${CF_ZONE_ID:-}" ] && [ -z "${CF_ZONE_ID_GROUP:-}" ]; }; then
+            echo "::warning::CF_API_TOKEN / CF_ZONE_ID not set - skipping edge purge"
             exit 0
           fi
-          response="$(curl --silent --show-error --fail-with-body \
-            -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
-            -H "Authorization: Bearer ${CF_API_TOKEN}" \
-            -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}')"
-          echo "$response"
-          case "$response" in
-            *'"success":true'*) echo "Edge cache purged." ;;
-            *) echo "::error::Cloudflare purge failed" >&2; exit 1 ;;
-          esac
+          purge_zone() {
+            curl --silent --show-error --fail-with-body               -X POST "https://api.cloudflare.com/client/v4/zones/$1/purge_cache"               -H "Authorization: Bearer ${CF_API_TOKEN}"               -H "Content-Type: application/json"               --data '{"purge_everything":true}'
+          }
+          if [ -n "${CF_ZONE_ID:-}" ]; then
+            response="$(purge_zone "${CF_ZONE_ID}")"
+            echo "$response"
+            case "$response" in
+              *'"success":true'*) echo "Edge cache purged." ;;
+              *) echo "::error::Cloudflare purge failed" >&2; exit 1 ;;
+            esac
+          fi
+          # The new zone must not fail a release that deployed correctly (its token scope may lag behind).
+          if [ -n "${CF_ZONE_ID_GROUP:-}" ]; then
+            response="$(purge_zone "${CF_ZONE_ID_GROUP}" || true)"
+            echo "$response"
+            case "$response" in
+              *'"success":true'*) echo "thgroupfulfill.com edge cache purged." ;;
+              *) echo "::warning::Cloudflare purge failed for the thgroupfulfill.com zone" ;;
+            esac
+          fi
 
       - name: Public production SEO smoke crawl
         id: public-seo-smoke
         if: vars.PUBLIC_SEO_SMOKE == '1'
         continue-on-error: true
         env:
-          SITE_BASE: https://thgfulfill.com
+          SITE_BASE: https://thgroupfulfill.com
         run: node scripts/smoke-production-seo.mjs
 
       - name: Roll back failed production artifact

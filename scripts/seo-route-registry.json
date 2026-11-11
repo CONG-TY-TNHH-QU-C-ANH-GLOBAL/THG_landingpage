@@ -1,5 +1,5 @@
 {
-  "siteBase": "https://thgfulfill.com",
+  "siteBase": "https://thgroupfulfill.com",
   "defaultLocale": "vi",
   "locales": ["vi", "en", "zh"],
   "staticRoutes": [

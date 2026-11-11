@@ -112,8 +112,8 @@ const TrackingPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: t("tracking.title"), url: "https://thgfulfill.com/tracking" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: t("tracking.title"), url: "https://thgroupfulfill.com/tracking" },
         ]}
       />
       <Navbar />

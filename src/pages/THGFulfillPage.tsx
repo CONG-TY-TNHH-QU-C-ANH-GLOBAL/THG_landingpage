@@ -61,12 +61,12 @@ const THGFulfillPage = () => {
       <JsonLdService
         name="TH Group Fulfill — POD & Dropship Fulfillment"
         description="End-to-end Print-on-Demand and Dropship fulfillment from Vietnam, China and USA warehouses. Optimized basecost, multi-route shipping, transparent pricing."
-        url="https://thgfulfill.com/thg-fulfill"
+        url="https://thgroupfulfill.com/thg-fulfill"
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: "TH Group Fulfill", url: "https://thgfulfill.com/thg-fulfill" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: "TH Group Fulfill", url: "https://thgroupfulfill.com/thg-fulfill" },
         ]}
       />
       <Navbar />

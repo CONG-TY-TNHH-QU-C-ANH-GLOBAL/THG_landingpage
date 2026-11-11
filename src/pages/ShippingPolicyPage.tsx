@@ -35,8 +35,8 @@ const ShippingPolicyPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: t("spolicy.title"), url: "https://thgfulfill.com/shipping-policy" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: t("spolicy.title"), url: "https://thgroupfulfill.com/shipping-policy" },
         ]}
       />
       <Navbar />

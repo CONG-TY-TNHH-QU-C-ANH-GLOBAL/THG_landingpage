@@ -40,9 +40,9 @@ const CommunityReviewsListPage = () => {
       />
       <JsonLdBreadcrumb
         items={[
-          { name: "Home", url: "https://thgfulfill.com/" },
-          { name: t("community.eyebrow"), url: "https://thgfulfill.com/community" },
-          { name: t("reviews.title"), url: "https://thgfulfill.com/community/reviews" },
+          { name: "Home", url: "https://thgroupfulfill.com/" },
+          { name: t("community.eyebrow"), url: "https://thgroupfulfill.com/community" },
+          { name: t("reviews.title"), url: "https://thgroupfulfill.com/community/reviews" },
         ]}
       />
       <Navbar />

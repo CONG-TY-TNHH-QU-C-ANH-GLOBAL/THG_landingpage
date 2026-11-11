@@ -140,9 +140,9 @@ const BlogDetailPage = () => {
             />
             {!isPreview && <JsonLdBreadcrumb
                 items={[
-                    { name: "Home", url: `https://thgfulfill.com/${lang}` },
-                    { name: t("blog.title"), url: `https://thgfulfill.com/${lang}/blog` },
-                    { name: title, url: `https://thgfulfill.com/${lang}/blog/${article.slug}` },
+                    { name: "Home", url: `https://thgroupfulfill.com/${lang}` },
+                    { name: t("blog.title"), url: `https://thgroupfulfill.com/${lang}/blog` },
+                    { name: title, url: `https://thgroupfulfill.com/${lang}/blog/${article.slug}` },
                 ]}
             />}
             {!isPreview && <JsonLdArticle
@@ -150,7 +150,7 @@ const BlogDetailPage = () => {
                 description={description}
                 image={featuredSrc ?? undefined}
                 datePublished={article.date}
-                url={`https://thgfulfill.com/${lang}/blog/${article.slug}`}
+                url={`https://thgroupfulfill.com/${lang}/blog/${article.slug}`}
             />}
             <Navbar />
 

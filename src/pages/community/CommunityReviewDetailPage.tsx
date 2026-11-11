@@ -54,9 +54,9 @@ const CommunityReviewDetailPage = () => {
       {r && (
         <JsonLdBreadcrumb
           items={[
-            { name: "Home", url: "https://thgfulfill.com/" },
-            { name: t("reviews.title"), url: "https://thgfulfill.com/community/reviews" },
-            { name: r.title, url: `https://thgfulfill.com/community/reviews/${r.slug}` },
+            { name: "Home", url: "https://thgroupfulfill.com/" },
+            { name: t("reviews.title"), url: "https://thgroupfulfill.com/community/reviews" },
+            { name: r.title, url: `https://thgroupfulfill.com/community/reviews/${r.slug}` },
           ]}
         />
       )}

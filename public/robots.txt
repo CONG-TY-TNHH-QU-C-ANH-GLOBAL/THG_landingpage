@@ -35,4 +35,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location (generated at build time from CMS API — see scripts/generate-sitemap.ts)
-Sitemap: https://thgfulfill.com/sitemap.xml
+Sitemap: https://thgroupfulfill.com/sitemap.xml
