@@ -421,7 +421,7 @@ jobs:
             redirect="$(curl --silent --show-error --resolve "www.$host:443:$origin" -k -D - -o /dev/null https://www.$host/en/ | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
             [ "$redirect" = "$base/en/" ] || { echo "www redirect: got $redirect" >&2; failed=1; }
             if [ "$host" = 'thgroupfulfill.com' ]; then
-              redirect="$(curl --silent --show-error --resolve "thgfulfill.com:443:$origin" -k -D - -o /dev/null 'https://thgfulfill.com/vi/thg-express?x=1' | awk 'tolower($1) == "location:" { print $2 }' | tr -d '')"
+              redirect="$(curl --silent --show-error --resolve "thgfulfill.com:443:$origin" -k -D - -o /dev/null 'https://thgfulfill.com/vi/thg-express?x=1' | awk 'tolower($1) == "location:" { print $2 }' | tr -d '\r')"
               [ "$redirect" = 'https://thgroupfulfill.com/vi/thg-express?x=1' ] || { echo "legacy domain redirect: got $redirect" >&2; failed=1; }
             fi
             [ "$failed" -eq 0 ]
