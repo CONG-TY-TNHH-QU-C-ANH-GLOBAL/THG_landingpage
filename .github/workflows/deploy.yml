@@ -75,8 +75,17 @@ jobs:
       - name: Unit tests
         run: bun run test
 
+      # Browser binary only (downloaded from cdn.playwright.dev). `--with-deps` also ran apt-get, which
+      # failed for 40+ minutes on 2026-11-11 when the runner could not resolve the Ubuntu mirror, and that
+      # blocked every deploy. The runner image already ships Chromium's native libraries.
       - name: Install Playwright browsers
-        run: bunx playwright install --with-deps chromium
+        run: bunx playwright install chromium
+
+      # Best effort: system fonts and libraries for rendering. A mirror outage must not block a release.
+      - name: Install Playwright system dependencies (best effort)
+        continue-on-error: true
+        timeout-minutes: 4
+        run: bunx playwright install-deps chromium
 
       - name: E2E tests
         env:
@@ -169,6 +178,9 @@ jobs:
               echo "::error::Landing origin certificate does not cover thgfulfill.com" >&2
               exit 1
             fi
+            # The backup must describe the config as it was before THIS deploy, never a leftover from an
+            # earlier one (the rollback step restores it).
+            sudo rm -f "$NGINX_BACKUP"
             if sudo test -f "$NGINX_CONF"; then
               sudo cp "$NGINX_CONF" "$NGINX_BACKUP"
             fi
@@ -486,11 +498,16 @@ jobs:
             test -d /var/www/thgfulfill.previous
             sudo rm -rf /var/www/thgfulfill
             sudo cp -a /var/www/thgfulfill.previous /var/www/thgfulfill
+            # The release also changes the nginx virtual hosts (new domain, legacy redirect). Put back the
+            # config saved by this deploy so the artifact and the routing go back together.
+            if sudo test -f /tmp/thgfulfill.nginx.previous; then
+              sudo cp /tmp/thgfulfill.nginx.previous /etc/nginx/sites-available/thgfulfill
+            fi
             sudo nginx -t
             sudo systemctl reload nginx
 
       - name: Fail release after rollback
         if: steps.origin-seo-smoke.outcome == 'failure' || steps.public-seo-smoke.outcome == 'failure'
         run: |
-          echo "::error::Production SEO smoke failed. Previous artifact was restored."
+          echo "::error::Production SEO smoke failed. Previous artifact and nginx config were restored."
           exit 1
