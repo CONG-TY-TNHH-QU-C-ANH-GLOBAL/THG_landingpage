@@ -120,3 +120,37 @@ jobs:
           fi
 
           echo "✅ Branch freshness OK."
+
+  workflow-files:
+    runs-on: ubuntu-latest
+    name: Workflow file check
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # A workflow GitHub cannot parse does not fail a check, it silently never runs. PR #165 shipped a
+      # stray carriage return inside a block scalar and no deploy could start until #166. Fail the PR instead.
+      - name: Workflow files are valid YAML and free of stray control characters
+        run: |
+          set -uo pipefail
+          status=0
+          have_ruby=1
+          command -v ruby >/dev/null 2>&1 || { have_ruby=0; echo "::warning::ruby not found on this runner: YAML parsing skipped, control characters are still checked"; }
+          for f in .github/workflows/*.yml .github/workflows/*.yaml; do
+            [ -e "$f" ] || continue
+            if [ "$have_ruby" = 1 ] && ! ruby -ryaml -e 'YAML.load_file(ARGV[0])' "$f" 2> "$RUNNER_TEMP/yaml.err"; then
+              echo "::error file=$f::Not valid YAML: $(head -c 300 "$RUNNER_TEMP/yaml.err" | tr -d '\n')"
+              status=1
+            fi
+            # Control characters other than tab and line feed, and carriage returns that are not the end of a CRLF line.
+            # Counted with tr/grep -c (no grep -P), so an error cannot read as a clean file: a failing command aborts the loop body.
+            ctl=$(LC_ALL=C tr -cd '\000-\010\013\014\016-\037' < "$f" | wc -c) || { echo "::error file=$f::Control character scan failed"; status=1; continue; }
+            crs=$(LC_ALL=C tr -cd '\r' < "$f" | wc -c) || { echo "::error file=$f::Control character scan failed"; status=1; continue; }
+            crlf=$(grep -c $'\r$' "$f"; true)
+            if [ "$ctl" -ne 0 ] || [ "$crs" -ne "$crlf" ]; then
+              echo "::error file=$f::Stray control characters: $ctl control character(s), $((crs - crlf)) carriage return(s) outside CRLF line ends"
+              status=1
+            fi
+          done
+          exit $status
