@@ -37,7 +37,13 @@ const AboutVideoSection = () => {
   // Video always uses the EN locale block so all tabs show the same video.
   // Text content (highlights, title, desc) still follows the active language.
   const enBlock = useHomepageBlock("en", "about_video");
-  const videoId = extractYouTubeId(enBlock.video_url || settings?.about_video_url);
+  // The CMS keeps the operator's edit on the Vietnamese (source-language) block and creates no EN block unless
+  // one is edited on purpose, so reading EN alone ignored every video change. EN still wins when it is set,
+  // then the Vietnamese block, then the global setting.
+  const viBlock = useHomepageBlock("vi", "about_video");
+  const videoId = extractYouTubeId(
+    enBlock.video_url || viBlock.video_url || settings?.about_video_url,
+  );
 
   const highlights = [
     { icon: Package, label: block.highlight1 || tVi("about.highlight1") },
