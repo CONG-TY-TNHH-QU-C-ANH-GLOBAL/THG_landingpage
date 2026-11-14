@@ -39,11 +39,16 @@ describe("AboutVideoSection: which video is shown", () => {
     expect(shownVideoId()).toBe("3pYc7uehIJE");
   });
 
-  it("an English block still wins over the Vietnamese one", () => {
+  it("the Vietnamese block wins over an English one: the video is edited on the VI tab only", () => {
     blocks = {
       en: { video_url: "https://youtu.be/q7NiFssAaRE" },
       vi: { video_url: "https://www.youtube.com/watch?v=3pYc7uehIJE" },
     };
+    expect(shownVideoId()).toBe("3pYc7uehIJE");
+  });
+
+  it("a reviewed English block is used only when the Vietnamese block has no video", () => {
+    blocks = { en: { video_url: "https://youtu.be/q7NiFssAaRE" }, vi: { title: "x" } };
     expect(shownVideoId()).toBe("q7NiFssAaRE");
   });
 
