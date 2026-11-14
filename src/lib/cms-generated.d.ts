@@ -326,6 +326,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            price_includes_shipping_default: boolean;
                             overrides: {
                                 product_id: string;
                                 template_url: string | null;

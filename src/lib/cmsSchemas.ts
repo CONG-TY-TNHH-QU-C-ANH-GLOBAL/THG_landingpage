@@ -162,8 +162,12 @@ export const cmsCatalogOverrideSchema = z.object({
 export type CmsCatalogOverride = z.infer<typeof cmsCatalogOverrideSchema>;
 
 export const catalogOverridesResponseSchema = z.object({
+  /** Catalog-wide "price includes shipping" for products not in `overrides`.
+   *  Optional so a CMS that predates the setting still parses. */
+  price_includes_shipping_default: z.boolean().optional(),
   overrides: z.array(cmsCatalogOverrideSchema),
 });
+export type CmsCatalogOverridesResponse = z.infer<typeof catalogOverridesResponseSchema>;
 
 /* ---------- Leadership ---------- */
 

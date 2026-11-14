@@ -691,7 +691,7 @@ const CatalogPage = () => {
             const extras = resolveCatalogExtras(
               selectedProduct.id,
               selectedProduct.templateUrl,
-              catalogOverrides?.overrides,
+              catalogOverrides,
             );
             const templateUrl = extras.templateUrl;
             const subcategory = desc?.subcategory;
