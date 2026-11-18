@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest is 26.04; Playwright has no chromium build for it yet
     # Safety guard (ADR-001 Option A): deployment runs ONLY for the main branch.
     # A manual workflow_dispatch from any other ref (e.g. migration/next-main) is a no-op.
     # Preserves push:[main] auto-deploy and the CMS repository_dispatch redeploy, whose
