@@ -28,7 +28,8 @@ import {
     OwnPackagingArt,
     PolyMailerArt,
 } from "@/components/pricing/PackagingArt";
-import { THREE_PL_USPS_RATES } from "@/data/threePlPricing";
+import { USPS_GA_ZONE_KEYS } from "@/data/uspsGaLabelRates";
+import { useUspsGaLabelRates } from "@/hooks/useCmsContent";
 import { trackEvent } from "@/lib/analytics";
 import "@/lib/i18n/translations/fulfill";
 import "@/lib/i18n/translations/pricing";
@@ -41,7 +42,7 @@ interface DomesticPricingRow {
     zones: Record<number, string>;
 }
 
-const ZONES = [1, 2, 3, 4, 5, 6, 7, 8];
+const ZONES = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const INITIAL_ROWS = 6;
 
 // Reveals the rows the show-more button hides, and drops JS-only controls,
@@ -98,14 +99,17 @@ const DomesticPricingContent = () => {
         trackEvent("view_pricing", { pricing_type: "us_3pl", locale: language });
     }, [language]);
 
+    // The 3PL USPS table is the label rate card's Tier 1 (CMS uspsGaLabelT1).
+    const { tiers } = useUspsGaLabelRates();
+    const tier1 = tiers[0];
     const domesticPricingRows = useMemo<DomesticPricingRow[]>(() => {
-        return THREE_PL_USPS_RATES.map((r, idx) => ({
+        return tier1.map((r, idx) => ({
             STT: String(idx + 1),
-            weight: String(r[0]),
-            gram: String(Math.round(r[0] * 28.3495)),
-            zones: Object.fromEntries(ZONES.map((zone) => [zone, r[zone].toFixed(2)])),
+            weight: String(r.oz),
+            gram: String(r.g),
+            zones: Object.fromEntries(ZONES.map((zone) => [zone, r[USPS_GA_ZONE_KEYS[zone - 1]].toFixed(2)])),
         }));
-    }, []);
+    }, [tier1]);
 
     const hasMore = domesticPricingRows.length > INITIAL_ROWS;
 
@@ -497,7 +501,7 @@ const DomesticPricingContent = () => {
             <section id="estimator" className="px-6 pb-[72px]">
                 <div className="mx-auto max-w-[820px]">
                     <ScrollReveal>
-                        <ThreePlEstimator />
+                        <ThreePlEstimator rates={tier1} />
                     </ScrollReveal>
                 </div>
             </section>

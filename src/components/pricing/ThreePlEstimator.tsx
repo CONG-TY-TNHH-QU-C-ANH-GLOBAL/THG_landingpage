@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
 import { Calculator } from "lucide-react";
 
-import { THREE_PL_PACKAGING, THREE_PL_PACK_TIERS, THREE_PL_USPS_RATES } from "@/data/threePlPricing";
+import { THREE_PL_PACKAGING, THREE_PL_PACK_TIERS } from "@/data/threePlPricing";
+import { uspsGaRateFor, USPS_GA_ZONE_KEYS, type UspsGaRow } from "@/data/uspsGaLabelRates";
 import { useI18n } from "@/lib/i18n";
 import "@/lib/i18n/translations/pricing";
 
 const money = (value: number) => `$${value.toFixed(2)}`;
 
-export function ThreePlEstimator() {
+export function ThreePlEstimator({ rates }: Readonly<{ rates: readonly UspsGaRow[] }>) {
   const { t } = useI18n();
   const [weight, setWeight] = useState(1);
   const [length, setLength] = useState(0);
@@ -21,9 +22,9 @@ export function ThreePlEstimator() {
     const billable = Math.max(weight, dimensional);
     const tier = THREE_PL_PACK_TIERS.find((item) => billable <= item.maxLbs);
     const packaging = THREE_PL_PACKAGING.find((item) => item.key === packagingKey) ?? THREE_PL_PACKAGING[0];
-    const shipping = THREE_PL_USPS_RATES.find((row) => billable * 16 <= row[0])?.[zone];
+    const shipping = uspsGaRateFor(rates, billable * 16, zone);
     return { billable, tier, packaging, shipping };
-  }, [height, length, packagingKey, weight, width, zone]);
+  }, [height, length, packagingKey, rates, weight, width, zone]);
 
   const total = estimate.tier && estimate.shipping != null
     ? estimate.tier.price + estimate.packaging.price + estimate.shipping
@@ -47,7 +48,7 @@ export function ThreePlEstimator() {
           <label className="block">
             <span className="rate-eyebrow block text-muted-foreground">Zone</span>
             <select value={zone} onChange={(e) => setZone(Number(e.target.value))} className="mt-1.5 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground">
-              {Array.from({ length: 8 }, (_, index) => index + 1).map((item) => <option key={item} value={item}>Zone {item}</option>)}
+              {USPS_GA_ZONE_KEYS.map((_, index) => index + 1).map((item) => <option key={item} value={item}>Zone {item}</option>)}
             </select>
           </label>
           {[t("domestic.length"), t("domestic.width"), t("domestic.height")].map((label, index) => {
