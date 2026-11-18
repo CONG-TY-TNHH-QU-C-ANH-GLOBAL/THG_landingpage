@@ -34,7 +34,9 @@ import { LeadFormDialog } from "@/components/lead/LeadFormDialog";
 import { SectionHeader } from "@/components/sections/SectionHeader";
 import { JsonLdBreadcrumb, JsonLdFaqPage, JsonLdService } from "@/components/seo/JsonLd";
 import { SeoHead } from "@/components/seo/SeoHead";
+import { UspsGaTierTable } from "@/components/pricing/UspsGaTierTable";
 import { ServiceVideoCard } from "@/components/service-pages/ServiceVideoCard";
+import { useUspsGaLabelRates } from "@/hooks/useCmsContent";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import "@/lib/i18n/translations/label";
@@ -406,40 +408,9 @@ const ECOSYSTEM: { id: string; name: string; href?: string; icon: LucideIcon; de
   { id: "label", name: "Label", icon: Tag, descKey: "label_page.eco_label" },
 ];
 
-const TierLadder = () => {
-  const { t } = useI18n();
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 max-w-6xl mx-auto">
-      {range(5).map((n) => {
-        const best = n === 5;
-        return (
-          <div
-            key={n}
-            className={`rounded-2xl p-6 flex flex-col ${best ? "bg-navy text-white shadow-xl" : "glass-card"}`}
-          >
-            <p className={`text-xs font-semibold uppercase tracking-[0.16em] ${best ? "text-[hsl(var(--gold))]" : "text-accent"}`}>
-              {t("label_page.tier")} {n}
-              {best ? ` · ${t("label_page.tier_best")}` : ""}
-            </p>
-            <p className="my-3 text-5xl font-extrabold tracking-tight">{n}%</p>
-            <p className={`mb-5 text-sm leading-relaxed ${best ? "text-white/75" : "text-navy/70"}`}>{t(`label_page.tier${n}_d`)}</p>
-            <div className="mt-auto">
-              <QuoteButton
-                source={`tier-${n}`}
-                className={
-                  best
-                    ? GOLD_BUTTON
-                    : "w-full rounded-full border border-border bg-transparent text-navy hover:bg-secondary shadow-none px-6 py-5 font-semibold"
-                }
-              >
-                {best ? t("label_page.tier_cta_partner") : t("label_page.tier_cta")}
-              </QuoteButton>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+const LabelRates = () => {
+  const { tiers } = useUspsGaLabelRates();
+  return <UspsGaTierTable tiers={tiers} />;
 };
 
 const THGLabelPage = () => {
@@ -741,8 +712,11 @@ const THGLabelPage = () => {
           <ScrollReveal>
             <SectionHeader className="mb-12" eyebrow={t("label_page.price_eyebrow")} title={t("label_page.price_title")} description={t("label_page.price_sub")} />
           </ScrollReveal>
-          <TierLadder />
-          <p className="mt-8 text-center text-sm text-navy/60">{t("label_page.price_note")}</p>
+          <LabelRates />
+          <div className="mt-8 flex flex-col items-center gap-4">
+            <QuoteButton source="label-pricing">{t("label_page.tier_cta")}</QuoteButton>
+            <p className="text-center text-sm text-navy/60">{t("label_page.price_note")}</p>
+          </div>
         </div>
       </section>
 

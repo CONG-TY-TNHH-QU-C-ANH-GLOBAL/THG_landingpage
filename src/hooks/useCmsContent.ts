@@ -8,6 +8,12 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { cmsClient, type Locale } from "@/lib/cmsClient";
 import { readFxRate, readTableCurrency, type PriceCurrency } from "@/components/pricing/fxDisplay";
 import { blogPostQueryOptions, eventQueryOptions } from "@/lib/articleNavigation";
+import {
+  readUspsGaRows,
+  USPS_GA_LABEL_RATES_SNAPSHOT,
+  USPS_GA_SLUGS,
+  type UspsGaRow,
+} from "@/data/uspsGaLabelRates";
 
 const STALE_MS = 5 * 60 * 1000; // 5 minutes — matches CMS edge cache TTL
 const GC_MS = 30 * 60 * 1000; // 30 minutes
@@ -404,6 +410,32 @@ export function useCommunityReview(slug: string) {
     enabled: !!slug,
     retry: false,
   });
+}
+
+/**
+ * USPS Ground Advantage label rates, Tier 1..5, from the CMS rate cards
+ * uspsGaLabelT1..T5. A tier that fails to load or has an unexpected shape uses
+ * the bundled snapshot, so the table always renders (and prerenders) in full.
+ */
+export function useUspsGaLabelRates(): { tiers: UspsGaRow[][]; isLive: boolean } {
+  const queries = useQueries({
+    queries: USPS_GA_SLUGS.map((slug) => ({
+      queryKey: ["cms", "pricing", slug],
+      queryFn: () => cmsClient.getPricingTable(slug),
+      staleTime: STALE_MS,
+      gcTime: GC_MS,
+      refetchOnMount: "always" as const,
+    })),
+  });
+  return useMemo(() => {
+    let live = 0;
+    const tiers = queries.map((q, i) => {
+      const rows = q.data?.table.status === "live" ? readUspsGaRows(q.data.table.data) : null;
+      if (rows) live += 1;
+      return rows ?? [...USPS_GA_LABEL_RATES_SNAPSHOT[i]];
+    });
+    return { tiers, isLive: live === USPS_GA_SLUGS.length };
+  }, [queries]);
 }
 
 /**

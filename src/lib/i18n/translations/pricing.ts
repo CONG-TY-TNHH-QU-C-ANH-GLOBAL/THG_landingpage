@@ -34,7 +34,7 @@ export const pricingTranslations: TranslationDict = {
   "domestic.hero_highlight": tr("Rate Card", "3PL", "费率表"),
   "domestic.hero_desc": tr("Transparent storage, pick-pack and US domestic shipping from", "Phí lưu kho, pick-pack và vận chuyển nội địa Mỹ minh bạch từ", "透明的仓储、拣货打包及美国境内配送服务，来自"),
   "domestic.table_title": tr("USPS Ground Advantage by Zone", "USPS Ground Advantage theo zone", "USPS Ground Advantage分区费率"),
-  "domestic.table_desc": tr("Published reference rates • Zones 1–8", "Biểu phí tham khảo • Zone 1–8", "公开参考费率 • Zone 1–8"),
+  "domestic.table_desc": tr("Published reference rates • Zones 1–9", "Biểu phí tham khảo • Zone 1–9", "公开参考费率 • Zone 1–9"),
   "domestic.weight_ounces": tr("Weight not over (ounces)", "Cân nặng không quá (ounce)", "重量不超过（盎司）"),
   "domestic.estimator_title": tr("Estimate fulfillment cost", "Ước tính chi phí fulfillment", "估算履约费用"),
   "domestic.estimator_desc": tr("Pick & pack + packaging + USPS Ground Advantage", "Pick & pack + bao bì + USPS Ground Advantage", "拣货打包 + 包材 + USPS Ground Advantage"),
