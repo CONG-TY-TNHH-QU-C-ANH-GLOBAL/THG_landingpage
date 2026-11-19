@@ -506,9 +506,9 @@ export const labelTranslations: TranslationDict = {
   "label_page.tier_cta": tr("Get a quote", "Nhận báo giá", "获取报价"),
   "label_page.rates_tabs": tr("Rate card tiers", "Các tier bảng giá", "价格档位"),
   "label_page.rates_title": tr(
-    "USPS Ground Advantage Rate Card – THG Fulfillment – Tier",
-    "Bảng giá USPS Ground Advantage – THG Fulfillment – Tier",
-    "USPS Ground Advantage 价格表 – THG Fulfillment – Tier",
+    "USPS Ground Advantage Rate Card – TH Group – Tier",
+    "Bảng giá USPS Ground Advantage – TH Group – Tier",
+    "USPS Ground Advantage 价格表 – TH Group – Tier",
   ),
   "label_page.rates_volume_prefix": tr("For a volume of", "Áp dụng cho sản lượng", "适用量级："),
   "label_page.rates_volume_t1": tr("under 1,000 labels/month", "Dưới 1.000 label/tháng", "每月少于 1,000 张面单"),
