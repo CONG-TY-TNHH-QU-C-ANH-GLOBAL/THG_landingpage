@@ -41,7 +41,7 @@ test.describe("USPS Ground Advantage label rate card", () => {
 
     await expect(section.getByRole("tab")).toHaveText(["Tier 1", "Tier 2", "Tier 3", "Tier 4", "Tier 5"]);
     const t1 = section.getByRole("tabpanel", { name: "Tier 1" });
-    await expect(t1.getByRole("heading")).toHaveText("Bảng giá USPS Ground Advantage – THG Fulfillment – Tier 1");
+    await expect(t1.getByRole("heading")).toHaveText("Bảng giá USPS Ground Advantage – TH Group – Tier 1");
     await expect(t1).toContainText("Áp dụng cho sản lượng Dưới 1.000 label/tháng · Đơn vị: USD/label");
     await expect(t1.getByRole("row")).toHaveCount(25);
     await expect(t1.getByRole("row").nth(1)).toContainText("9.99");
