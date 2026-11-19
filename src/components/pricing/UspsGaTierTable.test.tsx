@@ -25,7 +25,7 @@ describe("UspsGaTierTable", () => {
     mount();
     const panel = screen.getByRole("tabpanel", { name: "Tier 1" });
     expect(within(panel).getByRole("heading")).toHaveTextContent(
-      "Bảng giá USPS Ground Advantage – THG Fulfillment – Tier 1",
+      "Bảng giá USPS Ground Advantage – TH Group – Tier 1",
     );
     expect(panel).toHaveTextContent("Áp dụng cho sản lượng Dưới 1.000 label/tháng · Đơn vị: USD/label");
     const headers = within(panel).getAllByRole("columnheader").map((h) => h.textContent);
