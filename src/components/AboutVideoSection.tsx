@@ -38,11 +38,11 @@ const AboutVideoSection = () => {
   // Text content (highlights, title, desc) still follows the active language.
   const enBlock = useHomepageBlock("en", "about_video");
   // The CMS keeps the operator's edit on the Vietnamese (source-language) block and creates no EN block unless
-  // one is edited on purpose, so reading EN alone ignored every video change. EN still wins when it is set,
-  // then the Vietnamese block, then the global setting.
+  // one is edited on purpose, so reading EN alone ignored every video change. The video is one link for every
+  // language and is edited on the Vietnamese tab: VI first, then a reviewed EN block, then the global setting.
   const viBlock = useHomepageBlock("vi", "about_video");
   const videoId = extractYouTubeId(
-    enBlock.video_url || viBlock.video_url || settings?.about_video_url,
+    viBlock.video_url || enBlock.video_url || settings?.about_video_url,
   );
 
   const highlights = [
